@@ -1,0 +1,33 @@
+The naming conventions for projects in this solution:
+
+
+1. Classes:
+- PascalCase
+- eg. MyClass
+
+
+2. Interfaces:
+- PascalCase
+- Start with 'I'
+- eg. IMyInterface
+
+
+3. Properties:
+- public:
+	PascalCase (eg. PublicProperty)
+- protected and private:
+	PascalCase
+	Start with an underscore ('_')
+	(eg. _PrivateProperty)
+
+
+4. Member fields:
+- public: Pascal Case (eg. PublicField)
+- protected and private: PascalCase, start with 'm' (eg. mPrivateField)
+
+
+5. Methods:
+- Pascal Case
+- Asynchronous methods end with 'Async'
+- eg. public void Foo()
+- eg. private async Task BarAsync()
