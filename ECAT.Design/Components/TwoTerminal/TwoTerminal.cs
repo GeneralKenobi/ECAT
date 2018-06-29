@@ -14,12 +14,12 @@ namespace ECAT.Core
 		/// <summary>
 		/// One of the terminals in this two-terminal
 		/// </summary>
-		public Node TerminalA { get; set; } = Node.Factory.Construct();
+		public PartialNode TerminalA { get; set; } = new PartialNode();
 
 		/// <summary>
 		/// One of the terminals in this two-terminal
 		/// </summary>
-		public Node TerminalB { get; set; } = Node.Factory.Construct();
+		public PartialNode TerminalB { get; set; } = new PartialNode();
 
 		#endregion
 	}
