@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using CSharpEnhanced.Maths;
+using System.ComponentModel;
 
 namespace ECAT.Core
 {
@@ -13,6 +14,15 @@ namespace ECAT.Core
 		/// Event fired whenever a property changes
 		/// </summary>
 		public event PropertyChangedEventHandler PropertyChanged;
+
+		#endregion
+
+		#region Public properties
+
+		/// <summary>
+		/// The center coordinate
+		/// </summary>
+		public cdouble Center { get; set; } = new cdouble();
 
 		#endregion
 	}
