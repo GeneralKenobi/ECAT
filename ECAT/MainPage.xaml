@@ -5,10 +5,66 @@
     xmlns:local="using:ECAT"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:controls="using:UWPEnhanced.Controls"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{StaticResource WhiteBrush}">
 
-    <Grid>
 
-    </Grid>
+	<Grid>
+
+		<ScrollViewer ZoomMode="Enabled" MinZoomFactor="0.1" MaxZoomFactor="10"
+			HorizontalScrollMode="Enabled" HorizontalScrollBarVisibility="Auto">
+
+			<!-- All parts go here -->
+			<!-- Don't use layout rounding because it blurs the parts when they're rotated,
+		especially noticeable when the control has text in it -->
+			<Canvas x:Name="MainCanvas"
+				Background="Transparent"
+				Margin="0"
+				Width="2000"
+				Height="2000"
+				UseLayoutRounding="False"
+				AllowDrop="True">
+				<!--DragOver="PartDragOver"
+				Drop="DropOnMainCanvas"
+				Tapped="MainCanvasTapped"-->
+
+				<!--<local:SocketTC Canvas.Left="200" Canvas.Top="200"/>-->
+
+			</Canvas>
+
+		</ScrollViewer>
+
+		<controls:Menu x:Name="SideMenu"
+			Position="Left"
+			RestrictedPositions="Horizontal"
+			Background="{StaticResource DarkBlueBrush}"
+			BorderBrush="{StaticResource BlackBrush}"			
+			SeparatorBrush="{StaticResource BlackBrush}"
+			SeparatorThickness="1"
+			Foreground="{StaticResource WhiteBrush}"
+			FontSize="22"
+			IconsPanelLength="40"
+			IconsPanelPadding="3 10"
+			IconsSpacing="20"
+			Padding="5"
+			ContentLength="200">
+			<controls:Menu.Content>
+
+				<StackPanel controls:Menu.Glyph="&#xE710;">
+				
+				
+				</StackPanel>
+
+				<!--Menu allowing the user to add parts-->
+				<!--<local:PartAddingMenu controls:Menu.Glyph="&#xE710;"/>-->
+
+				<!--Edit menu control-->
+				<!--<local:EditMenu controls:Menu.Glyph="&#xE104;"/>-->
+
+			</controls:Menu.Content>
+		</controls:Menu>
+
+
+	</Grid>
 </Page>
