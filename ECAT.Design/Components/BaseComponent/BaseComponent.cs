@@ -1,12 +1,13 @@
 ﻿using CSharpEnhanced.Maths;
+using ECAT.Core;
 using System.ComponentModel;
 
-namespace ECAT.Core
+namespace ECAT.Design
 {
 	/// <summary>
 	/// Base class for all components
 	/// </summary>
-	public class BaseComponent : INotifyPropertyChanged
+	public class BaseComponent : IBaseComponent
 	{
 		#region Events
 
@@ -23,6 +24,11 @@ namespace ECAT.Core
 		/// The center coordinate
 		/// </summary>
 		public cdouble Center { get; set; } = new cdouble();
+
+		public void Dispose()
+		{
+			throw new System.NotImplementedException();
+		}
 
 		#endregion
 	}
