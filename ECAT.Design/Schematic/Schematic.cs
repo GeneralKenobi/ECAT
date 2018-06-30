@@ -65,13 +65,13 @@ namespace ECAT.Design
 		/// Method that adds a new component to the circuit
 		/// </summary>
 		/// <param name="component"></param>
-		public void AddNewComponent(IBaseComponent component) => _Components.Add(component);
+		public void AddComponent(IBaseComponent component) => _Components.Add(component);
 
 		/// <summary>
 		/// Method that adds a new wire to the circuit
 		/// </summary>
 		/// <param name="wire"></param>
-		public void AddNewWire(IWire wire) => _Wires.Add(wire);
+		public void AddWire(IWire wire) => _Wires.Add(wire);
 
 		/// <summary>
 		/// Method that removes a component from the circuit

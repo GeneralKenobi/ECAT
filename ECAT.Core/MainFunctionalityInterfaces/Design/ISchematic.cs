@@ -31,13 +31,13 @@ namespace ECAT.Core
 		/// Method that adds a new component to the circuit
 		/// </summary>
 		/// <param name="component"></param>
-		void AddNewComponent(IBaseComponent component);
+		void AddComponent(IBaseComponent component);
 
 		/// <summary>
 		/// Method that adds a new wire to the circuit
 		/// </summary>
 		/// <param name="wire"></param>
-		void AddNewWire(IWire wire);
+		void AddWire(IWire wire);
 
 		/// <summary>
 		/// Method that removes a component from the circuit
