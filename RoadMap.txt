@@ -1,0 +1,67 @@
+1. Status: Done
+Priority: High
+Create initial interfaces for Design module
+
+2. Status: Done
+Priority: High
+Create initial implementation for Design module
+
+3. Status: WiP
+Priority: High
+Create initial implementation of ViewModel for Design module
+
+4. Status: WiP
+Priority: High
+Create basic UI elements of Design module (component adding menu, a resistor model)
+
+5. Status: TBD
+Priority: High
+Integrate Design interface, implementation, ViewModel and UI into a working module
+
+6. Status: TBD
+Priority: High
+Test and refine the Design module
+
+7. Status: TBD
+Priority: Low
+Allow for multiple schematics open at the same time (interface & implementation)
+
+8. Status: TBD
+Priority: Low
+Allow for multiple schematics open at the same time (UI)
+
+9. Status: TBD
+Priority: High
+Wire connection for circuit design (interface & implementation)
+
+10. Status: TBD 
+Priority: High
+Wire connection for circuit design (UI)
+
+11. Status: TBD
+Priority: Medium
+Removing parts from the schematic (interface & implementation)
+
+12. Status: TBD
+Priority: Medium
+Removing parts from the schematic (UI)
+
+13. Status: TBD
+Priority: Low
+Moving parts around (interface & implementation)
+
+14. Status: TBD
+Priority: Low
+Moving parts around (UI)
+
+15. Status: TBD
+Priority: Low
+Rotating components (interface & implementation)
+
+16. Status: TBD
+Priority: Low
+Rotating components (UI)
+
+10. Status: TBD
+Priority: Low
+More components

@@ -14,7 +14,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NamingConventions", "Naming
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ECAT.Design", "ECAT.Design\ECAT.Design.csproj", "{5112987C-A231-4D27-941B-7BEC84ED3871}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECAT.ViewModel", "ECAT.ViewModel\ECAT.ViewModel.csproj", "{F92D76F1-59E2-4C9D-B7F4-FE461906B932}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ECAT.ViewModel", "ECAT.ViewModel\ECAT.ViewModel.csproj", "{F92D76F1-59E2-4C9D-B7F4-FE461906B932}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RoadMap", "RoadMap", "{27268BD8-60EB-4ECD-9CC7-BBA543AF762F}"
+	ProjectSection(SolutionItems) = preProject
+		RoadMap.txt = RoadMap.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
