@@ -28,6 +28,7 @@ namespace ECAT
         /// </summary>
         public App()
         {
+			IoCSetup.Run();
             this.InitializeComponent();
             this.Suspending += OnSuspending;
         }

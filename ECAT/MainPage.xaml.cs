@@ -1,9 +1,11 @@
 ﻿using ECAT.Core;
+using ECAT.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -154,20 +156,20 @@ namespace ECAT
 		/// <param name="e"></param>
 		private void DropOnMainCanvas(object sender, DragEventArgs e)
 		{
-			// If the position before drag was found in the IoC
-			if (IoC.Get("PositionBeforeDrag", out Position pos))
-			{
-				// Remove it
-				IoC.Remove("PositionBeforeDrag");
+			//// If the position before drag was found in the IoC
+			//if (IoC.Get("PositionBeforeDrag", out Position pos))
+			//{
+			//	// Remove it
+			//	IoC.Remove("PositionBeforeDrag");
 
-				// Get the drop position relative to the MainCanvas
-				var dropPosition = e.GetPosition(MainCanvas);
+			//	// Get the drop position relative to the MainCanvas
+			//	var dropPosition = e.GetPosition(MainCanvas);
 
-				// Assign the new position for the coord
-				pos.Absolute.Set(dropPosition.X + pos.Shift.X, dropPosition.Y + pos.Shift.Y);
+			//	// Assign the new position for the coord
+			//	pos.Absolute.Set(dropPosition.X + pos.Shift.X, dropPosition.Y + pos.Shift.Y);
 
-				e.Handled = true;
-			}
+			//	e.Handled = true;
+			//}
 		}
 
 		/// <summary>
@@ -198,31 +200,31 @@ namespace ECAT
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="args"></param>
-		private void OnEditedPartChanged(object sender, EditedPartChangedEventArgs args)
+		private void OnEditedPartChanged(object sender, /*EditedPartChangedEventArgs*/object args)
 		{
-			switch (args.ChangeType)
-			{
-				case EditedPartChangeType.NullToPart:
-				case EditedPartChangeType.TheSame:
-				case EditedPartChangeType.PartToPart:
-					{
-						// Swaps to the edit menu if it wasn't shown
-						if (SideMenu.GetSelectedContentIndex() != 2)
-						{
-							SideMenu.SetSelectedContentFromIndex(2);
-						}
+			//switch (args.ChangeType)
+			//{
+			//	case EditedPartChangeType.NullToPart:
+			//	case EditedPartChangeType.TheSame:
+			//	case EditedPartChangeType.PartToPart:
+			//		{
+			//			// Swaps to the edit menu if it wasn't shown
+			//			if (SideMenu.GetSelectedContentIndex() != 2)
+			//			{
+			//				SideMenu.SetSelectedContentFromIndex(2);
+			//			}
 
-						SideMenu.IsOpen = true;
-					}
-					break;
+			//			SideMenu.IsOpen = true;
+			//		}
+			//		break;
 
-				case EditedPartChangeType.PartToNull:
-					{
-						// Hides the menu
-						SideMenu.IsOpen = false;
-					}
-					break;
-			}
+			//	case EditedPartChangeType.PartToNull:
+			//		{
+			//			// Hides the menu
+			//			SideMenu.IsOpen = false;
+			//		}
+			//		break;
+			//}
 		}
 
 		#endregion

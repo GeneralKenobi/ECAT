@@ -95,6 +95,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="IoCSetup\IoCSetup.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -178,6 +179,10 @@
     <ProjectReference Include="..\ECAT.Design\ECAT.Design.csproj">
       <Project>{5112987c-a231-4d27-941b-7bec84ed3871}</Project>
       <Name>ECAT.Design</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ECAT.ViewModel\ECAT.ViewModel.csproj">
+      <Project>{f92d76f1-59e2-4c9d-b7f4-fe461906b932}</Project>
+      <Name>ECAT.ViewModel</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
