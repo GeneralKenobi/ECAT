@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 
-namespace ECAT.Core
+namespace ECAT.Design
 {
 	/// <summary>
 	/// Class used to connect <see cref="BaseComponent"/> with
