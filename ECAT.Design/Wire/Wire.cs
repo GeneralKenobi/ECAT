@@ -1,4 +1,5 @@
 ﻿using CSharpEnhanced.Maths;
+using ECAT.Design;
 using PropertyChanged;
 using System;
 using System.Collections.Generic;
