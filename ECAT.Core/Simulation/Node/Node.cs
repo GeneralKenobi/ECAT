@@ -19,7 +19,7 @@ namespace ECAT.Core
 		{
 			ID = id;
 
-			ConnectedComponents = new ReadOnlyCollection<BaseComponent>(_ConnectedComponents);
+			ConnectedComponents = new ReadOnlyCollection<IBaseComponent>(_ConnectedComponents);
 		}
 
 		#endregion
@@ -29,7 +29,7 @@ namespace ECAT.Core
 		/// <summary>
 		/// Backing store for <see cref="ConnectedComponents"/>
 		/// </summary>
-		private List<BaseComponent> _ConnectedComponents { get; } = new List<BaseComponent>();
+		private List<IBaseComponent> _ConnectedComponents { get; } = new List<IBaseComponent>();
 
 		#endregion
 
@@ -43,7 +43,7 @@ namespace ECAT.Core
 		/// <summary>
 		/// Collection of all parts connected to this node
 		/// </summary>
-		public ReadOnlyCollection<BaseComponent> ConnectedComponents { get; }
+		public ReadOnlyCollection<IBaseComponent> ConnectedComponents { get; }
 
 		#endregion
 
