@@ -1,0 +1,73 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ECAT">
+
+	<Style TargetType="local:BaseComponentControl">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="local:BaseComponentControl">
+					<Grid>
+
+						<Grid.Resources>
+							<local:ReverseRotationAngleValueConverter x:Key="RotationAngleConverter"/>
+							<local:PartToPartControlConverter x:Key="PartControlConverter"/>
+						</Grid.Resources>
+
+						<Grid.RenderTransform>
+							<RotateTransform Angle="{Binding RotationAngleClockWise, Mode=OneWay}"
+								CenterX="{Binding HorizontalRotationCenter}"
+								CenterY="{Binding VerticalRotationCenter}"/>
+						</Grid.RenderTransform>
+
+
+						<Grid.ContextFlyout>
+							<MenuFlyout Opening="MenuFlyoutOpenClose"
+								Closed="MenuFlyoutOpenClose"
+								MenuFlyoutPresenterStyle="{StaticResource MenuFlyoutPresenterStyle}">
+
+								<!-- Go to part edit icon -->
+								<MenuFlyoutItem Style="{StaticResource ContextMenuFlyoutItemStyle}"
+									Text="&#xE104;"
+									FontFamily="{ThemeResource SymbolThemeFontFamily}"
+									Command="{Binding EditPartCommand}"
+									CommandParameter="{Binding}"/>
+
+								<!-- Rotate 90 degrees left icon -->
+								<MenuFlyoutItem Style="{StaticResource ContextMenuFlyoutItemStyle}"
+									Text="&#xf0e2;"
+									FontFamily="{StaticResource FontAwesome}"
+									Command="{Binding RotateLeftCommand}"/>
+
+								<!-- Rotate 90 degrees right icon -->
+								<MenuFlyoutItem Style="{StaticResource ContextMenuFlyoutItemStyle}"
+									Text="&#xf01e;"
+									FontFamily="{StaticResource FontAwesome}"
+									Command="{Binding RotateRightCommand}"/>
+
+								<!-- Remove element icon -->
+								<MenuFlyoutItem Style="{StaticResource ContextMenuFlyoutItemStyle}"
+									Text="&#xE107;"
+									FontFamily="{StaticResource SymbolThemeFontFamily}"
+									Command="{Binding RemoveCommand}"
+									CommandParameter="{Binding}"/>
+							</MenuFlyout>
+						</Grid.ContextFlyout>
+
+						<!-- Border around the 'focused' element -->
+						<Border x:Name="Border"
+							Margin="-5"
+							Padding="4"
+							BorderThickness="1"
+							BorderBrush="{Binding MenuPresentBorderBrush, RelativeSource={RelativeSource Mode=TemplatedParent}}">
+
+							<ContentPresenter Content="{Binding Mode=OneWay, Converter={StaticResource PartControlConverter}}"/>
+						</Border>
+
+					</Grid>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+</ResourceDictionary>

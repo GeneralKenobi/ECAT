@@ -3,6 +3,7 @@ using ECAT.Core;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows.Input;
 
 namespace ECAT.ViewModel
 {
@@ -19,6 +20,7 @@ namespace ECAT.ViewModel
 		public DesignViewModel()
 		{			
 			_DesignManagerScope = IoC.Container.BeginLifetimeScope();
+
 			if(_DesignManagerScope.TryResolve(out IDesignManager manager))
 			{
 				DesignManager = manager;
@@ -55,6 +57,12 @@ namespace ECAT.ViewModel
 			_DesignManagerScope.Dispose();
 			_DesignManagerScope = null;
 		}
+
+		#endregion
+
+		#region Commands
+
+		
 
 		#endregion
 	}

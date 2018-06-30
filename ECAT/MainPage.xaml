@@ -49,15 +49,10 @@
 			IconsSpacing="20"
 			Padding="5"
 			ContentLength="200">
-			<controls:Menu.Content>
-
-				<StackPanel controls:Menu.Glyph="&#xE710;">
-				
-				
-				</StackPanel>
+			<controls:Menu.Content>				
 
 				<!--Menu allowing the user to add parts-->
-				<!--<local:PartAddingMenu controls:Menu.Glyph="&#xE710;"/>-->
+				<local:ComponentAddingMenu controls:Menu.Glyph="&#xE710;"/>
 
 				<!--Edit menu control-->
 				<!--<local:EditMenu controls:Menu.Glyph="&#xE104;"/>-->
