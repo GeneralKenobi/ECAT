@@ -1,8 +1,9 @@
-﻿using System;
+﻿using ECAT.Core;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ECAT.Core
+namespace ECAT.Design
 {
 	/// <summary>
 	/// Base class for all two-terminal components
