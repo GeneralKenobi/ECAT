@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Text;
 
 namespace ECAT.Core
 {
 	/// <summary>
 	/// Interface for design of a circuit
 	/// </summary>
-    public interface IDesignManager : INotifyPropertyChanged
+	public interface IDesignManager : INotifyPropertyChanged
     {
 		#region Properties
 
