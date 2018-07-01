@@ -15,16 +15,16 @@ using Windows.UI.Xaml.Media;
 
 namespace ECAT
 {
-	public sealed class BaseComponentControl : Control, INotifyPropertyChanged
+	public sealed class ComponentWrapperTC : Control, INotifyPropertyChanged
 	{
 		#region Constructor
 		
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public BaseComponentControl()
+		public ComponentWrapperTC()
 		{
-			this.DefaultStyleKey = typeof(BaseComponentControl);
+			this.DefaultStyleKey = typeof(ComponentWrapperTC);
 		}
 
 		#endregion
