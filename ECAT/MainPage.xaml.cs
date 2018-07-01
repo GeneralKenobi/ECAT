@@ -29,7 +29,9 @@ namespace ECAT.UWP
     {
         public MainPage()
         {
-            this.InitializeComponent();
+			Uri uri = new Uri("ms-appx:///ECAT.UWP/Dictionary1.xaml");
+			Uri uri2 = new Uri("/Dictionary1.xaml");
+			this.InitializeComponent();
 			Loaded += MainPageLoaded;
         }
 

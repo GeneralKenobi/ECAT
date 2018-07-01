@@ -4,6 +4,9 @@
     xmlns:local="using:ECAT.UWP">
 
 	<ResourceDictionary.MergedDictionaries>
+		<ResourceDictionary Source="Dictionary1.xaml"/>
+		<ResourceDictionary Source="ms-appx:///ECAT/.UWP/Dictionary1.xaml"/>
+		<!--<ResourceDictionary Source="ms-appx:///ECAT/Design/Components/ComponentWrapper/Dictionary1.xaml"/>-->
 		<!--<ResourceDictionary Source="ms-appx:///ECAT/Design/Components/ComponentWrapper/ComponentWrapperTCStyle.xaml"/>-->
 		<!--<ResourceDictionary Source="ms-appx:///ECAT/Design/Components/Resistor/ResistorTCStyle.xaml"/>-->
 	</ResourceDictionary.MergedDictionaries>
