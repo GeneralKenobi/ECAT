@@ -4,7 +4,7 @@
 	xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
 	xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
 	xmlns:extensions="using:Microsoft.Toolkit.Uwp.UI.Extensions"
-    xmlns:local="using:ECAT">
+    xmlns:local="using:ECAT.UWP">
 
 	<ResourceDictionary.MergedDictionaries>
 		<ResourceDictionary Source="Colors.xaml"/>

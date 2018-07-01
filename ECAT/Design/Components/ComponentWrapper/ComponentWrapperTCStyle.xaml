@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:ECAT">
+    xmlns:local="using:ECAT.UWP">
 
 	<Style TargetType="local:ComponentWrapperTC">
 		<Setter Property="Template">

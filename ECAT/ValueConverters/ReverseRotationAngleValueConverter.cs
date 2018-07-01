@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Data;
 
-namespace ECAT
+namespace ECAT.UWP
 {
 	/// <summary>
 	/// Convert which takes a normal rotation angle (anti clockwise) in degrees (as a double) and returns a clockwise rotation

@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ECAT
+namespace ECAT.UWP
 {
 	public static class IoCSetup
 	{

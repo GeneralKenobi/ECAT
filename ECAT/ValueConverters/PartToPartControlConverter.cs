@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
-namespace ECAT
+namespace ECAT.UWP
 {
 	public class PartToPartControlConverter : IValueConverter
 	{
