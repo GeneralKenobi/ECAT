@@ -7,14 +7,14 @@ namespace ECAT.Simulation
 	/// <summary>
 	/// Implementation of the simulation module
 	/// </summary>
-	public class Simulation : ISimulation
+	public class SimulationManager : ISimulationManager
 	{
 		#region Constructor
 
 		/// <summary>
 		/// Default Constructor
 		/// </summary>
-		public Simulation()
+		public SimulationManager()
 		{
 			ImplementedComponents = new ReadOnlyObservableCollection<IComponentDeclaration>(_ImplementedComponents);
 		}

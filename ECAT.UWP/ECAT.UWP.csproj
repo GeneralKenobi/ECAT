@@ -230,6 +230,10 @@
       <Project>{5112987c-a231-4d27-941b-7bec84ed3871}</Project>
       <Name>ECAT.Design</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ECAT.Simulation\ECAT.Simulation.csproj">
+      <Project>{7b16e0f2-dd0f-403f-b697-7efda90a5b67}</Project>
+      <Name>ECAT.Simulation</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ECAT.ViewModel\ECAT.ViewModel.csproj">
       <Project>{f92d76f1-59e2-4c9d-b7f4-fe461906b932}</Project>
       <Name>ECAT.ViewModel</Name>
