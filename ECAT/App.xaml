@@ -15,7 +15,8 @@
 				<ResourceDictionary Source="Styles/ToggleButtons.xaml"/>
 				<ResourceDictionary Source="Styles/Expanders.xaml"/>
 				<ResourceDictionary Source="Styles/ListViews.xaml"/>
-			</ResourceDictionary.MergedDictionaries>			
+				<ResourceDictionary Source="Styles/MenuFlyoutItems.xaml"/>
+			</ResourceDictionary.MergedDictionaries>
 		</ResourceDictionary>
 	</Application.Resources>
 

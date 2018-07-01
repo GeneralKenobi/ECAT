@@ -13,6 +13,7 @@ namespace ECAT
 	{
 		public object Convert(object value, Type targetType, object parameter, string language)
 		{
+			//return new ResistorTC();
 			//if (value is BasePart part && ControlsHelpers.TryGetUIControl(part, out FrameworkElement element))
 			//{
 			//	return element;

@@ -4,7 +4,10 @@
     xmlns:local="using:ECAT">
 
 	<ResourceDictionary.MergedDictionaries>
-		<ResourceDictionary Source="ms-appx:///ECAT/Design/Components/BaseComponent/BaseComponentControlStyle.xaml"/>
+		<ResourceDictionary Source="ms-appx:///ECAT/Design/Components/ComponentWrapper/ComponentWrapperTCStyle.xaml"/>
+		<!--<ResourceDictionary Source="ms-appx:///ECAT/Design/Components/Resistor/ResistorTCStyle.xaml"/>-->
 	</ResourceDictionary.MergedDictionaries>
-    
+
+	
+
 </ResourceDictionary>

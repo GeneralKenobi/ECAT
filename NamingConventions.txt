@@ -31,3 +31,13 @@ The naming conventions for projects in this solution:
 - Asynchronous methods end with 'Async'
 - eg. public void Foo()
 - eg. private async Task BarAsync()
+
+
+6. (UWP) Templated Controls:
+- PascalCase
+- End with TC (eg. MyTemplatedControlTC)
+
+
+7. (UWP) User Controls:
+- PascalCase
+- End with UC (eg. MyUserControlUC)

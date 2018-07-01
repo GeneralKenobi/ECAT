@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECAT", "ECAT\ECAT.csproj", "{A4FC6244-C161-4808-AD65-E52A22BA3A73}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECAT.UWP", "ECAT\ECAT.UWP.csproj", "{A4FC6244-C161-4808-AD65-E52A22BA3A73}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ECAT.Core", "ECAT.Core\ECAT.Core.csproj", "{D134819F-AEAF-4625-B413-72D6EDC6CA20}"
 EndProject

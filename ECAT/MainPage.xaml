@@ -31,6 +31,8 @@
 
 				<!--<local:SocketTC Canvas.Left="200" Canvas.Top="200"/>-->
 
+				<local:ComponentWrapperTC Canvas.Left="200" Canvas.Top="200"/>
+
 			</Canvas>
 
 		</ScrollViewer>
