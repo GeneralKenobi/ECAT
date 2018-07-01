@@ -2,6 +2,7 @@
 using ECAT.Core;
 using ECAT.Design;
 using ECAT.ViewModel;
+using ECAT.Simulation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,14 +22,12 @@ namespace ECAT.UWP
 			ContainerBuilder builder = new ContainerBuilder();
 
 			// Register necessary types
-			builder.RegisterType<DesignManager>().As<IDesignManager>();
+			builder.RegisterInstance(new DesignManager()).As<IDesignManager>();
+			builder.RegisterInstance(new SimulationManager()).As<ISimulationManager>();			
+			
 
 			IoC.Build(builder);
 
-			var vm = new DesignViewModel();
-			vm.Dispose();
-			vm = null;
-			GC.Collect();
 		}
 	}
 }
