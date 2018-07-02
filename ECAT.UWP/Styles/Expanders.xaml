@@ -275,6 +275,7 @@
 	<Style x:Key="ExpanderEditMenuStyle" TargetType="controls:Expander" >
 		<Setter Property="Header" Value="Header" />
 		<Setter Property="IsTabStop" Value="False" />
+		<Setter Property="Background" Value="Transparent"/>
 		<Setter Property="animations:Implicit.Animations">
 			<Setter.Value>
 				<animations:AnimationCollection>
