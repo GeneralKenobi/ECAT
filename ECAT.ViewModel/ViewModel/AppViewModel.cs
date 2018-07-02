@@ -9,6 +9,18 @@ namespace ECAT.ViewModel
 	/// </summary>
     public class AppViewModel : BaseViewModel
     {
-		public DesignViewModel DesignVM { get; set; } = new DesignViewModel();
+		/// <summary>
+		/// ViewModel related with circuit design functionalities
+		/// </summary>
+		public DesignViewModel DesignVM { get; } = new DesignViewModel();
+
+		/// <summary>
+		/// ViewModel related with circuit simulation functionalities
+		/// </summary>
+		public SimulationViewModel SimulationVM { get; } = new SimulationViewModel();
+
+
+
+
     }
 }
