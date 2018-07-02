@@ -56,5 +56,37 @@ namespace ECAT.ViewModel
 
 
 		#endregion
+
+		#region Public methods
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="clickPosition"></param>
+		public void AddComponent(PlanePosition clickPosition)
+		{
+			if (AddingComponents)
+			{
+				IBaseComponent newComponent = null;
+				try
+				{
+					newComponent = Activator.CreateInstance(DesignManager.GetComponentType(ComponentToAdd)) as IBaseComponent;
+
+					newComponent.Handle.Absolute = clickPosition.Absolute;
+				}
+				catch(Exception e)
+				{
+					// If something happened and the element could not be created rethrow the exception
+					throw;
+				}
+
+				if (newComponent != null)
+				{
+					DesignManager.CurrentSchematic.AddComponent(newComponent);
+				}
+			}
+		}
+
+		#endregion
 	}
 }
