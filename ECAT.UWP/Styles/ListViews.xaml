@@ -305,7 +305,7 @@
 							<ContentPresenter x:Name="ContentPresenter"
                             ContentTransitions="{TemplateBinding ContentTransitions}"
                             ContentTemplate="{TemplateBinding ContentTemplate}"
-                            Content="{TemplateBinding Content}"
+                            Content="{Binding Content.DisplayName, RelativeSource={RelativeSource Mode=TemplatedParent}}"
                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                             Margin="{TemplateBinding Padding}"/>
