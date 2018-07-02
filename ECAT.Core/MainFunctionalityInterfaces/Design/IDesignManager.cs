@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 namespace ECAT.Core
@@ -58,6 +59,20 @@ namespace ECAT.Core
 		/// </summary>
 		/// <param name="index"></param>
 		void ChangeCurrentSchematic(int index);
+
+		/// <summary>
+		/// Returns the type corresponding to the declaration
+		/// </summary>
+		/// <param name="declaration"></param>
+		/// <returns></returns>
+		Type GetComponentType(IComponentDeclaration declaration);
+
+		/// <summary>
+		/// Returns the type corresponding to the given component it
+		/// </summary>
+		/// <param name="declaration"></param>
+		/// <returns></returns>
+		Type GetComponentType(int id);
 
 		#endregion
 	}

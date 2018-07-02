@@ -18,6 +18,7 @@ namespace ECAT.Design
 		public DesignManager()
 		{
 			Schematics = new ReadOnlyObservableCollection<ISchematic>(_Schematics);
+			ChangeCurrentSchematic(0);
 		}
 
 		#endregion
@@ -27,7 +28,10 @@ namespace ECAT.Design
 		/// <summary>
 		/// Backing store for <see cref="Schematic"/>
 		/// </summary>
-		private ObservableCollection<ISchematic> _Schematics { get; } = new ObservableCollection<ISchematic>();
+		private ObservableCollection<ISchematic> _Schematics { get; } = new ObservableCollection<ISchematic>()
+		{
+			new Schematic(),
+		};
 
 		#endregion
 
@@ -129,6 +133,32 @@ namespace ECAT.Design
 			}
 
 			RemoveSchematic(_Schematics[index]);
+		}
+
+		/// <summary>
+		/// Returns the type corresponding to the declaration
+		/// </summary>
+		/// <param name="declaration"></param>
+		/// <returns></returns>
+		public Type GetComponentType(IComponentDeclaration declaration) => GetComponentType(declaration.ID);
+
+		/// <summary>
+		/// Returns the type corresponding to the given component it
+		/// </summary>
+		/// <param name="declaration"></param>
+		/// <returns></returns>
+		public Type GetComponentType(int id)
+		{
+			switch(id)
+			{
+				case 0: return typeof(Resistor);
+
+				default:
+					{
+						throw new ArgumentException($"No type corresponds to that ID: {id}");
+					}
+					
+			}
 		}
 
 		#endregion
