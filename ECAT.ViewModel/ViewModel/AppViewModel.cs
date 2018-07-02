@@ -9,6 +9,29 @@ namespace ECAT.ViewModel
 	/// </summary>
     public class AppViewModel : BaseViewModel
     {
+		#region Constructor
+
+		/// <summary>
+		/// Default Constructor
+		/// </summary>
+		private AppViewModel()
+		{
+
+		}
+
+		#endregion
+
+		#region Singleton
+
+		/// <summary>
+		/// The singleton ViewModel for the whole app
+		/// </summary>
+		public static AppViewModel Singleton { get; } = new AppViewModel();
+
+		#endregion
+
+		#region Public properties
+
 		/// <summary>
 		/// ViewModel related with circuit design functionalities
 		/// </summary>
@@ -19,8 +42,12 @@ namespace ECAT.ViewModel
 		/// </summary>
 		public SimulationViewModel SimulationVM { get; } = new SimulationViewModel();
 
+		#endregion
+
+		#region Commands
 
 
 
-    }
+		#endregion
+	}
 }

@@ -31,17 +31,8 @@ namespace ECAT.UWP
         {
 			this.InitializeComponent();
 			Loaded += MainPageLoaded;
-			DataContext = _VM;
+			DataContext = AppViewModel.Singleton;
         }
-
-		#region Private Properties
-
-		/// <summary>
-		/// ViewModel for the <see cref="MainPage"/>
-		/// </summary>
-		private AppViewModel _VM { get; } = new AppViewModel();
-
-		#endregion
 
 		#region On Loaded
 
@@ -143,7 +134,7 @@ namespace ECAT.UWP
 		{
 			var pointerCoord = e.GetPosition(sender as Canvas);
 
-			//_VM.MainPanelClickedCommand.Execute(new Position(pointerCoord.X, pointerCoord.Y));
+			//AppViewModel.Singleton.MainPanelClickedCommand.Execute(new Position(pointerCoord.X, pointerCoord.Y));
 		}
 
 		#endregion

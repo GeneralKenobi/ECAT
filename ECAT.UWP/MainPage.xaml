@@ -31,8 +31,7 @@
 
 				<!--<local:SocketTC Canvas.Left="200" Canvas.Top="200"/>-->
 
-				<local:ComponentWrapperTC Canvas.Left="200" Canvas.Top="187.5" Canvas.ZIndex="1200"
-					DataContext="{x:Bind _VM, Mode=OneWay}"/>
+				<local:ComponentWrapperTC Canvas.Left="200" Canvas.Top="187.5" Canvas.ZIndex="1200"/>
 				
 
 			</Canvas>
