@@ -38,11 +38,22 @@ namespace ECAT.ViewModel
 		/// </summary>
 		public IDesignManager DesignManager { get; private set; }
 
+		/// <summary>
+		/// The component that was selected by the user to be added upon clicking on the screen.
+		/// If null, then no component is to be added
+		/// </summary>
+		public IComponentDeclaration ComponentToAdd { get; set; }
+
+		/// <summary>
+		/// True if the user is currently adding components
+		/// </summary>
+		public bool AddingComponents => ComponentToAdd != null;
+
 		#endregion
 
 		#region Commands
 
-		
+
 
 		#endregion
 	}
