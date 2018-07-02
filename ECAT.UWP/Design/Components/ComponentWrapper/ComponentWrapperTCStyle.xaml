@@ -6,18 +6,24 @@
 	<Style TargetType="local:ComponentWrapperTC">
 		<Setter Property="Template">
 			<Setter.Value>
-				<ControlTemplate TargetType="local:ComponentWrapperTC">
+				<ControlTemplate TargetType="local:ComponentWrapperTC">					
 					<Grid>
-
 						<Grid.Resources>
 							<local:ReverseRotationAngleValueConverter x:Key="RotationAngleConverter"/>
 							<local:PartToPartControlConverter x:Key="PartControlConverter"/>
 						</Grid.Resources>
 
 						<Grid.RenderTransform>
-							<RotateTransform Angle="{Binding RotationAngleClockWise, Mode=OneWay}"
+
+							<CompositeTransform CenterX="{Binding HorizontalRotationCenter}"
+								CenterY="{Binding VerticalRotationCenter}"
+								Rotation="{Binding RotationAngleClockWise, Mode=OneWay}"
+								TranslateX="{Binding Handle.X}"
+								TranslateY="{Binding Handle.Y}"/>
+
+							<!--<RotateTransform Angle="{Binding RotationAngleClockWise, Mode=OneWay}"
 								CenterX="{Binding HorizontalRotationCenter}"
-								CenterY="{Binding VerticalRotationCenter}"/>
+								CenterY="{Binding VerticalRotationCenter}"/>-->
 						</Grid.RenderTransform>
 
 

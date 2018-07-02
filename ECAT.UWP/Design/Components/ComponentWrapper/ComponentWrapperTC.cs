@@ -24,7 +24,7 @@ namespace ECAT.UWP
 		/// </summary>
 		public ComponentWrapperTC()
 		{
-			this.DefaultStyleKey = typeof(ComponentWrapperTC);
+			this.DefaultStyleKey = typeof(ComponentWrapperTC);			
 		}
 
 		#endregion
