@@ -31,6 +31,7 @@ namespace ECAT.UWP
         {
 			this.InitializeComponent();
 			Loaded += MainPageLoaded;
+			DataContext = _VM;
         }
 
 		#region Private Properties

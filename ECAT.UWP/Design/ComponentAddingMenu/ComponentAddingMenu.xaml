@@ -16,6 +16,8 @@
 		VerticalScrollMode="Auto">
 		<StackPanel>
 
+			
+
 			<!-- Name of the part / title of the menu header with white underline -->
 			<Border BorderThickness="0 0 0 1"
 								BorderBrush="{StaticResource WhiteBrush}"
@@ -37,8 +39,8 @@
 
 				<ListView IsEnabled="{Binding EnableAddPartsButtons}"				
 					ItemClick="PartAddingListViewItemClicked"
-					ItemsSource="{Binding PartTypeCollection.Input.Keys, Mode=OneWay}"
-					SelectedItem="{Binding SelectedPartToAdd, Mode=TwoWay}"
+					ItemsSource="{Binding SimulationVM.SimulationManager.ImplementedComponents, Mode=OneWay}"
+					SelectedItem="{Binding DesignVM.ComponentToAdd, Mode=TwoWay}"
 					SelectedIndex="{x:Bind InputListSelectedIndex, Mode=TwoWay}"
 					Style="{StaticResource PartAddingListViewStyle}"
 					ItemContainerStyle="{StaticResource PartAddingListViewItemStyle}"/>
