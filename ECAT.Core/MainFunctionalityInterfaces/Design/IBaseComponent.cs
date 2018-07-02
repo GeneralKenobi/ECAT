@@ -14,9 +14,19 @@ namespace ECAT.Core
 		#region Properties
 
 		/// <summary>
-		/// The center of the component
+		/// Position of the handle of the component (top left corner)
 		/// </summary>
-		cdouble Center { get; set; }
+		PlanePosition Handle { get; set; }
+
+		/// <summary>
+		/// Width of the control in circuit design in the default, horizontal position
+		/// </summary>
+		double Width { get; }
+
+		/// <summary>
+		/// Height of the control in circuit design in the default, horizontal position
+		/// </summary>
+		double Height { get; }
 
 		#endregion
 	}

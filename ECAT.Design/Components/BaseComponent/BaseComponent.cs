@@ -7,7 +7,7 @@ namespace ECAT.Design
 	/// <summary>
 	/// Base class for all components
 	/// </summary>
-	public class BaseComponent : IBaseComponent
+	public abstract class BaseComponent : IBaseComponent
 	{
 		#region Events
 
@@ -21,14 +21,28 @@ namespace ECAT.Design
 		#region Public properties
 
 		/// <summary>
-		/// The center coordinate
+		/// Position of the handle of the component (top left corner)
 		/// </summary>
-		public cdouble Center { get; set; } = new cdouble();
+		public PlanePosition Handle { get; set; } = new PlanePosition();
 
-		public void Dispose()
-		{
-			throw new System.NotImplementedException();
-		}
+		/// <summary>
+		/// Width of the control in circuit design in the default, horizontal position
+		/// </summary>
+		public abstract double Width { get; }
+
+		/// <summary>
+		/// Height of the control in circuit design in the default, horizontal position
+		/// </summary>
+		public abstract double Height { get; }
+
+		#endregion
+
+		#region Public methods
+
+		/// <summary>
+		/// Disposes of the component
+		/// </summary>
+		public virtual void Dispose() { }
 
 		#endregion
 	}
