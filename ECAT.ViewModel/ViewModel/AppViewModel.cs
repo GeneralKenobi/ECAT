@@ -1,6 +1,9 @@
-﻿using System;
+﻿using CSharpEnhanced.ICommands;
+using ECAT.Core;
+using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows.Input;
 
 namespace ECAT.ViewModel
 {
@@ -16,7 +19,7 @@ namespace ECAT.ViewModel
 		/// </summary>
 		private AppViewModel()
 		{
-
+			DesignAreaClickedCommand = new RelayParametrizedCommand(DesignAreaClicked);
 		}
 
 		#endregion
@@ -46,7 +49,28 @@ namespace ECAT.ViewModel
 
 		#region Commands
 
+		/// <summary>
+		/// Command to invoke when the user clicks (presses, etc) the design area on the screen. The parameter should be the coordinate
+		/// of the click given as a <see cref="PlanePosition"/>
+		/// </summary>
+		public ICommand DesignAreaClickedCommand { get; }
 
+		#endregion
+
+		#region Private methods
+
+		/// <summary>
+		/// Method for <see cref="DesignAreaClickedCommand"/>
+		/// </summary>
+		/// <param name="parameter"></param>
+		private void DesignAreaClicked(object parameter)
+		{
+			if(parameter is PlanePosition position)
+			{
+				// Decide what to do with the input
+				DesignVM.AddComponent(position);
+			}
+		}
 
 		#endregion
 	}
