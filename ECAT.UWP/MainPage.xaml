@@ -24,7 +24,8 @@
 				Width="2000"
 				Height="2000"
 				UseLayoutRounding="False"
-				AllowDrop="True">
+				AllowDrop="True"
+				Tapped="MainCanvasTapped">
 				<!--DragOver="PartDragOver"
 				Drop="DropOnMainCanvas"
 				Tapped="MainCanvasTapped"-->

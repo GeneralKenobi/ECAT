@@ -32,6 +32,8 @@ namespace ECAT.UWP
 			this.InitializeComponent();
 			Loaded += MainPageLoaded;
 			DataContext = AppViewModel.Singleton;
+			(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic.Components as INotifyCollectionChanged).
+				CollectionChanged += PartsCollectionChanged;
         }
 
 		#region On Loaded
@@ -86,14 +88,14 @@ namespace ECAT.UWP
 								//	Tag = wire.ID,
 								//});
 							}
-							//else if (item is BasePart part)
-							//{
-							//	MainCanvas.Children.Add(new BasePartControl()
-							//	{
-							//		DataContext = item,
-							//		Tag = part.ID,
-							//	});
-							//}
+							else if (item is IBaseComponent component)
+							{
+								MainCanvas.Children.Add(new ComponentWrapperTC()
+								{
+									DataContext = item,
+									//Tag = component.ID,
+								});
+							}
 						}
 					}
 					break;
@@ -134,7 +136,7 @@ namespace ECAT.UWP
 		{
 			var pointerCoord = e.GetPosition(sender as Canvas);
 
-			//AppViewModel.Singleton.MainPanelClickedCommand.Execute(new Position(pointerCoord.X, pointerCoord.Y));
+			AppViewModel.Singleton.DesignAreaClickedCommand.Execute(new PlanePosition(pointerCoord.X, pointerCoord.Y));			
 		}
 
 		#endregion
