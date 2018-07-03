@@ -1,25 +1,27 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:ECAT.UWP">
+    xmlns:local="using:ECAT.UWP"
+	xmlns:UWPEnhancedConverters="using:UWPEnhanced.ValueConverters">
 
 	<Style TargetType="local:ComponentWrapperTC">
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="local:ComponentWrapperTC">					
-					<Grid>
+					<Grid Background="Transparent">
 						<Grid.Resources>
 							<local:ReverseRotationAngleValueConverter x:Key="RotationAngleConverter"/>
 							<local:PartToPartControlConverter x:Key="PartControlConverter"/>
+							<UWPEnhancedConverters:OppositeDoubleConverter x:Key="OppositeDoubleConverter"/>
 						</Grid.Resources>
 
 						<Grid.RenderTransform>
 
 							<CompositeTransform CenterX="{Binding HorizontalRotationCenter}"
 								CenterY="{Binding VerticalRotationCenter}"
-								Rotation="{Binding RotationAngleClockWise, Mode=OneWay}"
-								TranslateX="{Binding Handle.X}"
-								TranslateY="{Binding Handle.Y}"/>
+								Rotation="{Binding Component.RotationAngle, Mode=OneWay, Converter={StaticResource OppositeDoubleConverter}}"
+								TranslateX="{Binding CenterX}"
+								TranslateY="{Binding CenterY}"/>
 
 							<!--<RotateTransform Angle="{Binding RotationAngleClockWise, Mode=OneWay}"
 								CenterX="{Binding HorizontalRotationCenter}"
@@ -67,7 +69,9 @@
 							BorderThickness="1"
 							BorderBrush="{Binding MenuPresentBorderBrush, RelativeSource={RelativeSource Mode=TemplatedParent}}">
 
-							<ContentPresenter Content="{Binding Mode=OneWay, Converter={StaticResource PartControlConverter}}"/>
+							<ContentPresenter Content="{Binding Component, Mode=OneWay, Converter={StaticResource PartControlConverter}}"
+								Width="{Binding Component.Width}"
+								Height="{Binding Component.Height}"/>
 						</Border>
 
 					</Grid>
