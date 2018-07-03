@@ -23,6 +23,7 @@ namespace ECAT.ViewModel
 
 			RotateLeftCommand = new RelayCommand(RotateLeft);
 			RotateRightCommand = new RelayCommand(RotateRight);
+			RemoveComponentCommand = new RelayCommand(RemoveComponent);
 		}
 
 		#endregion
@@ -68,6 +69,11 @@ namespace ECAT.ViewModel
 		/// </summary>
 		public ICommand RotateRightCommand { get; }
 
+		/// <summary>
+		/// Command for removing this component from the circuit
+		/// </summary>
+		public ICommand RemoveComponentCommand { get; }
+
 		#endregion
 
 		#region Private methods
@@ -81,6 +87,11 @@ namespace ECAT.ViewModel
 		/// Method for <see cref="RotateRightCommand"/>
 		/// </summary>
 		private void RotateRight() => Component.RotationAngle -= 90;
+
+		/// <summary>
+		/// Method for <see cref="RemoveComponentCommand"/>
+		/// </summary>
+		private void RemoveComponent() => AppViewModel.Singleton.DesignVM.DesignManager.RemoveComponent(Component);
 
 		#endregion
 	}

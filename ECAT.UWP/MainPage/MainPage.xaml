@@ -14,10 +14,12 @@
 	</Page.Resources>
 
 
-	<Grid>
+	<Grid >
 
 		<ScrollViewer ZoomMode="Enabled" MinZoomFactor="0.1" MaxZoomFactor="10"
-			HorizontalScrollMode="Enabled" HorizontalScrollBarVisibility="Auto">
+			HorizontalScrollMode="Enabled" HorizontalScrollBarVisibility="Auto"
+			HorizontalAlignment="Left"
+			VerticalAlignment="Top">
 
 			<Grid Tapped="MainCanvasTapped">
 
@@ -25,10 +27,10 @@
 			<!-- Don't use layout rounding because it blurs the parts when they're rotated,
 		especially noticeable when the control has text in it -->
 				<Grid x:Name="BackgroundGrid"
-					Background="Transparent"				
-					Width="2000"
-					Height="2000"
-					UseLayoutRounding="False"/>
+					Background="Transparent"
+					UseLayoutRounding="False"
+					HorizontalAlignment="Left"
+					VerticalAlignment="Top"/>
 
 				<!--DragOver="PartDragOver"
 				Drop="DropOnMainCanvas"
@@ -36,12 +38,11 @@
 
 
 
-				<ItemsControl ItemsSource="{Binding DesignVM.DesignManager.CurrentSchematic.Components}"								
-				UseLayoutRounding="False">
+				<ItemsControl ItemsSource="{Binding DesignVM.DesignManager.CurrentSchematic.Components}">
 
 				<ItemsControl.ItemsPanel>
 					<ItemsPanelTemplate>
-						<Grid UseLayoutRounding="False"/>
+						<Canvas />
 					</ItemsPanelTemplate>
 				</ItemsControl.ItemsPanel>
 
