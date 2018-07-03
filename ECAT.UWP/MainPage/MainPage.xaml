@@ -9,16 +9,22 @@
     mc:Ignorable="d"
     Background="{StaticResource WhiteBrush}">
 
+	<Page.Resources>
+		<local:IBaseComponentToComponentViewModelConverter x:Key="ComponentConverter"/>
+	</Page.Resources>
+
 
 	<Grid>
 
 		<ScrollViewer ZoomMode="Enabled" MinZoomFactor="0.1" MaxZoomFactor="10"
 			HorizontalScrollMode="Enabled" HorizontalScrollBarVisibility="Auto">
 
+			<Grid>
+
 			<!-- All parts go here -->
 			<!-- Don't use layout rounding because it blurs the parts when they're rotated,
 		especially noticeable when the control has text in it -->
-			<Canvas x:Name="MainCanvas"
+				<Canvas x:Name="MainCanvas"
 				Background="Transparent"
 				Margin="0"
 				Width="2000"
@@ -26,17 +32,33 @@
 				UseLayoutRounding="False"
 				AllowDrop="True"
 				Tapped="MainCanvasTapped">
-				<!--DragOver="PartDragOver"
+
+					<!--DragOver="PartDragOver"
 				Drop="DropOnMainCanvas"
 				Tapped="MainCanvasTapped"-->
 
-				<!--<local:SocketTC Canvas.Left="200" Canvas.Top="200"/>-->
-
-				<local:ComponentWrapperTC Canvas.Left="200" Canvas.Top="187.5" Canvas.ZIndex="1200"/>
-				
-
 			</Canvas>
 
+			<ItemsControl ItemsSource="{Binding DesignVM.DesignManager.CurrentSchematic.Components}"
+					HorizontalAlignment="Left"
+					VerticalAlignment="Top"
+					Canvas.ZIndex="12313"					
+					Name="ComponentsControl">
+
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<Grid/>
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+						<local:ComponentWrapperTC DataContext="{Binding Converter={StaticResource ComponentConverter}}"/>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+
+			</Grid>
 		</ScrollViewer>
 
 		<controls:Menu x:Name="SideMenu"

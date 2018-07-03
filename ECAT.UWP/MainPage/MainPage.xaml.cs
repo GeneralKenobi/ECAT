@@ -1,10 +1,14 @@
 ﻿using ECAT.Core;
+using ECAT.Design;
 using ECAT.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -25,16 +29,30 @@ namespace ECAT.UWP
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class MainPage : Page
+    public sealed partial class MainPage : Page, INotifyPropertyChanged
     {
         public MainPage()
         {
 			this.InitializeComponent();
 			Loaded += MainPageLoaded;
-			DataContext = AppViewModel.Singleton;
+			DataContext = AppViewModel.Singleton;			
 			(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic.Components as INotifyCollectionChanged).
 				CollectionChanged += PartsCollectionChanged;
-        }
+			
+		}
+		
+		
+		
+
+
+		#region Events
+
+		/// <summary>
+		/// Event fired whenever a property changes its value
+		/// </summary>
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		#endregion
 
 		#region On Loaded
 
@@ -74,6 +92,8 @@ namespace ECAT.UWP
 
 		private void PartsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
+			
+			return;
 			switch (e.Action)
 			{
 				case NotifyCollectionChangedAction.Add:
