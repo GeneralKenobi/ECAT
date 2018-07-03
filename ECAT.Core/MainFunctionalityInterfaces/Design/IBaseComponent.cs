@@ -28,6 +28,11 @@ namespace ECAT.Core
 		/// </summary>
 		double Height { get; }
 
+		/// <summary>
+		/// Angle of component's rotation in degrees
+		/// </summary>
+		double RotationAngle { get; set; }
+
 		#endregion
 	}
 }
