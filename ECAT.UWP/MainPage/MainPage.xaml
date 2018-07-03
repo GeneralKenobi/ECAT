@@ -24,21 +24,19 @@
 			<!-- All parts go here -->
 			<!-- Don't use layout rounding because it blurs the parts when they're rotated,
 		especially noticeable when the control has text in it -->
-				<Canvas x:Name="BackgroundGridCanvas"
-				Background="Transparent"
-				Margin="0"
-				Width="2000"
-				Height="2000"
-				UseLayoutRounding="False"
-				AllowDrop="True">
+				<Grid x:Name="BackgroundGrid"
+					Background="Transparent"				
+					Width="2000"
+					Height="2000"
+					UseLayoutRounding="False"/>
 
-					<!--DragOver="PartDragOver"
+				<!--DragOver="PartDragOver"
 				Drop="DropOnMainCanvas"
 				Tapped="MainCanvasTapped"-->
 
-			</Canvas>
 
-			<ItemsControl ItemsSource="{Binding DesignVM.DesignManager.CurrentSchematic.Components}"								
+
+				<ItemsControl ItemsSource="{Binding DesignVM.DesignManager.CurrentSchematic.Components}"								
 				UseLayoutRounding="False">
 
 				<ItemsControl.ItemsPanel>

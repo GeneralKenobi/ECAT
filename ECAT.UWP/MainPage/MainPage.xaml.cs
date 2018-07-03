@@ -57,7 +57,7 @@ namespace ECAT.UWP
 			// Add a horizontal and a vertical line every 25 pixels
 			for (int i = 25; i < 2000; i += 25)
 			{
-				BackgroundGridCanvas.Children.Add(new Line()
+				BackgroundGrid.Children.Add(new Line()
 				{
 					Stroke = App.Current.Resources["LightGrayBrush"] as SolidColorBrush,
 					StrokeThickness = 1,
@@ -67,7 +67,7 @@ namespace ECAT.UWP
 					Y2=i,
 				});
 
-				BackgroundGridCanvas.Children.Add(new Line()
+				BackgroundGrid.Children.Add(new Line()
 				{
 					Stroke = App.Current.Resources["LightGrayBrush"] as SolidColorBrush,
 					StrokeThickness = 1,
