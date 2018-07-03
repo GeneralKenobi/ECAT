@@ -1,10 +1,13 @@
 ﻿using ECAT.Core;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Text;
 
 namespace ECAT.Design
 {
-	public class Schematic : ISchematic
+    public class Schematic : ISchematic
     {
 		#region Constructor
 
@@ -14,7 +17,7 @@ namespace ECAT.Design
 		public Schematic()
 		{
 			Components = new ReadOnlyObservableCollection<IBaseComponent>(_Components);
-			Wires = new ReadOnlyObservableCollection<IWire>(_Wires);			
+			Wires = new ReadOnlyObservableCollection<IWire>(_Wires);
 		}
 
 		#endregion
