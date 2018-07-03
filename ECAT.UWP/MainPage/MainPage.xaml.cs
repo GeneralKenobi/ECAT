@@ -91,7 +91,7 @@ namespace ECAT.UWP
 		/// <param name="e"></param>
 		private void MainCanvasTapped(object sender, TappedRoutedEventArgs e)
 		{
-			var pointerCoord = e.GetPosition(sender as UIElement);
+			var pointerCoord = e.GetPosition(sender as Canvas);
 
 			AppViewModel.Singleton.DesignAreaClickedCommand.Execute(new PlanePosition(pointerCoord.X, pointerCoord.Y));			
 		}
