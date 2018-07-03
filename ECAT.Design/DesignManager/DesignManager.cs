@@ -161,6 +161,52 @@ namespace ECAT.Design
 			}
 		}
 
+		/// <summary>
+		/// Method that removes a component from its <see cref="ISchematic"/>. First searches through the <see cref="CurrentSchematic"/>,
+		/// if the <paramref name="component"/> is not found there searches through the rest of <see cref="Schematics"/>
+		/// </summary>
+		/// <param name="component"></param>
+		public void RemoveComponent(IBaseComponent component)
+		{
+			if(CurrentSchematic.Components.Contains(component))
+			{
+				CurrentSchematic.RemoveComponent(component);
+			}
+			else
+			{
+				foreach(var schematic in _Schematics)
+				{
+					if(schematic.Components.Contains(component))
+					{
+						schematic.RemoveComponent(component);
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Method that removes a wire from its <see cref="ISchematic"/>. First searches through the <see cref="CurrentSchematic"/>,
+		/// if the <paramref name="wire"/> is not found there searches through the rest of <see cref="Schematics"/>
+		/// </summary>
+		/// <param name="wire"></param>
+		public void RemoveWire(IWire wire)
+		{
+			if (CurrentSchematic.Wires.Contains(wire))
+			{
+				CurrentSchematic.RemoveWire(wire);
+			}
+			else
+			{
+				foreach (var schematic in _Schematics)
+				{
+					if (schematic.Wires.Contains(wire))
+					{
+						schematic.RemoveWire(wire);
+					}
+				}
+			}
+		}
+
 		#endregion
 	}
 }
