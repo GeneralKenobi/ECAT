@@ -1,43 +1,28 @@
 ﻿using ECAT.Core;
-using ECAT.Design;
 using ECAT.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Markup;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
 namespace ECAT.UWP
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    public sealed partial class MainPage : Page
-    {
+	/// <summary>
+	/// An empty page that can be used on its own or navigated to within a Frame.
+	/// </summary>
+	public sealed partial class MainPage : Page
+	{
 		#region Constructor
 
 		/// <summary>
 		/// Default constructor
 		/// </summary>
 		public MainPage()
-        {
+		{
 			this.InitializeComponent();
 			Loaded += MainPageLoaded;
 			DataContext = AppViewModel.Singleton;
@@ -61,10 +46,10 @@ namespace ECAT.UWP
 				{
 					Stroke = App.Current.Resources["LightGrayBrush"] as SolidColorBrush,
 					StrokeThickness = 1,
-					X1=0,
-					X2=2000,
-					Y1=i,
-					Y2=i,
+					X1 = 0,
+					X2 = 2000,
+					Y1 = i,
+					Y2 = i,
 				});
 
 				BackgroundGrid.Children.Add(new Line()
@@ -91,9 +76,9 @@ namespace ECAT.UWP
 		/// <param name="e"></param>
 		private void MainCanvasTapped(object sender, TappedRoutedEventArgs e)
 		{
-			var pointerCoord = e.GetPosition(sender as Canvas);
+			var pointerCoord = e.GetPosition(sender as UIElement);
 
-			AppViewModel.Singleton.DesignAreaClickedCommand.Execute(new PlanePosition(pointerCoord.X, pointerCoord.Y));			
+			AppViewModel.Singleton.DesignAreaClickedCommand.Execute(new PlanePosition(pointerCoord.X, pointerCoord.Y));
 		}
 
 		#endregion
