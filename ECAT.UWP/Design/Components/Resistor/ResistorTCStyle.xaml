@@ -4,31 +4,30 @@
     xmlns:local="using:ECAT.UWP">
 
 
-	<Style TargetType="local:ResistorTC">
+	<Style TargetType="local:ResistorTC">		
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="local:ResistorTC">
-					<Grid>
+					<Canvas>
 
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="Auto"/>
-							<ColumnDefinition Width="Auto"/>
-							<ColumnDefinition Width="Auto"/>
-						</Grid.ColumnDefinitions>
+						<!-- The american model -->
+						<!--<Polyline Stroke="{StaticResource BlackBrush}"
+								StrokeThickness="4"
+								Points="0,12.5 26,12.5 30,22 38,3 46,22 54,3 62,22 70,3 74,12.5 100,12.5"
+								Width="100"
+								Height="25"
+								StrokeLineJoin="Round"/>-->
 
+						<!-- The European model -->
+						<!-- The point 100,12.5 is doubled because otherwise the miter is awfully long when turning 180 degrees -->
+						<Polyline Stroke="{StaticResource BlackBrush}"
+								StrokeThickness="6"
+								Points="0,12.5 25,12.5 25,3 75,3 75,12.5 100,12.5 100,12.5 75,12.5 75,22 25,22 25,12.5"/>
 
-						<Border Grid.Column="1"
-							Width="50"
-							Height="25"
-							BorderThickness="5"
-							BorderBrush="Black"
-							Background="Transparent">
-						</Border>
+						<local:SocketTC Canvas.Left="-6" Canvas.Top="6.5"/>
+						<local:SocketTC Canvas.Left="94" Canvas.Top="6.5"/>
 
-						<Border Width="25" Height="5" Background="Black"/>
-						<Border Grid.Column="2" Width="25" Height="5" Background="Black"/>
-
-					</Grid>
+					</Canvas>
 				</ControlTemplate>
 			</Setter.Value>
 		</Setter>
