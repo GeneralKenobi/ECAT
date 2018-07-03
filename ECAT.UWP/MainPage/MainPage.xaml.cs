@@ -29,28 +29,19 @@ namespace ECAT.UWP
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class MainPage : Page, INotifyPropertyChanged
+    public sealed partial class MainPage : Page
     {
-        public MainPage()
+		#region Constructor
+
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		public MainPage()
         {
 			this.InitializeComponent();
 			Loaded += MainPageLoaded;
-			DataContext = AppViewModel.Singleton;			
-			(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic.Components as INotifyCollectionChanged).
-				CollectionChanged += PartsCollectionChanged;
-			
+			DataContext = AppViewModel.Singleton;
 		}
-		
-		
-		
-
-
-		#region Events
-
-		/// <summary>
-		/// Event fired whenever a property changes its value
-		/// </summary>
-		public event PropertyChangedEventHandler PropertyChanged;
 
 		#endregion
 
@@ -66,79 +57,25 @@ namespace ECAT.UWP
 			// Add a horizontal and a vertical line every 25 pixels
 			for (int i = 25; i < 2000; i += 25)
 			{
-				MainCanvas.Children.Add(new Path()
+				MainCanvas.Children.Add(new Line()
 				{
 					Stroke = App.Current.Resources["LightGrayBrush"] as SolidColorBrush,
 					StrokeThickness = 1,
-					Data = (Geometry)XamlReader.Load(
-					"<Geometry xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'>" +
-					"M0," + i.ToString() + " h2000</Geometry>"),
+					X1=0,
+					X2=2000,
+					Y1=i,
+					Y2=i,
 				});
 
-				MainCanvas.Children.Add(new Path()
+				MainCanvas.Children.Add(new Line()
 				{
 					Stroke = App.Current.Resources["LightGrayBrush"] as SolidColorBrush,
 					StrokeThickness = 1,
-					Data = (Geometry)XamlReader.Load(
-					"<Geometry xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'>" +
-					"M" + i.ToString() + ",0 v2000</Geometry>"),
+					X1 = i,
+					X2 = i,
+					Y1 = 0,
+					Y2 = 2000,
 				});
-			}
-		}
-
-		#endregion
-		
-		#region Parts added/deleted
-
-		private void PartsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			
-			return;
-			switch (e.Action)
-			{
-				case NotifyCollectionChangedAction.Add:
-					{
-						foreach (var item in e.NewItems)
-						{
-							if (item is Wire wire)
-							{
-								//MainCanvas.Children.Add(new WireControl()
-								//{
-								//	DataContext = wire,
-								//	Tag = wire.ID,
-								//});
-							}
-							else if (item is IBaseComponent component)
-							{
-								MainCanvas.Children.Add(new ComponentWrapperTC()
-								{
-									DataContext = new ComponentViewModel(component),
-									//Tag = component.ID,
-								});
-							}
-						}
-					}
-					break;
-
-				case NotifyCollectionChangedAction.Remove:
-					{
-						foreach (var item in e.OldItems)
-						{
-							//if (item is BasePart part)
-							//{
-							//	foreach (var child in MainCanvas.Children)
-							//	{
-							//		if (child is FrameworkElement element &&
-							//			element.Tag != null && (int)element.Tag == part.ID)
-							//		{
-							//			MainCanvas.Children.Remove(child);
-							//			break;
-							//		}
-							//	}
-							//}
-						}
-					}
-					break;
 			}
 		}
 
