@@ -92,7 +92,7 @@ namespace ECAT.UWP
 							{
 								MainCanvas.Children.Add(new ComponentWrapperTC()
 								{
-									DataContext = item,
+									DataContext = new ComponentViewModel(component),
 									//Tag = component.ID,
 								});
 							}

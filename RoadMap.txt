@@ -6,15 +6,15 @@ Create initial interfaces for Design module
 Priority: High
 Create initial implementation for Design module
 
-3. Status: WiP
+3. Status: Done
 Priority: High
 Create initial implementation of ViewModel for Design module
 
-4. Status: WiP
+4. Status: Done
 Priority: High
 Create basic UI elements of Design module (component adding menu, a resistor model)
 
-5. Status: TBD
+5. Status: Done
 Priority: High
 Integrate Design interface, implementation, ViewModel and UI into a working module
 
@@ -54,14 +54,18 @@ Moving parts around (interface & implementation)
 Priority: Low
 Moving parts around (UI)
 
-15. Status: TBD
+15. Status: WiP
 Priority: Low
 Rotating components (interface & implementation)
 
-16. Status: TBD
+16. Status: WiP
 Priority: Low
 Rotating components (UI)
 
-10. Status: TBD
+17. Status: TBD
 Priority: Low
 More components
+
+18. Status: TBD
+Priority: Low
+Highlight border around the element
