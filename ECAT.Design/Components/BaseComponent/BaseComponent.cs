@@ -18,6 +18,15 @@ namespace ECAT.Design
 
 		#endregion
 
+		#region Private members
+
+		/// <summary>
+		/// Backing store for <see cref="RotationAngle"/>
+		/// </summary>
+		private double mRotationAngle = 0;
+
+		#endregion
+
 		#region Public properties
 
 		/// <summary>
@@ -34,6 +43,18 @@ namespace ECAT.Design
 		/// Height of the control in circuit design in the default, horizontal position
 		/// </summary>
 		public abstract double Height { get; }
+
+		/// <summary>
+		/// Angle of component's rotation in degrees
+		/// </summary>
+		public double RotationAngle
+		{
+			get => mRotationAngle;
+			set
+			{
+				mRotationAngle = Helpers.ReduceAngle(value, AngleUnit.Degrees);
+			}
+		}
 
 		#endregion
 
