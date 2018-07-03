@@ -1,15 +1,12 @@
-﻿using CSharpEnhanced.Maths;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel;
-using System.Text;
 
 namespace ECAT.Core
 {
 	/// <summary>
 	/// Inteface for base class for all components
 	/// </summary>
-    public interface IBaseComponent : INotifyPropertyChanged, IDisposable
+	public interface IBaseComponent : INotifyPropertyChanged, IDisposable
     {
 		#region Properties
 
