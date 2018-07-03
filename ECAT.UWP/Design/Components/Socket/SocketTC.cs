@@ -1,23 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Documents;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-
-// The Templated Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234235
-
+﻿using Windows.UI.Xaml.Controls;
 namespace ECAT.UWP
 {
-    public sealed class SocketTC : Control
+	/// <summary>
+	/// Templated control for sockets
+	/// </summary>
+	public sealed class SocketTC : Control
     {
-        public SocketTC()
+		#region Constructor
+
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		public SocketTC()
         {
             this.DefaultStyleKey = typeof(SocketTC);
         }
-    }
+
+		#endregion
+	}
 }
