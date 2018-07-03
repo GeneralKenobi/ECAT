@@ -14,14 +14,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ECAT.Design", "ECAT.Design\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ECAT.ViewModel", "ECAT.ViewModel\ECAT.ViewModel.csproj", "{F92D76F1-59E2-4C9D-B7F4-FE461906B932}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RoadMap", "RoadMap", "{27268BD8-60EB-4ECD-9CC7-BBA543AF762F}"
-	ProjectSection(SolutionItems) = preProject
-		RoadMap.txt = RoadMap.txt
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECAT.UWP", "ECAT.UWP\ECAT.UWP.csproj", "{A4FC6244-C161-4808-AD65-E52A22BA3A73}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECAT.Simulation", "ECAT.Simulation\ECAT.Simulation.csproj", "{7B16E0F2-DD0F-403F-B697-7EFDA90A5B67}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ECAT.Simulation", "ECAT.Simulation\ECAT.Simulation.csproj", "{7B16E0F2-DD0F-403F-B697-7EFDA90A5B67}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
