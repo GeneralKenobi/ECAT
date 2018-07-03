@@ -57,8 +57,9 @@
 								<MenuFlyoutItem Style="{StaticResource ContextMenuFlyoutItemStyle}"
 									Text="&#xE107;"
 									FontFamily="{StaticResource SymbolThemeFontFamily}"
-									Command="{Binding RemoveCommand}"
+									Command="{Binding RemoveComponentCommand}"
 									CommandParameter="{Binding}"/>
+
 							</MenuFlyout>
 						</Grid.ContextFlyout>
 
