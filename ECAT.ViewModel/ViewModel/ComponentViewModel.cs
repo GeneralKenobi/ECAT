@@ -45,16 +45,6 @@ namespace ECAT.ViewModel
 		/// </summary>
 		public double VerticalRotationCenter => Component.Height / 2;
 
-		/// <summary>
-		/// X coordinate of the center of the component
-		/// </summary>
-		public double CenterX => Component.Handle == null ? 0 : Component.Handle.X - Component.Width / 2;
-
-		/// <summary>
-		/// Y coordinate of the center of the component
-		/// </summary>
-		public double CenterY => Component.Handle == null ? 0 : Component.Handle.Y - Component.Height / 2;
-
 		#endregion
 
 		#region Commands
