@@ -36,9 +36,24 @@
 				Drop="DropOnMainCanvas"
 				Tapped="MainCanvasTapped"-->
 
-
-
+				<!-- Control for components -->
 				<ItemsControl ItemsSource="{Binding DesignVM.DesignManager.CurrentSchematic.Components}">
+
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<Canvas />
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<local:ComponentWrapperTC DataContext="{Binding Converter={StaticResource ComponentConverter}}"/>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+
+				<!-- Control for wires-->
+				<ItemsControl ItemsSource="{Binding DesignVM.DesignManager.CurrentSchematic.Wires}">
 
 					<ItemsControl.ItemsPanel>
 						<ItemsPanelTemplate>
