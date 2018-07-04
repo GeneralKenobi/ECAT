@@ -61,6 +61,12 @@ namespace ECAT.Design
 		#region Public methods
 
 		/// <summary>
+		/// Returns a new <see cref="IWire"/>
+		/// </summary>
+		/// <returns></returns>
+		public IWire ConstructWire() => new Wire();
+
+		/// <summary>
 		/// Creates and adds a new, empty schematic
 		/// </summary>
 		public void AddSchematic() => _Schematics.Add(new Schematic());

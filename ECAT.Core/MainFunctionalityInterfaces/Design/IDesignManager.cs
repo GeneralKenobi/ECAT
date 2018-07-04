@@ -75,6 +75,12 @@ namespace ECAT.Core
 		Type GetComponentType(int id);
 
 		/// <summary>
+		/// Returns a new <see cref="IWire"/>
+		/// </summary>
+		/// <returns></returns>
+		IWire ConstructWire();
+
+		/// <summary>
 		/// Method that removes a component from its <see cref="ISchematic"/>. First searches through the <see cref="CurrentSchematic"/>,
 		/// if the <paramref name="component"/> is not found there searches through the rest of <see cref="Schematics"/>
 		/// </summary>
