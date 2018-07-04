@@ -20,8 +20,8 @@
 							<CompositeTransform CenterX="{Binding HorizontalRotationCenter}"
 								CenterY="{Binding VerticalRotationCenter}"
 								Rotation="{Binding Component.RotationAngle, Mode=OneWay, Converter={StaticResource OppositeDoubleConverter}}"
-								TranslateX="{Binding CenterX}"
-								TranslateY="{Binding CenterY}"/>
+								TranslateX="{Binding Component.Center.Re}"
+								TranslateY="{Binding Component.Center.Im}"/>
 
 							<!--<RotateTransform Angle="{Binding RotationAngleClockWise, Mode=OneWay}"
 								CenterX="{Binding HorizontalRotationCenter}"
