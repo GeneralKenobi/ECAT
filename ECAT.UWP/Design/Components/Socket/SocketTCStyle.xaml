@@ -14,13 +14,14 @@
 						Height="12">
 
 						<xaml:VisualAttachments.AttachedVisuals>
-							<xaml:PointerTriggerCommand Command="{Binding SocketClickedCommand}"
+							<xaml:PointerTriggerCommand Command="{Binding SocketClickedCommand}"			
+								CommandParameter="{Binding PartialNode, RelativeSource={RelativeSource Mode=TemplatedParent}}"
 								PointerEvent="PointerPressed"/>
 						</xaml:VisualAttachments.AttachedVisuals>						
 
 						<Ellipse Fill="{StaticResource BlackBrush}"/>
-						<Ellipse Margin="2"
-							Fill="{StaticResource GrayBrush}"/>
+						<!--<Ellipse Margin="2"
+							Fill="{StaticResource GrayBrush}"/>-->
 						<!--Fill="{Binding SocketState, Converter={StaticResource BackgroundConverter}}"/>-->
 					</Grid>
 				</ControlTemplate>
