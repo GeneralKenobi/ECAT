@@ -9,6 +9,18 @@ namespace ECAT.Design
 	/// </summary>
 	public abstract class BaseComponent : IBaseComponent
 	{
+		#region Constructor
+
+		/// <summary>
+		/// Default Constructor
+		/// </summary>
+		public BaseComponent()
+		{
+			AssignPartialNodePositions();
+		}
+
+		#endregion
+
 		#region Events
 
 		/// <summary>
@@ -69,6 +81,15 @@ namespace ECAT.Design
 		/// Disposes of the component
 		/// </summary>
 		public virtual void Dispose() { }
+
+		#endregion
+
+		#region Protected methods
+
+		/// <summary>
+		/// Assigns positions to all <see cref="PartialNode"/>s, invoked by <see cref="BaseComponent"/>'s constructor
+		/// </summary>
+		protected abstract void AssignPartialNodePositions();
 
 		#endregion
 	}
