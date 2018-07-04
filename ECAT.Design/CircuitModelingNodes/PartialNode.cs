@@ -1,4 +1,5 @@
 ﻿using CSharpEnhanced.Maths;
+using ECAT.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -25,7 +26,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// The coordinate of this PartialNode
 		/// </summary>
-		public cdouble Coord { get; set; }
+		public PlanePosition Position { get; set; }
 
 		#endregion
 	}
