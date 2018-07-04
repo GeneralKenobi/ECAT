@@ -40,11 +40,14 @@ namespace ECAT.Core
 		/// </summary>
 		public void InvokeInternalStateChanged() => InternalStateChanged?.Invoke(this, EventArgs.Empty);
 
+		#endregion
+
+		#region Private Members
+
 		/// <summary>
-		/// Invokes the <see cref="InternalStateChanged"/> event
+		/// The coord is rounded to a multiple of this number
 		/// </summary>
-		private void DependsOnInternalStateChanged(object sender) =>
-			InvokeInternalStateChanged();
+		private int mRoundTo = 25;
 
 		#endregion
 
@@ -56,13 +59,8 @@ namespace ECAT.Core
 		/// </summary>
 		private cdouble _Value { get; set; } = new cdouble();
 
-		/// <summary>
-		/// The coord is rounded to a multiple of this number
-		/// </summary>
-		private int mRoundTo = 25;
-
 		#endregion
-
+		
 		#region Public Properties
 
 		/// <summary>
