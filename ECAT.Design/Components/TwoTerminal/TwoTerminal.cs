@@ -1,7 +1,4 @@
 ﻿using ECAT.Core;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ECAT.Design
 {
@@ -21,6 +18,19 @@ namespace ECAT.Design
 		/// One of the terminals in this two-terminal
 		/// </summary>
 		public PartialNode TerminalB { get; set; } = new PartialNode();
+
+		#endregion
+
+		#region Protected methods
+
+		/// <summary>
+		/// Assigns positions to all <see cref="PartialNode"/>s
+		/// </summary>
+		protected override void AssignPartialNodePositions()
+		{
+			TerminalA.Position = new PlanePosition(Center.Re, Center.Im, -Width / 2, 0);
+			TerminalB.Position = new PlanePosition(Center.Re, Center.Im, Width / 2, 0);
+		}
 
 		#endregion
 	}
