@@ -1,5 +1,6 @@
 ﻿using CSharpEnhanced.Maths;
 using ECAT.Core;
+using System;
 using System.ComponentModel;
 
 namespace ECAT.Design
@@ -16,7 +17,7 @@ namespace ECAT.Design
 		/// </summary>
 		public BaseComponent()
 		{
-			AssignPartialNodePositions();
+			UpdatePartialNodePositions();
 		}
 
 		#endregion
@@ -37,6 +38,11 @@ namespace ECAT.Design
 		/// </summary>
 		private double mRotationAngle = 0;
 
+		/// <summary>
+		/// Backing store for <see cref="Handle"/>
+		/// </summary>
+		private PlanePosition mHandle = new PlanePosition();
+
 		#endregion
 
 		#region Public properties
@@ -44,7 +50,29 @@ namespace ECAT.Design
 		/// <summary>
 		/// Position of the handle of the component (top left corner)
 		/// </summary>
-		public PlanePosition Handle { get; set; } = new PlanePosition();
+		public PlanePosition Handle
+		{
+			get => mHandle;
+			set
+			{
+				if(mHandle != value)
+				{
+					if(mHandle != null)
+					{
+						mHandle.InternalStateChanged -= HandleChangedCallback;
+					}
+
+					mHandle = value;
+
+					UpdatePartialNodePositions();
+
+					if(mHandle != null)
+					{
+						mHandle.InternalStateChanged += HandleChangedCallback;
+					}
+				}
+			}
+		}
 
 		/// <summary>
 		/// The center of the component
@@ -69,7 +97,13 @@ namespace ECAT.Design
 			get => mRotationAngle;
 			set
 			{
-				mRotationAngle = Helpers.ReduceAngle(value, AngleUnit.Degrees);
+				var reducedValue = Helpers.ReduceAngle(value, AngleUnit.Degrees);
+
+				if(reducedValue != mRotationAngle)
+				{
+					mRotationAngle = reducedValue;
+					UpdatePartialNodePositions();
+				}
 			}
 		}
 
@@ -89,7 +123,19 @@ namespace ECAT.Design
 		/// <summary>
 		/// Assigns positions to all <see cref="PartialNode"/>s, invoked by <see cref="BaseComponent"/>'s constructor
 		/// </summary>
-		protected abstract void AssignPartialNodePositions();
+		protected abstract void UpdatePartialNodePositions();
+
+		#endregion
+
+		#region Private methods
+
+		/// <summary>
+		/// Method used to call <see cref="UpdatePartialNodePositions"/> whenever the <see cref="Handle"/> changes or one of its values
+		/// changes
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void HandleChangedCallback(object sender, EventArgs e) => UpdatePartialNodePositions();
 
 		#endregion
 	}
