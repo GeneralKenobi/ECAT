@@ -31,7 +31,16 @@ namespace ECAT.ViewModel
 
 		#endregion
 
-		#region Public properties
+		#region Private properties
+
+		/// <summary>
+		/// The currently placed wire
+		/// </summary>
+		private IWire _PlacedWire { get; set; } = null;
+
+		#endregion
+
+		#region Public properties		
 
 		/// <summary>
 		/// Provided implementation of the <see cref="IDesignManager"/> interface
@@ -51,16 +60,10 @@ namespace ECAT.ViewModel
 
 		#endregion
 
-		#region Commands
-
-
-
-		#endregion
-
 		#region Public methods
 
 		/// <summary>
-		/// 
+		/// Adds a component on the given position
 		/// </summary>
 		/// <param name="clickPosition"></param>
 		public void AddComponent(PlanePosition clickPosition)
@@ -72,7 +75,7 @@ namespace ECAT.ViewModel
 				{
 					newComponent = Activator.CreateInstance(DesignManager.GetComponentType(ComponentToAdd)) as IBaseComponent;
 
-					newComponent.Handle.Absolute = clickPosition.Absolute;
+					newComponent.Center = new PlanePosition(clickPosition.X, clickPosition.Y);
 				}
 				catch(Exception e)
 				{
@@ -84,6 +87,21 @@ namespace ECAT.ViewModel
 				{
 					DesignManager.CurrentSchematic.AddComponent(newComponent);
 				}
+			}
+		}
+
+		public void SocketClickedHandler(IPartialNode node)
+		{
+			if(_PlacedWire == null)
+			{
+				_PlacedWire = DesignManager.ConstructWire();
+				DesignManager.CurrentSchematic.AddWire(_PlacedWire);
+				_PlacedWire.N1 = node;
+			}
+			else
+			{
+				_PlacedWire.N2 = node;
+				_PlacedWire = null;
 			}
 		}
 

@@ -24,6 +24,7 @@ namespace ECAT.ViewModel
 			RotateLeftCommand = new RelayCommand(RotateLeft);
 			RotateRightCommand = new RelayCommand(RotateRight);
 			RemoveComponentCommand = new RelayCommand(RemoveComponent);
+			SocketClickedCommand = new RelayParametrizedCommand(SocketClicked);
 		}
 
 		#endregion
@@ -64,6 +65,14 @@ namespace ECAT.ViewModel
 		/// </summary>
 		public ICommand RemoveComponentCommand { get; }
 
+		/// <summary>
+		/// Performs actions based on the current state.
+		/// If idle, begins placing a new wire originating from the pressed socket
+		/// If placing wire, ends placing the wire on the pressed socket.
+		/// Parameter should be the pressed <see cref="IPartialNode"/>
+		/// </summary>
+		public ICommand SocketClickedCommand { get; }
+
 		#endregion
 
 		#region Private methods
@@ -82,6 +91,17 @@ namespace ECAT.ViewModel
 		/// Method for <see cref="RemoveComponentCommand"/>
 		/// </summary>
 		private void RemoveComponent() => AppViewModel.Singleton.DesignVM.DesignManager.RemoveComponent(Component);
+
+		/// <summary>
+		/// Method for <see cref="SocketClickedCommand"/>
+		/// </summary>
+		private void SocketClicked(object parameter)
+		{
+			if (parameter is IPartialNode node)
+			{
+				AppViewModel.Singleton.DesignVM.SocketClickedHandler(node);
+			}
+		}		
 
 		#endregion
 	}

@@ -63,7 +63,7 @@
 
 					<ItemsControl.ItemTemplate>
 						<DataTemplate>
-							<local:ComponentWrapperTC DataContext="{Binding Converter={StaticResource ComponentConverter}}"/>
+							<local:WireTC DataContext="{Binding }"/>
 						</DataTemplate>
 					</ItemsControl.ItemTemplate>
 				</ItemsControl>
