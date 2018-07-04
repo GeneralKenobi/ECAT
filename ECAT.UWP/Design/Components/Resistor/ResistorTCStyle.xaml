@@ -22,10 +22,10 @@
 						<!-- The point 100,12.5 is doubled because otherwise the miter is awfully long when turning 180 degrees -->
 						<Polyline Stroke="{StaticResource BlackBrush}"
 								StrokeThickness="6"
-								Points="0,12.5 25,12.5 25,3 75,3 75,12.5 100,12.5 100,12.5 75,12.5 75,22 25,22 25,12.5"/>
+								Points="0,25 25,25 25,15.5 75,15.5 75,25 100,25 100,25 75,25 75,34.5 25,34.5 25,25"/>
 
-						<local:SocketTC Canvas.Left="-6" Canvas.Top="6.5"/>
-						<local:SocketTC Canvas.Left="94" Canvas.Top="6.5"/>
+						<local:SocketTC Canvas.Left="-6" Canvas.Top="19" PartialNode="{Binding Component.TerminalA}"/>
+						<local:SocketTC Canvas.Left="94" Canvas.Top="19" PartialNode="{Binding Component.TerminalB}"/>
 
 					</Canvas>
 				</ControlTemplate>
