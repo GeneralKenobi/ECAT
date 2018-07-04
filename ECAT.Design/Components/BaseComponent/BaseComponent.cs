@@ -39,7 +39,7 @@ namespace ECAT.Design
 		private double mRotationAngle = 0;
 
 		/// <summary>
-		/// Backing store for <see cref="Handle"/>
+		/// Backing store for <see cref="Center"/>
 		/// </summary>
 		private PlanePosition mHandle = new PlanePosition();
 
@@ -48,9 +48,9 @@ namespace ECAT.Design
 		#region Public properties
 
 		/// <summary>
-		/// Position of the handle of the component (top left corner)
+		/// The center of the component
 		/// </summary>
-		public PlanePosition Handle
+		public PlanePosition Center
 		{
 			get => mHandle;
 			set
@@ -75,9 +75,9 @@ namespace ECAT.Design
 		}
 
 		/// <summary>
-		/// The center of the component
+		/// Position of the handle of the component (top left corner)
 		/// </summary>
-		public virtual cdouble Center => new cdouble(Handle.X - Width / 2, Handle.Y - Height / 2);
+		public virtual cdouble Handle => new cdouble(Center.X - Width / 2, Center.Y - Height / 2);
 
 		/// <summary>
 		/// Width of the control in circuit design in the default, horizontal position
@@ -130,7 +130,7 @@ namespace ECAT.Design
 		#region Private methods
 
 		/// <summary>
-		/// Method used to call <see cref="UpdatePartialNodePositions"/> whenever the <see cref="Handle"/> changes or one of its values
+		/// Method used to call <see cref="UpdatePartialNodePositions"/> whenever the <see cref="Center"/> changes or one of its values
 		/// changes
 		/// </summary>
 		/// <param name="sender"></param>

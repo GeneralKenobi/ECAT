@@ -10,16 +10,16 @@ namespace ECAT.Core
 	public interface IBaseComponent : INotifyPropertyChanged, IDisposable
     {
 		#region Properties
+		
+		/// <summary>
+		/// The center of the component
+		/// </summary>
+		PlanePosition Center { get; set; }
 
 		/// <summary>
 		/// Position of the handle of the component (top left corner)
 		/// </summary>
-		PlanePosition Handle { get; set; }
-
-		/// <summary>
-		/// The center of the component
-		/// </summary>
-		cdouble Center { get; }
+		cdouble Handle { get; }
 
 		/// <summary>
 		/// Width of the control in circuit design in the default, horizontal position
