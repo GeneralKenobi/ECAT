@@ -26,7 +26,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Assigns positions to all <see cref="PartialNode"/>s
 		/// </summary>
-		protected override void AssignPartialNodePositions()
+		protected override void UpdatePartialNodePositions()
 		{
 			TerminalA.Position = new PlanePosition(Center.Re, Center.Im, -Width / 2, 0);
 			TerminalB.Position = new PlanePosition(Center.Re, Center.Im, Width / 2, 0);
