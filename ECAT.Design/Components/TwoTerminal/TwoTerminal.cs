@@ -19,6 +19,16 @@ namespace ECAT.Design
 		/// </summary>
 		public PartialNode TerminalB { get; set; } = new PartialNode();
 
+		/// <summary>
+		/// Width of the control in circuit design in the default, horizontal position
+		/// </summary>
+		public override double Width => 100;
+
+		/// <summary>
+		/// Height of the control in circuit design in the default, horizontal position
+		/// </summary>
+		public override double Height => 50;
+
 		#endregion
 
 		#region Protected methods
@@ -27,9 +37,12 @@ namespace ECAT.Design
 		/// Assigns positions to all <see cref="PartialNode"/>s
 		/// </summary>
 		protected override void UpdatePartialNodePositions()
-		{
-			TerminalA.Position = new PlanePosition(Center.Re, Center.Im, -Width / 2, 0);
-			TerminalB.Position = new PlanePosition(Center.Re, Center.Im, Width / 2, 0);
+		{			
+			TerminalA.Position = new PlanePosition(Center.X, Center.Y, -Width / 2, 0);
+			TerminalB.Position = new PlanePosition(Center.X, Center.Y, Width / 2, 0);			
+
+			TerminalA.Position.Shift.Rotate(RotationAngle);
+			TerminalB.Position.Shift.Rotate(RotationAngle);
 		}
 
 		#endregion

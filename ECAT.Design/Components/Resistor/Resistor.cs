@@ -10,14 +10,6 @@ namespace ECAT.Design
 	/// </summary>
     public class Resistor : TwoTerminal
     {
-		/// <summary>
-		/// Width of the control in circuit design in the default, horizontal position
-		/// </summary>
-		public override double Width => 100;
-
-		/// <summary>
-		/// Height of the control in circuit design in the default, horizontal position
-		/// </summary>
-		public override double Height => 25;
+		
 	}
 }
