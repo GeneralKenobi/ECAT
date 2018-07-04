@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CSharpEnhanced.Maths;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -32,7 +33,7 @@ namespace ECAT.Core
 		/// Collection of points that define the corners of the wire on the plane.
 		/// Element at index 0 is a neighbour of <see cref="N1"/>, element at the last index is a neighbour of <see cref="N2"/>
 		/// </summary>
-		ObservableCollection<IWire> IntermediatePoints { get; set; }
+		ReadOnlyObservableCollection<PlanePosition> DefiningPoints { get; }
 
 		#endregion
 
@@ -46,6 +47,18 @@ namespace ECAT.Core
 		/// of <paramref name="wire"/></param>
 		/// <param name="mergeFromNode">Node of <paramref name="wire"/> that will be lost (it will become an intermediate point)</param>
 		void MergeWith(IWire wire, IPartialNode mergeToNode, IPartialNode mergeFromNode);
+
+		/// <summary>
+		/// Adds a new intermediate piont to the wire
+		/// </summary>
+		/// <param name="point"></param>
+		void AddIntermediatePoint(cdouble point);
+
+		/// <summary>
+		/// Adds a new point to the wire at beginning/end
+		/// </summary>
+		/// <param name="point"></param>
+		void AddPoint(cdouble point, bool addAtEnd = true);
 
 		#endregion
 	}
