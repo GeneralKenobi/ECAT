@@ -35,6 +35,11 @@ namespace ECAT.Design
 		public PlanePosition Handle { get; set; } = new PlanePosition();
 
 		/// <summary>
+		/// The center of the component
+		/// </summary>
+		public virtual cdouble Center => new cdouble(Handle.X - Width / 2, Handle.Y - Height / 2);
+
+		/// <summary>
 		/// Width of the control in circuit design in the default, horizontal position
 		/// </summary>
 		public abstract double Width { get; }

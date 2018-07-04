@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CSharpEnhanced.Maths;
+using System;
 using System.ComponentModel;
 
 namespace ECAT.Core
@@ -14,6 +15,11 @@ namespace ECAT.Core
 		/// Position of the handle of the component (top left corner)
 		/// </summary>
 		PlanePosition Handle { get; set; }
+
+		/// <summary>
+		/// The center of the component
+		/// </summary>
+		cdouble Center { get; }
 
 		/// <summary>
 		/// Width of the control in circuit design in the default, horizontal position
