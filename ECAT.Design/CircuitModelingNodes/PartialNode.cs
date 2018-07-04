@@ -10,7 +10,7 @@ namespace ECAT.Design
 	/// <summary>
 	/// Class used to connect <see cref="BaseComponent"/> with
 	/// </summary>
-	public class PartialNode : INotifyPropertyChanged
+	public class PartialNode : IPartialNode
 	{
 		#region Events
 
