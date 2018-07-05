@@ -21,7 +21,7 @@
 			HorizontalAlignment="Left"
 			VerticalAlignment="Top">
 
-			<Grid Tapped="MainCanvasTapped">
+			<Grid Tapped="DesignAreaTapped">
 
 				<!-- All parts go here -->
 				<!-- Don't use layout rounding because it blurs the parts when they're rotated,

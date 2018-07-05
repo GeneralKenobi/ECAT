@@ -75,7 +75,7 @@ namespace ECAT.UWP
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void MainCanvasTapped(object sender, TappedRoutedEventArgs e)
+		private void DesignAreaTapped(object sender, TappedRoutedEventArgs e)
 		{
 			var pointerCoord = e.GetPosition(sender as UIElement);
 
