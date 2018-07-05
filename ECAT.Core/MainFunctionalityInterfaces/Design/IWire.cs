@@ -53,13 +53,13 @@ namespace ECAT.Core
 		/// Adds a new intermediate piont to the wire
 		/// </summary>
 		/// <param name="point"></param>
-		void AddIntermediatePoint(Complex point);
+		void AddIntermediatePoint(IPlanePosition point);
 
 		/// <summary>
 		/// Adds a new point to the wire at beginning/end
 		/// </summary>
 		/// <param name="point"></param>
-		void AddPoint(Complex point, bool addAtEnd = true);
+		void AddPoint(IPlanePosition point, bool addAtEnd = true);
 
 		#endregion
 	}

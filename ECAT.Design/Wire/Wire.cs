@@ -204,7 +204,7 @@ namespace ECAT.Design
 		/// Adds a new intermediate piont to the wire
 		/// </summary>
 		/// <param name="point"></param>
-		public void AddIntermediatePoint(Complex point)
+		public void AddIntermediatePoint(IPlanePosition point)
 		{
 			throw new NotImplementedException();
 		}
@@ -213,11 +213,11 @@ namespace ECAT.Design
 		/// Adds a new point to the wire at beginning/end
 		/// </summary>
 		/// <param name="point"></param>
-		public void AddPoint(Complex point, bool addAtEnd = true)
+		public void AddPoint(IPlanePosition point, bool addAtEnd = true)
 		{
 			int index = addAtEnd ? _DefiningPoints.Count - 1 : 0;
 
-			_DefiningPoints.Insert(index, new PlanePosition(point));
+			_DefiningPoints.Insert(index, point);
 		}
 
 		#endregion
