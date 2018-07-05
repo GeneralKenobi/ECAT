@@ -10,18 +10,6 @@ namespace ECAT.Design
 	/// </summary>
 	public abstract class BaseComponent : IBaseComponent
 	{
-		#region Constructor
-
-		/// <summary>
-		/// Default Constructor
-		/// </summary>
-		public BaseComponent()
-		{
-			UpdatePartialNodePositions();
-		}
-
-		#endregion
-
 		#region Events
 
 		/// <summary>
@@ -41,7 +29,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Backing store for <see cref="Center"/>
 		/// </summary>
-		private PlanePosition mHandle = new PlanePosition();
+		private PlanePosition mCenter = new PlanePosition();
 
 		#endregion
 
@@ -52,23 +40,23 @@ namespace ECAT.Design
 		/// </summary>
 		public PlanePosition Center
 		{
-			get => mHandle;
+			get => mCenter;
 			set
 			{
-				if(mHandle != value)
+				if(mCenter != value)
 				{
-					if(mHandle != null)
+					if(mCenter != null)
 					{
-						mHandle.InternalStateChanged -= HandleChangedCallback;
+						mCenter.InternalStateChanged -= CenterChangedCallback;
 					}
 
-					mHandle = value;
+					mCenter = value;
 
-					UpdatePartialNodePositions();
+					UpdateAbsolutePartialNodePositions();
 
-					if(mHandle != null)
+					if(mCenter != null)
 					{
-						mHandle.InternalStateChanged += HandleChangedCallback;
+						mCenter.InternalStateChanged += CenterChangedCallback;
 					}
 				}
 			}
@@ -77,7 +65,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Position of the handle of the component (top left corner)
 		/// </summary>
-		public virtual cdouble Handle => new cdouble(Center.X - Width / 2, Center.Y - Height / 2);
+		public virtual cdouble Handle => new cdouble(Center.X - Width / 2, Center.Y + Height / 2);
 
 		/// <summary>
 		/// Width of the control in circuit design in the default, horizontal position
@@ -87,29 +75,22 @@ namespace ECAT.Design
 		/// <summary>
 		/// Height of the control in circuit design in the default, horizontal position
 		/// </summary>
-		public abstract double Height { get; }
-
-		/// <summary>
-		/// Angle of component's rotation in degrees
-		/// </summary>
-		public double RotationAngle
-		{
-			get => mRotationAngle;
-			set
-			{
-				var reducedValue = Helpers.ReduceAngle(value, AngleUnit.Degrees);
-
-				if(reducedValue != mRotationAngle)
-				{
-					mRotationAngle = reducedValue;
-					UpdatePartialNodePositions();
-				}
-			}
-		}
+		public abstract double Height { get; }		
 
 		#endregion
 
 		#region Public methods
+
+		/// <summary>
+		/// Rotates the component by <paramref name="degrees"/>
+		/// </summary>
+		/// <param name="degrees">Number of degrees to rotate the component by</param>
+		public void Rotate(double degrees)
+		{
+			Center.RotationAngle += degrees;
+
+			RotatePartialNodes(degrees);
+		}
 
 		/// <summary>
 		/// Disposes of the component
@@ -123,20 +104,29 @@ namespace ECAT.Design
 		/// <summary>
 		/// Assigns positions to all <see cref="PartialNode"/>s, invoked by <see cref="BaseComponent"/>'s constructor
 		/// </summary>
-		protected abstract void UpdatePartialNodePositions();
+		protected abstract void UpdateAbsolutePartialNodePositions();
+
+		/// <summary>
+		/// Rotates all partial nodes by <paramref name="degrees"/>
+		/// </summary>
+		/// <param name="degrees"></param>
+		protected abstract void RotatePartialNodes(double degrees);
 
 		#endregion
 
 		#region Private methods
 
 		/// <summary>
-		/// Method used to call <see cref="UpdatePartialNodePositions"/> whenever the <see cref="Center"/> changes or one of its values
+		/// Method used to call <see cref="UpdateAbsolutePartialNodePositions"/> whenever the <see cref="Center"/> changes or one of its values
 		/// changes
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void HandleChangedCallback(object sender, EventArgs e) => UpdatePartialNodePositions();
-
+		private void CenterChangedCallback(object sender, EventArgs e)
+		{
+			UpdateAbsolutePartialNodePositions();			
+		}
+		
 		#endregion
 	}
 }
