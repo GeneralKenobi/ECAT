@@ -70,23 +70,11 @@ namespace ECAT.ViewModel
 		{
 			if (AddingComponents)
 			{
-				IBaseComponent newComponent = null;
-				try
-				{
-					newComponent = Activator.CreateInstance(DesignManager.GetComponentType(ComponentToAdd)) as IBaseComponent;
+				var newComponent = IoC.Container.Resolve<IComponentFactory>().Construct(ComponentToAdd);
 
-					newComponent.Center = clickPosition;
-				}
-				catch(Exception e)
-				{
-					// If something happened and the element could not be created rethrow the exception
-					throw;
-				}
-
-				if (newComponent != null)
-				{
-					DesignManager.CurrentSchematic.AddComponent(newComponent);
-				}
+				newComponent.Center = clickPosition;
+				
+				DesignManager.CurrentSchematic.AddComponent(newComponent);				
 			}
 		}
 
@@ -94,7 +82,7 @@ namespace ECAT.ViewModel
 		{
 			if(_PlacedWire == null)
 			{
-				_PlacedWire = DesignManager.ConstructWire();
+				_PlacedWire = IoC.Container.Resolve<IComponentFactory>().ConstructWire();
 				DesignManager.CurrentSchematic.AddWire(_PlacedWire);
 				_PlacedWire.N1 = node;
 			}
