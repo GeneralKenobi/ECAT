@@ -13,10 +13,10 @@
 					<Grid Width="12"
 						Height="12">
 
-						<xaml:VisualAttachments.AttachedVisuals>
+						<xaml:VisualAttachments.AttachedVisuals>							
 							<xaml:PointerTriggerCommand Command="{Binding SocketClickedCommand}"			
 								CommandParameter="{Binding PartialNode, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-								PointerEvent="PointerPressed"/>
+								PointerEvent="PointerReleased"/>
 						</xaml:VisualAttachments.AttachedVisuals>						
 
 						<Ellipse Fill="{StaticResource BlackBrush}"/>
