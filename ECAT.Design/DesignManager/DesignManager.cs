@@ -58,13 +58,7 @@ namespace ECAT.Design
 
 		#endregion
 
-		#region Public methods
-
-		/// <summary>
-		/// Returns a new <see cref="IWire"/>
-		/// </summary>
-		/// <returns></returns>
-		public IWire ConstructWire() => new Wire();
+		#region Public methods		
 
 		/// <summary>
 		/// Creates and adds a new, empty schematic
