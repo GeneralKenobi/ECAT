@@ -80,12 +80,12 @@ namespace ECAT.ViewModel
 		/// <summary>
 		/// Method for <see cref="RotateLeftCommand"/>
 		/// </summary>
-		private void RotateLeft() => Component.RotationAngle += 90;
+		private void RotateLeft() => Component.Rotate(90);
 
 		/// <summary>
 		/// Method for <see cref="RotateRightCommand"/>
 		/// </summary>
-		private void RotateRight() => Component.RotationAngle -= 90;
+		private void RotateRight() => Component.Rotate(-90);
 
 		/// <summary>
 		/// Method for <see cref="RemoveComponentCommand"/>
