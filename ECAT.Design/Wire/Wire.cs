@@ -136,7 +136,7 @@ namespace ECAT.Design
 
 					if (_N2 != null)
 					{
-						_DefiningPoints.Insert(_DefiningPoints.Count - 1, _N2.Position);
+						_DefiningPoints.Insert(_DefiningPoints.Count, _N2.Position);
 						_N2.Position.InternalStateChanged += (s, e) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DefiningPoints)));
 					}
 				}
@@ -213,12 +213,8 @@ namespace ECAT.Design
 		/// Adds a new point to the wire at beginning/end
 		/// </summary>
 		/// <param name="point"></param>
-		public void AddPoint(IPlanePosition point, bool addAtEnd = true)
-		{
-			int index = addAtEnd ? _DefiningPoints.Count - 1 : 0;
-
-			_DefiningPoints.Insert(index, point);
-		}
+		public void AddPoint(IPlanePosition point, bool addAtEnd = true) =>
+			_DefiningPoints.Insert(addAtEnd ? _DefiningPoints.Count : 0, point);
 
 		#endregion
 
