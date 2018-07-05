@@ -52,7 +52,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// The coordinate of this PartialNode
 		/// </summary>
-		public PlanePosition Position { get; }
+		public IPlanePosition Position { get; }
 
 		#endregion
 	}

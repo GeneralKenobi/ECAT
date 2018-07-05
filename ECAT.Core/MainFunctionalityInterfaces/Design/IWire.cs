@@ -33,7 +33,7 @@ namespace ECAT.Core
 		/// Collection of points that define the corners of the wire on the plane.
 		/// Element at index 0 is a neighbour of <see cref="N1"/>, element at the last index is a neighbour of <see cref="N2"/>
 		/// </summary>
-		ReadOnlyObservableCollection<PlanePosition> DefiningPoints { get; }
+		ReadOnlyObservableCollection<IPlanePosition> DefiningPoints { get; }
 
 		#endregion
 

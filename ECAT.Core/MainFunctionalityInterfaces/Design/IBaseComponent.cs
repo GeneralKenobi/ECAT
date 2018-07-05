@@ -14,7 +14,7 @@ namespace ECAT.Core
 		/// <summary>
 		/// The center of the component
 		/// </summary>
-		PlanePosition Center { get; set; }
+		IPlanePosition Center { get; set; }
 
 		/// <summary>
 		/// Position of the handle of the component (top left corner)

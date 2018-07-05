@@ -14,7 +14,7 @@ namespace ECAT.UWP
 	{
 		public object Convert(object value, Type targetType, object parameter, string language)
 		{
-			if(value is ICollection<PlanePosition> collection)
+			if(value is ICollection<IPlanePosition> collection)
 			{
 				var pointCollection = new PointCollection();
 

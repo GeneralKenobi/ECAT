@@ -17,7 +17,7 @@ namespace ECAT.Core
 		/// <summary>
 		/// The x-y position of the center of the instance on the plane
 		/// </summary>
-		PlanePosition Position { get; }
+		IPlanePosition Position { get; }
 
 		#endregion
 	}

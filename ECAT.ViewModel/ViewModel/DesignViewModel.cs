@@ -66,7 +66,7 @@ namespace ECAT.ViewModel
 		/// Adds a component on the given position
 		/// </summary>
 		/// <param name="clickPosition"></param>
-		public void AddComponent(PlanePosition clickPosition)
+		public void AddComponent(IPlanePosition clickPosition)
 		{
 			if (AddingComponents)
 			{
@@ -75,7 +75,7 @@ namespace ECAT.ViewModel
 				{
 					newComponent = Activator.CreateInstance(DesignManager.GetComponentType(ComponentToAdd)) as IBaseComponent;
 
-					newComponent.Center = new PlanePosition(clickPosition.X, clickPosition.Y);
+					newComponent.Center = clickPosition;
 				}
 				catch(Exception e)
 				{

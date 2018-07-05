@@ -65,7 +65,7 @@ namespace ECAT.ViewModel
 		/// <param name="parameter"></param>
 		private void DesignAreaClicked(object parameter)
 		{
-			if(parameter is PlanePosition position)
+			if(parameter is IPlanePosition position)
 			{
 				// Decide what to do with the input
 				DesignVM.AddComponent(position);

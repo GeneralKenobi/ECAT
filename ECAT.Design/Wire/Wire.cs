@@ -25,8 +25,8 @@ namespace ECAT.Design
 		/// </summary>
 		public Wire()
 		{
-			_DefiningPoints = new ObservableCollection<PlanePosition>();
-			DefiningPoints = new ReadOnlyObservableCollection<PlanePosition>(_DefiningPoints);
+			_DefiningPoints = new ObservableCollection<IPlanePosition>();
+			DefiningPoints = new ReadOnlyObservableCollection<IPlanePosition>(_DefiningPoints);
 		}
 
 		#endregion
@@ -45,7 +45,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Backing store for <see cref="_DefiningPoints"/>
 		/// </summary>
-		private ObservableCollection<PlanePosition> mDefiningPoints;
+		private ObservableCollection<IPlanePosition> mDefiningPoints;
 
 		#endregion
 
@@ -64,7 +64,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Backing store for <see cref="DefiningPoints"/>
 		/// </summary>
-		private ObservableCollection<PlanePosition> _DefiningPoints
+		private ObservableCollection<IPlanePosition> _DefiningPoints
 		{
 			get => mDefiningPoints;
 			set
@@ -110,6 +110,7 @@ namespace ECAT.Design
 					if(_N1 != null)
 					{
 						_DefiningPoints.Insert(0, _N1.Position);
+						_N1.Position.InternalStateChanged += (s, e) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DefiningPoints)));
 					}
 				}
 			}
@@ -135,6 +136,7 @@ namespace ECAT.Design
 					if (_N2 != null)
 					{
 						_DefiningPoints.Insert(_DefiningPoints.Count - 1, _N2.Position);
+						_N2.Position.InternalStateChanged += (s, e) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DefiningPoints)));
 					}
 				}
 			}
@@ -149,7 +151,7 @@ namespace ECAT.Design
 		/// Collection of points that define the intermediate points of the wire. Point indexed 0 is the neighbour of <see cref="N1"/>,
 		/// point at the last index is the neighbour of <see cref="N2"/>
 		/// </summary>
-		public ReadOnlyObservableCollection<PlanePosition> DefiningPoints { get; }
+		public ReadOnlyObservableCollection<IPlanePosition> DefiningPoints { get; }
 
 		#endregion
 
@@ -185,12 +187,12 @@ namespace ECAT.Design
 			if (mergeToNode == N1)
 			{				
 				// If the wire is merged at the beginning, then to the beginning				
-				_DefiningPoints = new ObservableCollection<PlanePosition>(wire.DefiningPoints.Concat(DefiningPoints));
+				_DefiningPoints = new ObservableCollection<IPlanePosition>(wire.DefiningPoints.Concat(DefiningPoints));
 			}
 			else
 			{
 				// If the wire is merged at the end, then to the end
-				_DefiningPoints = new ObservableCollection<PlanePosition>(DefiningPoints.Concat(wire.DefiningPoints));
+				_DefiningPoints = new ObservableCollection<IPlanePosition>(DefiningPoints.Concat(wire.DefiningPoints));
 			}
 
 			// Assign the new beginning (or end) of the wire

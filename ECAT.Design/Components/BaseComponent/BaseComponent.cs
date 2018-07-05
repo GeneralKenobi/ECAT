@@ -29,7 +29,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Backing store for <see cref="Center"/>
 		/// </summary>
-		private PlanePosition mCenter = new PlanePosition();
+		private IPlanePosition mCenter = new PlanePosition();
 
 		#endregion
 
@@ -38,7 +38,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// The center of the component
 		/// </summary>
-		public PlanePosition Center
+		public IPlanePosition Center
 		{
 			get => mCenter;
 			set

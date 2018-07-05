@@ -1,4 +1,5 @@
 ﻿using ECAT.Core;
+using ECAT.Design;
 using ECAT.ViewModel;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.UI.Xaml;
