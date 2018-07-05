@@ -24,7 +24,8 @@ namespace ECAT.UWP
 			// Register necessary types
 			builder.RegisterInstance(new DesignManager()).As<IDesignManager>();
 			builder.RegisterInstance(new SimulationManager()).As<ISimulationManager>();			
-			
+			builder.RegisterInstance(new ComponentFactory()).As<IComponentFactory>();
+
 
 			IoC.Build(builder);
 
