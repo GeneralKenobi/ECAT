@@ -18,7 +18,7 @@ namespace ECAT.UWP
 			{
 				var pointCollection = new PointCollection();
 
-				var transformedCollection = collection.Select((pos) => new Point((int)Math.Round(pos.X), (int)Math.Round(pos.Y)));
+				var transformedCollection = collection.Select((pos) => new Point((int)Math.Round(pos.X), -(int)Math.Round(pos.Y)));
 
 				foreach(var item in transformedCollection)
 				{
