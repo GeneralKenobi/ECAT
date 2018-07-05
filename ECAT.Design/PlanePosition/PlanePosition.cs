@@ -1,14 +1,15 @@
 ﻿using CSharpEnhanced.Maths;
+using ECAT.Core;
 using System;
 using System.ComponentModel;
 using System.Numerics;
 
-namespace ECAT.Core
+namespace ECAT.Design
 {
 	/// <summary>
 	/// Position on a plane that can be shifted without losing the absolute center coordinate and rotated around it
 	/// </summary>
-	public class PlanePosition : INotifyPropertyChanged
+	public class PlanePosition : IPlanePosition
 	{
 		#region Constructor
 
@@ -59,7 +60,7 @@ namespace ECAT.Core
 		/// <summary>
 		/// Event fired when the internal state of this Position changes	
 		/// </summary>
-		public EventHandler InternalStateChanged;	
+		public event EventHandler InternalStateChanged;	
 
 		#endregion
 
