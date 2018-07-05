@@ -31,10 +31,15 @@ namespace ECAT.Core
 		/// </summary>
 		double Height { get; }
 
+		#endregion
+
+		#region Methods
+
 		/// <summary>
-		/// Angle of component's rotation in degrees
+		/// Rotates the component by <paramref name="degrees"/>
 		/// </summary>
-		double RotationAngle { get; set; }
+		/// <param name="degrees">Number of degrees to rotate the component by</param>
+		void Rotate(double degrees);
 
 		#endregion
 	}
