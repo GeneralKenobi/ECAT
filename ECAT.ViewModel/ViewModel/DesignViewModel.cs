@@ -2,6 +2,7 @@
 using ECAT.Core;
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 using System.Windows.Input;
 
@@ -58,6 +59,11 @@ namespace ECAT.ViewModel
 		/// </summary>
 		public bool AddingComponents => ComponentToAdd != null;
 
+		/// <summary>
+		/// True if the user is currently placing a wire
+		/// </summary>
+		public bool PlacingWire => _PlacedWire != null;
+
 		#endregion
 
 		#region Public methods
@@ -78,6 +84,10 @@ namespace ECAT.ViewModel
 			}
 		}
 
+		/// <summary>
+		/// Handles clicks onto sockets
+		/// </summary>
+		/// <param name="node"></param>
 		public void SocketClickedHandler(IPartialNode node)
 		{
 			if(_PlacedWire == null)
@@ -91,6 +101,21 @@ namespace ECAT.ViewModel
 				_PlacedWire.N2 = node;
 				_PlacedWire = null;
 			}
+		}
+
+		/// <summary>
+		/// Adds a new point to the currently placed wire
+		/// </summary>
+		/// <param name="position"></param>
+		/// <param name="addAtEnd"></param>
+		public void AddPointToPlacedWire(IPlanePosition position, bool addAtEnd = true)
+		{
+			if(!PlacingWire)
+			{
+				throw new InvalidOperationException("Can't add a point to the placed wire if there is no wire being placed");
+			}
+
+			_PlacedWire.AddPoint(position, addAtEnd);
 		}
 
 		#endregion
