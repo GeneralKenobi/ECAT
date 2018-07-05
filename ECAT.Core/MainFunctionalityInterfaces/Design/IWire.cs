@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Numerics;
 using System.Text;
 
 namespace ECAT.Core
@@ -52,13 +53,13 @@ namespace ECAT.Core
 		/// Adds a new intermediate piont to the wire
 		/// </summary>
 		/// <param name="point"></param>
-		void AddIntermediatePoint(cdouble point);
+		void AddIntermediatePoint(Complex point);
 
 		/// <summary>
 		/// Adds a new point to the wire at beginning/end
 		/// </summary>
 		/// <param name="point"></param>
-		void AddPoint(cdouble point, bool addAtEnd = true);
+		void AddPoint(Complex point, bool addAtEnd = true);
 
 		#endregion
 	}

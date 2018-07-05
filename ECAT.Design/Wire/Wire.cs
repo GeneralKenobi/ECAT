@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 
 namespace ECAT.Design
@@ -203,7 +204,7 @@ namespace ECAT.Design
 		/// Adds a new intermediate piont to the wire
 		/// </summary>
 		/// <param name="point"></param>
-		public void AddIntermediatePoint(cdouble point)
+		public void AddIntermediatePoint(Complex point)
 		{
 			throw new NotImplementedException();
 		}
@@ -212,11 +213,11 @@ namespace ECAT.Design
 		/// Adds a new point to the wire at beginning/end
 		/// </summary>
 		/// <param name="point"></param>
-		public void AddPoint(cdouble point, bool addAtEnd = true)
+		public void AddPoint(Complex point, bool addAtEnd = true)
 		{
 			int index = addAtEnd ? _DefiningPoints.Count - 1 : 0;
 
-			_DefiningPoints.Insert(index, new PlanePosition(point.Re, point.Im));
+			_DefiningPoints.Insert(index, new PlanePosition(point));
 		}
 
 		#endregion
