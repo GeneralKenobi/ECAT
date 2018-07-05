@@ -1,9 +1,4 @@
-﻿using ECAT.Core;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ECAT.Design
+﻿namespace ECAT.Design
 {
 	/// <summary>
 	/// Class for a resistor in circuit design
