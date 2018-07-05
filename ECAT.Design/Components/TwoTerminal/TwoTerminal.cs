@@ -1,4 +1,6 @@
-﻿using ECAT.Core;
+﻿using CSharpEnhanced.Maths;
+using ECAT.Core;
+using System.Numerics;
 
 namespace ECAT.Design
 {
@@ -7,17 +9,20 @@ namespace ECAT.Design
 	/// </summary>
     public abstract class TwoTerminal : BaseComponent
     {
-		#region Public properties
+		#region Constructor
 
 		/// <summary>
-		/// One of the terminals in this two-terminal
+		/// Default Constructor
 		/// </summary>
-		public PartialNode TerminalA { get; set; } = new PartialNode();
+		public TwoTerminal()
+		{
+			TerminalA = new PartialNode(_TerminalAShift);
+			TerminalB = new PartialNode(_TerminalBShift);
+		}
 
-		/// <summary>
-		/// One of the terminals in this two-terminal
-		/// </summary>
-		public PartialNode TerminalB { get; set; } = new PartialNode();
+		#endregion
+
+		#region Public properties		
 
 		/// <summary>
 		/// Width of the control in circuit design in the default, horizontal position
@@ -27,7 +32,31 @@ namespace ECAT.Design
 		/// <summary>
 		/// Height of the control in circuit design in the default, horizontal position
 		/// </summary>
-		public override double Height => 50;
+		public override double Height => 50;		
+
+		/// <summary>
+		/// One of the terminals in this two-terminal
+		/// </summary>
+		public PartialNode TerminalA { get; }
+
+		/// <summary>
+		/// One of the terminals in this two-terminal
+		/// </summary>
+		public PartialNode TerminalB { get; }
+
+		#endregion
+
+		#region Protected properties
+
+		/// <summary>
+		/// The shift assigned to <see cref="TerminalA"/>, override to provide custom value
+		/// </summary>
+		protected virtual Complex _TerminalAShift => new Complex(-Width / 2, 0);
+
+		/// <summary>
+		/// The shift assigned to <see cref="TerminalB"/>, override to provide custom value
+		/// </summary>
+		protected virtual Complex _TerminalBShift => new Complex(Width / 2, 0);
 
 		#endregion
 
@@ -36,13 +65,20 @@ namespace ECAT.Design
 		/// <summary>
 		/// Assigns positions to all <see cref="PartialNode"/>s
 		/// </summary>
-		protected override void UpdatePartialNodePositions()
-		{			
-			TerminalA.Position = new PlanePosition(Center.X, Center.Y, -Width / 2, 0);
-			TerminalB.Position = new PlanePosition(Center.X, Center.Y, Width / 2, 0);			
+		protected override void UpdateAbsolutePartialNodePositions()
+		{
+			TerminalA.Position.Absolute = new Complex(Center.X, Center.Y);
+			TerminalB.Position.Absolute = new Complex(Center.X, Center.Y);
+		}
 
-			TerminalA.Position.Shift.Rotate(RotationAngle);
-			TerminalB.Position.Shift.Rotate(RotationAngle);
+		/// <summary>
+		/// Rotates all partial nodes by <paramref name="degrees"/>
+		/// </summary>
+		/// <param name="degrees"></param>
+		protected override void RotatePartialNodes(double degrees)
+		{
+			TerminalA.Position.RotationAngle += degrees;
+			TerminalB.Position.RotationAngle += degrees;
 		}
 
 		#endregion
