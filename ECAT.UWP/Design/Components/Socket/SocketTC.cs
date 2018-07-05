@@ -1,6 +1,10 @@
 ﻿using ECAT.Core;
+using System.Threading.Tasks;
+using UWPEnhanced.Xaml;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Shapes;
 
 namespace ECAT.UWP
 {
@@ -16,8 +20,20 @@ namespace ECAT.UWP
 		/// </summary>
 		public SocketTC()
         {
-            this.DefaultStyleKey = typeof(SocketTC);
+			this.DefaultStyleKey = typeof(SocketTC);		
+			this.Tapped += SocketTapped;
         }
+
+		#endregion
+
+		#region Private methods
+
+		/// <summary>
+		/// Sets the handled property
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void SocketTapped(object sender, TappedRoutedEventArgs e) => e.Handled = true;
 
 		#endregion
 
