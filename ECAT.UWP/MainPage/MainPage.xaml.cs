@@ -78,7 +78,7 @@ namespace ECAT.UWP
 		{
 			var pointerCoord = e.GetPosition(sender as UIElement);
 
-			AppViewModel.Singleton.DesignAreaClickedCommand.Execute(new PlanePosition(pointerCoord.X, pointerCoord.Y));
+			AppViewModel.Singleton.DesignAreaClickedCommand.Execute(new PlanePosition(pointerCoord.X, -pointerCoord.Y));
 		}
 
 		#endregion
