@@ -22,6 +22,6 @@ namespace ECAT.Core
 		/// <summary>
 		/// User is currently placing a wire
 		/// </summary>
-		AddingWire = 2,
+		PlacingWire = 2,
     }
 }
