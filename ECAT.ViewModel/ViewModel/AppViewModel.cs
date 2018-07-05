@@ -45,6 +45,27 @@ namespace ECAT.ViewModel
 		/// </summary>
 		public SimulationViewModel SimulationVM { get; } = new SimulationViewModel();
 
+		/// <summary>
+		/// Returns the current state of the wire
+		/// </summary>
+		public AppState State
+		{
+			get
+			{
+				if(DesignVM.AddingComponents)
+				{
+					return AppState.AddingComponents;
+				}
+
+				if(DesignVM.PlacingWire)
+				{
+					return AppState.PlacingWire;
+				}
+
+				return AppState.Idle;
+			}
+		}
+
 		#endregion
 
 		#region Commands
@@ -68,7 +89,18 @@ namespace ECAT.ViewModel
 			if(parameter is IPlanePosition position)
 			{
 				// Decide what to do with the input
-				DesignVM.AddComponent(position);
+				switch(State)
+				{
+					case AppState.AddingComponents:
+						{
+							DesignVM.AddComponent(position);
+						} break;
+
+					case AppState.PlacingWire:
+						{
+							DesignVM.AddPointToPlacedWire(position);
+						} break;
+				}
 			}
 		}
 
