@@ -3,6 +3,7 @@ using ECAT.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Numerics;
 using System.Text;
 
 namespace ECAT.Design
@@ -12,6 +13,31 @@ namespace ECAT.Design
 	/// </summary>
 	public class PartialNode : IPartialNode
 	{
+		#region Constructor
+
+		/// <summary>
+		/// Default Constructor
+		/// </summary>
+		public PartialNode() => Position = new PlanePosition();
+		
+		/// <summary>
+		/// Constructor with parameters for shift values
+		/// </summary>
+		public PartialNode(double xShift, double yShift)
+		{
+			Position = new PlanePosition(0, 0, xShift, yShift);
+		}
+
+		/// <summary>
+		/// Constructor with parameters for shift values
+		/// </summary>
+		public PartialNode(Complex shift)
+		{
+			Position = new PlanePosition(Complex.Zero, shift);
+		}
+
+		#endregion
+
 		#region Events
 
 		/// <summary>
@@ -26,7 +52,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// The coordinate of this PartialNode
 		/// </summary>
-		public PlanePosition Position { get; set; }
+		public PlanePosition Position { get; }
 
 		#endregion
 	}
