@@ -30,9 +30,7 @@
 
 
 						<Grid.ContextFlyout>
-							<MenuFlyout Opening="MenuFlyoutOpenClose"
-								Closed="MenuFlyoutOpenClose"
-								MenuFlyoutPresenterStyle="{StaticResource MenuFlyoutPresenterStyle}">
+							<MenuFlyout	MenuFlyoutPresenterStyle="{StaticResource MenuFlyoutPresenterStyle}">
 
 								<!-- Go to part edit icon -->
 								<MenuFlyoutItem Style="{StaticResource ContextMenuFlyoutItemStyle}"
@@ -65,8 +63,7 @@
 
 						<!-- Border around the 'focused' element -->
 						<Border x:Name="Border"
-							Margin="-5"
-							Padding="4"
+							Margin="-1"
 							BorderThickness="1"
 							BorderBrush="{Binding MenuPresentBorderBrush, RelativeSource={RelativeSource Mode=TemplatedParent}}">
 

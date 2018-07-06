@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using UWPEnhanced.Xaml;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -24,7 +25,24 @@ namespace ECAT.UWP
 		/// </summary>
 		public ComponentWrapperTC()
 		{
-			this.DefaultStyleKey = typeof(ComponentWrapperTC);			
+			this.DefaultStyleKey = typeof(ComponentWrapperTC);
+			this.Loaded += OnLoaded;
+		}
+
+		#endregion
+
+		#region OnLoaded
+
+		/// <summary>
+		/// Invoked when the control loads, assigns event handlers to events of the flyout menu
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnLoaded(object sender, RoutedEventArgs e)
+		{
+			var grid = this.FindChild<Grid>();
+			grid.ContextFlyout.Opening += MenuFlyoutOpenClose;
+			grid.ContextFlyout.Closed += MenuFlyoutOpenClose;
 		}
 
 		#endregion
@@ -43,7 +61,7 @@ namespace ECAT.UWP
 		/// <summary>
 		/// When true, the border around the part is shown
 		/// </summary>
-		public bool ShowBorder { get; set; }
+		private bool ShowBorder { get; set; }
 
 		/// <summary>
 		/// SolidColorBrush to bind the BorderBrush to
