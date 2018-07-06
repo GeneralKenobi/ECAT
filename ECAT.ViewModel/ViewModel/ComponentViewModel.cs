@@ -1,8 +1,6 @@
 ﻿using CSharpEnhanced.ICommands;
 using ECAT.Core;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Input;
 
 namespace ECAT.ViewModel
@@ -34,17 +32,17 @@ namespace ECAT.ViewModel
 		/// <summary>
 		/// The component 
 		/// </summary>
-		public IBaseComponent Component { get; }
+		public IBaseComponent Component { get; private set; }
 
 		/// <summary>
 		/// Horizontal center of rotation
 		/// </summary>
-		public double HorizontalRotationCenter => Component.Width / 2;
+		public double HorizontalRotationCenter => Component == null ? 0 : Component.Width / 2;
 
 		/// <summary>
 		/// Vertical center of rotation
 		/// </summary>
-		public double VerticalRotationCenter => Component.Height / 2;
+		public double VerticalRotationCenter => Component == null ? 0 : Component.Height / 2;
 
 		#endregion
 
@@ -90,7 +88,12 @@ namespace ECAT.ViewModel
 		/// <summary>
 		/// Method for <see cref="RemoveComponentCommand"/>
 		/// </summary>
-		private void RemoveComponent() => AppViewModel.Singleton.DesignVM.DesignManager.RemoveComponent(Component);
+		private void RemoveComponent()
+		{
+			AppViewModel.Singleton.DesignVM.DesignManager.RemoveComponent(Component);
+
+			Component = null;
+		}
 
 		/// <summary>
 		/// Method for <see cref="SocketClickedCommand"/>
