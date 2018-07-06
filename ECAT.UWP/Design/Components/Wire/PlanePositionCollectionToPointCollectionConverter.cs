@@ -10,6 +10,9 @@ using Windows.UI.Xaml.Media;
 
 namespace ECAT.UWP
 {
+	/// <summary>
+	/// Converts an <see cref="ICollection{T}"/> of <see cref="IPlanePosition"/> to a <see cref="PointCollection"/>
+	/// </summary>
 	public class PlanePositionCollectionToPointCollectionConverter : IValueConverter
 	{
 		public object Convert(object value, Type targetType, object parameter, string language)
