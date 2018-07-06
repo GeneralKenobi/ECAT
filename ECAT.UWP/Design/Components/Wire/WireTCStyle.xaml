@@ -1,22 +1,47 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:ECAT.UWP">
+    xmlns:local="using:ECAT.UWP"
+	xmlns:converters="using:UWPEnhanced.ValueConverters">
 
-	<local:PlanePositionCollectionToPointCollectionConverter x:Key="PointsConverter"/>
 	<Style TargetType="local:WireTC">
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="local:WireTC">
+					<Grid Name="RootGrid">
 
-					<Polyline Stroke="{StaticResource BlackBrush}"
-						StrokeThickness="6"
-						StrokeMiterLimit="0"
-						Points="{Binding DefiningPoints, Converter={StaticResource PointsConverter}}"/>
+						<Grid.Resources>
+							<local:PlanePositionCollectionToPointCollectionConverter x:Key="PointsConverter"/>
+							<local:PlanePositionCollectionToOutermostPointCollectionConverter x:Key="BorderConverter"/>
+							<converters:OppositeDoubleConverter x:Key="OppositeConverter"/>							
+						</Grid.Resources>
 
+						<!-- Context menu with delete button -->
+						<Grid.ContextFlyout>
+							<MenuFlyout	MenuFlyoutPresenterStyle="{StaticResource MenuFlyoutPresenterStyle}">
+							
+								<!-- Remove element icon -->
+								<MenuFlyoutItem Style="{StaticResource ContextMenuFlyoutItemStyle}"
+									Text="&#xE107;"
+									FontFamily="{StaticResource SymbolThemeFontFamily}"
+									Command="{Binding RemoveWireCommand}"/>
 
+							</MenuFlyout>
+						</Grid.ContextFlyout>
 
-
+						<!-- Polyline that visualizes the wire -->
+						<Polyline Stroke="{StaticResource BlackBrush}"
+							StrokeThickness="6"
+							StrokeMiterLimit="0"
+							Points="{Binding Wire.DefiningPoints, Converter={StaticResource PointsConverter}}"
+							StrokeLineJoin="Round"/>
+					
+						<!-- Polygon that acts as a border around the wire when context menu is present -->
+						<Polygon Points="{Binding Wire.DefiningPoints, Converter={StaticResource BorderConverter}}" 
+							Stroke="{Binding MenuPresentBorderBrush, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+							StrokeThickness="1"/>
+						
+					</Grid>
 				</ControlTemplate>
 			</Setter.Value>
 		</Setter>

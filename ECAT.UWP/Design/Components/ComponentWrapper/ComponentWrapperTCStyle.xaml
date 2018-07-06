@@ -7,8 +7,8 @@
 	<Style TargetType="local:ComponentWrapperTC">
 		<Setter Property="Template">
 			<Setter.Value>
-				<ControlTemplate TargetType="local:ComponentWrapperTC">					
-					<Grid Background="Transparent">
+				<ControlTemplate TargetType="local:ComponentWrapperTC">
+					<Grid Name="RootGrid" Background="Transparent">
 						<Grid.Resources>
 							<local:ReverseRotationAngleValueConverter x:Key="RotationAngleConverter"/>
 							<local:PartToPartControlConverter x:Key="PartControlConverter"/>
@@ -55,15 +55,13 @@
 								<MenuFlyoutItem Style="{StaticResource ContextMenuFlyoutItemStyle}"
 									Text="&#xE107;"
 									FontFamily="{StaticResource SymbolThemeFontFamily}"
-									Command="{Binding RemoveComponentCommand}"
-									CommandParameter="{Binding}"/>
+									Command="{Binding RemoveComponentCommand}"/>
 
 							</MenuFlyout>
 						</Grid.ContextFlyout>
 
 						<!-- Border around the 'focused' element -->
-						<Border x:Name="Border"
-							Margin="-1"
+						<Border Margin="-1"
 							BorderThickness="1"
 							BorderBrush="{Binding MenuPresentBorderBrush, RelativeSource={RelativeSource Mode=TemplatedParent}}">
 

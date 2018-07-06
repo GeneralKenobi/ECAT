@@ -16,67 +16,17 @@ using Windows.UI.Xaml.Media;
 
 namespace ECAT.UWP
 {
-	public sealed class ComponentWrapperTC : Control, INotifyPropertyChanged
+	public sealed class ComponentWrapperTC : BorderWithFlyoutMenuBaseTC
 	{
 		#region Constructor
 		
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public ComponentWrapperTC()
+		public ComponentWrapperTC() : base("RootGrid")
 		{
 			this.DefaultStyleKey = typeof(ComponentWrapperTC);
-			this.Loaded += OnLoaded;
 		}
-
-		#endregion
-
-		#region OnLoaded
-
-		/// <summary>
-		/// Invoked when the control loads, assigns event handlers to events of the flyout menu
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void OnLoaded(object sender, RoutedEventArgs e)
-		{
-			var grid = this.FindChild<Grid>();
-			grid.ContextFlyout.Opening += MenuFlyoutOpenClose;
-			grid.ContextFlyout.Closed += MenuFlyoutOpenClose;
-		}
-
-		#endregion
-
-		#region Events
-
-		/// <summary>
-		/// Event fired whenever a property changes its value
-		/// </summary>
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		#endregion
-
-		#region Menu Opening/Closing
-
-		/// <summary>
-		/// When true, the border around the part is shown
-		/// </summary>
-		private bool ShowBorder { get; set; }
-
-		/// <summary>
-		/// SolidColorBrush to bind the BorderBrush to
-		/// </summary>
-		public SolidColorBrush MenuPresentBorderBrush => ShowBorder ?
-			App.Current.Resources["RedBrush"] as SolidColorBrush :
-			new SolidColorBrush(Colors.Transparent);
-
-		/// <summary>
-		/// Toggles the <see cref="ShowBorder"/> flag
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void MenuFlyoutOpenClose(object sender, object e) =>
-			ShowBorder = !ShowBorder;
 
 		#endregion
 
