@@ -11,6 +11,7 @@
 
 	<Page.Resources>
 		<local:IBaseComponentToComponentViewModelConverter x:Key="ComponentConverter"/>
+		<local:IWireToWireViewModelConverter x:Key="WireConverter"/>
 	</Page.Resources>
 
 
@@ -63,7 +64,7 @@
 
 					<ItemsControl.ItemTemplate>
 						<DataTemplate>
-							<local:WireTC DataContext="{Binding }"/>
+							<local:WireTC DataContext="{Binding Converter={StaticResource WireConverter}}"/>
 						</DataTemplate>
 					</ItemsControl.ItemTemplate>
 				</ItemsControl>

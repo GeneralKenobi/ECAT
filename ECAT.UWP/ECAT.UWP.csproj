@@ -98,13 +98,16 @@
     <Compile Include="Design\ComponentAddingMenu\ComponentAddingMenu.xaml.cs">
       <DependentUpon>ComponentAddingMenu.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Design\Components\BorderWithFlyoutMenuBaseTC\BorderWithFlyoutMenuBaseTC.cs" />
     <Compile Include="Design\Components\ComponentWrapper\ComponentWrapperTC.cs" />
     <Compile Include="Design\Components\Resistor\ResistorTC.cs" />
     <Compile Include="Design\Components\Socket\SocketTC.cs" />
+    <Compile Include="Design\Components\Wire\PlanePositionCollectionToOutermostPointCollectionConverter.cs" />
     <Compile Include="Design\Components\Wire\PlanePositionCollectionToPointCollectionConverter.cs" />
     <Compile Include="Design\Components\Wire\WireTC.cs" />
     <Compile Include="IoCSetup\IoCSetup.cs" />
     <Compile Include="MainPage\IBaseComponentToComponentViewModelConverter.cs" />
+    <Compile Include="MainPage\IWireToWireViewModelConverter.cs" />
     <Compile Include="MainPage\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -255,6 +258,7 @@
       <Name>ECAT.ViewModel</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
