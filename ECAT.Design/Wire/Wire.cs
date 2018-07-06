@@ -1,15 +1,10 @@
-﻿using CSharpEnhanced.Maths;
-using ECAT.Core;
-using ECAT.Design;
-using PropertyChanged;
+﻿using ECAT.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using System.Numerics;
-using System.Text;
 
 namespace ECAT.Design
 {
@@ -17,7 +12,7 @@ namespace ECAT.Design
 	/// Provides means to connect two <see cref="PartialNode"/>s as well as an arbitrary number of <see cref="WireNode"/>s.
 	/// Later before running the simulation dedicated logic will scan all connections and merge them into a single <see cref="Node"/>
 	/// </summary>
-    public class Wire : IWire
+	public class Wire : IWire
     {
 		#region Constructor
 
@@ -146,7 +141,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// List with all wires that are connected to this wire somewhere in the middle
 		/// </summary>
-		public IList<IWire> ConnectedWires { get; set; }
+		public IList<IWire> ConnectedWires { get; set; } = new List<IWire>();
 
 		/// <summary>
 		/// Collection of points that define the intermediate points of the wire. Point indexed 0 is the neighbour of <see cref="N1"/>,
