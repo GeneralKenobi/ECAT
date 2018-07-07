@@ -22,6 +22,7 @@ namespace ECAT.ViewModel
 			Wire = wire ?? throw new ArgumentNullException(nameof(wire));
 
 			RemoveWireCommand = new RelayCommand(RemoveWire);
+			WireSocketClickedCommand = new RelayParametrizedCommand(WireSocketClicked);
 
 			(Wire.DefiningPoints as INotifyCollectionChanged).CollectionChanged += OnWireDefiningPointsChanged;			
 		}
@@ -33,7 +34,12 @@ namespace ECAT.ViewModel
 		/// <summary>
 		/// Removes <see cref="Wire"/> from its schematic
 		/// </summary>
-		public ICommand RemoveWireCommand { get; set; }
+		public ICommand RemoveWireCommand { get; }
+
+		/// <summary>
+		/// Starts extending the wire from the clicked socket
+		/// </summary>
+		public ICommand WireSocketClickedCommand { get; }
 
 		#endregion
 
@@ -59,6 +65,18 @@ namespace ECAT.ViewModel
 		#endregion
 
 		#region Private methods
+
+		/// <summary>
+		/// Method for <see cref="WireSocketClickedCommand"/>
+		/// </summary>
+		/// <param name="parameter"></param>
+		private void WireSocketClicked(object parameter)
+		{
+			if(parameter is bool b)
+			{
+				AppViewModel.Singleton.DesignVM.WireSocketClickedHandler(Wire, b);
+			}
+		}
 
 		/// <summary>
 		/// Method for <see cref="RemoveWireCommand"/>
