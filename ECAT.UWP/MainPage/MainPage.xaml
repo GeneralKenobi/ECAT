@@ -7,7 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:controls="using:UWPEnhanced.Controls"
     mc:Ignorable="d"
-    Background="{StaticResource WhiteBrush}">
+    Background="{StaticResource WhiteBrush}"
+	KeyDown="KeyPressed">
 
 	<Page.Resources>
 		<local:IBaseComponentToComponentViewModelConverter x:Key="ComponentConverter"/>
@@ -37,6 +38,22 @@
 				Drop="DropOnMainCanvas"
 				Tapped="MainCanvasTapped"-->
 
+				<!-- Control for wires-->
+				<ItemsControl ItemsSource="{Binding DesignVM.DesignManager.CurrentSchematic.Wires}">
+
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<Canvas />
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<local:WireTC DataContext="{Binding Converter={StaticResource WireConverter}}"/>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+
 				<!-- Control for components -->
 				<ItemsControl ItemsSource="{Binding DesignVM.DesignManager.CurrentSchematic.Components}">
 
@@ -53,21 +70,7 @@
 					</ItemsControl.ItemTemplate>
 				</ItemsControl>
 
-				<!-- Control for wires-->
-				<ItemsControl ItemsSource="{Binding DesignVM.DesignManager.CurrentSchematic.Wires}">
-
-					<ItemsControl.ItemsPanel>
-						<ItemsPanelTemplate>
-							<Canvas />
-						</ItemsPanelTemplate>
-					</ItemsControl.ItemsPanel>
-
-					<ItemsControl.ItemTemplate>
-						<DataTemplate>
-							<local:WireTC DataContext="{Binding Converter={StaticResource WireConverter}}"/>
-						</DataTemplate>
-					</ItemsControl.ItemTemplate>
-				</ItemsControl>
+			
 
 			</Grid>
 		</ScrollViewer>
