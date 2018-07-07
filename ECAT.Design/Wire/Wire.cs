@@ -173,7 +173,7 @@ namespace ECAT.Design
 		/// Merges this instance with <paramref name="wire"/>. After the call completes <paramref name="wire"/> is obselete.
 		/// </summary>
 		/// <param name="wire"></param>
-		public void MergeWith(IWire wire, IPartialNode mergeToNode, IPartialNode mergeFromNode)
+		public void MergeWith(IWire wire, bool mergeToEnd, bool mergeFromEnd)
 		{
 			// Swap all connections to the new wire
 			foreach (var x in wire.ConnectedWires)
@@ -184,20 +184,38 @@ namespace ECAT.Design
 			// Clear the connections from the old wire
 			wire.ConnectedWires.Clear();
 
-			// Concat the control points
-			if (mergeToNode == N1)
-			{				
-				// If the wire is merged at the beginning, then to the beginning				
-				_DefiningPoints = new ObservableCollection<IPlanePosition>(wire.DefiningPoints.Concat(DefiningPoints));
+			// Add the points from the merged wire to this instance
+			// If the wire is merged from end
+			if(mergeFromEnd)
+			{
+				// Then the points need to be added from end to beginning
+				for(int i=wire.DefiningPoints.Count - 1; i >= 0; --i)
+				{
+					// If the merging is made to the end, then the points need to be added to the end, otherwise to the beginning
+					_DefiningPoints.Insert(mergeToEnd ? _DefiningPoints.Count : 0, wire.DefiningPoints[i]);
+				}
 			}
 			else
 			{
-				// If the wire is merged at the end, then to the end
-				_DefiningPoints = new ObservableCollection<IPlanePosition>(DefiningPoints.Concat(wire.DefiningPoints));
+				// Otherwise the points need to be added from beginning to end
+				for (int i = 0; i < wire.DefiningPoints.Count; ++i)
+				{
+					// If the merging is made to the end, then the points need to be added to the end, otherwise to the beginning
+					_DefiningPoints.Insert(mergeToEnd ? _DefiningPoints.Count : 0, wire.DefiningPoints[i]);
+				}
 			}
 
-			// Assign the new beginning (or end) of the wire
-			mergeToNode = (wire.N1 == mergeFromNode ? wire.N2 : wire.N1);
+			// Assign the new ending for the end which the wire was merged to
+			if (mergeToEnd)
+			{
+				_N2 = mergeFromEnd ? wire.N1 : wire.N2;
+			}
+			else
+			{
+				_N1 = mergeFromEnd ? wire.N1 : wire.N2;
+			}
+
+			//PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DefiningPoints)));
 		}
 
 		/// <summary>
