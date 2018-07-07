@@ -2,7 +2,8 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:ECAT.UWP"
-	xmlns:converters="using:UWPEnhanced.ValueConverters">
+	xmlns:converters="using:UWPEnhanced.ValueConverters"
+	xmlns:xaml="using:UWPEnhanced.Xaml">
 
 
 	<Style TargetType="local:WireTC">
@@ -42,11 +43,32 @@
 							Stroke="{Binding MenuPresentBorderBrush, RelativeSource={RelativeSource Mode=TemplatedParent}}"
 							StrokeThickness="1"/>
 
-						<local:WireSocketTC Position="{Binding WireBeginning}"
-							/>
+						<local:WireSocketTC Position="{Binding WireBeginning}">
 
-						<local:WireSocketTC Position="{Binding WireEnding}"
-							/>
+							<xaml:VisualAttachments.AttachedVisuals>
+								<xaml:PointerTriggerCommand Command="{Binding WireSocketClickedCommand}"									
+									PointerEvent="PointerReleased">
+									<xaml:PointerTriggerCommand.CommandParameter>
+										<x:Boolean>False</x:Boolean>
+									</xaml:PointerTriggerCommand.CommandParameter>	
+								</xaml:PointerTriggerCommand>
+							</xaml:VisualAttachments.AttachedVisuals>
+
+						</local:WireSocketTC>
+
+						<local:WireSocketTC Position="{Binding WireEnding}">
+
+							<xaml:VisualAttachments.AttachedVisuals>
+								<xaml:PointerTriggerCommand Command="{Binding WireSocketClickedCommand}"
+									PointerEvent="PointerReleased">
+									<xaml:PointerTriggerCommand.CommandParameter>
+										<x:Boolean>True</x:Boolean>
+									</xaml:PointerTriggerCommand.CommandParameter>
+								</xaml:PointerTriggerCommand>								
+							</xaml:VisualAttachments.AttachedVisuals>
+
+						</local:WireSocketTC>
+							
 
 
 					</Grid>
