@@ -3,6 +3,7 @@ using CSharpEnhanced.ICommands;
 using ECAT.Core;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Numerics;
 using System.Text;
 using System.Windows.Input;
@@ -30,49 +31,21 @@ namespace ECAT.ViewModel
 				throw new Exception();
 			}
 
+			DesignManager.PropertyChanged += WireManipulated;
+
 			StopActionCommand = new RelayCommand(StopAction);
 			DesignAreaClickedCommand = new RelayParametrizedCommand(DesignAreaClicked);
 			PrepareToPlaceLooseWireCommand = new RelayCommand(PrepareToPlaceLooseWire);
 		}
 
-		#endregion
-
-		#region Private members
-
-		/// <summary>
-		/// Backing store for <see cref="_PlacedWire"/>
-		/// </summary>
-		private IWire mPlacedWire = null;
-
-		#endregion
+		#endregion		
 
 		#region Private properties
 
 		/// <summary>
 		/// Flag which, if set, ensures the next click on the design area will place a new wire in that position
 		/// </summary>
-		private bool _PlaceLooseWireOnNextClick { get; set; } = false;
-
-		/// <summary>
-		/// Determines the direction of extending the wire
-		/// </summary>
-		private bool _ExtendWireAtEnd { get; set; } = true;
-
-		/// <summary>
-		/// The currently placed wire
-		/// </summary>
-		private IWire _PlacedWire
-		{
-			get => mPlacedWire;
-			set
-			{
-				// Whenever this property is set (either to some IWire or null), it means that wire manipulation has began/ended
-				// and such action always cancels the action of placing a loose wire so reset the flag
-				_PlaceLooseWireOnNextClick = false;
-
-				mPlacedWire = value;
-			}
-		}
+		private bool _PlaceLooseWireOnNextClick { get; set; } = false;		
 
 		#endregion
 
@@ -92,12 +65,7 @@ namespace ECAT.ViewModel
 		/// <summary>
 		/// True if the user is currently adding components
 		/// </summary>
-		public bool AddingComponents => ComponentToAdd != null;
-
-		/// <summary>
-		/// True if the user is currently placing a wire
-		/// </summary>
-		public bool PlacingWire => _PlacedWire != null;
+		public bool AddingComponents => ComponentToAdd != null;		
 
 		#endregion
 
@@ -121,36 +89,7 @@ namespace ECAT.ViewModel
 
 		#endregion
 
-		#region Public methods
-
-		/// <summary>
-		/// Handles a click made on a wire socket
-		/// </summary>
-		/// <param name="wire"></param>
-		/// <param name="endClicked"></param>
-		public void WireSocketClickedHandler(IWire wire, bool endClicked)
-		{
-			// If there was a wire placed
-			if (PlacingWire)
-			{
-				// Then it means the two wires need to be merged
-				_PlacedWire.MergeWith(wire, endClicked, _ExtendWireAtEnd);
-
-				// Remove the old wire
-				DesignManager.RemoveWire(wire);
-
-				// And remove the reference to the placed wire from the view-model
-				_PlacedWire = null;
-			}
-			else
-			{
-				// Otherwise it means that the wire whose socket was pressed will be extended
-				_PlacedWire = wire;
-
-				// Assign the direction of extension
-				_ExtendWireAtEnd = endClicked;
-			}
-		}
+		#region Public methods		
 
 		/// <summary>
 		/// Adds a component on the given position
@@ -166,67 +105,11 @@ namespace ECAT.ViewModel
 				
 				DesignManager.CurrentSchematic.AddComponent(newComponent);				
 			}
-		}
-
-		/// <summary>
-		/// Handles clicks onto sockets
-		/// </summary>
-		/// <param name="node"></param>
-		public void SocketClickedHandler(IPartialNode node)
-		{
-			// If there was a wire placed
-			if(PlacingWire)
-			{
-				// Then this action ends it; Assign the clicked node to the placed wire
-				_PlacedWire.N2 = node;
-
-				// And get rid of it's reference
-				_PlacedWire = null;				
-			}
-			else
-			{
-				// Create a new wire
-				CreateWireToPlace();
-
-				// Assign it's initial node
-				_PlacedWire.N1 = node;
-			}
-		}
-
-		/// <summary>
-		/// Adds a new point to the currently placed wire
-		/// </summary>
-		/// <param name="position"></param>
-		/// <param name="addAtEnd"></param>
-		public void AddPointToPlacedWire(IPlanePosition position)
-		{
-			if(!PlacingWire)
-			{
-				throw new InvalidOperationException("Can't add a point to the placed wire if there is no wire being placed");
-			}
-
-			_PlacedWire.AddPoint(position, _ExtendWireAtEnd);
-		}
+		}		
 
 		#endregion
 
 		#region Private methods
-
-		/// <summary>
-		/// Creates a new <see cref="IWire"/>, assigns it to <see cref="_PlacedWire"/>, adds it to the current schematic and marks
-		/// that it's extended at the end
-		/// </summary>
-		private void CreateWireToPlace()
-		{
-			// Create a new wire
-			_PlacedWire = IoC.Container.Resolve<IComponentFactory>().ConstructWire();
-
-			// Signal that it's extended at the end
-			_ExtendWireAtEnd = true;
-
-			// Add the wire to the current schematic
-			DesignManager.CurrentSchematic.AddWire(_PlacedWire);
-		}
 
 		/// <summary>
 		/// Method for <see cref="StopActionCommand"/>
@@ -242,7 +125,7 @@ namespace ECAT.ViewModel
 
 				case AppState.PlacingWire:
 					{
-						_PlacedWire = null;
+						DesignManager.StopPlacingWire();
 					} break;
 			}
 		}
@@ -266,7 +149,7 @@ namespace ECAT.ViewModel
 
 					case AppState.PlacingWire:
 						{
-							AddPointToPlacedWire(position);
+							DesignManager.AddPointToPlacedWire(position);
 						}
 						break;
 
@@ -274,7 +157,7 @@ namespace ECAT.ViewModel
 						{
 							if(_PlaceLooseWireOnNextClick)
 							{
-								PlaceLooseWire(position);
+								DesignManager.PlaceLooseWire(position);
 							}
 						} break;
 				}
@@ -295,16 +178,17 @@ namespace ECAT.ViewModel
 		}
 
 		/// <summary>
-		/// Creates and places a new loose wire on the given position
+		/// Listens to property changed on <see cref="DesignManager"/> and resets <see cref="_PlaceLooseWireOnNextClick"/> if
+		/// the PlacingWire property changes (which means that there was some kind of wire manipulation that cancels the operation)
 		/// </summary>
-		/// <param name="position"></param>
-		private void PlaceLooseWire(IPlanePosition position)
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void WireManipulated(object sender, PropertyChangedEventArgs e)
 		{
-			// Create a new wire
-			CreateWireToPlace();
-
-			// Add the position to it
-			_PlacedWire.AddPoint(position);
+			if(e.PropertyName==nameof(DesignManager.PlacingWire))
+			{
+				_PlaceLooseWireOnNextClick = false;
+			}
 		}
 
 		#endregion

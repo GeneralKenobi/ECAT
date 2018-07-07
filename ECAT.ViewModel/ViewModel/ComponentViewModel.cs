@@ -102,7 +102,7 @@ namespace ECAT.ViewModel
 		{
 			if (parameter is IPartialNode node)
 			{
-				AppViewModel.Singleton.DesignVM.SocketClickedHandler(node);
+				AppViewModel.Singleton.DesignVM.DesignManager.SocketClickedHandler(node);
 			}
 		}		
 

@@ -21,6 +21,11 @@ namespace ECAT.Core
 		/// </summary>
 		ISchematic CurrentSchematic { get; }
 
+		/// <summary>
+		/// True if a wire is being placed
+		/// </summary>
+		bool PlacingWire { get; }
+
 		#endregion
 
 		#region Methods
@@ -87,6 +92,36 @@ namespace ECAT.Core
 		/// </summary>
 		/// <param name="wire"></param>
 		void RemoveWire(IWire wire);
+
+		/// <summary>
+		/// Handles clicks onto sockets
+		/// </summary>
+		/// <param name="node"></param>
+		void SocketClickedHandler(IPartialNode node);
+
+		/// <summary>
+		/// Adds a new point to the currently placed wire
+		/// </summary>
+		/// <param name="position"></param>
+		/// <param name="addAtEnd"></param>
+		void AddPointToPlacedWire(IPlanePosition position);
+
+		/// <summary>
+		/// Handles a click made on a wire socket
+		/// </summary>
+		/// <param name="wire"></param>
+		/// <param name="endClicked"></param>
+		void WireSocketClickedHandler(IWire wire, bool endClicked);
+
+		/// <summary>
+		/// Finishes the wire placing procedure
+		/// </summary>
+		void StopPlacingWire();
+
+		/// <summary>
+		/// Creates and places a new, loose wire on the given position
+		/// </summary>
+		void PlaceLooseWire(IPlanePosition position);
 
 		#endregion
 	}

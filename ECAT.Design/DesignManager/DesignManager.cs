@@ -1,4 +1,5 @@
-﻿using ECAT.Core;
+﻿using Autofac;
+using ECAT.Core;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -33,6 +34,16 @@ namespace ECAT.Design
 			new Schematic(),
 		};
 
+		/// <summary>
+		/// Determines the direction of extending the wire
+		/// </summary>
+		private bool _ExtendWireAtEnd { get; set; } = true;
+
+		/// <summary>
+		/// The currently placed wire
+		/// </summary>
+		private IWire _PlacedWire { get; set; } = null;
+
 		#endregion
 
 		#region Public Properties
@@ -47,6 +58,11 @@ namespace ECAT.Design
 		/// </summary>
 		public ISchematic CurrentSchematic { get; private set; }
 
+		/// <summary>
+		/// True if the user is currently placing a wire
+		/// </summary>
+		public bool PlacingWire => _PlacedWire != null;
+
 		#endregion
 
 		#region Events
@@ -58,7 +74,76 @@ namespace ECAT.Design
 
 		#endregion
 
-		#region Public methods		
+		#region Public methods
+
+		/// <summary>
+		/// Handles clicks onto sockets
+		/// </summary>
+		/// <param name="node"></param>
+		public void SocketClickedHandler(IPartialNode node)
+		{
+			// If there was a wire placed
+			if (PlacingWire)
+			{
+				// Then this action ends it; Assign the clicked node to the placed wire
+				_PlacedWire.N2 = node;
+
+				// And get rid of it's reference
+				_PlacedWire = null;
+			}
+			else
+			{
+				// Create a new wire
+				CreateWireToPlace();
+
+				// Assign it's initial node
+				_PlacedWire.N1 = node;
+			}
+		}
+
+		/// <summary>
+		/// Adds a new point to the currently placed wire
+		/// </summary>
+		/// <param name="position"></param>
+		/// <param name="addAtEnd"></param>
+		public void AddPointToPlacedWire(IPlanePosition position)
+		{
+			if (!PlacingWire)
+			{
+				throw new InvalidOperationException("Can't add a point to the placed wire if there is no wire being placed");
+			}
+
+			_PlacedWire.AddPoint(position, _ExtendWireAtEnd);
+		}
+
+		/// <summary>
+		/// Handles a click made on a wire socket
+		/// </summary>
+		/// <param name="wire"></param>
+		/// <param name="endClicked"></param>
+		public void WireSocketClickedHandler(IWire wire, bool endClicked)
+		{
+			// If there was a wire placed
+			if (PlacingWire)
+			{
+				// Then it means the two wires need to be merged
+				_PlacedWire.MergeWith(wire, endClicked, _ExtendWireAtEnd);
+
+				// Remove the old wire
+				RemoveWire(wire);
+
+				// And remove the reference to the placed wire from the view-model
+				_PlacedWire = null;
+			}
+			else
+			{
+				// Otherwise it means that the wire whose socket was pressed will be extended
+				_PlacedWire = wire;
+
+				// Assign the direction of extension
+				_ExtendWireAtEnd = endClicked;
+			}
+		}
 
 		/// <summary>
 		/// Creates and adds a new, empty schematic
@@ -205,6 +290,44 @@ namespace ECAT.Design
 					}
 				}
 			}
+		}
+
+		/// <summary>
+		/// Finishes the wire placing procedure
+		/// </summary>
+		public void StopPlacingWire() => _PlacedWire = null;
+
+		/// <summary>
+		/// Creates and places a new loose wire on the given position
+		/// </summary>
+		/// <param name="position"></param>
+		public void PlaceLooseWire(IPlanePosition position)
+		{
+			// Create a new wire
+			CreateWireToPlace();
+
+			// Add the position to it
+			_PlacedWire.AddPoint(position);
+		}
+
+		#endregion
+
+		#region Private methods
+
+		/// <summary>
+		/// Creates a new <see cref="IWire"/>, assigns it to <see cref="_PlacedWire"/>, adds it to the current schematic and marks
+		/// that it's extended at the end
+		/// </summary>
+		private void CreateWireToPlace()
+		{
+			// Create a new wire
+			_PlacedWire = IoC.Container.Resolve<IComponentFactory>().ConstructWire();
+
+			// Signal that it's extended at the end
+			_ExtendWireAtEnd = true;
+
+			// Add the wire to the current schematic
+			CurrentSchematic.AddWire(_PlacedWire);
 		}
 
 		#endregion

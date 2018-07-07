@@ -74,7 +74,7 @@ namespace ECAT.ViewModel
 		{
 			if(parameter is bool b)
 			{
-				AppViewModel.Singleton.DesignVM.WireSocketClickedHandler(Wire, b);
+				AppViewModel.Singleton.DesignVM.DesignManager.WireSocketClickedHandler(Wire, b);
 			}
 		}
 

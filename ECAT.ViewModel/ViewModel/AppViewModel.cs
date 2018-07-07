@@ -57,7 +57,7 @@ namespace ECAT.ViewModel
 					return AppState.AddingComponents;
 				}
 
-				if(DesignVM.PlacingWire)
+				if(DesignVM.DesignManager.PlacingWire)
 				{
 					return AppState.PlacingWire;
 				}
