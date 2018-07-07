@@ -4,6 +4,7 @@
     xmlns:local="using:ECAT.UWP"
 	xmlns:converters="using:UWPEnhanced.ValueConverters">
 
+
 	<Style TargetType="local:WireTC">
 		<Setter Property="Template">
 			<Setter.Value>
@@ -13,7 +14,7 @@
 						<Grid.Resources>
 							<local:PlanePositionCollectionToPointCollectionConverter x:Key="PointsConverter"/>
 							<local:PlanePositionCollectionToOutermostPointCollectionConverter x:Key="BorderConverter"/>
-							<converters:OppositeDoubleConverter x:Key="OppositeConverter"/>							
+							<converters:OppositeDoubleConverter x:Key="OppositeConverter"/>
 						</Grid.Resources>
 
 						<!-- Context menu with delete button -->
@@ -31,7 +32,7 @@
 
 						<!-- Polyline that visualizes the wire -->
 						<Polyline Stroke="{StaticResource BlackBrush}"
-							StrokeThickness="6"
+							StrokeThickness="5"
 							StrokeMiterLimit="0"
 							Points="{Binding Wire.DefiningPoints, Converter={StaticResource PointsConverter}}"
 							StrokeLineJoin="Round"/>
@@ -40,7 +41,14 @@
 						<Polygon Points="{Binding Wire.DefiningPoints, Converter={StaticResource BorderConverter}}" 
 							Stroke="{Binding MenuPresentBorderBrush, RelativeSource={RelativeSource Mode=TemplatedParent}}"
 							StrokeThickness="1"/>
-						
+
+						<local:WireSocketTC Position="{Binding WireBeginning}"
+							/>
+
+						<local:WireSocketTC Position="{Binding WireEnding}"
+							/>
+
+
 					</Grid>
 				</ControlTemplate>
 			</Setter.Value>
