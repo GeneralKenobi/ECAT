@@ -49,7 +49,7 @@ namespace ECAT.Core
 		/// <param name="mergeToNode">Node of the instace on which the method was called that will assume the other end
 		/// of <paramref name="wire"/></param>
 		/// <param name="mergeFromNode">Node of <paramref name="wire"/> that will be lost (it will become an intermediate point)</param>
-		void MergeWith(IWire wire, IPartialNode mergeToNode, IPartialNode mergeFromNode);
+		void MergeWith(IWire wire, bool mergeToEnd, bool mergeFromEnd);
 
 		/// <summary>
 		/// Adds a new intermediate piont to the wire
