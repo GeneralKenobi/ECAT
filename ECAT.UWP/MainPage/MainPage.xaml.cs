@@ -2,6 +2,7 @@
 using ECAT.Design;
 using ECAT.ViewModel;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -79,7 +80,7 @@ namespace ECAT.UWP
 		{
 			var pointerCoord = e.GetPosition(sender as UIElement);
 
-			AppViewModel.Singleton.DesignAreaClickedCommand.Execute(new PlanePosition(pointerCoord.X, -pointerCoord.Y));
+			AppViewModel.Singleton.DesignVM.DesignAreaClickedCommand.Execute(new PlanePosition(pointerCoord.X, -pointerCoord.Y));
 		}
 
 		#endregion
@@ -162,6 +163,23 @@ namespace ECAT.UWP
 			//		}
 			//		break;
 			//}
+		}
+
+		/// <summary>
+		/// Handles key presses
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void KeyPressed(object sender, KeyRoutedEventArgs e)
+		{
+			if(e.Key == VirtualKey.Escape)
+			{
+				AppViewModel.Singleton.DesignVM.StopActionCommand.Execute(null);
+			}
+			if (e.Key == VirtualKey.W)
+			{
+				AppViewModel.Singleton.DesignVM.PrepareToPlaceLooseWireCommand.Execute(null);
+			}
 		}
 
 		#endregion
