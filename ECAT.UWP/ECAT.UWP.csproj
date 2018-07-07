@@ -104,6 +104,7 @@
     <Compile Include="Design\Components\Socket\SocketTC.cs" />
     <Compile Include="Design\Components\Wire\PlanePositionCollectionToOutermostPointCollectionConverter.cs" />
     <Compile Include="Design\Components\Wire\PlanePositionCollectionToPointCollectionConverter.cs" />
+    <Compile Include="Design\Components\Wire\WireSocket\WireSocketTC.cs" />
     <Compile Include="Design\Components\Wire\WireTC.cs" />
     <Compile Include="IoCSetup\IoCSetup.cs" />
     <Compile Include="MainPage\IBaseComponentToComponentViewModelConverter.cs" />
@@ -154,6 +155,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Design\Components\Socket\SocketTCStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Design\Components\Wire\WireSocket\WireSocketTCStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
