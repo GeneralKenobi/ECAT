@@ -2,28 +2,35 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:ECAT.UWP"
-	xmlns:xaml="using:UWPEnhanced.Xaml">
+	xmlns:xaml="using:UWPEnhanced.Xaml"
+	xmlns:converters="using:UWPEnhanced.ValueConverters">
 
+	<converters:OppositeDoubleConverter x:Key="Opposite"/>
+	<converters:ProductConverter x:Key="Product"/>
 
 
 	<Style TargetType="local:SocketTC">
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="local:SocketTC">
-					<Grid Width="12"
-						Height="12">
+				
+					<Ellipse Fill="{StaticResource BlackBrush}"
+						Width="{Binding PartialNode.Radius, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource Product}, ConverterParameter=2}"
+						Height="{Binding PartialNode.Radius, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource Product}, ConverterParameter=2}">
 
-						<xaml:VisualAttachments.AttachedVisuals>							
+						<xaml:VisualAttachments.AttachedVisuals>
 							<xaml:PointerTriggerCommand Command="{Binding SocketClickedCommand}"			
 								CommandParameter="{Binding PartialNode, RelativeSource={RelativeSource Mode=TemplatedParent}}"
 								PointerEvent="PointerReleased"/>
-						</xaml:VisualAttachments.AttachedVisuals>						
+						</xaml:VisualAttachments.AttachedVisuals>
 
-						<Ellipse Fill="{StaticResource BlackBrush}"/>
-						<!--<Ellipse Margin="2"
-							Fill="{StaticResource GrayBrush}"/>-->
-						<!--Fill="{Binding SocketState, Converter={StaticResource BackgroundConverter}}"/>-->
-					</Grid>
+						<Ellipse.RenderTransform>
+							<TranslateTransform X="{Binding PartialNode.Radius, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource Opposite}}"
+								Y="{Binding PartialNode.Radius, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource Opposite}}"/>
+						</Ellipse.RenderTransform>
+
+					</Ellipse>
+					
 				</ControlTemplate>
 			</Setter.Value>
 		</Setter>
