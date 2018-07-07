@@ -37,7 +37,7 @@ namespace ECAT.UWP
 		#region PartialNode Dependency Property
 
 		/// <summary>
-		/// 
+		/// Partial node represented by this <see cref="SocketTC"/>
 		/// </summary>
 		public IPartialNode PartialNode
 		{
