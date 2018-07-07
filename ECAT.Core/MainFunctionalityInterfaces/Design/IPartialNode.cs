@@ -19,6 +19,11 @@ namespace ECAT.Core
 		/// </summary>
 		IPlanePosition Position { get; }
 
+		/// <summary>
+		/// The radius of the partial node
+		/// </summary>
+		double Radius { get; }
+
 		#endregion
 	}
 }

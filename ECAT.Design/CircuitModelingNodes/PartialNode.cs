@@ -54,6 +54,11 @@ namespace ECAT.Design
 		/// </summary>
 		public IPlanePosition Position { get; }
 
+		/// <summary>
+		/// Radius of the partial node
+		/// </summary>
+		public double Radius => 6;
+
 		#endregion
 	}
 }
