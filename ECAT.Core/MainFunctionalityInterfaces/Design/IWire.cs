@@ -1,19 +1,21 @@
-﻿using CSharpEnhanced.Maths;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Numerics;
-using System.Text;
 
 namespace ECAT.Core
 {
 	/// <summary>
 	/// Interface for wires for circuit design
 	/// </summary>
-    public interface IWire : INotifyPropertyChanged, IDisposable
+	public interface IWire : INotifyPropertyChanged, IDisposable
 	{
 		#region Properties
+
+		/// <summary>
+		/// Radius of the sockets present on a wire
+		/// </summary>
+		double WireSocketRadius { get; }
 
 		/// <summary>
 		/// The beginning of the wire

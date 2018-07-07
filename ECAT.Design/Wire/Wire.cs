@@ -48,6 +48,11 @@ namespace ECAT.Design
 		#region Private properties
 
 		/// <summary>
+		/// Radius of the sockets present on a wire
+		/// </summary>
+		public double WireSocketRadius => 6;
+
+		/// <summary>
 		/// Backing store for <see cref="N1"/>
 		/// </summary>
 		private IPartialNode _N1 { get; set; }
@@ -101,12 +106,12 @@ namespace ECAT.Design
 						_DefiningPoints.Remove(_N1.Position);
 					}
 
-					_N1 = value;
+					_N1 = value;					
 
-					if(_N1 != null)
+					if (_N1 != null)
 					{
 						_DefiningPoints.Insert(0, _N1.Position);
-						_N1.Position.InternalStateChanged += (s, e) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DefiningPoints)));
+						_N1.Position.InternalStateChanged += (s, e) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DefiningPoints)));						
 					}
 				}
 			}
@@ -132,7 +137,7 @@ namespace ECAT.Design
 					if (_N2 != null)
 					{
 						_DefiningPoints.Insert(_DefiningPoints.Count, _N2.Position);
-						_N2.Position.InternalStateChanged += (s, e) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DefiningPoints)));
+						_N2.Position.InternalStateChanged += (s, e) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DefiningPoints)));						
 					}
 				}
 			}
