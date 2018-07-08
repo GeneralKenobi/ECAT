@@ -37,7 +37,14 @@
 							StrokeMiterLimit="0"
 							Points="{Binding Wire.DefiningPoints, Converter={StaticResource PointsConverter}}"
 							StrokeLineJoin="Round"/>
-					
+
+						<Polyline Name="WireHitbox"
+							Stroke="Transparent"
+							StrokeThickness="25"
+							StrokeMiterLimit="0"
+							Points="{Binding Wire.DefiningPoints, Converter={StaticResource PointsConverter}}"
+							StrokeLineJoin="Round"/>
+
 						<!-- Polygon that acts as a border around the wire when context menu is present -->
 						<Polygon Points="{Binding Wire.DefiningPoints, Converter={StaticResource BorderConverter}}" 
 							Stroke="{Binding MenuPresentBorderBrush, RelativeSource={RelativeSource Mode=TemplatedParent}}"
