@@ -17,28 +17,36 @@
 						<Border.Resources>
 							<converters:OppositeDoubleConverter x:Key="Opposite"/>
 							<converters:ProductConverter x:Key="Product"/>
+							<converters:QuotientConverter x:Key="Quotient"/>
 						</Border.Resources>
-
-						<xaml:VisualAttachments.AttachedVisuals>
-							<xaml:PointerTriggerCommand Command="{Binding SocketClickedCommand}"			
-							CommandParameter="{Binding PartialNode, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-							PointerEvent="PointerReleased"/>
-						</xaml:VisualAttachments.AttachedVisuals>
 
 						<Border.RenderTransform>
 							<TranslateTransform	X="{Binding Position.X, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-								Y="{Binding Position.Y, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource Opposite}}"/>
+									Y="{Binding Position.Y, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource Opposite}}"/>
 						</Border.RenderTransform>
 
-						<Ellipse Fill="{StaticResource BlackBrush}"
-							Width="{Binding Wire.WireSocketRadius, Converter={StaticResource Product}, ConverterParameter=2}"
-							Height="{Binding Wire.WireSocketRadius, Converter={StaticResource Product}, ConverterParameter=2}">
-							<Ellipse.RenderTransform>
-								<TranslateTransform X="{Binding Wire.WireSocketRadius, Converter={StaticResource Opposite}}"
-									Y="{Binding Wire.WireSocketRadius, Converter={StaticResource Opposite}}"/>
-							</Ellipse.RenderTransform>
-						</Ellipse>
+						<Border Background="Transparent"
+							Width="{Binding HitboxLength}"
+							Height="{Binding HitboxLength}">
 
+							<Border.RenderTransform>
+								<TranslateTransform X="{Binding HitboxLength, Converter={StaticResource Quotient}, ConverterParameter=-2}"
+								Y="{Binding HitboxLength, Converter={StaticResource Quotient}, ConverterParameter=-2}"/>
+							</Border.RenderTransform>
+
+							<Ellipse Fill="{StaticResource BlackBrush}"
+								Width="{Binding Wire.WireSocketRadius, Converter={StaticResource Product}, ConverterParameter=2}"
+								Height="{Binding Wire.WireSocketRadius, Converter={StaticResource Product}, ConverterParameter=2}">
+
+								<xaml:VisualAttachments.AttachedVisuals>
+									<xaml:PointerTriggerCommand Command="{Binding WireSocketClickedCommand}"			
+										CommandParameter="{Binding PositionOnWire, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+										PointerEvent="PointerReleased"/>
+								</xaml:VisualAttachments.AttachedVisuals>
+
+							</Ellipse>
+
+						</Border>
 					</Border>
 				</ControlTemplate>
 			</Setter.Value>
