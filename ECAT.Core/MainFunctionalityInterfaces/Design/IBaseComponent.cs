@@ -31,6 +31,11 @@ namespace ECAT.Core
 		/// </summary>
 		double Height { get; }
 
+		/// <summary>
+		/// Radius of sockets on the component
+		/// </summary>
+		double SocketRadius { get; }
+
 		#endregion
 
 		#region Methods

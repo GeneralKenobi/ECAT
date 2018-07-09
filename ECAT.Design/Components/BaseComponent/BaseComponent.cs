@@ -36,6 +36,11 @@ namespace ECAT.Design
 		#region Public properties
 
 		/// <summary>
+		/// Radius of sockets on the component
+		/// </summary>
+		public double SocketRadius => 6;
+
+		/// <summary>
 		/// The center of the component
 		/// </summary>
 		public IPlanePosition Center
