@@ -30,19 +30,20 @@
 
 							</MenuFlyout>
 						</Grid.ContextFlyout>
+						
 
-						<!-- Polyline that visualizes the wire -->
-						<Polyline Stroke="{StaticResource BlackBrush}"
-							StrokeThickness="5"
+						<Polyline Stroke="Transparent"
+							StrokeThickness="{Binding HitboxLength}"
 							StrokeMiterLimit="0"
-							Points="{Binding Wire.DefiningPoints, Converter={StaticResource PointsConverter}}"
+							Points="{Binding Wire.ConstructionPoints, Converter={StaticResource PointsConverter}}"
 							StrokeLineJoin="Round"/>
 
-						<Polyline Name="WireHitbox"
-							Stroke="Transparent"
-							StrokeThickness="25"
+						<!-- Polyline that visualizes the wire -->
+						<Polyline Name="WirePolyline"
+							Stroke="{StaticResource BlackBrush}"
+							StrokeThickness="5"
 							StrokeMiterLimit="0"
-							Points="{Binding Wire.DefiningPoints, Converter={StaticResource PointsConverter}}"
+							Points="{Binding Wire.ConstructionPoints, Converter={StaticResource PointsConverter}}"
 							StrokeLineJoin="Round"/>
 
 						<!-- Polygon that acts as a border around the wire when context menu is present -->
@@ -50,33 +51,13 @@
 							Stroke="{Binding MenuPresentBorderBrush, RelativeSource={RelativeSource Mode=TemplatedParent}}"
 							StrokeThickness="1"/>
 
-						<local:WireSocketTC Position="{Binding WireBeginning}">
+						<!-- Socket on the beginning of the wire -->
+						<local:WireSocketTC Position="{Binding Wire.Beginning}"
+								PositionOnWire="False"/>
 
-							<xaml:VisualAttachments.AttachedVisuals>
-								<xaml:PointerTriggerCommand Command="{Binding WireSocketClickedCommand}"									
-									PointerEvent="PointerReleased">
-									<xaml:PointerTriggerCommand.CommandParameter>
-										<x:Boolean>False</x:Boolean>
-									</xaml:PointerTriggerCommand.CommandParameter>	
-								</xaml:PointerTriggerCommand>
-							</xaml:VisualAttachments.AttachedVisuals>
-
-						</local:WireSocketTC>
-
-						<local:WireSocketTC Position="{Binding WireEnding}">
-
-							<xaml:VisualAttachments.AttachedVisuals>
-								<xaml:PointerTriggerCommand Command="{Binding WireSocketClickedCommand}"
-									PointerEvent="PointerReleased">
-									<xaml:PointerTriggerCommand.CommandParameter>
-										<x:Boolean>True</x:Boolean>
-									</xaml:PointerTriggerCommand.CommandParameter>
-								</xaml:PointerTriggerCommand>								
-							</xaml:VisualAttachments.AttachedVisuals>
-
-						</local:WireSocketTC>
-							
-
+						<!-- Socket at the end of the wire -->
+						<local:WireSocketTC Position="{Binding Wire.Ending}"
+							PositionOnWire="True"/>
 
 					</Grid>
 				</ControlTemplate>

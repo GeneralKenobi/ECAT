@@ -21,7 +21,8 @@ namespace ECAT.UWP
 		{
 			this.DefaultStyleKey = typeof(WireTC);
 			this.DataContextChanged += OnDataContextChanged;
-			Loaded += OnLoaded;
+
+			this.Tapped += OnWireTapped;
 		}
 
 		#endregion
@@ -53,18 +54,6 @@ namespace ECAT.UWP
 		}
 
 		/// <summary>
-		/// Looks for the hitbox control of the wire and subscribes to its Tapped event
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void OnLoaded(object sender, RoutedEventArgs e)
-		{
-			var line = this.FindChild("WireHitbox");
-
-			line.Tapped += OnWireTapped;
-		}
-
-		/// <summary>
 		/// Sets the handled flag, extracts click position and executes <see cref="_WireClickedCommand"/>
 		/// </summary>
 		/// <param name="sender"></param>
@@ -73,11 +62,14 @@ namespace ECAT.UWP
 		{
 			e.Handled = true;
 
-			// Because the wire is considered to be positioned 0,0 relative to the design area (it's position is set using a
-			// render transform), the click position relative to the control is the position of the click relative to design area
-			var clickPosition = e.GetPosition(this);
+			if(e.OriginalSource is FrameworkElement element && element.Name == "WirePolyline")
+			{ 
+				// Because the wire is considered to be positioned 0,0 relative to the design area (it's position is set using a
+				// render transform), the click position relative to the control is the position of the click relative to design area
+					var clickPosition = e.GetPosition(this);
 
-			_WireClickedCommand?.Execute(new PlanePosition(clickPosition.X, -clickPosition.Y));
+				_WireClickedCommand?.Execute(new PlanePosition(clickPosition.X, -clickPosition.Y));
+			}
 		}
 
 		#endregion
