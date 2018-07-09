@@ -4,6 +4,7 @@ using System;
 using System.Collections.Specialized;
 using System.Windows.Input;
 using Autofac;
+using System.Diagnostics;
 
 namespace ECAT.ViewModel
 {
@@ -23,8 +24,7 @@ namespace ECAT.ViewModel
 
 			RemoveWireCommand = new RelayCommand(RemoveWire);
 			WireSocketClickedCommand = new RelayParametrizedCommand(WireSocketClicked);
-
-			(Wire.DefiningPoints as INotifyCollectionChanged).CollectionChanged += OnWireDefiningPointsChanged;			
+			WireClickedCommand = new RelayParametrizedCommand(WireClicked);
 		}
 
 		#endregion
@@ -41,6 +41,11 @@ namespace ECAT.ViewModel
 		/// </summary>
 		public ICommand WireSocketClickedCommand { get; }
 
+		/// <summary>
+		/// Handles clicks made on a wire
+		/// </summary>
+		public ICommand WireClickedCommand { get; }
+
 		#endregion
 
 		#region Public properties
@@ -51,20 +56,26 @@ namespace ECAT.ViewModel
 		public IWire Wire { get; private set; }
 
 		/// <summary>
-		/// Point that the wire begins on
+		/// Length of the hitbox for sockets and wire stroke
 		/// </summary>
-		public IPlanePosition WireBeginning => Wire != null && Wire.DefiningPoints.Count > 0 ?
-			Wire.DefiningPoints[0] : IoC.Container.Resolve<IPlanePositionFactory>().Construct();
-
-		/// <summary>
-		/// Point the wire ends on
-		/// </summary>
-		public IPlanePosition WireEnding => Wire != null && Wire.DefiningPoints.Count > 0 ?
-			Wire.DefiningPoints[Wire.DefiningPoints.Count - 1] : IoC.Container.Resolve<IPlanePositionFactory>().Construct();
+		public double HitboxLength => AppViewModel.Singleton.RoundTo;
 
 		#endregion
 
 		#region Private methods
+
+		/// <summary>
+		/// Method for <see cref="WireClickedCommand"/>
+		/// </summary>
+		/// <param name="parameter"></param>
+		private void WireClicked(object parameter)
+		{
+			if (parameter is IPlanePosition position)
+			{
+				AppViewModel.Singleton.DesignVM.DesignManager.WireClickedHandler(Wire, position);
+			}
+		}
+
 
 		/// <summary>
 		/// Method for <see cref="WireSocketClickedCommand"/>
@@ -86,16 +97,6 @@ namespace ECAT.ViewModel
 			AppViewModel.Singleton.DesignVM.DesignManager.RemoveWire(Wire);
 			Wire = null;
 		}
-
-		/// <summary>
-		/// Method invoked when DefiningPoints of the Wire change; invkes PropertyChanged event for <see cref="WireBeginning"/> and
-		/// <see cref="WireEnding"/>
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void OnWireDefiningPointsChanged(object sender, NotifyCollectionChangedEventArgs e) =>
-			InvokePropertyChanged(nameof(WireEnding), nameof(WireBeginning));
-
 
 		#endregion
 	}
