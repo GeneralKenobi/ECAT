@@ -1,9 +1,11 @@
-﻿using ECAT.Core;
+﻿using Autofac;
+using ECAT.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 
 namespace ECAT.Design
@@ -21,8 +23,11 @@ namespace ECAT.Design
 		/// </summary>
 		public Wire()
 		{
-			_DefiningPoints = new ObservableCollection<IPlanePosition>();
+			_DefiningPoints.CollectionChanged += DefiningPointsChanged;
 			DefiningPoints = new ReadOnlyObservableCollection<IPlanePosition>(_DefiningPoints);
+			ConstructionPoints = new ReadOnlyObservableCollection<IPlanePosition>(_ConstructionPoints);
+
+			_ConstructionPoints.CollectionChanged += OnConstructionPointsChanged;
 		}
 
 		#endregion
@@ -36,112 +41,37 @@ namespace ECAT.Design
 
 		#endregion
 
-		#region Private members
-
-		/// <summary>
-		/// Backing store for <see cref="_DefiningPoints"/>
-		/// </summary>
-		private ObservableCollection<IPlanePosition> mDefiningPoints;
-
-		#endregion
-
 		#region Private properties
-
+		
 		/// <summary>
 		/// Radius of the sockets present on a wire
 		/// </summary>
 		public double WireSocketRadius => 6;
 
 		/// <summary>
-		/// Backing store for <see cref="N1"/>
-		/// </summary>
-		private IPartialNode _N1 { get; set; }
-
-		/// <summary>
-		/// Backing store for <see cref="N2"/>
-		/// </summary>
-		private IPartialNode _N2 { get; set; }
-
-		/// <summary>
 		/// Backing store for <see cref="DefiningPoints"/>
 		/// </summary>
-		private ObservableCollection<IPlanePosition> _DefiningPoints
-		{
-			get => mDefiningPoints;
-			set
-			{
-				if(mDefiningPoints != value)
-				{
-					if(mDefiningPoints != null)
-					{
-						mDefiningPoints.CollectionChanged -= DefiningPointsChanged;
-					}
+		private ObservableCollection<IPlanePosition> _DefiningPoints { get; } = new ObservableCollection<IPlanePosition>();
+		
+		/// <summary>
+		/// Backing store for <see cref="ConstructionPoints"/>
+		/// </summary>
+		private ObservableCollection<IPlanePosition> _ConstructionPoints { get; } = new ObservableCollection<IPlanePosition>();
 
-					mDefiningPoints = value;
-
-					if(mDefiningPoints != null)
-					{
-						mDefiningPoints.CollectionChanged += DefiningPointsChanged;
-					}
-				}
-			}
-		}
-	
 		#endregion
 
 		#region Public properties
 
 		/// <summary>
-		/// The first end of the wire (may be floating)
+		/// The first end of the wire
 		/// </summary>
-		public IPartialNode N1
-		{
-			get => _N1;
-			set
-			{
-				if(_N1 != value)
-				{
-					if(_N1 != null)
-					{
-						_DefiningPoints.Remove(_N1.Position);
-					}
-
-					_N1 = value;					
-
-					if (_N1 != null)
-					{
-						_DefiningPoints.Insert(0, _N1.Position);
-						_N1.Position.InternalStateChanged += (s, e) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DefiningPoints)));						
-					}
-				}
-			}
-		}
+		public IPlanePosition Beginning => _ConstructionPoints.Count > 0 ? _ConstructionPoints[0] : new PlanePosition();
 
 		/// <summary>
-		/// The second end of the wire (may be floating)
+		/// The second end of the wire
 		/// </summary>
-		public IPartialNode N2
-		{
-			get => _N2;
-			set
-			{
-				if (_N2 != value)
-				{
-					if (_N2 != null)
-					{
-						_DefiningPoints.Remove(_N2.Position);
-					}
-
-					_N2 = value;
-
-					if (_N2 != null)
-					{
-						_DefiningPoints.Insert(_DefiningPoints.Count, _N2.Position);
-						_N2.Position.InternalStateChanged += (s, e) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DefiningPoints)));						
-					}
-				}
-			}
-		}
+		public IPlanePosition Ending => _ConstructionPoints.Count > 0 ?
+				_ConstructionPoints[_ConstructionPoints.Count - 1] : new PlanePosition();
 
 		/// <summary>
 		/// List with all wires that are connected to this wire somewhere in the middle
@@ -149,10 +79,15 @@ namespace ECAT.Design
 		public IList<IWire> ConnectedWires { get; set; } = new List<IWire>();
 
 		/// <summary>
-		/// Collection of points that define the intermediate points of the wire. Point indexed 0 is the neighbour of <see cref="N1"/>,
-		/// point at the last index is the neighbour of <see cref="N2"/>
+		/// Collection of points that define the intermediate points of the wire. Point indexed 0 is the neighbour of <see cref="Beginning"/>,
+		/// point at the last index is the neighbour of <see cref="Ending"/>
 		/// </summary>
 		public ReadOnlyObservableCollection<IPlanePosition> DefiningPoints { get; }
+
+		/// <summary>
+		/// Collection of points that should be interpolated with a polyline to form a proper wire on the screen
+		/// </summary>
+		public ReadOnlyObservableCollection<IPlanePosition> ConstructionPoints { get; }
 
 		#endregion
 
@@ -166,7 +101,7 @@ namespace ECAT.Design
 			foreach(var wire in ConnectedWires)
 			{
 				wire.ConnectedWires.Remove(this);
-			}			
+			}
 		}
 
 		/// <summary>
@@ -183,39 +118,56 @@ namespace ECAT.Design
 
 			// Clear the connections from the old wire
 			wire.ConnectedWires.Clear();
-
-			// Add the points from the merged wire to this instance
-			// If the wire is merged from end
-			if(mergeFromEnd)
+						
+			if (mergeFromEnd)
 			{
-				// Then the points need to be added from end to beginning
-				for(int i=wire.DefiningPoints.Count - 1; i >= 0; --i)
+				// If the wire is merged from end
+
+				// The defining points need to be added starting from the end
+				for (int i = wire.DefiningPoints.Count - 1; i >= 0; --i)
 				{
 					// If the merging is made to the end, then the points need to be added to the end, otherwise to the beginning
 					_DefiningPoints.Insert(mergeToEnd ? _DefiningPoints.Count : 0, wire.DefiningPoints[i]);
 				}
+
+				// Now for the construction points (to keep the original shape they'll be transfered over from the merged wire)
+				
+				// First of all insert a point that will join merged ends of both wires
+				// Add the point to the merged to end
+				_ConstructionPoints.Insert(mergeToEnd ? _ConstructionPoints.Count : 0,
+					// Take the X from the merged to end
+					new PlanePosition(_ConstructionPoints[mergeToEnd ? _ConstructionPoints.Count - 1 : 0].X,
+					// And take Y from the merged from end
+					wire.ConstructionPoints[wire.ConstructionPoints.Count - 1].Y));
+
+				// Now for the rest of the points
+				for (int i = wire.ConstructionPoints.Count - 1; i >= 0; --i)				
+				{
+					// If the merging is made to the end, then the points need to be added to the end, otherwise to the beginning
+					_ConstructionPoints.Insert(mergeToEnd ? _ConstructionPoints.Count : 0, wire.ConstructionPoints[i]);
+				}
 			}
 			else
 			{
-				// Otherwise the points need to be added from beginning to end
+				// This case is the same except the loops are iterated from 0 to max
+
 				for (int i = 0; i < wire.DefiningPoints.Count; ++i)
 				{
-					// If the merging is made to the end, then the points need to be added to the end, otherwise to the beginning
 					_DefiningPoints.Insert(mergeToEnd ? _DefiningPoints.Count : 0, wire.DefiningPoints[i]);
+				}
+
+				_ConstructionPoints.Insert(mergeToEnd ? _ConstructionPoints.Count : 0,
+					new PlanePosition(_ConstructionPoints[mergeToEnd ? _ConstructionPoints.Count - 1 : 0].X,
+					// And here the y coordinate is taken from the beginning (the merged from end)
+					wire.ConstructionPoints[0].Y));
+
+				for (int i = 0; i < wire.ConstructionPoints.Count; ++i)
+				{
+					_ConstructionPoints.Insert(mergeToEnd ? _ConstructionPoints.Count : 0, wire.ConstructionPoints[i]);
 				}
 			}
 
-			// Assign the new ending for the end which the wire was merged to
-			if (mergeToEnd)
-			{
-				_N2 = mergeFromEnd ? wire.N1 : wire.N2;
-			}
-			else
-			{
-				_N1 = mergeFromEnd ? wire.N1 : wire.N2;
-			}
-
-			//PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DefiningPoints)));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ConstructionPoints)));
 		}
 
 		/// <summary>
@@ -224,19 +176,88 @@ namespace ECAT.Design
 		/// <param name="point"></param>
 		public void AddIntermediatePoint(IPlanePosition point)
 		{
-			throw new NotImplementedException();
+			// If there are not enough coords to add intermediate points, throw an exception
+			if (DefiningPoints.Count < 2)
+			{
+				throw new Exception("Can't add an intermediate point to a wire with less than 2 coords");
+			}
+
+			// If the point that we add is already on the wire just return
+			if(ConstructionPoints.Contains(point))
+			{
+				return;
+			}
+
+			for (int i = 0; i < ConstructionPoints.Count - 1; ++i)
+			{
+				// If the point lies on the line between two subsequent points
+				if ((ConstructionPoints[i].X == point.X && ConstructionPoints[i + 1].X == point.X &&
+					(point.Y - ConstructionPoints[i].Y) * (point.Y - ConstructionPoints[i + 1].Y) < 0) ||
+					(ConstructionPoints[i].Y == point.Y && ConstructionPoints[i + 1].Y == point.Y &&
+					(point.X - ConstructionPoints[i].X) * (point.X - ConstructionPoints[i + 1].X) < 0))
+				{
+					_ConstructionPoints.Insert(i + 1, point);
+					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ConstructionPoints)));
+					return;
+				}
+			}
+
+			throw new Exception("The given position doesn't lie on the wire");
 		}
 
 		/// <summary>
 		/// Adds a new point to the wire at beginning/end
 		/// </summary>
 		/// <param name="point"></param>
-		public void AddPoint(IPlanePosition point, bool addAtEnd = true) =>
-			_DefiningPoints.Insert(addAtEnd ? _DefiningPoints.Count : 0, point);
+		public void AddPoint(IPlanePosition point, bool addAtEnd = true)
+		{
+			if(addAtEnd)
+			{
+				AddPointAtEnd(point);
+			}
+			else
+			{
+				AddPointAtBeginning(point);
+			}
+
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ConstructionPoints)));
+		}
 
 		#endregion
 
 		#region Private methods
+
+		/// <summary>
+		/// Adds a point to the end of the wire, adds necessary points to <see cref="_ConstructionPoints"/>
+		/// </summary>
+		/// <param name="point"></param>
+		private void AddPointAtEnd(IPlanePosition point)
+		{
+			_DefiningPoints.Add(point);
+
+			if (_ConstructionPoints.Count > 0)
+			{
+				_ConstructionPoints.Add(new PlanePosition(point.X, _ConstructionPoints[_ConstructionPoints.Count - 1].Y));
+			}
+
+			_ConstructionPoints.Add(point);
+		}
+
+		/// <summary>
+		/// Adds a point to the beginning of the wire, adds necessary points to <see cref="_ConstructionPoints"/>
+		/// </summary>
+		/// <param name="point"></param>
+		private void AddPointAtBeginning(IPlanePosition point)
+		{
+			_DefiningPoints.Insert(0, point);
+
+			if (_ConstructionPoints.Count > 0)
+			{
+				_ConstructionPoints.Insert(0, new PlanePosition(point.X, _ConstructionPoints[0].Y));
+			}
+
+			_ConstructionPoints.Insert(0, point);
+		}
 
 		/// <summary>
 		/// Callback for changes in <see cref="_DefiningPoints"/>, raises <see cref="PropertyChanged"/> on <see cref="DefiningPoints"/>
@@ -245,6 +266,17 @@ namespace ECAT.Design
 		/// <param name="e"></param>
 		private void DefiningPointsChanged(object sender, NotifyCollectionChangedEventArgs e) => PropertyChanged?.Invoke(
 			this, new PropertyChangedEventArgs(nameof(DefiningPoints)));
+
+		/// <summary>
+		/// Callback for ConstructionPointsChanged
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnConstructionPointsChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Beginning)));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Ending)));
+		}
 
 		#endregion
 	}
