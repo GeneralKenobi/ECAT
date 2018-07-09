@@ -241,7 +241,8 @@
     <Reference Include="CSharpEnhanced">
       <HintPath>..\..\CSharpEnhanced\CSharpEnhanced\bin\Debug\netstandard2.0\CSharpEnhanced.dll</HintPath>
     </Reference>
-    <Reference Include="UWPEnhanced">
+    <Reference Include="UWPEnhanced, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\UWPEnhanced\UWPEnhanced\bin\Debug\UWPEnhanced.dll</HintPath>
     </Reference>
   </ItemGroup>
