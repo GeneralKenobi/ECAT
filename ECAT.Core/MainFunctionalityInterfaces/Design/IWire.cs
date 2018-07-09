@@ -20,12 +20,12 @@ namespace ECAT.Core
 		/// <summary>
 		/// The beginning of the wire
 		/// </summary>
-		IPartialNode N1 { get; set; }
+		IPlanePosition Beginning { get; }
 
 		/// <summary>
 		/// The end of the wire
 		/// </summary>
-		IPartialNode N2 { get; set; }
+		IPlanePosition Ending { get; }
 
 		/// <summary>
 		/// Collection of all wires connected to this instance
@@ -34,9 +34,14 @@ namespace ECAT.Core
 
 		/// <summary>
 		/// Collection of points that define the corners of the wire on the plane.
-		/// Element at index 0 is a neighbour of <see cref="N1"/>, element at the last index is a neighbour of <see cref="N2"/>
+		/// Element at index 0 is a neighbour of <see cref="Beginning"/>, element at the last index is a neighbour of <see cref="Ending"/>
 		/// </summary>
 		ReadOnlyObservableCollection<IPlanePosition> DefiningPoints { get; }
+
+		/// <summary>
+		/// Collection of points that should be interpolated with a polyline to form a proper wire on the screen
+		/// </summary>
+		ReadOnlyObservableCollection<IPlanePosition> ConstructionPoints { get; }
 
 		#endregion
 
