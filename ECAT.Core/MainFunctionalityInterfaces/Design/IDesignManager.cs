@@ -96,8 +96,8 @@ namespace ECAT.Core
 		/// <summary>
 		/// Handles clicks onto sockets
 		/// </summary>
-		/// <param name="node"></param>
-		void SocketClickedHandler(IPartialNode node);
+		/// <param name="position"></param>
+		void SocketClickedHandler(IPlanePosition position);
 
 		/// <summary>
 		/// Adds a new point to the currently placed wire
@@ -122,6 +122,12 @@ namespace ECAT.Core
 		/// Creates and places a new, loose wire on the given position
 		/// </summary>
 		void PlaceLooseWire(IPlanePosition position);
+
+		/// <summary>
+		/// Handles clicks performed on a wire
+		/// </summary>
+		/// <param name="wire"></param>
+		void WireClickedHandler(IWire wire, IPlanePosition clickPosition);
 
 		#endregion
 	}
