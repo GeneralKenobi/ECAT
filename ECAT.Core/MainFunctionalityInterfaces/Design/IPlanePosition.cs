@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
-using System.Text;
 
 namespace ECAT.Core
 {
 	/// <summary>
 	/// Interface for a class acting as a coordinate
 	/// </summary>
-    public interface IPlanePosition : INotifyPropertyChanged
+	public interface IPlanePosition : INotifyPropertyChanged
     {
 		#region Events
 
@@ -46,6 +44,16 @@ namespace ECAT.Core
 		/// Final Y coordinate of this position (with applied shift)
 		/// </summary>
 		double Y { get; }
+
+		#endregion
+
+		#region Methods
+
+		/// <summary>
+		/// Creates and returns a deep clone of the instance
+		/// </summary>
+		/// <returns></returns>
+		IPlanePosition DeepClone();
 
 		#endregion
 	}

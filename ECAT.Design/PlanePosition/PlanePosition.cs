@@ -1,4 +1,5 @@
-﻿using CSharpEnhanced.Maths;
+﻿using Autofac;
+using CSharpEnhanced.Maths;
 using ECAT.Core;
 using System;
 using System.ComponentModel;
@@ -154,7 +155,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// All coordinates are rounded to multiples of this value
 		/// </summary>
-		public double RoundTo => 25;
+		public static double RoundTo { get; } = IoC.Container.Resolve<IPlanePositionFactory>().RoundTo;
 
 		#endregion
 
@@ -164,6 +165,16 @@ namespace ECAT.Design
 		/// Invokes the <see cref="InternalStateChanged"/> event
 		/// </summary>
 		private void InvokeInternalStateChanged() => InternalStateChanged?.Invoke(this, EventArgs.Empty);
+
+		#endregion
+
+		#region Public methods
+
+		/// <summary>
+		/// Creates and returns a deep clone of the instance
+		/// </summary>
+		/// <returns></returns>
+		public IPlanePosition DeepClone() => new PlanePosition(Absolute.Real, Absolute.Imaginary, Shift.Real, Shift.Imaginary);
 
 		#endregion
 	}
