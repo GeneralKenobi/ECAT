@@ -16,8 +16,8 @@ namespace ECAT.Design
 		/// </summary>
 		public TwoTerminal()
 		{
-			TerminalA = new PartialNode(_TerminalAShift);
-			TerminalB = new PartialNode(_TerminalBShift);
+			TerminalA = new PlanePosition(Complex.Zero, _TerminalAShift);
+			TerminalB = new PlanePosition(Complex.Zero, _TerminalBShift);
 		}
 
 		#endregion
@@ -32,17 +32,17 @@ namespace ECAT.Design
 		/// <summary>
 		/// Height of the control in circuit design in the default, horizontal position
 		/// </summary>
-		public override double Height => 50;		
+		public override double Height => 50;
 
 		/// <summary>
 		/// One of the terminals in this two-terminal
 		/// </summary>
-		public PartialNode TerminalA { get; }
+		public IPlanePosition TerminalA { get; }
 
 		/// <summary>
 		/// One of the terminals in this two-terminal
 		/// </summary>
-		public PartialNode TerminalB { get; }
+		public IPlanePosition TerminalB { get; }
 
 		#endregion
 
@@ -67,8 +67,8 @@ namespace ECAT.Design
 		/// </summary>
 		protected override void UpdateAbsolutePartialNodePositions()
 		{
-			TerminalA.Position.Absolute = new Complex(Center.X, Center.Y);
-			TerminalB.Position.Absolute = new Complex(Center.X, Center.Y);
+			TerminalA.Absolute = new Complex(Center.X, Center.Y);
+			TerminalB.Absolute = new Complex(Center.X, Center.Y);
 		}
 
 		/// <summary>
@@ -77,8 +77,8 @@ namespace ECAT.Design
 		/// <param name="degrees"></param>
 		protected override void RotatePartialNodes(double degrees)
 		{
-			TerminalA.Position.RotationAngle += degrees;
-			TerminalB.Position.RotationAngle += degrees;
+			TerminalA.RotationAngle += degrees;
+			TerminalB.RotationAngle += degrees;
 		}
 
 		#endregion
