@@ -1,5 +1,6 @@
 ﻿using ECAT.Core;
 using ECAT.Design;
+using ECAT.Simulation;
 using ECAT.ViewModel;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.System;
@@ -179,6 +180,10 @@ namespace ECAT.UWP
 			if (e.Key == VirtualKey.W)
 			{
 				AppViewModel.Singleton.DesignVM.PrepareToPlaceLooseWireCommand.Execute(null);
+			}
+			if (e.Key == VirtualKey.R)
+			{
+				AppViewModel.Singleton.DesignVM.ComponentToAdd = new ComponentDeclaration(0, "Resistor", 2, ComponentType.Passive);
 			}
 		}
 
