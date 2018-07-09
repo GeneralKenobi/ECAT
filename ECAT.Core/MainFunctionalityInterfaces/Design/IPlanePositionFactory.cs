@@ -1,15 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Text;
+﻿using System.Numerics;
 
 namespace ECAT.Core
 {
 	/// <summary>
 	/// Factory of <see cref="IPlanePosition"/>
 	/// </summary>
-    public interface IPlanePositionFactory
+	public interface IPlanePositionFactory
     {
+		#region Properties
+
+		/// <summary>
+		/// All coordinates are rounded to multiples of this value
+		/// </summary>
+		double RoundTo { get; }
+
+		#endregion
+
+		#region Methods
+
 		/// <summary>
 		/// Constructs an <see cref="IPlanePosition"/> with all coordinates 0
 		/// </summary>
@@ -48,5 +56,7 @@ namespace ECAT.Core
 		/// <param name="shift"></param>
 		/// <returns></returns>
 		IPlanePosition Construct(Complex absolute, Complex shift);
-    }
+
+		#endregion
+	}
 }

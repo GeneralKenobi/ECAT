@@ -12,6 +12,11 @@ namespace ECAT.Design
 	public class PlanePositionFactory : IPlanePositionFactory
 	{
 		/// <summary>
+		/// All coordinates are rounded to multiples of this value
+		/// </summary>
+		public double RoundTo { get; } = 25;
+
+		/// <summary>
 		/// Constructs an <see cref="IPlanePosition"/> with all coordinates 0
 		/// </summary>
 		/// <returns></returns>
