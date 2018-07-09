@@ -3,6 +3,7 @@ using ECAT.Core;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Threading.Tasks;
 
 namespace ECAT.Design
 {
@@ -79,17 +80,17 @@ namespace ECAT.Design
 		/// <summary>
 		/// Handles clicks onto sockets
 		/// </summary>
-		/// <param name="node"></param>
-		public void SocketClickedHandler(IPartialNode node)
+		/// <param name="position"></param>
+		public void SocketClickedHandler(IPlanePosition position)
 		{
 			// If there was a wire placed
 			if (PlacingWire)
 			{
 				// Then this action ends it; Assign the clicked node to the placed wire
-				_PlacedWire.N2 = node;
+				_PlacedWire.AddPoint(position.DeepClone(), _ExtendWireAtEnd);
 
 				// And get rid of it's reference
-				_PlacedWire = null;
+				StopPlacingWire();
 			}
 			else
 			{
@@ -97,7 +98,7 @@ namespace ECAT.Design
 				CreateWireToPlace();
 
 				// Assign it's initial node
-				_PlacedWire.N1 = node;
+				_PlacedWire.AddPoint(position.DeepClone(), false);
 			}
 		}
 
@@ -127,13 +128,13 @@ namespace ECAT.Design
 			if (PlacingWire)
 			{
 				// Then it means the two wires need to be merged
-				_PlacedWire.MergeWith(wire, endClicked, _ExtendWireAtEnd);
+				wire.MergeWith(_PlacedWire, endClicked, _ExtendWireAtEnd);
 
 				// Remove the old wire
-				RemoveWire(wire);
+				RemoveWire(_PlacedWire);
 
 				// And remove the reference to the placed wire from the view-model
-				_PlacedWire = null;
+				StopPlacingWire();
 			}
 			else
 			{
@@ -293,9 +294,17 @@ namespace ECAT.Design
 		}
 
 		/// <summary>
-		/// Finishes the wire placing procedure
+		/// Finishes the wire placing procedure. If the wire has less than 2 defining points then it's removed from the schematic
 		/// </summary>
-		public void StopPlacingWire() => _PlacedWire = null;
+		public void StopPlacingWire()
+		{
+			if(_PlacedWire.DefiningPoints.Count < 2)
+			{
+				RemoveWire(_PlacedWire);
+			}
+
+			_PlacedWire = null;
+		}
 
 		/// <summary>
 		/// Creates and places a new loose wire on the given position
@@ -310,9 +319,55 @@ namespace ECAT.Design
 			_PlacedWire.AddPoint(position);
 		}
 
+		/// <summary>
+		/// Handles clicks performed on a wire
+		/// </summary>
+		/// <param name="wire"></param>
+		public void WireClickedHandler(IWire wire, IPlanePosition clickPosition)
+		{
+			if(PlacingWire)
+			{
+				// If it's the same wire, do nothing
+				if(_PlacedWire == wire)
+				{
+					return;
+				}
+
+				ConnectWithPlacedWire(wire, clickPosition);
+
+				// Finally stop placing it
+				StopPlacingWire();
+			}
+			else
+			{
+				// Create a new wire
+				CreateWireToPlace();
+
+				ConnectWithPlacedWire(wire, clickPosition);
+			}			
+		}
+
 		#endregion
 
 		#region Private methods
+
+		/// <summary>
+		/// Connects the given wire with the currently placed wire in the given position
+		/// </summary>
+		/// <param name="wire"></param>
+		/// <param name="connectionPosition"></param>
+		private void ConnectWithPlacedWire(IWire wire, IPlanePosition connectionPosition)
+		{
+			// Connect it with the clicked wire
+			wire.ConnectedWires.Add(_PlacedWire);
+			_PlacedWire.ConnectedWires.Add(wire);
+
+			// Add the intermediate point to the wire (to make sure the connection won't be broken by accident)
+			wire.AddIntermediatePoint(connectionPosition);
+
+			// Add the point to the placed wire
+			AddPointToPlacedWire(connectionPosition);
+		}
 
 		/// <summary>
 		/// Creates a new <see cref="IWire"/>, assigns it to <see cref="_PlacedWire"/>, adds it to the current schematic and marks
@@ -321,7 +376,7 @@ namespace ECAT.Design
 		private void CreateWireToPlace()
 		{
 			// Create a new wire
-			_PlacedWire = IoC.Container.Resolve<IComponentFactory>().ConstructWire();
+			_PlacedWire = new Wire();
 
 			// Signal that it's extended at the end
 			_ExtendWireAtEnd = true;
