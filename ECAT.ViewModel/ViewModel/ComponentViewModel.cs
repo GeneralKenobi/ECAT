@@ -30,6 +30,11 @@ namespace ECAT.ViewModel
 		#region Public properties
 
 		/// <summary>
+		/// Length of hitbox for sockets
+		/// </summary>
+		public double HitboxLength => AppViewModel.Singleton.RoundTo;
+
+		/// <summary>
 		/// The component 
 		/// </summary>
 		public IBaseComponent Component { get; private set; }
@@ -100,9 +105,9 @@ namespace ECAT.ViewModel
 		/// </summary>
 		private void SocketClicked(object parameter)
 		{
-			if (parameter is IPartialNode node)
+			if (parameter is IPlanePosition position)
 			{
-				AppViewModel.Singleton.DesignVM.DesignManager.SocketClickedHandler(node);
+				AppViewModel.Singleton.DesignVM.DesignManager.SocketClickedHandler(position);
 			}
 		}		
 

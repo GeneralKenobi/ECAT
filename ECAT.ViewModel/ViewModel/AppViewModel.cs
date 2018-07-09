@@ -1,4 +1,5 @@
-﻿using CSharpEnhanced.ICommands;
+﻿using Autofac;
+using CSharpEnhanced.ICommands;
 using ECAT.Core;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,11 @@ namespace ECAT.ViewModel
 
 		#region Public properties
 
+		/// <summary>
+		/// All coordinates are rounded to multiples of this value
+		/// </summary>
+		public double RoundTo { get; } = IoC.Container.Resolve<IPlanePositionFactory>().RoundTo;
+		
 		/// <summary>
 		/// ViewModel related with circuit design functionalities
 		/// </summary>
