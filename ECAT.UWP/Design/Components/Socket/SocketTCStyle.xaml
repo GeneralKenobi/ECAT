@@ -7,30 +7,35 @@
 
 	<converters:OppositeDoubleConverter x:Key="Opposite"/>
 	<converters:ProductConverter x:Key="Product"/>
+	<converters:QuotientConverter x:Key="Quotient"/>
 
 
 	<Style TargetType="local:SocketTC">
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="local:SocketTC">
-				
-					<Ellipse Fill="{StaticResource BlackBrush}"
-						Width="{Binding PartialNode.Radius, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource Product}, ConverterParameter=2}"
-						Height="{Binding PartialNode.Radius, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource Product}, ConverterParameter=2}">
 
-						<xaml:VisualAttachments.AttachedVisuals>
-							<xaml:PointerTriggerCommand Command="{Binding SocketClickedCommand}"			
-								CommandParameter="{Binding PartialNode, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-								PointerEvent="PointerReleased"/>
-						</xaml:VisualAttachments.AttachedVisuals>
+					<Border Background="Transparent"
+					Width="{Binding HitboxLength}"
+					Height="{Binding HitboxLength}">
 
-						<Ellipse.RenderTransform>
-							<TranslateTransform X="{Binding PartialNode.Radius, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource Opposite}}"
-								Y="{Binding PartialNode.Radius, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource Opposite}}"/>
-						</Ellipse.RenderTransform>
+						<Border.RenderTransform>
+							<TranslateTransform X="{Binding HitboxLength, Converter={StaticResource Quotient}, ConverterParameter=-2}"
+								Y="{Binding HitboxLength, Converter={StaticResource Quotient}, ConverterParameter=-2}"/>
+						</Border.RenderTransform>
 
-					</Ellipse>
-					
+						<Ellipse Fill="{StaticResource BlackBrush}"
+							Width="{Binding Component.SocketRadius, Converter={StaticResource Product}, ConverterParameter=2}"
+							Height="{Binding Component.SocketRadius, Converter={StaticResource Product}, ConverterParameter=2}">
+
+							<xaml:VisualAttachments.AttachedVisuals>
+								<xaml:PointerTriggerCommand Command="{Binding SocketClickedCommand}"			
+									CommandParameter="{Binding Position, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+									PointerEvent="PointerReleased"/>
+							</xaml:VisualAttachments.AttachedVisuals>
+
+						</Ellipse>
+					</Border>
 				</ControlTemplate>
 			</Setter.Value>
 		</Setter>

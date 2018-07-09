@@ -37,20 +37,20 @@ namespace ECAT.UWP
 		#region PartialNode Dependency Property
 
 		/// <summary>
-		/// Partial node represented by this <see cref="SocketTC"/>
+		/// Position assigned to this <see cref="SocketTC"/>
 		/// </summary>
-		public IPartialNode PartialNode
+		public IPlanePosition Position
 		{
-			get => (IPartialNode)GetValue(PartialNodeProperty);
+			get => (IPlanePosition)GetValue(PartialNodeProperty);
 			set => SetValue(PartialNodeProperty, value);
 		}
 
 		/// <summary>
-		/// Backing store for <see cref="PartialNode"/>
+		/// Backing store for <see cref="Position"/>
 		/// </summary>
 		public static readonly DependencyProperty PartialNodeProperty =
-			DependencyProperty.Register(nameof(PartialNode), typeof(IPartialNode),
-			typeof(SocketTC), new PropertyMetadata(default(IPartialNode)));
+			DependencyProperty.Register(nameof(Position), typeof(IPlanePosition),
+			typeof(SocketTC), new PropertyMetadata(default(IPlanePosition)));
 
 		#endregion
 	}
