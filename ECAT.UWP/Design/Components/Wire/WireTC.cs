@@ -21,8 +21,6 @@ namespace ECAT.UWP
 		{
 			this.DefaultStyleKey = typeof(WireTC);
 			this.DataContextChanged += OnDataContextChanged;
-
-			this.Tapped += OnWireTapped;
 		}
 
 		#endregion
@@ -37,7 +35,7 @@ namespace ECAT.UWP
 
 		#endregion
 
-		#region Privatem methods
+		#region Private methods
 
 		/// <summary>
 		/// Checks if the new DataContext is a <see cref="WireViewModel"/>, if so extracts the
@@ -50,25 +48,6 @@ namespace ECAT.UWP
 			if(args.NewValue is WireViewModel newVM)
 			{
 				_WireClickedCommand = newVM.WireClickedCommand;
-			}
-		}
-
-		/// <summary>
-		/// Sets the handled flag, extracts click position and executes <see cref="_WireClickedCommand"/>
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void OnWireTapped(object sender, TappedRoutedEventArgs e)
-		{
-			e.Handled = true;
-
-			if(e.OriginalSource is FrameworkElement element && element.Name == "WirePolyline")
-			{ 
-				// Because the wire is considered to be positioned 0,0 relative to the design area (it's position is set using a
-				// render transform), the click position relative to the control is the position of the click relative to design area
-					var clickPosition = e.GetPosition(this);
-
-				_WireClickedCommand?.Execute(new PlanePosition(clickPosition.X, -clickPosition.Y));
 			}
 		}
 

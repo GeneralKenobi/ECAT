@@ -136,20 +136,20 @@ namespace ECAT.ViewModel
 		/// <param name="parameter"></param>
 		private void DesignAreaClicked(object parameter)
 		{
-			if (parameter is IPlanePosition position)
+			if (parameter is Complex position)
 			{
 				// Decide what to do with the input
 				switch (AppViewModel.Singleton.State)
 				{
 					case AppState.AddingComponents:
 						{
-							AddComponent(position);
+							AddComponent(IoC.Container.Resolve<IPlanePositionFactory>().Construct(position));
 						}
 						break;
 
 					case AppState.PlacingWire:
 						{
-							DesignManager.AddPointToPlacedWire(position);
+							DesignManager.AddPointToPlacedWire(IoC.Container.Resolve<IPlanePositionFactory>().Construct(position));
 						}
 						break;
 
@@ -157,7 +157,7 @@ namespace ECAT.ViewModel
 						{
 							if(_PlaceLooseWireOnNextClick)
 							{
-								DesignManager.PlaceLooseWire(position);
+								DesignManager.PlaceLooseWire(IoC.Container.Resolve<IPlanePositionFactory>().Construct(position));
 							}
 						} break;
 				}

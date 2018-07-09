@@ -1,6 +1,8 @@
-﻿using CSharpEnhanced.ICommands;
+﻿using Autofac;
+using CSharpEnhanced.ICommands;
 using ECAT.Core;
 using System;
+using System.Numerics;
 using System.Windows.Input;
 
 namespace ECAT.ViewModel

@@ -8,6 +8,7 @@
 	<converters:OppositeDoubleConverter x:Key="Opposite"/>
 	<converters:ProductConverter x:Key="Product"/>
 	<converters:QuotientConverter x:Key="Quotient"/>
+	<converters:NegateImaginaryComplexConverter x:Key="PositionConverter"/>
 
 
 	<Style TargetType="local:SocketTC">
@@ -15,23 +16,35 @@
 			<Setter.Value>
 				<ControlTemplate TargetType="local:SocketTC">
 
+					<!-- Transparent hitbox that will catch all tapped events that technically still belong to this socket
+					(in a 25-length square around center) and surpress them from being bubbled up (eg. to design area) which
+					could, for example, allow the user to place a wire on the socket without invoking proper commands 
+					related to the socket -->
 					<Border Background="Transparent"
-					Width="{Binding HitboxLength}"
-					Height="{Binding HitboxLength}">
+						Width="{Binding HitboxLength}"
+						Height="{Binding HitboxLength}">
 
+						<!-- Offset that centralizes the socket around it's assigned position -->
 						<Border.RenderTransform>
 							<TranslateTransform X="{Binding HitboxLength, Converter={StaticResource Quotient}, ConverterParameter=-2}"
 								Y="{Binding HitboxLength, Converter={StaticResource Quotient}, ConverterParameter=-2}"/>
 						</Border.RenderTransform>
 
+						<!-- Attach a trigger that will catch and surpress tapped event from being propagated -->
+						<xaml:VisualAttachments.AttachedVisuals>
+							<xaml:VisualTappedTrigger SetHandled="True"/>
+						</xaml:VisualAttachments.AttachedVisuals>
+
+						<!-- Visible socket -->
 						<Ellipse Fill="{StaticResource BlackBrush}"
 							Width="{Binding Component.SocketRadius, Converter={StaticResource Product}, ConverterParameter=2}"
 							Height="{Binding Component.SocketRadius, Converter={StaticResource Product}, ConverterParameter=2}">
 
+							<!-- Socket clicked command -->
 							<xaml:VisualAttachments.AttachedVisuals>
-								<xaml:PointerTriggerCommand Command="{Binding SocketClickedCommand}"			
+								<xaml:TappedTriggerCommand Command="{Binding SocketClickedCommand}"			
 									CommandParameter="{Binding Position, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-									PointerEvent="PointerReleased"/>
+									SetHandled="True"/>
 							</xaml:VisualAttachments.AttachedVisuals>
 
 						</Ellipse>

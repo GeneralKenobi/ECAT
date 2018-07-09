@@ -17,22 +17,10 @@ namespace ECAT.UWP
 		/// </summary>
 		public SocketTC()
         {
-			this.DefaultStyleKey = typeof(SocketTC);		
-			this.Tapped += SocketTapped;
+			this.DefaultStyleKey = typeof(SocketTC);
         }
 
-		#endregion
-
-		#region Private methods
-
-		/// <summary>
-		/// Sets the handled property
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void SocketTapped(object sender, TappedRoutedEventArgs e) => e.Handled = true;
-
-		#endregion
+		#endregion	
 
 		#region PartialNode Dependency Property
 

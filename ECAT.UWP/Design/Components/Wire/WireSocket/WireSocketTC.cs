@@ -22,22 +22,10 @@ namespace ECAT.UWP
 		/// </summary>
 		public WireSocketTC()
 		{
-			this.DefaultStyleKey = typeof(WireSocketTC);
-			this.Tapped += SocketTapped;			
+			this.DefaultStyleKey = typeof(WireSocketTC);				
 		}
 
-		#endregion
-
-		#region Private methods
-
-		/// <summary>
-		/// Sets the tapped event to handled
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void SocketTapped(object sender, TappedRoutedEventArgs e) => e.Handled = true;
-
-		#endregion
+		#endregion		
 
 		#region Position Dependency Property
 

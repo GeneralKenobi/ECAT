@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.Windows.Input;
 using Autofac;
 using System.Diagnostics;
+using System.Numerics;
 
 namespace ECAT.ViewModel
 {
@@ -70,9 +71,10 @@ namespace ECAT.ViewModel
 		/// <param name="parameter"></param>
 		private void WireClicked(object parameter)
 		{
-			if (parameter is IPlanePosition position)
+			if (parameter is Complex position)
 			{
-				AppViewModel.Singleton.DesignVM.DesignManager.WireClickedHandler(Wire, position);
+				AppViewModel.Singleton.DesignVM.DesignManager.WireClickedHandler(Wire,
+					IoC.Container.Resolve<IPlanePositionFactory>().Construct(position.Real, position.Imaginary));
 			}
 		}
 

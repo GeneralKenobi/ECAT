@@ -6,6 +6,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:controls="using:UWPEnhanced.Controls"
+	xmlns:xaml="using:UWPEnhanced.Xaml"
+	xmlns:converters="using:UWPEnhanced.ValueConverters"
     mc:Ignorable="d"
     Background="{StaticResource WhiteBrush}"
 	KeyDown="KeyPressed">
@@ -13,6 +15,7 @@
 	<Page.Resources>
 		<local:IBaseComponentToComponentViewModelConverter x:Key="ComponentConverter"/>
 		<local:IWireToWireViewModelConverter x:Key="WireConverter"/>
+		<converters:NegateImaginaryComplexConverter x:Key="PositionConverter"/>		
 	</Page.Resources>
 
 
@@ -23,7 +26,13 @@
 			HorizontalAlignment="Left"
 			VerticalAlignment="Top">
 
-			<Grid Tapped="DesignAreaTapped">
+			<!--<Grid Tapped="DesignAreaTapped">-->
+			<Grid>
+
+				<xaml:VisualAttachments.AttachedVisuals>
+					<xaml:TappedTriggerCommandPointerPosition Command="{Binding DesignVM.DesignAreaClickedCommand}"
+						Converter="{StaticResource PositionConverter}"/>
+				</xaml:VisualAttachments.AttachedVisuals>
 
 				<!-- All parts go here -->
 				<!-- Don't use layout rounding because it blurs the parts when they're rotated,

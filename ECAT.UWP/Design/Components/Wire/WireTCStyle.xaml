@@ -16,6 +16,7 @@
 							<local:PlanePositionCollectionToPointCollectionConverter x:Key="PointsConverter"/>
 							<local:PlanePositionCollectionToOutermostPointCollectionConverter x:Key="BorderConverter"/>
 							<converters:OppositeDoubleConverter x:Key="OppositeConverter"/>
+							<converters:NegateImaginaryComplexConverter x:Key="PositionConverter"/>
 						</Grid.Resources>
 
 						<!-- Context menu with delete button -->
@@ -30,13 +31,23 @@
 
 							</MenuFlyout>
 						</Grid.ContextFlyout>
-						
 
+						<!-- Transparent hitbox that will catch all tapped events that technically still belong to this socket
+						(a polyline with stroke thickness 25) and surpress them from being bubbled up (eg. to design area) which
+						could, for example, allow the user to place a wire on this wire without invoking proper commands 
+						related to the wire (eg. connecting the wires resulting in a misleading schematic) -->
 						<Polyline Stroke="Transparent"
 							StrokeThickness="{Binding HitboxLength}"
 							StrokeMiterLimit="0"
 							Points="{Binding Wire.ConstructionPoints, Converter={StaticResource PointsConverter}}"
-							StrokeLineJoin="Round"/>
+							StrokeLineJoin="Round">
+
+							<!-- Attach a trigger that will catch and surpress tapped event from being propagated -->
+							<xaml:VisualAttachments.AttachedVisuals>
+								<xaml:VisualTappedTrigger SetHandled="True"/>
+							</xaml:VisualAttachments.AttachedVisuals>
+
+						</Polyline>
 
 						<!-- Polyline that visualizes the wire -->
 						<Polyline Name="WirePolyline"
@@ -44,7 +55,16 @@
 							StrokeThickness="5"
 							StrokeMiterLimit="0"
 							Points="{Binding Wire.ConstructionPoints, Converter={StaticResource PointsConverter}}"
-							StrokeLineJoin="Round"/>
+							StrokeLineJoin="Round">
+
+							<!-- Wire clicked command -->
+							<xaml:VisualAttachments.AttachedVisuals>
+								<xaml:TappedTriggerCommandPointerPosition Command="{Binding WireClickedCommand}"
+									SetHandled="True"
+									Converter="{StaticResource PositionConverter}"/>
+							</xaml:VisualAttachments.AttachedVisuals>
+							
+						</Polyline>
 
 						<!-- Polygon that acts as a border around the wire when context menu is present -->
 						<Polygon Points="{Binding Wire.DefiningPoints, Converter={StaticResource BorderConverter}}" 
