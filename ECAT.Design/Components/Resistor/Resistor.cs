@@ -5,6 +5,6 @@
 	/// </summary>
     public class Resistor : TwoTerminal
     {
-		
+		double Resistance { get; set; } = 1000;
 	}
 }
