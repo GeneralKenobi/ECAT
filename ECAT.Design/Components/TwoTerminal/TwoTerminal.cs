@@ -1,5 +1,4 @@
-﻿using CSharpEnhanced.Maths;
-using ECAT.Core;
+﻿using ECAT.Core;
 using System.Numerics;
 
 namespace ECAT.Design
@@ -7,7 +6,7 @@ namespace ECAT.Design
 	/// <summary>
 	/// Base class for all two-terminal components
 	/// </summary>
-    public abstract class TwoTerminal : BaseComponent
+	public abstract class TwoTerminal : BaseComponent
     {
 		#region Constructor
 
@@ -16,8 +15,8 @@ namespace ECAT.Design
 		/// </summary>
 		public TwoTerminal()
 		{
-			TerminalA = new PlanePosition(Complex.Zero, _TerminalAShift);
-			TerminalB = new PlanePosition(Complex.Zero, _TerminalBShift);
+			TerminalA = new Terminal(new PlanePosition(Complex.Zero, _TerminalAShift));
+			TerminalB = new Terminal(new PlanePosition(Complex.Zero, _TerminalBShift));
 		}
 
 		#endregion
@@ -37,12 +36,12 @@ namespace ECAT.Design
 		/// <summary>
 		/// One of the terminals in this two-terminal
 		/// </summary>
-		public IPlanePosition TerminalA { get; }
+		public ITerminal TerminalA { get; }
 
 		/// <summary>
 		/// One of the terminals in this two-terminal
 		/// </summary>
-		public IPlanePosition TerminalB { get; }
+		public ITerminal TerminalB { get; }
 
 		#endregion
 
@@ -67,8 +66,8 @@ namespace ECAT.Design
 		/// </summary>
 		protected override void UpdateAbsolutePartialNodePositions()
 		{
-			TerminalA.Absolute = new Complex(Center.X, Center.Y);
-			TerminalB.Absolute = new Complex(Center.X, Center.Y);
+			TerminalA.Position.Absolute = new Complex(Center.X, Center.Y);
+			TerminalB.Position.Absolute = new Complex(Center.X, Center.Y);
 		}
 
 		/// <summary>
@@ -77,8 +76,8 @@ namespace ECAT.Design
 		/// <param name="degrees"></param>
 		protected override void RotatePartialNodes(double degrees)
 		{
-			TerminalA.RotationAngle += degrees;
-			TerminalB.RotationAngle += degrees;
+			TerminalA.Position.RotationAngle += degrees;
+			TerminalB.Position.RotationAngle += degrees;
 		}
 
 		#endregion
