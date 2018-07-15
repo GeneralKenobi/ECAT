@@ -40,8 +40,8 @@ namespace ECAT.Simulation
 			new ObservableCollection<IComponentDeclaration>()
 		{
 			new ComponentDeclaration(0, "Resistor", 2, ComponentType.Passive),
-			new ComponentDeclaration(0, "Resistor", 2, ComponentType.Passive),
-			new ComponentDeclaration(0, "Resistor", 2, ComponentType.Passive),
+			new ComponentDeclaration(1, "Voltage Source", 2, ComponentType.Passive),
+			new ComponentDeclaration(2, "Current Source", 2, ComponentType.Passive),
 		};
 
 		#endregion
