@@ -39,7 +39,7 @@
 							Stroke="{StaticResource BlackBrush}"
 							StrokeThickness="2"
 							StrokeMiterLimit="0"
-							Points="25,12.5 12.5,25 25,37.5 12.5,25 37.5,25"/>
+							Points="25,12.5 37.5,25 25,37.5 37.5,25 12.5,25"/>
 
 						<!-- First socket -->
 						<local:SocketTC Canvas.Top="25" Position="{Binding Component.TerminalA}"/>
