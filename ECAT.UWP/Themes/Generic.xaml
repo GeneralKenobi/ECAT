@@ -9,6 +9,9 @@
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/Socket/SocketTCStyle.xaml"/>
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/Wire/WireSocket/WireSocketTCStyle.xaml"/>
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/Wire/WireTCStyle.xaml"/>
+		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/VoltageSource/VoltageSourceTCStyle.xaml"/>
 	</ResourceDictionary.MergedDictionaries>
 
+
+    
 </ResourceDictionary>
