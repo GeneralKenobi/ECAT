@@ -6,12 +6,39 @@
 	<Style TargetType="local:VoltageSourceTC">
 		<Setter Property="Template">
 			<Setter.Value>
-				<ControlTemplate TargetType="local:VoltageSource">
-					<Border
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}">
-					</Border>
+				<ControlTemplate TargetType="local:VoltageSourceTC">
+					<Canvas>
+						<Ellipse Canvas.Left="27"
+							Canvas.Top="2"
+							Width="46"
+							Height="46"
+							Fill="Transparent"
+							Stroke="{StaticResource BlackBrush}"
+							StrokeThickness="3"/>
+
+						<Line Stroke="{StaticResource BlackBrush}"
+							StrokeThickness="5"
+							X1="0"
+							Y1="25"
+							X2="27"
+							Y2="25"/>
+
+						<Line Stroke="{StaticResource BlackBrush}"
+							StrokeThickness="5"
+							X1="73"
+							Y1="25"
+							X2="100"
+							Y2="25"/>
+
+						<Polyline Canvas.Left="25"
+							Stroke="{StaticResource BlackBrush}"
+							StrokeThickness="2"
+							StrokeMiterLimit="0"
+							Points="25,12.5 12.5,25 25,37.5 12.5,25 37.5,25"/>
+
+						<local:SocketTC Canvas.Top="25" Position="{Binding Component.TerminalA}"/>
+						<local:SocketTC Canvas.Left="100" Canvas.Top="25" Position="{Binding Component.TerminalB}"/>
+					</Canvas>
 				</ControlTemplate>
 			</Setter.Value>
 		</Setter>
