@@ -23,6 +23,8 @@ namespace ECAT.Design
 			{
 				case 0: return new Resistor();
 
+				case 1: return new VoltageSource();
+
 				default:
 					{
 						throw new ArgumentException($"No component matches the ID: {componentID}");
