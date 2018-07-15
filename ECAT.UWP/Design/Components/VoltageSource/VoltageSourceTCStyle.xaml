@@ -8,6 +8,8 @@
 			<Setter.Value>
 				<ControlTemplate TargetType="local:VoltageSourceTC">
 					<Canvas>
+
+						<!-- The circle in the middle -->
 						<Ellipse Canvas.Left="27"
 							Canvas.Top="2"
 							Width="46"
@@ -16,6 +18,7 @@
 							Stroke="{StaticResource BlackBrush}"
 							StrokeThickness="3"/>
 
+						<!-- The wire to the first socket -->
 						<Line Stroke="{StaticResource BlackBrush}"
 							StrokeThickness="5"
 							X1="0"
@@ -23,6 +26,7 @@
 							X2="27"
 							Y2="25"/>
 
+						<!-- The wire to the second socket -->
 						<Line Stroke="{StaticResource BlackBrush}"
 							StrokeThickness="5"
 							X1="73"
@@ -30,14 +34,19 @@
 							X2="100"
 							Y2="25"/>
 
+						<!-- The arrow in the circle -->
 						<Polyline Canvas.Left="25"
 							Stroke="{StaticResource BlackBrush}"
 							StrokeThickness="2"
 							StrokeMiterLimit="0"
 							Points="25,12.5 12.5,25 25,37.5 12.5,25 37.5,25"/>
 
+						<!-- First socket -->
 						<local:SocketTC Canvas.Top="25" Position="{Binding Component.TerminalA}"/>
+
+						<!-- Second socket -->
 						<local:SocketTC Canvas.Left="100" Canvas.Top="25" Position="{Binding Component.TerminalB}"/>
+
 					</Canvas>
 				</ControlTemplate>
 			</Setter.Value>
