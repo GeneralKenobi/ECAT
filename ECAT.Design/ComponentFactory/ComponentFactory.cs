@@ -25,6 +25,8 @@ namespace ECAT.Design
 
 				case 1: return new VoltageSource();
 
+				case 2: return new CurrentSource();
+
 				default:
 					{
 						throw new ArgumentException($"No component matches the ID: {componentID}");

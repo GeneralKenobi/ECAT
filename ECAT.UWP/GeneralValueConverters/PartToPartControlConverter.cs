@@ -24,6 +24,11 @@ namespace ECAT.UWP
 				return new VoltageSourceTC();
 			}
 
+			if(value is CurrentSource)
+			{
+				return new CurrentSourceTC();
+			}
+
 			//if (value is BasePart part && ControlsHelpers.TryGetUIControl(part, out FrameworkElement element))
 			//{
 			//	return element;
