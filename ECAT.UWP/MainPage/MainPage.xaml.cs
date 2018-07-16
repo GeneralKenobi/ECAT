@@ -185,6 +185,14 @@ namespace ECAT.UWP
 			{
 				AppViewModel.Singleton.DesignVM.ComponentToAdd = new ComponentDeclaration(0, "Resistor", 2, ComponentType.Passive);
 			}
+			if (e.Key == VirtualKey.V)
+			{
+				AppViewModel.Singleton.DesignVM.ComponentToAdd = new ComponentDeclaration(1, "Voltage Source", 2, ComponentType.Passive);
+			}
+			if (e.Key == VirtualKey.C)
+			{
+				AppViewModel.Singleton.DesignVM.ComponentToAdd = new ComponentDeclaration(2, "Current Source", 2, ComponentType.Passive);
+			}
 		}
 
 		#endregion
