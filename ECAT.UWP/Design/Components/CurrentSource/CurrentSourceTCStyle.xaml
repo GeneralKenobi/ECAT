@@ -9,14 +9,23 @@
 				<ControlTemplate TargetType="local:CurrentSourceTC">
 					<Canvas>
 
-						<!-- The circle in the middle -->
+						<!-- The outer circle -->
 						<Ellipse Canvas.Left="27"
 							Canvas.Top="2"
 							Width="46"
 							Height="46"
 							Fill="Transparent"
 							Stroke="{StaticResource BlackBrush}"
-							StrokeThickness="3"/>
+							StrokeThickness="2"/>
+
+						<!-- The inner circle -->
+						<Ellipse Canvas.Left="32"
+							Canvas.Top="7"
+							Width="36"
+							Height="36"
+							Fill="Transparent"
+							Stroke="{StaticResource BlackBrush}"
+							StrokeThickness="2"/>
 
 						<!-- The wire to the first socket -->
 						<Line Stroke="{StaticResource BlackBrush}"
@@ -39,7 +48,7 @@
 							Stroke="{StaticResource BlackBrush}"
 							StrokeThickness="2"
 							StrokeMiterLimit="0"
-							Points="25,12.5 37.5,25 25,37.5 37.5,25 12.5,25"/>
+							Points="25,15 35,25 25,35 35,25 12,25"/>
 
 						<!-- First socket -->
 						<local:SocketTC Canvas.Top="25" Position="{Binding Component.TerminalA}"/>
