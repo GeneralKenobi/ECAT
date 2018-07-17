@@ -27,6 +27,11 @@ namespace ECAT.Core
 		/// </summary>
 		Complex CurrentSourceAdmittance { get; }
 
+		/// <summary>
+		/// Default admittance for a <see cref="IResistor"/>
+		/// </summary>
+		Complex DefaultResistorAdmittance { get; }
+
 		#endregion
 	}
 }

@@ -34,7 +34,12 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Admittance of a current source
 		/// </summary>
-		public Complex CurrentSourceAdmittance => Complex.Zero;
+		public Complex CurrentSourceAdmittance { get; } = Complex.Zero;
+
+		/// <summary>
+		/// Default admittance for a <see cref="IResistor"/>
+		/// </summary>
+		public Complex DefaultResistorAdmittance { get; } = new Complex(1e-3, 0);
 
 		#endregion
 	}
