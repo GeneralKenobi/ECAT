@@ -5,6 +5,24 @@ namespace ECAT.Design
 {
 	public class ComponentFactory : IComponentFactory
 	{
+		// TODO: Implement a good way of storing and getting component types, ids and other parameters.
+
+		/// <summary>
+		/// Constructs and returns a component based on the given type
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		/// <exception cref="ArgumentException">Thrown if the interface does not correspond to a defined component or
+		/// the interface is not a final implementation (eg. it's a <see cref="ITwoTerminal"/>)</exception>
+		public IBaseComponent Construct<T>() where T : IBaseComponent
+		{
+			if (typeof(T) == typeof(IResistor)) return new Resistor();
+			if (typeof(T) == typeof(IVoltageSource)) return new VoltageSource();
+			if (typeof(T) == typeof(ICurrentSource)) return new CurrentSource();
+
+			throw new ArgumentException(nameof(T) + " is not a recognized (or final) component type");
+		}
+
 		/// <summary>
 		/// Constructs a new <see cref="IBaseComponent"/> based on the given <see cref="IComponentDeclaration"/>
 		/// </summary>

@@ -12,6 +12,15 @@ namespace ECAT.Core
 		#region Methods
 
 		/// <summary>
+		/// Constructs and returns a component based on the given type
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		/// <exception cref="ArgumentException">Thrown if the interface does not correspond to a defined component or
+		/// the interface is not a final implementation (eg. it's a <see cref="ITwoTerminal"/>)</exception>
+		IBaseComponent Construct<T>() where T : IBaseComponent;
+
+		/// <summary>
 		/// Constructs a new <see cref="IBaseComponent"/> based on the given <see cref="IComponentDeclaration"/>
 		/// </summary>
 		/// <param name="declaration"></param>
