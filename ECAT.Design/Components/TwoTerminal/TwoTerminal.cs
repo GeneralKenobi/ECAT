@@ -7,7 +7,7 @@ namespace ECAT.Design
 	/// <summary>
 	/// Base class for all two-terminal components
 	/// </summary>
-    public abstract class TwoTerminal : BaseComponent
+    public abstract class TwoTerminal : BaseComponent, ITwoTerminal
     {
 		#region Constructor
 
@@ -43,6 +43,11 @@ namespace ECAT.Design
 		/// One of the terminals in this two-terminal
 		/// </summary>
 		public IPlanePosition TerminalB { get; }
+
+		/// <summary>
+		/// The admittance between the two terminals
+		/// </summary>
+		public Complex Admittance { get; set; }
 
 		#endregion
 
