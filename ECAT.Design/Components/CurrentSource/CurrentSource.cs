@@ -1,10 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using ECAT.Core;
 
 namespace ECAT.Design
 {
-    public class CurrentSource : TwoTerminal
+	/// <summary>
+	/// Current source is an ideal source that can supply a chosen value of current to an arbitrary load
+	/// </summary>
+	public class CurrentSource : TwoTerminal, ICurrentSource
     {
+		/// <summary>
+		/// Default Constructor
+		/// </summary>
+		public CurrentSource()
+		{
+			Admittance = IoC.Resolve<IDefaultValues>().CurrentSourceAdmittance;
+		}
     }
 }
