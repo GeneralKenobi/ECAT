@@ -1,11 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ECAT.Core
+﻿namespace ECAT.Core
 {
-    public interface ITwoTerminal : IBaseComponent
+	/// <summary>
+	/// Interface for all components that have two terminals
+	/// </summary>
+	public interface ITwoTerminal : IBaseComponent
     {
+		#region Properties
 
-    }
+		/// <summary>
+		/// One of the terminals in this two-terminal
+		/// </summary>
+		IPlanePosition TerminalA { get; }
+
+		/// <summary>
+		/// One of the terminals in this two-terminal
+		/// </summary>
+		IPlanePosition TerminalB { get; }
+
+		#endregion
+	}
 }
