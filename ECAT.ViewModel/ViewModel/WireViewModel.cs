@@ -74,7 +74,7 @@ namespace ECAT.ViewModel
 			if (parameter is Complex position)
 			{
 				AppViewModel.Singleton.DesignVM.DesignManager.WireClickedHandler(Wire,
-					IoC.Container.Resolve<IPlanePositionFactory>().Construct(position.Real, position.Imaginary));
+					IoC.Resolve<IPlanePositionFactory>().Construct(position.Real, position.Imaginary));
 			}
 		}
 

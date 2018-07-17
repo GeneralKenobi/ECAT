@@ -99,7 +99,7 @@ namespace ECAT.ViewModel
 		{
 			if (AddingComponents)
 			{
-				var newComponent = IoC.Container.Resolve<IComponentFactory>().Construct(ComponentToAdd);
+				var newComponent = IoC.Resolve<IComponentFactory>().Construct(ComponentToAdd);
 
 				newComponent.Center = clickPosition;
 				
@@ -143,13 +143,13 @@ namespace ECAT.ViewModel
 				{
 					case AppState.AddingComponents:
 						{
-							AddComponent(IoC.Container.Resolve<IPlanePositionFactory>().Construct(position));
+							AddComponent(IoC.Resolve<IPlanePositionFactory>().Construct(position));
 						}
 						break;
 
 					case AppState.PlacingWire:
 						{
-							DesignManager.AddPointToPlacedWire(IoC.Container.Resolve<IPlanePositionFactory>().Construct(position));
+							DesignManager.AddPointToPlacedWire(IoC.Resolve<IPlanePositionFactory>().Construct(position));
 						}
 						break;
 
@@ -157,7 +157,7 @@ namespace ECAT.ViewModel
 						{
 							if(_PlaceLooseWireOnNextClick)
 							{
-								DesignManager.PlaceLooseWire(IoC.Container.Resolve<IPlanePositionFactory>().Construct(position));
+								DesignManager.PlaceLooseWire(IoC.Resolve<IPlanePositionFactory>().Construct(position));
 							}
 						} break;
 				}

@@ -46,6 +46,14 @@ namespace ECAT.Core
 			}
 		}
 
+		/// <summary>
+		/// Calls and returns the result of <see cref="IoC.Container.Resolve{T}"/> (without getting a lifetime scope;
+		/// should be used on singletons or possibility of not being cleaned-up is not a problem)
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		public static T Resolve<T>() => Container.Resolve<T>();
+
 		#endregion
 
 		#region Private static methods

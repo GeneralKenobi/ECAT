@@ -20,7 +20,7 @@ namespace ECAT.Design
 		/// </summary>
 		public VoltageSource()
 		{
-			Admittance = IoC.Container.Resolve<IDefaultValues>().MaximumParameterValue;
+			Admittance = IoC.Resolve<IDefaultValues>().MaximumParameterValue;
 		}
     }
 }
