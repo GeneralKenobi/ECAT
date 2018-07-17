@@ -15,6 +15,11 @@ namespace ECAT.Core
 		/// </summary>
 		ReadOnlyObservableCollection<IComponentDeclaration> ImplementedComponents { get; }
 
+		/// <summary>
+		/// A maximum value for parameters in the circuit (admittance, voltage source voltage, etc)
+		/// </summary>
+		double MaximumParameterValue { get; }
+
 		#endregion
 	}
 }
