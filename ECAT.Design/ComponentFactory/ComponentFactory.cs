@@ -5,6 +5,9 @@ using System.Collections.ObjectModel;
 
 namespace ECAT.Design
 {
+	/// <summary>
+	/// Contains all component types and constructs them as needed
+	/// </summary>
 	public class ComponentFactory : IComponentFactory
 	{
 		#region Constructor
