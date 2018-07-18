@@ -10,7 +10,7 @@
 		/// <summary>
 		/// Unique number assigned to the specific component type
 		/// </summary>
-		int ID { get; }
+		ComponentIDEnumeration ID { get; }
 
 		/// <summary>
 		/// User-friendly name that may be displayed on the screen

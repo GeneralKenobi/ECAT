@@ -42,7 +42,7 @@ namespace ECAT.Core
 		/// </summary>
 		/// <param name="componentID"></param>
 		/// <returns></returns>
-		IBaseComponent Construct(int componentID);
+		IBaseComponent Construct(ComponentIDEnumeration componentID);
 
 		/// <summary>
 		/// Constructs a new <see cref="IWire"/>

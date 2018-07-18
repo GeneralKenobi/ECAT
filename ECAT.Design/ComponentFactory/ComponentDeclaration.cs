@@ -12,7 +12,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Default Constructor
 		/// </summary>
-		public ComponentDeclaration(int id, string displayName, int numberOfTerminals, ComponentType componentType)
+		public ComponentDeclaration(ComponentIDEnumeration id, string displayName, int numberOfTerminals, ComponentType componentType)
 		{
 			ID = id;
 			DisplayName = displayName;
@@ -27,7 +27,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Unique number assigned to the specific component type
 		/// </summary>
-		public int ID { get; }
+		public ComponentIDEnumeration ID { get; }
 
 		/// <summary>
 		/// User-friendly name that may be displayed on the screen

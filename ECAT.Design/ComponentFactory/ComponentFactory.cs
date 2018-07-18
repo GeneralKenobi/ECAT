@@ -31,19 +31,19 @@ namespace ECAT.Design
 		private ObservableCollection<IComponentDeclaration> _ImplementedComponents { get; } =
 			new ObservableCollection<IComponentDeclaration>()
 		{
-			new ComponentDeclaration(0, "Resistor", 2, ComponentType.Passive),
-			new ComponentDeclaration(1, "Voltage Source", 2, ComponentType.Passive),
-			new ComponentDeclaration(2, "Current Source", 2, ComponentType.Passive),
+			new ComponentDeclaration(ComponentIDEnumeration.Resistor, "Resistor", 2, ComponentType.Passive),
+			new ComponentDeclaration(ComponentIDEnumeration.VoltageSource, "Voltage Source", 2, ComponentType.Passive),
+			new ComponentDeclaration(ComponentIDEnumeration.CurrentSource, "Current Source", 2, ComponentType.Passive),
 		};
 
 		/// <summary>
 		/// Dictionary of component IDs and types assigned to them
 		/// </summary>
-		private Dictionary<int, Type> _ComponentTypesByID { get; } = new Dictionary<int, Type>()
+		private Dictionary<ComponentIDEnumeration, Type> _ComponentTypesByID { get; } = new Dictionary<ComponentIDEnumeration, Type>()
 		{
-			{0, typeof(Resistor) },
-			{1, typeof(VoltageSource) },
-			{2, typeof(CurrentSource) },
+			{ComponentIDEnumeration.Resistor, typeof(Resistor) },
+			{ComponentIDEnumeration.VoltageSource, typeof(VoltageSource) },
+			{ComponentIDEnumeration.CurrentSource, typeof(CurrentSource) },
 		};
 
 		/// <summary>
@@ -98,7 +98,7 @@ namespace ECAT.Design
 		/// </summary>
 		/// <param name="componentID"></param>
 		/// <returns></returns>
-		public IBaseComponent Construct(int componentID)
+		public IBaseComponent Construct(ComponentIDEnumeration componentID)
 		{
 			if (_ComponentTypesByID.TryGetValue(componentID, out var result))
 			{
