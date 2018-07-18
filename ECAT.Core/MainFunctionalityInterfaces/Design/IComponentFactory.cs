@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 
 namespace ECAT.Core
@@ -9,6 +10,15 @@ namespace ECAT.Core
 	/// </summary>
     public interface IComponentFactory
     {
+		#region Properties
+
+		/// <summary>
+		/// Collection of names of all components that are implemented and usable
+		/// </summary>
+		ReadOnlyObservableCollection<IComponentDeclaration> ImplementedComponents { get; }
+
+		#endregion
+
 		#region Methods
 
 		/// <summary>

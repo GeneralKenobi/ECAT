@@ -1,6 +1,6 @@
 ﻿using ECAT.Core;
 
-namespace ECAT.Simulation
+namespace ECAT.Design
 {
 	/// <summary>
 	/// Implementation of the component declaration interface. Stores important information about a single component type
