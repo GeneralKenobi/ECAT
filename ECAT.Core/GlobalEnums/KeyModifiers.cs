@@ -9,6 +9,11 @@ namespace ECAT.Core
 	public enum KeyModifiers
     {
 		/// <summary>
+		/// No modifiers are present
+		/// </summary>
+		None = 0,
+
+		/// <summary>
 		/// Shift key
 		/// </summary>
 		Shift = 1,
