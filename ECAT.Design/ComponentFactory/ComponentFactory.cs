@@ -10,6 +10,18 @@ namespace ECAT.Design
 	/// </summary>
 	public class ComponentFactory : IComponentFactory
 	{
+		#region Constructor
+
+		/// <summary>
+		/// Default Constructor
+		/// </summary>
+		public ComponentFactory()
+		{
+			ImplementedComponents = new ReadOnlyObservableCollection<IComponentDeclaration>(_ImplementedComponents);
+		}
+
+		#endregion
+
 		#region Private properties
 
 		/// <summary>
