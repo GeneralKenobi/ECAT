@@ -4,6 +4,7 @@ using ECAT.Simulation;
 using ECAT.ViewModel;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.System;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -173,26 +174,17 @@ namespace ECAT.UWP
 		/// <param name="e"></param>
 		private void KeyPressed(object sender, KeyRoutedEventArgs e)
 		{
-			if(e.Key == VirtualKey.Escape)
+			if(e.Key == VirtualKey.Shift || e.Key == VirtualKey.Control || e.Key == VirtualKey.Menu)
 			{
-				AppViewModel.Singleton.DesignVM.StopActionCommand.Execute(null);
+				return;
 			}
-			if (e.Key == VirtualKey.W)
-			{
-				AppViewModel.Singleton.DesignVM.PrepareToPlaceLooseWireCommand.Execute(null);
-			}
-			if (e.Key == VirtualKey.R)
-			{
-				AppViewModel.Singleton.DesignVM.ComponentToAdd = new ComponentDeclaration(0, "Resistor", 2, ComponentType.Passive);
-			}
-			if (e.Key == VirtualKey.V)
-			{
-				AppViewModel.Singleton.DesignVM.ComponentToAdd = new ComponentDeclaration(1, "Voltage Source", 2, ComponentType.Passive);
-			}
-			if (e.Key == VirtualKey.C)
-			{
-				AppViewModel.Singleton.DesignVM.ComponentToAdd = new ComponentDeclaration(2, "Current Source", 2, ComponentType.Passive);
-			}
+			// TODO: This method of getting key modifiers is not working reliably - find a solution
+			var shift = CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down ? KeyModifiers.Shift : KeyModifiers.None;
+			var ctrl = CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Control) == CoreVirtualKeyStates.Down ? KeyModifiers.Ctrl : KeyModifiers.None;
+			var alt = CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Menu) == CoreVirtualKeyStates.Down ? KeyModifiers.Alt : KeyModifiers.None;
+			AppViewModel.Singleton.ShortcutManager.ProcessKeyCombination(new ShortcutKey(e.Key.ToString(),
+				shift | ctrl | alt));
+			
 		}
 
 		#endregion
