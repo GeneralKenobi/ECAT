@@ -24,6 +24,7 @@ namespace ECAT.UWP
 			builder.RegisterInstance(new ComponentFactory()).As<IComponentFactory>();
 			builder.RegisterInstance(new PlanePositionFactory()).As<IPlanePositionFactory>();
 			builder.RegisterInstance(new DefaultValues()).As<IDefaultValues>();
+			builder.RegisterInstance(new InfoLogger()).As<IInfoLogger>();
 
 
 			IoC.Build(builder);
