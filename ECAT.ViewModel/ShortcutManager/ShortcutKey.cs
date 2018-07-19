@@ -2,6 +2,9 @@
 
 namespace ECAT.ViewModel
 {
+	/// <summary>
+	/// Represents a key combination that may be used as a shortcut key - a key and some modifiers
+	/// </summary>
 	public class ShortcutKey
 	{
 		#region Constructor
