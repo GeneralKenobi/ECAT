@@ -52,6 +52,11 @@ namespace ECAT.ViewModel
 		public SimulationViewModel SimulationVM { get; } = new SimulationViewModel();
 
 		/// <summary>
+		/// Manages shortcuts and processes key presses
+		/// </summary>
+		public ShortcutManager ShortcutManager { get; } = new ShortcutManager();
+
+		/// <summary>
 		/// Returns the current state of the wire
 		/// </summary>
 		public AppState State
