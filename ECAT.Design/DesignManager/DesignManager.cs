@@ -222,32 +222,6 @@ namespace ECAT.Design
 		}
 
 		/// <summary>
-		/// Returns the type corresponding to the declaration
-		/// </summary>
-		/// <param name="declaration"></param>
-		/// <returns></returns>
-		public Type GetComponentType(IComponentDeclaration declaration) => GetComponentType(declaration.ID);
-
-		/// <summary>
-		/// Returns the type corresponding to the given component it
-		/// </summary>
-		/// <param name="declaration"></param>
-		/// <returns></returns>
-		public Type GetComponentType(int id)
-		{
-			switch(id)
-			{
-				case 0: return typeof(Resistor);
-
-				default:
-					{
-						throw new ArgumentException($"No type corresponds to that ID: {id}");
-					}
-					
-			}
-		}
-
-		/// <summary>
 		/// Method that removes a component from its <see cref="ISchematic"/>. First searches through the <see cref="CurrentSchematic"/>,
 		/// if the <paramref name="component"/> is not found there searches through the rest of <see cref="Schematics"/>
 		/// </summary>
