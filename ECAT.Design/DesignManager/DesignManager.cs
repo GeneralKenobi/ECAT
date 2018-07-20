@@ -25,7 +25,16 @@ namespace ECAT.Design
 
 		#endregion
 
-		#region Private Properties
+		#region Private members
+
+		/// <summary>
+		/// Backing store for <see cref="_PlacedWire"/>
+		/// </summary>
+		private IWire mPlacedWire;
+
+		#endregion
+
+		#region Private properties
 
 		/// <summary>
 		/// Backing store for <see cref="Schematic"/>
@@ -43,7 +52,34 @@ namespace ECAT.Design
 		/// <summary>
 		/// The currently placed wire
 		/// </summary>
-		private IWire _PlacedWire { get; set; } = null;
+		private IWire _PlacedWire
+		{
+			get => mPlacedWire;
+			set
+			{
+				if(value == null)
+				{
+					// If the wire is removed and it has less than 2 defining points
+					if (mPlacedWire.DefiningPoints.Count < 2)
+					{
+						// Remove it (as it's too short to be usable)
+						RemoveWire(mPlacedWire);
+
+						IoC.Resolve<IInfoLogger>().Log("Due to insufficient number of points the wire was removed");
+					}
+					else
+					{
+						IoC.Resolve<IInfoLogger>().Log(string.Empty);
+					}
+				}
+				else
+				{
+					IoC.Resolve<IInfoLogger>().Log("Tap the schematic to extend the wire");
+				}
+
+				mPlacedWire = value;
+			}
+		}
 
 		#endregion
 
@@ -270,15 +306,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Finishes the wire placing procedure. If the wire has less than 2 defining points then it's removed from the schematic
 		/// </summary>
-		public void StopPlacingWire()
-		{
-			if(_PlacedWire.DefiningPoints.Count < 2)
-			{
-				RemoveWire(_PlacedWire);
-			}
-
-			_PlacedWire = null;
-		}
+		public void StopPlacingWire() => _PlacedWire = null;
 
 		/// <summary>
 		/// Creates and places a new loose wire on the given position
