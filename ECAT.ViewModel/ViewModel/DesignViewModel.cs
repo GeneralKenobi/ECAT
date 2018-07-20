@@ -2,10 +2,8 @@
 using CSharpEnhanced.ICommands;
 using ECAT.Core;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
-using System.Text;
 using System.Windows.Input;
 
 namespace ECAT.ViewModel
@@ -13,7 +11,7 @@ namespace ECAT.ViewModel
 	/// <summary>
 	/// ViewModel for circuit design
 	/// </summary>
-    public class DesignViewModel : BaseViewModel
+	public class DesignViewModel : BaseViewModel
     {
 		#region Constructor
 
@@ -45,7 +43,12 @@ namespace ECAT.ViewModel
 		/// <summary>
 		/// Flag which, if set, ensures the next click on the design area will place a new wire in that position
 		/// </summary>
-		private bool _PlaceLooseWireOnNextClick { get; set; } = false;		
+		private bool _PlaceLooseWireOnNextClick { get; set; } = false;
+
+		/// <summary>
+		/// Backing store for <see cref="ComponentToAdd"/>
+		/// </summary>
+		private IComponentDeclaration _ComponentToAdd { get; set; }
 
 		#endregion
 
@@ -60,7 +63,25 @@ namespace ECAT.ViewModel
 		/// The component that was selected by the user to be added upon clicking on the screen.
 		/// If null, then no component is to be added
 		/// </summary>
-		public IComponentDeclaration ComponentToAdd { get; set; }
+		public IComponentDeclaration ComponentToAdd
+		{
+			get => _ComponentToAdd;
+			set
+			{
+				if(value != null && DesignManager.PlacingWire)
+				{
+					DesignManager.StopPlacingWire();
+				}
+
+				_ComponentToAdd = value;
+				InfoLogger.Log(_ComponentToAdd == null ? string.Empty : "Tap on the schematic to place a(n) " + _ComponentToAdd.DisplayName);
+			}
+		}
+
+		/// <summary>
+		/// InfoLogger for this app
+		/// </summary>
+		public IInfoLogger InfoLogger { get; } = IoC.Resolve<IInfoLogger>();
 
 		/// <summary>
 		/// True if the user is currently adding components
@@ -174,6 +195,8 @@ namespace ECAT.ViewModel
 			{
 				// Set the flag
 				_PlaceLooseWireOnNextClick = true;
+
+				InfoLogger.Log("Tap on the schematic to place a wire");
 			}
 		}
 
