@@ -146,7 +146,7 @@ namespace ECAT.ViewModel
 		/// <param name="key"></param>
 		/// <param name="activeModifiers"></param>
 		public void ProcessKeyCombination(ShortcutKey pressedKey) =>
-			_RegisteredShortcuts.Find((x) => x.DefinedKey.Equals(pressedKey)).Action.Invoke();
+			_RegisteredShortcuts.Find((x) => x.DefinedKey.Equals(pressedKey))?.Action.Invoke();
 
 		/// <summary>
 		/// Loads the default key mappings from a file and saves them as current ones
