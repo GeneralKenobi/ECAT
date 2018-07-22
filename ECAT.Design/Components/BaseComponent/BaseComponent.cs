@@ -1,6 +1,7 @@
 ﻿using CSharpEnhanced.Maths;
 using ECAT.Core;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace ECAT.Design
@@ -80,11 +81,17 @@ namespace ECAT.Design
 		/// <summary>
 		/// Height of the control in circuit design in the default, horizontal position
 		/// </summary>
-		public abstract double Height { get; }		
+		public abstract double Height { get; }
 
 		#endregion
 
 		#region Public methods
+
+		/// <summary>
+		/// Returns a list with all terminals in this component
+		/// </summary>
+		/// <returns></returns>
+		public abstract List<ITerminal> GetTerminals();
 
 		/// <summary>
 		/// Rotates the component by <paramref name="degrees"/>

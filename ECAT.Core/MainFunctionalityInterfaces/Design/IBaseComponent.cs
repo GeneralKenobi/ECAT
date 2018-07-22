@@ -1,5 +1,6 @@
 ﻿using CSharpEnhanced.Maths;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace ECAT.Core
@@ -45,6 +46,12 @@ namespace ECAT.Core
 		/// </summary>
 		/// <param name="degrees">Number of degrees to rotate the component by</param>
 		void Rotate(double degrees);
+
+		/// <summary>
+		/// Returns a list with all terminals in this component
+		/// </summary>
+		/// <returns></returns>
+		List<ITerminal> GetTerminals();
 
 		#endregion
 	}
