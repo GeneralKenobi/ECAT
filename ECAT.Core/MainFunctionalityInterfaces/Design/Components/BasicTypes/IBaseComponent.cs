@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Numerics;
 
 namespace ECAT.Core
 {
@@ -20,7 +21,7 @@ namespace ECAT.Core
 		/// <summary>
 		/// Position of the handle of the component (top left corner)
 		/// </summary>
-		cdouble Handle { get; }
+		Complex Handle { get; }
 
 		/// <summary>
 		/// Width of the control in circuit design in the default, horizontal position

@@ -25,7 +25,16 @@ namespace ECAT.Design
 
 		#endregion
 
-		#region Private Properties
+		#region Private members
+
+		/// <summary>
+		/// Backing store for <see cref="_PlacedWire"/>
+		/// </summary>
+		private IWire mPlacedWire;
+
+		#endregion
+
+		#region Private properties
 
 		/// <summary>
 		/// Backing store for <see cref="Schematic"/>
@@ -43,7 +52,34 @@ namespace ECAT.Design
 		/// <summary>
 		/// The currently placed wire
 		/// </summary>
-		private IWire _PlacedWire { get; set; } = null;
+		private IWire _PlacedWire
+		{
+			get => mPlacedWire;
+			set
+			{
+				if(value == null)
+				{
+					// If the wire is removed and it has less than 2 defining points
+					if (mPlacedWire.DefiningPoints.Count < 2)
+					{
+						// Remove it (as it's too short to be usable)
+						RemoveWire(mPlacedWire);
+
+						IoC.Resolve<IInfoLogger>().Log("Due to insufficient number of points the wire was removed");
+					}
+					else
+					{
+						IoC.Resolve<IInfoLogger>().Log(string.Empty);
+					}
+				}
+				else
+				{
+					IoC.Resolve<IInfoLogger>().Log("Tap the schematic to extend the wire");
+				}
+
+				mPlacedWire = value;
+			}
+		}
 
 		#endregion
 
@@ -222,32 +258,6 @@ namespace ECAT.Design
 		}
 
 		/// <summary>
-		/// Returns the type corresponding to the declaration
-		/// </summary>
-		/// <param name="declaration"></param>
-		/// <returns></returns>
-		public Type GetComponentType(IComponentDeclaration declaration) => GetComponentType(declaration.ID);
-
-		/// <summary>
-		/// Returns the type corresponding to the given component it
-		/// </summary>
-		/// <param name="declaration"></param>
-		/// <returns></returns>
-		public Type GetComponentType(int id)
-		{
-			switch(id)
-			{
-				case 0: return typeof(Resistor);
-
-				default:
-					{
-						throw new ArgumentException($"No type corresponds to that ID: {id}");
-					}
-					
-			}
-		}
-
-		/// <summary>
 		/// Method that removes a component from its <see cref="ISchematic"/>. First searches through the <see cref="CurrentSchematic"/>,
 		/// if the <paramref name="component"/> is not found there searches through the rest of <see cref="Schematics"/>
 		/// </summary>
@@ -296,15 +306,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Finishes the wire placing procedure. If the wire has less than 2 defining points then it's removed from the schematic
 		/// </summary>
-		public void StopPlacingWire()
-		{
-			if(_PlacedWire.DefiningPoints.Count < 2)
-			{
-				RemoveWire(_PlacedWire);
-			}
-
-			_PlacedWire = null;
-		}
+		public void StopPlacingWire() => _PlacedWire = null;
 
 		/// <summary>
 		/// Creates and places a new loose wire on the given position

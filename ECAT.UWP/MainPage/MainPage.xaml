@@ -19,7 +19,7 @@
 	</Page.Resources>
 
 
-	<Grid >
+	<Grid>
 
 		<ScrollViewer ZoomMode="Enabled" MinZoomFactor="0.1" MaxZoomFactor="10"
 			HorizontalScrollMode="Enabled" HorizontalScrollBarVisibility="Auto"
@@ -36,7 +36,7 @@
 
 				<!-- All parts go here -->
 				<!-- Don't use layout rounding because it blurs the parts when they're rotated,
-		especially noticeable when the control has text in it -->
+				especially noticeable when the control has text in it -->
 				<Grid x:Name="BackgroundGrid"
 					Background="Transparent"
 					UseLayoutRounding="False"
@@ -84,9 +84,89 @@
 			</Grid>
 		</ScrollViewer>
 
+		<!-- The dark blue border at the bottom of the screen which contains the currently logged message -->
+		<Border Background="{StaticResource DarkBlue5Brush}"
+			HorizontalAlignment="Stretch"
+			VerticalAlignment="Bottom"
+			Height="30"
+			Padding="50 0 0 0">
+
+			<!-- The currently logged message -->
+			<TextBlock Text="{Binding DesignVM.InfoLogger.Message}"
+				FontSize="{StaticResource FontSizeSmall}"
+				Foreground="{StaticResource LightGrayBrush}"
+				VerticalAlignment="Center">
+
+				<!-- Translate transform which adjusts the position of the message depending on if menu is open/closed -->
+				<TextBlock.RenderTransform>
+					<TranslateTransform x:Name="LogMessageTranslateTransform"/>
+				</TextBlock.RenderTransform>
+
+				<xaml:VisualManager.VisualSetups>
+					<xaml:VisualSetupGroup>
+
+						<xaml:VisualSetupGroup.Triggers>
+							<xaml:VisualTransitionCollection>
+
+								<!-- Transitions to LogMessageDisplaced when menu is openend -->
+								<xaml:VisualTransition TransitionTo="LogMessageDisplaced">
+									<xaml:VisualDataTriggerBool Data="{Binding ElementName=SideMenu, Path=IsOpen}"
+										CompareTo="True"/>
+								</xaml:VisualTransition>
+
+								<!-- Transitions out of the current setup when menu is closed -->
+								<xaml:VisualTransition>
+									<xaml:VisualDataTriggerBool Data="{Binding ElementName=SideMenu, Path=IsOpen}"
+										CompareTo="False"/>				
+								</xaml:VisualTransition>
+
+							</xaml:VisualTransitionCollection>
+						</xaml:VisualSetupGroup.Triggers>
+
+						<!-- Moves the textblock to the right so that it's not obstructed be the menu -->
+						<xaml:VisualSetupDynamic ID="LogMessageDisplaced">
+							<xaml:VisualSetupDynamic.TransitionInStoryboard>
+								<Storyboard>
+									<DoubleAnimation Storyboard.TargetName="LogMessageTranslateTransform"
+										Storyboard.TargetProperty="X"
+										To="200"
+										Duration="0:0:0.25">
+									
+										<DoubleAnimation.EasingFunction>
+											<CubicEase EasingMode="EaseInOut"/>
+										</DoubleAnimation.EasingFunction>
+
+									</DoubleAnimation>
+								</Storyboard>
+							</xaml:VisualSetupDynamic.TransitionInStoryboard>
+
+							<!-- Moves the menu back -->
+							<xaml:VisualSetupDynamic.TransitionOutStoryboard>
+								<Storyboard>
+									<DoubleAnimation Storyboard.TargetName="LogMessageTranslateTransform"
+										Storyboard.TargetProperty="X"
+										To="0"
+										Duration="0:0:0.25">
+										
+										<DoubleAnimation.EasingFunction>
+											<CubicEase EasingMode="EaseInOut"/>
+										</DoubleAnimation.EasingFunction>
+
+									</DoubleAnimation>
+								</Storyboard>
+							</xaml:VisualSetupDynamic.TransitionOutStoryboard>
+
+						</xaml:VisualSetupDynamic>
+
+					</xaml:VisualSetupGroup>
+				</xaml:VisualManager.VisualSetups>
+			
+			</TextBlock>
+		</Border>
+
 		<controls:Menu x:Name="SideMenu"
 			Position="Left"
-			RestrictedPositions="Horizontal"
+			EnableMenuReposition="False"
 			Background="{StaticResource DarkBlueBrush}"
 			BorderBrush="{StaticResource BlackBrush}"			
 			SeparatorBrush="{StaticResource BlackBrush}"
@@ -107,8 +187,8 @@
 				<!--<local:EditMenu controls:Menu.Glyph="&#xE104;"/>-->
 
 			</controls:Menu.Content>
-		</controls:Menu>
 
+		</controls:Menu>
 
 	</Grid>
 </Page>

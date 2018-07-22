@@ -7,7 +7,7 @@ namespace ECAT.Design
 	/// <summary>
 	/// Base class for all two-terminal components
 	/// </summary>
-	public abstract class TwoTerminal : BaseComponent, ITwoTerminal
+    public abstract class TwoTerminal : BaseComponent, ITwoTerminal
     {
 		#region Constructor
 

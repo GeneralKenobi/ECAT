@@ -66,20 +66,6 @@ namespace ECAT.Core
 		void ChangeCurrentSchematic(int index);
 
 		/// <summary>
-		/// Returns the type corresponding to the declaration
-		/// </summary>
-		/// <param name="declaration"></param>
-		/// <returns></returns>
-		Type GetComponentType(IComponentDeclaration declaration);
-
-		/// <summary>
-		/// Returns the type corresponding to the given component it
-		/// </summary>
-		/// <param name="declaration"></param>
-		/// <returns></returns>
-		Type GetComponentType(int id);		
-
-		/// <summary>
 		/// Method that removes a component from its <see cref="ISchematic"/>. First searches through the <see cref="CurrentSchematic"/>,
 		/// if the <paramref name="component"/> is not found there searches through the rest of <see cref="Schematics"/>
 		/// </summary>

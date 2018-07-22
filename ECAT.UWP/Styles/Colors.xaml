@@ -108,11 +108,17 @@
 	<Color x:Key="DarkBlue">#3B5190</Color>
 	<SolidColorBrush x:Key="DarkBlueBrush" Color="{StaticResource DarkBlue}"/>
 
-	<Color x:Key="DarkBlue2">#344A89</Color>
+	<Color x:Key="DarkBlue2">#334A85</Color>
 	<SolidColorBrush x:Key="DarkBlue2Brush" Color="{StaticResource DarkBlue2}"/>
 
-	<Color x:Key="DarkBlue3">#2B4180</Color>
+	<Color x:Key="DarkBlue3">#2B4380</Color>
 	<SolidColorBrush x:Key="DarkBlue3Brush" Color="{StaticResource DarkBlue3}"/>
+
+	<Color x:Key="DarkBlue4">#233C7B</Color>
+	<SolidColorBrush x:Key="DarkBlue4Brush" Color="{StaticResource DarkBlue4}"/>
+
+	<Color x:Key="DarkBlue5">#1B3576</Color>
+	<SolidColorBrush x:Key="DarkBlue5Brush" Color="{StaticResource DarkBlue5}"/>
 
 	<Color x:Key="DarkBlue50">#7F3B5190</Color>
 	<SolidColorBrush x:Key="DarkBlueBrush50" Color="{StaticResource DarkBlue50}"/>

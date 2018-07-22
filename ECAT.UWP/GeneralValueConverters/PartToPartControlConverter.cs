@@ -1,4 +1,5 @@
 ﻿using ECAT.Core;
+using ECAT.Design;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,21 @@ namespace ECAT.UWP
 	{
 		public object Convert(object value, Type targetType, object parameter, string language)
 		{
-			return new ResistorTC();
+			if(value is Resistor)
+			{
+				return new ResistorTC();
+			}
+
+			if(value is VoltageSource)
+			{
+				return new VoltageSourceTC();
+			}
+
+			if(value is CurrentSource)
+			{
+				return new CurrentSourceTC();
+			}
+
 			//if (value is BasePart part && ControlsHelpers.TryGetUIControl(part, out FrameworkElement element))
 			//{
 			//	return element;

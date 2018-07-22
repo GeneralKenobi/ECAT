@@ -1,16 +1,13 @@
 ﻿using Autofac;
 using ECAT.Core;
 using ECAT.Design;
-using ECAT.ViewModel;
 using ECAT.Simulation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ECAT.UWP
 {
+	/// <summary>
+	/// Class that contains a method that prepares the IoC container for use
+	/// </summary>
 	public static class IoCSetup
 	{
 		/// <summary>
@@ -26,6 +23,8 @@ namespace ECAT.UWP
 			builder.RegisterInstance(new SimulationManager()).As<ISimulationManager>();			
 			builder.RegisterInstance(new ComponentFactory()).As<IComponentFactory>();
 			builder.RegisterInstance(new PlanePositionFactory()).As<IPlanePositionFactory>();
+			builder.RegisterInstance(new DefaultValues()).As<IDefaultValues>();
+			builder.RegisterInstance(new InfoLogger()).As<IInfoLogger>();
 
 
 			IoC.Build(builder);
