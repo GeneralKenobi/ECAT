@@ -25,20 +25,20 @@ namespace ECAT.UWP
 		#region PartialNode Dependency Property
 
 		/// <summary>
-		/// Position assigned to this <see cref="SocketTC"/>
+		/// ITerminal assigned to this <see cref="SocketTC"/>
 		/// </summary>
-		public IPlanePosition Position
+		public ITerminal Terminal
 		{
-			get => (IPlanePosition)GetValue(PartialNodeProperty);
-			set => SetValue(PartialNodeProperty, value);
+			get => (ITerminal)GetValue(TerminalProperty);
+			set => SetValue(TerminalProperty, value);
 		}
 
 		/// <summary>
-		/// Backing store for <see cref="Position"/>
+		/// Backing store for <see cref="Terminal"/>
 		/// </summary>
-		public static readonly DependencyProperty PartialNodeProperty =
-			DependencyProperty.Register(nameof(Position), typeof(IPlanePosition),
-			typeof(SocketTC), new PropertyMetadata(default(IPlanePosition)));
+		public static readonly DependencyProperty TerminalProperty =
+			DependencyProperty.Register(nameof(Terminal), typeof(ITerminal),
+			typeof(SocketTC), new PropertyMetadata(default(ITerminal)));
 
 		#endregion
 	}

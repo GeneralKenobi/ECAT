@@ -42,10 +42,10 @@
 							Points="25,15 35,25 25,35 35,25 12,25"/>
 
 						<!-- First socket -->
-						<local:SocketTC Canvas.Top="25" Position="{Binding Component.TerminalA}"/>
+						<local:SocketTC Canvas.Top="25" Terminal="{Binding Component.TerminalA}"/>
 
 						<!-- Second socket -->
-						<local:SocketTC Canvas.Left="100" Canvas.Top="25" Position="{Binding Component.TerminalB}"/>
+						<local:SocketTC Canvas.Left="100" Canvas.Top="25" Terminal="{Binding Component.TerminalB}"/>
 
 					</Canvas>
 				</ControlTemplate>

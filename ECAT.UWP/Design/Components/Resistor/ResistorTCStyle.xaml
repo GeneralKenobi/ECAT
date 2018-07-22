@@ -22,8 +22,8 @@
 								StrokeThickness="5"
 								Points="0,25 25,25 25,15.5 75,15.5 75,25 100,25 100,25 75,25 75,34.5 25,34.5 25,25"/>
 
-						<local:SocketTC Canvas.Top="25" Position="{Binding Component.TerminalA.Position}"/>
-						<local:SocketTC Canvas.Left="100" Canvas.Top="25" Position="{Binding Component.TerminalB.Position}"/>
+						<local:SocketTC Canvas.Top="25" Terminal="{Binding Component.TerminalA}"/>
+						<local:SocketTC Canvas.Left="100" Canvas.Top="25" Terminal="{Binding Component.TerminalB}"/>
 
 					</Canvas>
 				</ControlTemplate>

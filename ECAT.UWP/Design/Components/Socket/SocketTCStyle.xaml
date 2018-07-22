@@ -43,7 +43,7 @@
 							<!-- Socket clicked command -->
 							<xaml:VisualAttachments.AttachedVisuals>
 								<xaml:TappedTriggerCommand Command="{Binding SocketClickedCommand}"			
-									CommandParameter="{Binding Position, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+									CommandParameter="{Binding Terminal.Position, RelativeSource={RelativeSource Mode=TemplatedParent}}"
 									SetHandled="True"/>
 							</xaml:VisualAttachments.AttachedVisuals>
 
