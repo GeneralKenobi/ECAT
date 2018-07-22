@@ -16,5 +16,15 @@ namespace ECAT.Core
 		ReadOnlyObservableCollection<IComponentDeclaration> ImplementedComponents { get; }
 
 		#endregion
+
+		#region Methods
+
+		/// <summary>
+		/// Constructs a DC admittance matrix for the given schematic
+		/// </summary>
+		/// <param name="schematic"></param>
+		void ConstructDCAdmittanceMatrix(ISchematic schematic);
+
+		#endregion
 	}
 }
