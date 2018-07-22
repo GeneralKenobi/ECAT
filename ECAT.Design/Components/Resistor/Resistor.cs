@@ -17,10 +17,5 @@ namespace ECAT.Design
 		}
    
 		double Resistance { get; set; } = 1000;
-
-		/// <summary>
-		/// Admittance between terminals A and B
-		/// </summary>
-		public override Complex Admittance => new Complex(Resistance, 0);
 	}
 }

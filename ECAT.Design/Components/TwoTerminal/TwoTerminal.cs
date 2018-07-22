@@ -47,7 +47,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Admittance between terminals A and B
 		/// </summary>
-		public abstract Complex Admittance { get; }
+		public Complex Admittance { get; set; }
 
 		#endregion
 

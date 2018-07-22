@@ -47,7 +47,7 @@ namespace ECAT.Simulation
 
 		private List<INode> MergeNodesConnectedByWire(List<INode> nodes, List<IWire> wires)
 		{
-
+			return null;
 		}
 
 		/// <summary>

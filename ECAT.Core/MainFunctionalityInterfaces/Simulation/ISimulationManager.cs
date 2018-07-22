@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
 namespace ECAT.Core
 {
@@ -8,15 +7,6 @@ namespace ECAT.Core
 	/// </summary>
 	public interface ISimulationManager : INotifyPropertyChanged
     {
-		#region Properties
-
-		/// <summary>
-		/// Collection of names of all components that are implemented and usable
-		/// </summary>
-		ReadOnlyObservableCollection<IComponentDeclaration> ImplementedComponents { get; }
-
-		#endregion
-
 		#region Methods
 
 		/// <summary>

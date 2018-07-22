@@ -12,12 +12,12 @@ namespace ECAT.Core
 		/// <summary>
 		/// One of the terminals in this two-terminal
 		/// </summary>
-		IPlanePosition TerminalA { get; }
+		ITerminal TerminalA { get; }
 
 		/// <summary>
 		/// One of the terminals in this two-terminal
 		/// </summary>
-		IPlanePosition TerminalB { get; }
+		ITerminal TerminalB { get; }
 
 		/// <summary>
 		/// The admittance between the two terminals
