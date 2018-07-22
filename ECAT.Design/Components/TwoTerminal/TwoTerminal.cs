@@ -1,4 +1,5 @@
 ﻿using ECAT.Core;
+using System.Collections.Generic;
 using System.Numerics;
 
 namespace ECAT.Design
@@ -6,7 +7,7 @@ namespace ECAT.Design
 	/// <summary>
 	/// Base class for all two-terminal components
 	/// </summary>
-	public abstract class TwoTerminal : BaseComponent
+	public abstract class TwoTerminal : BaseComponent, ITwoTerminal
     {
 		#region Constructor
 
@@ -42,6 +43,11 @@ namespace ECAT.Design
 		/// One of the terminals in this two-terminal
 		/// </summary>
 		public ITerminal TerminalB { get; }
+
+		/// <summary>
+		/// Admittance between terminals A and B
+		/// </summary>
+		public abstract Complex Admittance { get; }
 
 		#endregion
 
@@ -79,6 +85,20 @@ namespace ECAT.Design
 			TerminalA.Position.RotationAngle += degrees;
 			TerminalB.Position.RotationAngle += degrees;
 		}
+
+		#endregion
+
+		#region Public methods
+
+		/// <summary>
+		/// Returns a list with all terminals in this component
+		/// </summary>
+		/// <returns></returns>
+		public override List<ITerminal> GetTerminals() => new List<ITerminal>()
+		{
+			TerminalA,
+			TerminalB,
+		};
 
 		#endregion
 	}
