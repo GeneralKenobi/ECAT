@@ -1,6 +1,8 @@
-﻿using System;
+﻿using CSharpEnhanced.CoreClasses;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 
 namespace ECAT.Core
@@ -8,46 +10,49 @@ namespace ECAT.Core
 	/// <summary>
 	/// Node - connects one or more components and/or wires. Used in admittance matrix and simulation
 	/// </summary>
-	public partial class Node
+	public partial class Node : INode
     {
 		#region Constructor
+
+		public Node() { }
 
 		/// <summary>
 		/// Default Constructor, hidden so as to force creation through <see cref=""/>
 		/// </summary>
 		private Node(int id)
 		{
-			ID = id;
-
-			ConnectedComponents = new ReadOnlyCollection<IBaseComponent>(_ConnectedComponents);
+			
 		}
-
-		#endregion
-		
-		#region Private properties
-
-		/// <summary>
-		/// Backing store for <see cref="ConnectedComponents"/>
-		/// </summary>
-		private List<IBaseComponent> _ConnectedComponents { get; } = new List<IBaseComponent>();
 
 		#endregion
 
 		#region Public properties
 
 		/// <summary>
-		/// Unique number representing the instance
+		/// Potential present at the node with respect to ground
 		/// </summary>
-		public int ID { get; }
+		public RefWrapper<double> Potential { get; }
 
 		/// <summary>
-		/// Collection of all parts connected to this node
+		/// List with all components that are connected to the <see cref="INode"/>
 		/// </summary>
-		public ReadOnlyCollection<IBaseComponent> ConnectedComponents { get; }
+		public List<IBaseComponent> ConnectedComponents { get; set; }
 
 		#endregion
 
+		#region Public Methods
 
+		/// <summary>
+		/// Merges <paramref name="node"/> into this instance (transfers over the associated components)
+		/// </summary>
+		/// <param name="node"></param>
+		public void Merge(INode node)
+		{
+			ConnectedComponents.AddRange(node.ConnectedComponents);
 
+			node.ConnectedComponents.Clear();
+		}
+
+		#endregion
 	}
 }
