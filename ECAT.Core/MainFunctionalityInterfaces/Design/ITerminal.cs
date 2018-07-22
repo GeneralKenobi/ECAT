@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using CSharpEnhanced.CoreClasses;
+using System.ComponentModel;
 
 namespace ECAT.Core
 {
@@ -13,8 +14,8 @@ namespace ECAT.Core
 		IPlanePosition Position { get; }
 
 		/// <summary>
-		/// Node assigned to the element in the simulation, having it stored allows to display the results during real-time simulations
+		/// Reference to potential at <see cref="INode"/> that is associated with this <see cref="ITerminal"/>
 		/// </summary>
-		INode Node { get; }
+		RefWrapper<double> Potential { get; set; }
     }
 }
