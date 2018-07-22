@@ -13,4 +13,10 @@
     <ProjectReference Include="..\ECAT.Core\ECAT.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="CSharpEnhanced">
+      <HintPath>..\..\CSharpEnhanced\CSharpEnhanced\bin\Debug\netstandard2.0\CSharpEnhanced.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
