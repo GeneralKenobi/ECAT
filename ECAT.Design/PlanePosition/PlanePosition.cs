@@ -176,6 +176,26 @@ namespace ECAT.Design
 		/// <returns></returns>
 		public IPlanePosition DeepClone() => new PlanePosition(Absolute.Real, Absolute.Imaginary, Shift.Real, Shift.Imaginary);
 
+		/// <summary>
+		/// Returns true if this and <paramref name="position"/> are at the same position
+		/// </summary>
+		/// <param name="position"></param>
+		/// <returns></returns>
+		public bool Equals(IPlanePosition position) => X == position.X && Y == position.Y;
+
+		/// <summary>
+		/// Returns true if this and <paramref name="position"/> are at the same position
+		/// </summary>
+		/// <param name="position"></param>
+		/// <returns></returns>
+		public bool Equals(Complex position) => X == position.Real && Y == position.Imaginary;
+
+		/// <summary>
+		/// Returns a string representation of the position
+		/// </summary>
+		/// <returns></returns>
+		public override string ToString() => $"({X}, {Y})";
+
 		#endregion
 	}
 }

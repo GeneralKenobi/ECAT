@@ -55,6 +55,20 @@ namespace ECAT.Core
 		/// <returns></returns>
 		IPlanePosition DeepClone();
 
+		/// <summary>
+		/// Returns true if this and <paramref name="position"/> are at the same position
+		/// </summary>
+		/// <param name="position"></param>
+		/// <returns></returns>
+		bool Equals(IPlanePosition position);
+
+		/// <summary>
+		/// Returns true if this and <paramref name="position"/> are at the same position
+		/// </summary>
+		/// <param name="position"></param>
+		/// <returns></returns>
+		bool Equals(Complex position);
+
 		#endregion
 	}
 }
