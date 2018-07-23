@@ -30,6 +30,7 @@ namespace ECAT.UWP
 			this.InitializeComponent();
 			Loaded += MainPageLoaded;
 			DataContext = AppViewModel.Singleton;
+			ScrollViewerControl.ZoomToFactor(2);
 		}
 
 		#endregion

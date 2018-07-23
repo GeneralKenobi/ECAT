@@ -21,7 +21,8 @@
 
 	<Grid>
 
-		<ScrollViewer ZoomMode="Enabled" MinZoomFactor="0.1" MaxZoomFactor="10"
+		<ScrollViewer Name="ScrollViewerControl"
+		ZoomMode="Enabled" MinZoomFactor="0.1" MaxZoomFactor="10"			
 			HorizontalScrollMode="Enabled" HorizontalScrollBarVisibility="Auto"
 			HorizontalAlignment="Left"
 			VerticalAlignment="Top">
