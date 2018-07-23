@@ -20,20 +20,26 @@
 					(in a 25-length square around center) and surpress them from being bubbled up (eg. to design area) which
 					could, for example, allow the user to place a wire on the socket without invoking proper commands 
 					related to the socket -->
-					<Border Background="Transparent"
+					<Grid Background="Transparent"
 						Width="{Binding HitboxLength}"
 						Height="{Binding HitboxLength}">
 
 						<!-- Offset that centralizes the socket around it's assigned position -->
-						<Border.RenderTransform>
+						<Grid.RenderTransform>
 							<TranslateTransform X="{Binding HitboxLength, Converter={StaticResource Quotient}, ConverterParameter=-2}"
 								Y="{Binding HitboxLength, Converter={StaticResource Quotient}, ConverterParameter=-2}"/>
-						</Border.RenderTransform>
+						</Grid.RenderTransform>
 
 						<!-- Attach a trigger that will catch and surpress tapped event from being propagated -->
 						<xaml:VisualAttachments.AttachedVisuals>
 							<xaml:VisualTappedTrigger SetHandled="True"/>
 						</xaml:VisualAttachments.AttachedVisuals>
+
+						<!-- Used for testing -->
+						<TextBlock Text="{Binding Terminal.Potential.Value, RelativeSource={RelativeSource Mode=TemplatedParent}, FallbackValue=Err}"
+							FontSize="6"
+							Foreground="{StaticResource BlackBrush}"
+							Margin="4 -5 0 0"/>
 
 						<!-- Visible socket -->
 						<Ellipse Fill="{StaticResource BlackBrush}"
@@ -48,7 +54,7 @@
 							</xaml:VisualAttachments.AttachedVisuals>
 
 						</Ellipse>
-					</Border>
+					</Grid>
 				</ControlTemplate>
 			</Setter.Value>
 		</Setter>
