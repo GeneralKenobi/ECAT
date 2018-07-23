@@ -16,6 +16,6 @@ namespace ECAT.Core
 		/// <summary>
 		/// Reference to potential at <see cref="INode"/> that is associated with this <see cref="ITerminal"/>
 		/// </summary>
-		RefWrapper<double> Potential { get; set; }
+		RefWrapperPropertyChanged<double> Potential { get; set; }
     }
 }

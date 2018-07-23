@@ -38,6 +38,6 @@ namespace ECAT.Design
 		/// <summary>
 		/// Reference to potential at <see cref="INode"/> that is associated with this <see cref="ITerminal"/>
 		/// </summary>
-		public RefWrapper<double> Potential { get; set; }
+		public RefWrapperPropertyChanged<double> Potential { get; set; }
 	}
 }
