@@ -125,6 +125,18 @@ namespace ECAT.Design
 		/// <param name="degrees"></param>
 		protected abstract void RotatePartialNodes(double degrees);
 
+		/// <summary>
+		/// Invokes Property Changed Event for each string parameter
+		/// </summary>
+		/// <param name="propertyName">Properties to invoke for. Null or string.Empty will result in notification for all properties</param>
+		protected void InvokePropertyChanged(params string[] propertyNames)
+		{
+			foreach (var item in propertyNames)
+			{
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(item));
+			}
+		}
+
 		#endregion
 
 		#region Private methods
