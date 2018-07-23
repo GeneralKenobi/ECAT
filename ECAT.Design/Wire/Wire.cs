@@ -58,6 +58,11 @@ namespace ECAT.Design
 		/// </summary>
 		private ObservableCollection<IPlanePosition> _ConstructionPoints { get; } = new ObservableCollection<IPlanePosition>();
 
+		/// <summary>
+		/// Backing store for <see cref="ConnectedWires"/>
+		/// </summary>
+		private List<IWire> _ConnectedWires { get; set; } = new List<IWire>();
+
 		#endregion
 
 		#region Public properties
@@ -76,7 +81,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// List with all wires that are connected to this wire somewhere in the middle
 		/// </summary>
-		public IList<IWire> ConnectedWires { get; set; } = new List<IWire>();
+		public IList<IWire> ConnectedWires => _ConnectedWires;
 
 		/// <summary>
 		/// Collection of points that define the intermediate points of the wire. Point indexed 0 is the neighbour of <see cref="Beginning"/>,
@@ -92,6 +97,15 @@ namespace ECAT.Design
 		#endregion
 
 		#region Public methods
+
+		/// <summary>
+		/// Returns an IList of all wires connected to this <see cref="IWire"/> (including connections through other wires, excluding
+		/// this instance)
+		/// </summary>
+		/// <returns></returns>
+		public IList<IWire> GetAllConnectedWires() =>
+			// Use the private helper method, filter out this instance and get only distinct elements
+			new List<IWire>(GetConnectedWiresRecursively(new List<IWire>()).Where((wire) => wire != this).Distinct());
 
 		/// <summary>
 		/// Disposes of the wire (disconnets itself from all other wires)
@@ -226,6 +240,32 @@ namespace ECAT.Design
 		#endregion
 
 		#region Private methods
+
+		/// <summary>
+		/// Gets all <see cref="IWire"/>s connected to this <see cref="IWire"/>
+		/// </summary>
+		/// <param name="alreadyFoundWires"></param>
+		/// <returns></returns>
+		private List<IWire> GetConnectedWiresRecursively(List<IWire> alreadyFoundWires)
+		{
+			// Make a list of results, including this instance to prevent the wires connected to it from quering it
+			List<IWire> result = new List<IWire>() { this, };
+
+			// For each connected wire
+			_ConnectedWires.ForEach((wire) =>
+			{
+				// If it's not in the already found wires
+				if (!alreadyFoundWires.Contains(wire))
+				{
+					// If it's a Wire, query it and give it a list of all connected wires, if it's only an IWire then use the
+					// public method to obtain all connected wires
+					result.AddRange(wire is Wire castedWire ?
+						castedWire.GetConnectedWiresRecursively(result) : wire.GetAllConnectedWires());
+				}
+			});
+
+			return result;
+		}
 
 		/// <summary>
 		/// Adds a point to the end of the wire, adds necessary points to <see cref="_ConstructionPoints"/>

@@ -30,7 +30,7 @@ namespace ECAT.Core
 		/// <summary>
 		/// Collection of all wires connected to this instance
 		/// </summary>
-		IList<IWire> ConnectedWires { get; set; }
+		IList<IWire> ConnectedWires { get; }
 
 		/// <summary>
 		/// Collection of points that define the corners of the wire on the plane.
@@ -67,6 +67,13 @@ namespace ECAT.Core
 		/// </summary>
 		/// <param name="point"></param>
 		void AddPoint(IPlanePosition point, bool addAtEnd = true);
+
+		/// <summary>
+		/// Returns an IList of all wires connected to this <see cref="IWire"/> (including connections through other wires, excluding
+		/// this instance)
+		/// </summary>
+		/// <returns></returns>
+		IList<IWire> GetAllConnectedWires();
 
 		#endregion
 	}
