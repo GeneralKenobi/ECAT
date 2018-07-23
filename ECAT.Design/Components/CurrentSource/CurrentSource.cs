@@ -14,5 +14,7 @@ namespace ECAT.Design
 		{
 			Admittance = IoC.Resolve<IDefaultValues>().CurrentSourceAdmittance;
 		}
-    }
+
+		public double ProducedCurrent => 1;
+	}
 }
