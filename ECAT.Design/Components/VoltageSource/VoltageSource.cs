@@ -14,6 +14,7 @@ namespace ECAT.Design
 	/// </summary>
     public class VoltageSource : TwoTerminal, IVoltageSource
     {
+		#region Constructor
 
 		/// <summary>
 		/// Default Constructor
@@ -21,6 +22,18 @@ namespace ECAT.Design
 		public VoltageSource()
 		{
 			Admittance = IoC.Resolve<IDefaultValues>().MaximumParameterValue;
+			ProducedVoltage = IoC.Resolve<IDefaultValues>().DefaultVoltageSourceProducedVoltage;
 		}
-    }
+
+		#endregion
+
+		#region Public properties
+
+		/// <summary>
+		/// Current supplied by this <see cref="ICurrentSource"/>
+		/// </summary>
+		public double ProducedVoltage { get; set; }
+
+		#endregion
+	}
 }
