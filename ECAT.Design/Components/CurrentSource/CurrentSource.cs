@@ -11,10 +11,14 @@ namespace ECAT.Design
 		/// Default Constructor
 		/// </summary>
 		public CurrentSource()
-		{
+		{			
 			Admittance = IoC.Resolve<IDefaultValues>().CurrentSourceAdmittance;
+			ProducedCurrent = IoC.Resolve<IDefaultValues>().DefaultCurrentSourceProducedCurrent;
 		}
 
-		public double ProducedCurrent => 1;
+		/// <summary>
+		/// Current supplied by this <see cref="ICurrentSource"/>
+		/// </summary>
+		public double ProducedCurrent { get; }
 	}
 }
