@@ -1,9 +1,5 @@
 ﻿using CSharpEnhanced.CoreClasses;
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 
 namespace ECAT.Core
 {
@@ -14,14 +10,18 @@ namespace ECAT.Core
     {
 		#region Constructor
 
+		/// <summary>
+		/// Default constructor
+		/// </summary>
 		public Node() { }
 
 		/// <summary>
-		/// Default Constructor, hidden so as to force creation through <see cref=""/>
+		/// Constructor taking an <see cref="IPlanePosition"/>
 		/// </summary>
-		private Node(int id)
+		/// <param name="position"></param>
+		public Node(IPlanePosition position)
 		{
-			
+			Position = position;
 		}
 
 		#endregion
@@ -29,28 +29,46 @@ namespace ECAT.Core
 		#region Public properties
 
 		/// <summary>
+		/// The position of the node
+		/// </summary>
+		public IPlanePosition Position { get; }
+
+		/// <summary>
 		/// Potential present at the node with respect to ground
 		/// </summary>
-		public RefWrapper<double> Potential { get; }
+		public RefWrapperPropertyChanged<double> Potential { get; } = new RefWrapperPropertyChanged<double>();
 
 		/// <summary>
 		/// List with all components that are connected to the <see cref="INode"/>
 		/// </summary>
-		public List<IBaseComponent> ConnectedComponents { get; set; }
+		public List<IBaseComponent> ConnectedComponents { get; set; } = new List<IBaseComponent>();
+
+		/// <summary>
+		/// List of all terminals that are associated with this <see cref="INode"/>
+		/// </summary>
+		public List<ITerminal> ConnectedTerminals { get; set; } = new List<ITerminal>();
 
 		#endregion
 
 		#region Public Methods
 
 		/// <summary>
-		/// Merges <paramref name="node"/> into this instance (transfers over the associated components)
+		/// Merges <paramref name="node"/> into this instance (transfers over the associated components and terinals)
 		/// </summary>
 		/// <param name="node"></param>
 		public void Merge(INode node)
 		{
-			ConnectedComponents.AddRange(node.ConnectedComponents);
+			// If the nodes are distinct
+			if (node != this)
+			{
+				// Transfer over connected components and terminals to this
+				ConnectedComponents.AddRange(node.ConnectedComponents);
+				ConnectedTerminals.AddRange(node.ConnectedTerminals);
 
-			node.ConnectedComponents.Clear();
+				// Remove them from the other node
+				node.ConnectedComponents.Clear();
+				node.ConnectedTerminals.Clear();
+			}
 		}
 
 		#endregion
