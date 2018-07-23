@@ -19,6 +19,6 @@ namespace ECAT.Design
 		/// <summary>
 		/// Current supplied by this <see cref="ICurrentSource"/>
 		/// </summary>
-		public double ProducedCurrent { get; }
+		public double ProducedCurrent { get; set; }
 	}
 }
