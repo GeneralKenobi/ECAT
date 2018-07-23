@@ -8,7 +8,7 @@ using System.Windows.Input;
 namespace ECAT.ViewModel
 {
 	/// <summary>
-	/// Base class for view models
+	/// Base class for view models or classes that want to implement <see cref="INotifyPropertyChanged"/>
 	/// </summary>
 	public class BaseViewModel : INotifyPropertyChanged
 	{
