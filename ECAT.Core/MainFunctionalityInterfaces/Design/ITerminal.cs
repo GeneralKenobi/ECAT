@@ -4,7 +4,9 @@ using System.ComponentModel;
 namespace ECAT.Core
 {
 	/// <summary>
-	/// Interface for terminals - each terminal has a position and allows for 
+	/// Interface for terminals; terminal is an ending of an <see cref="IBaseComponent"/> that
+	/// can be connected. It has an <see cref="IPlanePosition"/> and can be assigned an <see cref="RefWrapperPropertyChanged{T}"/>
+	/// to have a real-time updated value of potential at the terminal
 	/// </summary>
 	public interface ITerminal : INotifyPropertyChanged
     {
