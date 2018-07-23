@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Text;
+﻿using System.Numerics;
 
 namespace ECAT.Core
 {
 	/// <summary>
 	/// Interface for a class that defines default values for certain components (allowed ranges, fixed values, etc.)
 	/// </summary>
-    public interface IDefaultValues
+	public interface IDefaultValues
     {
 		#region Properties
 
@@ -31,6 +28,11 @@ namespace ECAT.Core
 		/// Default admittance for a <see cref="IResistor"/>
 		/// </summary>
 		Complex DefaultResistorAdmittance { get; }
+
+		/// <summary>
+		/// Default value for <see cref="ICurrentSource"/>'s produced current
+		/// </summary>
+		double DefaultCurrentSourceProducedCurrent { get; }
 
 		#endregion
 	}

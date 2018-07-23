@@ -39,7 +39,12 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Default admittance for a <see cref="IResistor"/>
 		/// </summary>
-		public Complex DefaultResistorAdmittance { get; } = new Complex(1e-3, 0);
+		public Complex DefaultResistorAdmittance { get; } = new Complex(1, 0);
+
+		/// <summary>
+		/// Default value for <see cref="ICurrentSource"/>'s produced current
+		/// </summary>
+		public double DefaultCurrentSourceProducedCurrent { get; } = 1;
 
 		#endregion
 	}
