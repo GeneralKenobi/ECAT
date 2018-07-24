@@ -54,11 +54,18 @@ namespace ECAT.Simulation
 
 			/////////////////////////////////////////////
 			// Temporary - remove when ground is added
-			var referenceNode = nodes.Find((x) => x.ConnectedComponents.Exists((y) => y is ICurrentSource cs &&
-				x.ConnectedTerminals.Contains(cs.TerminalA)));
+			// var referenceNode = nodes.Find((x) => x.ConnectedComponents.Exists((y) => y is ICurrentSource cs &&
+			//	x.ConnectedTerminals.Contains(cs.TerminalA)));
 			/////////////////////////////////////////////
-			
-			nodes.Remove(referenceNode);
+
+			// nodes.Remove(referenceNode);
+
+			var referenceNodes =
+				new List<INode>(nodes.Where((node) => node.ConnectedComponents.Exists((component) => component is IGround)));
+
+			referenceNodes.ForEach((node) => node.Potential.Value = 0);
+
+			nodes.RemoveAll((node) => referenceNodes.Contains(node));
 
 			var admittanceMatrix = ConstructDCAdmittanceMatrix(nodes);
 
@@ -66,7 +73,7 @@ namespace ECAT.Simulation
 
 			for (int i = 0; i < result.Length; ++i)
 			{
-				nodes[i].Potential.Value = result[i].Evaluate().Real;
+				nodes[i].Potential.Value = result[i].Evaluate().RoundTo(1e-3).Real;
 			}
 		}
 
@@ -85,17 +92,17 @@ namespace ECAT.Simulation
 				node.ConnectedComponents.ForEach((component) =>
 				{
 					if (component is IVoltageSource source)
-					{
+					{						
 						var currentSource = IoC.Resolve<IComponentFactory>().Construct<ICurrentSource>() as ICurrentSource;
 						var resistor = IoC.Resolve<IComponentFactory>().Construct<IResistor>() as IResistor;
 						currentSource.ProducedCurrent = source.ProducedVoltage * source.Admittance.Real;						
 						resistor.Admittance = source.Admittance;
 						equivalentComponents.Add(currentSource);
 						equivalentComponents.Add(resistor);
-						createdTerminals.Add(currentSource.TerminalA);
-						createdTerminals.Add(currentSource.TerminalB);
-						createdTerminals.Add(resistor.TerminalA);
-						createdTerminals.Add(resistor.TerminalB);
+						createdTerminals.Add(node.ConnectedTerminals.Contains(source.TerminalA) ?
+							currentSource.TerminalA : currentSource.TerminalB);
+						createdTerminals.Add(node.ConnectedTerminals.Contains(source.TerminalA) ?
+							resistor.TerminalA : resistor.TerminalB);
 					}
 				});
 
