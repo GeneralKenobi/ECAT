@@ -68,9 +68,9 @@ namespace ECAT.Design
 		#region Protected methods
 
 		/// <summary>
-		/// Assigns positions to all <see cref="PartialNode"/>s
+		/// Assigns positions to all <see cref="ITerminal"/>s
 		/// </summary>
-		protected override void UpdateAbsolutePartialNodePositions()
+		protected override void UpdateAbsoluteTerminalPositions()
 		{
 			TerminalA.Position.Absolute = new Complex(Center.X, Center.Y);
 			TerminalB.Position.Absolute = new Complex(Center.X, Center.Y);
@@ -80,7 +80,7 @@ namespace ECAT.Design
 		/// Rotates all partial nodes by <paramref name="degrees"/>
 		/// </summary>
 		/// <param name="degrees"></param>
-		protected override void RotatePartialNodes(double degrees)
+		protected override void RotateTerminals(double degrees)
 		{
 			TerminalA.Position.RotationAngle += degrees;
 			TerminalB.Position.RotationAngle += degrees;

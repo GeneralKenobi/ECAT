@@ -59,7 +59,7 @@ namespace ECAT.Design
 
 					mCenter = value;
 
-					UpdateAbsolutePartialNodePositions();
+					UpdateAbsoluteTerminalPositions();
 
 					if(mCenter != null)
 					{
@@ -102,7 +102,7 @@ namespace ECAT.Design
 		{
 			Center.RotationAngle += degrees;
 
-			RotatePartialNodes(degrees);
+			RotateTerminals(degrees);
 		}
 
 		/// <summary>
@@ -117,13 +117,13 @@ namespace ECAT.Design
 		/// <summary>
 		/// Assigns positions to all <see cref="PartialNode"/>s, invoked by <see cref="BaseComponent"/>'s constructor
 		/// </summary>
-		protected abstract void UpdateAbsolutePartialNodePositions();
+		protected abstract void UpdateAbsoluteTerminalPositions();
 
 		/// <summary>
 		/// Rotates all partial nodes by <paramref name="degrees"/>
 		/// </summary>
 		/// <param name="degrees"></param>
-		protected abstract void RotatePartialNodes(double degrees);
+		protected abstract void RotateTerminals(double degrees);
 
 		/// <summary>
 		/// Invokes Property Changed Event for each string parameter
@@ -142,14 +142,14 @@ namespace ECAT.Design
 		#region Private methods
 
 		/// <summary>
-		/// Method used to call <see cref="UpdateAbsolutePartialNodePositions"/> whenever the <see cref="Center"/> changes or one of its values
+		/// Method used to call <see cref="UpdateAbsoluteTerminalPositions"/> whenever the <see cref="Center"/> changes or one of its values
 		/// changes
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void CenterChangedCallback(object sender, EventArgs e)
 		{
-			UpdateAbsolutePartialNodePositions();			
+			UpdateAbsoluteTerminalPositions();			
 		}
 		
 		#endregion
