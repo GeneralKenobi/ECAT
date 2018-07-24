@@ -1,4 +1,5 @@
 ﻿using CSharpEnhanced.CoreClasses;
+using CSharpEnhanced.Helpers;
 using CSharpEnhanced.Maths;
 using ECAT.Core;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Numerics;
 
 namespace ECAT.Simulation
 {
@@ -43,65 +45,138 @@ namespace ECAT.Simulation
 			var nodes = GenerateNodes(new List<IBaseComponent>(schematic.Components));
 
 			// Merge nodes based on the wire connections
-			nodes = MergeNodesConnectedByWires(nodes, new List<IWire>(schematic.Wires));			
+			nodes = MergeNodesConnectedByWires(nodes, new List<IWire>(schematic.Wires));
 
+			// Assign the potentials from the nodes to the associated terminals
 			nodes.ForEach((node) => node.ConnectedTerminals.ForEach((terminal) => terminal.Potential = node.Potential));
 
+			NortonEquivalent(nodes);
+
+			/////////////////////////////////////////////
+			// Temporary - remove when ground is added
 			var referenceNode = nodes.Find((x) => x.ConnectedComponents.Exists((y) => y is ICurrentSource cs &&
 				x.ConnectedTerminals.Contains(cs.TerminalA)));
-
+			/////////////////////////////////////////////
+			
 			nodes.Remove(referenceNode);
-			
-			int nonGroundNodes = nodes.Count;
 
-			var coefficients = new IExpression[nonGroundNodes, nonGroundNodes];
-			var currents = new IExpression[nonGroundNodes];
-			
-			for(int i=0; i<nonGroundNodes; ++i)
+			var admittanceMatrix = ConstructDCAdmittanceMatrix(nodes);
+
+			var result = LinearEquations.SimplifiedGaussJordanElimination(admittanceMatrix.Item1, admittanceMatrix.Item2);
+
+			for (int i = 0; i < result.Length; ++i)
 			{
-				for (int j = 0; j < nonGroundNodes; ++j)
-				{
-					coefficients[i, j] = Variable.Zero;
-				}
-
-				currents[i] = Variable.Zero;
+				nodes[i].Potential.Value = result[i].Evaluate().Real;
 			}
+		}
 
+		#endregion
 
-			for(int i = 0; i<nonGroundNodes; ++i)
+		#region Private methods
+
+		private void NortonEquivalent(List<INode> nodes)
+		{
+			nodes.ForEach((node) =>
 			{
-				for (int j = 0; j < nonGroundNodes; ++j)
+				List<IBaseComponent> equivalentComponents = new List<IBaseComponent>();
+				List<ITerminal> createdTerminals = new List<ITerminal>();
+
+
+				node.ConnectedComponents.ForEach((component) =>
 				{
-					if (i == j)
+					if (component is IVoltageSource source)
 					{
-						nodes[i].ConnectedComponents.ForEach((x) =>
-						{
-							if (x is ITwoTerminal twoTerminal)
-							{
-								coefficients[i, j] = coefficients[i, j].Add(new Variable.VariableSource(twoTerminal.Admittance.Real).Variable);
-							}
-							else throw new NotImplementedException();
-						});
+						var currentSource = IoC.Resolve<IComponentFactory>().Construct<ICurrentSource>() as ICurrentSource;
+						var resistor = IoC.Resolve<IComponentFactory>().Construct<IResistor>() as IResistor;
+						currentSource.ProducedCurrent = source.ProducedVoltage * source.Admittance.Real;						
+						resistor.Admittance = source.Admittance;
+						equivalentComponents.Add(currentSource);
+						equivalentComponents.Add(resistor);
+						createdTerminals.Add(currentSource.TerminalA);
+						createdTerminals.Add(currentSource.TerminalB);
+						createdTerminals.Add(resistor.TerminalA);
+						createdTerminals.Add(resistor.TerminalB);
 					}
-					else
+				});
+
+				node.ConnectedComponents = new List<IBaseComponent>(node.ConnectedComponents.Where((component) =>
+					!(component is IVoltageSource)).Concat(equivalentComponents));
+				node.ConnectedTerminals = new List<ITerminal>(node.ConnectedTerminals.Concat(createdTerminals));
+			});
+		}
+
+		/// <summary>
+		/// Fills the diagonal of a DC admittance matrix - for i-th node adds all admittances connected to it to the admittance
+		/// denoted by indexes i,i
+		/// </summary>
+		/// <param name="nodes"></param>
+		/// <param name="admittances"></param>
+		/// <param name="currents"></param>
+		private void FillPassiveDCAdmittanceDiagonal(List<INode> nodes, IExpression[,] admittances)
+		{
+			// For each node
+			for(int i=0; i<nodes.Count; ++i)
+			{
+				// For each component connected to that node
+				nodes[i].ConnectedComponents.ForEach((component) =>
+				{
+					// If the component is a two terminal and imaginary part of its admittance is zero (non-existant)
+					if (component is ITwoTerminal twoTerminal && twoTerminal.Admittance.Imaginary == 0)
 					{
-						foreach(var item in nodes[i].ConnectedComponents.Intersect(nodes[j].ConnectedComponents))
+						// Add its admittance to the matrix
+						admittances[i,i] = admittances[i,i].Add(new Variable.VariableSource(twoTerminal.Admittance.Real).Variable);
+					}
+					// Currently components other than two terminals are not supported
+					else throw new NotImplementedException();
+				});
+			}
+		}
+
+		/// <summary>
+		/// Fills the non-diagonal entries of a DC admittance matrix - for i,j admittance subtracts from it all admittances located
+		/// between node i and node j		
+		/// </summary>
+		/// <param name="nodes"></param>
+		/// <param name="admittances"></param>
+		private void FillPassiveDCAdmittanceNonDiagonal(List<INode> nodes, IExpression[,] admittances)
+		{
+			for(int i=0; i<nodes.Count; ++i)
+			{
+				for(int j=0; j<i; ++j)
+				{
+					// Find all components located between node i and node j
+					var admittancesBetweenNodesij =
+						new List<IBaseComponent>(nodes[i].ConnectedComponents.Intersect(nodes[j].ConnectedComponents));
+
+					// For each of them
+					admittancesBetweenNodesij.ForEach((component) =>
+					{
+						// If the component is a two terminal and imaginary part of its admittance is zero (non-existant)
+						if (component is ITwoTerminal twoTerminal && twoTerminal.Admittance.Imaginary == 0)
 						{
-							if (item is ITwoTerminal twoTerminal)
-							{
-								coefficients[i, j] = coefficients[i, j].Subtract(new Variable.VariableSource(twoTerminal.Admittance.Real).Variable);
-							}
-							else throw new NotImplementedException();
+							// Subtract its admittance to the matrix
+							admittances[i, j] = admittances[i, i].Subtract(
+								new Variable.VariableSource(twoTerminal.Admittance.Real).Variable);
+
+							// And do the same to the entry j,i - admittances between node i,j are identical to admittances
+							// between nodes j,i
+							admittances[j, i] = admittances[i, i].Subtract(
+								new Variable.VariableSource(twoTerminal.Admittance.Real).Variable);
 						}
-					}
+						// Currently components other than two terminals are not supported
+						else throw new NotImplementedException();
+					});
 				}
 			}
+		}
 
-			for(int i=0; i<nonGroundNodes; ++i)
+		private void AddCurrents(List<INode> nodes, IExpression[] currents)
+		{
+			for (int i = 0; i < currents.Length; ++i)
 			{
-				foreach(var item in nodes[i].ConnectedComponents)
+				nodes[i].ConnectedComponents.ForEach((component) =>
 				{
-					if (item is ICurrentSource source)
+					if (component is ICurrentSource source)
 					{
 						if (nodes[i].ConnectedTerminals.Contains(source.TerminalA))
 						{
@@ -112,20 +187,29 @@ namespace ECAT.Simulation
 							currents[i] = currents[i].Add(new Variable.VariableSource(source.ProducedCurrent).Variable);
 						}
 					}
-				}
-			}
-
-			var result = LinearEquations.SimplifiedGaussJordanElimination(coefficients, currents);
-
-			for(int i=0; i<nonGroundNodes; ++i)
-			{
-				nodes[i].Potential.Value = result[i].Evaluate().Real;
+				});
 			}
 		}
 
-		#endregion
+		private Tuple<IExpression[,], IExpression[]> ConstructDCAdmittanceMatrix(List<INode> nodes)
+		{
+			// The size of the system
+			int size = nodes.Count;
 
-		#region Private methods
+			// Create arrays
+			var admittances = ArrayHelpers.CreateAndInitialize<IExpression>(Variable.Zero, size, size);
+			var currents = ArrayHelpers.CreateAndInitialize<IExpression>(Variable.Zero, size);
+
+			// TODO: When added, handle the active components
+
+			// Fill the passive admittance matrix
+			FillPassiveDCAdmittanceDiagonal(nodes, admittances);
+			FillPassiveDCAdmittanceNonDiagonal(nodes, admittances);
+
+			AddCurrents(nodes, currents);			
+
+			return new Tuple<IExpression[,], IExpression[]>(admittances, currents);
+		}
 
 		/// <summary>
 		/// Helper of <see cref="MergeNodesConnectedByWires(List{INode}, List{IWire})"/>, goes through the passed list of wires and,
