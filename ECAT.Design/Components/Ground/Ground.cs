@@ -1,4 +1,5 @@
-﻿using ECAT.Core;
+﻿using System.Numerics;
+using ECAT.Core;
 
 namespace ECAT.Design
 {
@@ -7,6 +8,15 @@ namespace ECAT.Design
 	/// </summary>
 	public class Ground : OneTerminal, IGround
 	{
+		#region Protected properties
+
+		/// <summary>
+		/// The shift assigned to <see cref="Terminal"/>, override to provide custom value
+		/// </summary>
+		protected override Complex _TerminalShift { get; } = new Complex(0, 25);
+
+		#endregion
+
 		#region Public properties
 
 		/// <summary>
