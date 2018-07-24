@@ -7,11 +7,28 @@
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="local:GroundTC">
-					<Border Width="50" Height="50"
-                        Background="{StaticResource RedBrush}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}">
-					</Border>
+					<Canvas>
+
+						<Line X1="25" X2="25" Y1="0" Y2="25"
+							Stroke="{StaticResource BlackBrush}"
+							StrokeThickness="5"/>
+
+						<Line X1="5" X2="45" Y1="25" Y2="25"
+							Stroke="{StaticResource BlackBrush}"
+							StrokeThickness="4"/>
+							
+						<Line X1="11" X2="39" Y1="31" Y2="31"
+							Stroke="{StaticResource BlackBrush}"
+							StrokeThickness="4"/>
+
+						<Line X1="17" X2="33" Y1="37" Y2="37"
+							Stroke="{StaticResource BlackBrush}"
+							StrokeThickness="4"/>
+
+						<local:SocketTC Terminal="{Binding Component.Terminal}"
+							Canvas.Left="25"/>
+
+					</Canvas>
 				</ControlTemplate>
 			</Setter.Value>
 		</Setter>
