@@ -197,7 +197,7 @@ namespace ECAT.Design
 			}
 
 			// If the point that we add is already on the wire just return
-			if(ConstructionPoints.Contains(point))
+			if(ConstructionPoints.FirstOrDefault((position) => position.Equals(point)) != null)
 			{
 				return;
 			}
@@ -210,6 +210,7 @@ namespace ECAT.Design
 					(ConstructionPoints[i].Y == point.Y && ConstructionPoints[i + 1].Y == point.Y &&
 					(point.X - ConstructionPoints[i].X) * (point.X - ConstructionPoints[i + 1].X) < 0))
 				{
+					// Add it to the wire's construction points
 					_ConstructionPoints.Insert(i + 1, point);
 					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ConstructionPoints)));
 					return;
