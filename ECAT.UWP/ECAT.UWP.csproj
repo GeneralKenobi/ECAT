@@ -101,6 +101,7 @@
     <Compile Include="Design\Components\BorderWithFlyoutMenuBaseTC\BorderWithFlyoutMenuBaseTC.cs" />
     <Compile Include="Design\Components\ComponentWrapper\ComponentWrapperTC.cs" />
     <Compile Include="Design\Components\CurrentSource\CurrentSourceTC.cs" />
+    <Compile Include="Design\Components\Ground\GroundTC.cs" />
     <Compile Include="Design\Components\Resistor\ResistorTC.cs" />
     <Compile Include="Design\Components\Socket\SocketTC.cs" />
     <Compile Include="Design\Components\VoltageSource\VoltageSourceTC.cs" />
@@ -153,6 +154,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Design\Components\CurrentSource\CurrentSourceTCStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Design\Components\Ground\GroundTCStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
