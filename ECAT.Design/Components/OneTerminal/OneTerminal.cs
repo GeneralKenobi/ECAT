@@ -1,8 +1,6 @@
 ﻿using ECAT.Core;
-using System;
 using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
 
 namespace ECAT.Design
 {
@@ -23,6 +21,8 @@ namespace ECAT.Design
 
 		#endregion
 
+		#region Public properties
+
 		/// <summary>
 		/// The terminal of this <see cref="IOneTerminal"/>
 		/// </summary>
@@ -32,6 +32,8 @@ namespace ECAT.Design
 		/// Input admittance of <see cref="Terminal"/>
 		/// </summary>
 		public Complex Admittance { get ; set; }
+
+		#endregion
 
 		#region Protected properties
 
