@@ -90,6 +90,9 @@ namespace ECAT.ViewModel
 				"Place Loose Wire", new ShortcutKey("W"), () => AppViewModel.Singleton.DesignVM.PrepareToPlaceLooseWireCommand.Execute(null)));
 
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
+				"Place Ground", new ShortcutKey("G"), () => PlacePartHelper(ComponentIDEnumeration.Ground)));
+
+			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
 				"Run Single DC Sweep", new ShortcutKey("T"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.SingleDCSweep(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic)));
 
 			// TODO: Change the ShortcutKeys to ShortcutKey.Empty and load the saved combinations from a local file
