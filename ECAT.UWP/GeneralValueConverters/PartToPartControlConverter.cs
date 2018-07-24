@@ -29,6 +29,11 @@ namespace ECAT.UWP
 				return new CurrentSourceTC();
 			}
 
+			if (value is Ground)
+			{
+				return new GroundTC();
+			}
+
 			//if (value is BasePart part && ControlsHelpers.TryGetUIControl(part, out FrameworkElement element))
 			//{
 			//	return element;

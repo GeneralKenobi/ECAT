@@ -34,6 +34,7 @@ namespace ECAT.Design
 			new ComponentDeclaration(ComponentIDEnumeration.Resistor, "Resistor", 2, ComponentType.Passive),
 			new ComponentDeclaration(ComponentIDEnumeration.VoltageSource, "Voltage Source", 2, ComponentType.Passive),
 			new ComponentDeclaration(ComponentIDEnumeration.CurrentSource, "Current Source", 2, ComponentType.Passive),
+			new ComponentDeclaration(ComponentIDEnumeration.Ground, "Ground", 1, ComponentType.Passive),
 		};
 
 		/// <summary>
@@ -44,6 +45,7 @@ namespace ECAT.Design
 			{ComponentIDEnumeration.Resistor, typeof(Resistor) },
 			{ComponentIDEnumeration.VoltageSource, typeof(VoltageSource) },
 			{ComponentIDEnumeration.CurrentSource, typeof(CurrentSource) },
+			{ComponentIDEnumeration.Ground, typeof(Ground) },
 		};
 
 		/// <summary>
@@ -54,6 +56,7 @@ namespace ECAT.Design
 			{typeof(IResistor), typeof(Resistor) },
 			{typeof(IVoltageSource), typeof(VoltageSource) },
 			{typeof(ICurrentSource), typeof(CurrentSource) },
+			{typeof(IGround), typeof(Ground) },
 		};
 
 		#endregion

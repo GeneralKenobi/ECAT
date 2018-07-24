@@ -10,5 +10,7 @@
 		VoltageSource = 1,
 
 		CurrentSource = 2,
+
+		Ground = 3,
     }
 }
