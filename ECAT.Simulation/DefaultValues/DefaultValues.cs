@@ -29,7 +29,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Admittance of a voltage source
 		/// </summary>
-		public Complex VoltageSourceAdmittance { get; } = new Complex(_MaximumParameterValue, 0);
+		public Complex VoltageSourceAdmittance { get; } = new Complex(0, 0);
 
 		/// <summary>
 		/// Admittance of a current source

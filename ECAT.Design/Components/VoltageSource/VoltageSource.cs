@@ -21,7 +21,7 @@ namespace ECAT.Design
 		/// </summary>
 		public VoltageSource()
 		{
-			Admittance = IoC.Resolve<IDefaultValues>().MaximumParameterValue;
+			Admittance = IoC.Resolve<IDefaultValues>().VoltageSourceAdmittance;
 			ProducedVoltage = IoC.Resolve<IDefaultValues>().DefaultVoltageSourceProducedVoltage;
 		}
 
