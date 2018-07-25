@@ -45,12 +45,7 @@ namespace ECAT.Simulation
 			// Assign the potentials from the nodes to the associated terminals
 			nodes.ForEach((node) => node.ConnectedTerminals.ForEach((terminal) => terminal.Potential = node.Potential));
 
-			var referenceNodes =
-				new List<INode>(nodes.Where((node) => node.ConnectedComponents.Exists((component) => component is IGround)));
-
-			nodes.ForEach((node) => node.Potential.Value = 0);
-
-			nodes.RemoveAll((node) => referenceNodes.Contains(node));			
+			ProcessReferenceNodes(nodes);
 
 			var voltageSources = new List<IVoltageSource>(schematic.Components.Where((component) =>
 				component is IVoltageSource).Select((component) => component as IVoltageSource));			
@@ -87,7 +82,68 @@ namespace ECAT.Simulation
 
 		#endregion
 
-		#region Private methods		
+		#region Private methods
+
+		/// <summary>
+		/// Finds all reference nodes (nodes that contain an <see cref="IGround"/> in their connected terminals), sets their
+		/// potential to 0V, removes them from <paramref name="nodes"/>. If there is no <see cref="IGround"/>, searches through
+		/// the nodes and chooses the first node that has a negative terminal of a source connected as the reference node. If there
+		/// are no sources then treats all nodes as reference nodes.
+		/// </summary>
+		/// <param name="nodes"></param>
+		private void ProcessReferenceNodes(List<INode> nodes)
+		{
+			// Find all reference nodes
+			var referenceNodes = FindReferenceNodes(nodes);
+
+			// Set their potential to 0
+			referenceNodes.ForEach((node) => node.Potential.Value = 0);
+
+			// Remove them from the nodes list
+			nodes.RemoveAll((node) => referenceNodes.Contains(node));
+		}
+
+		/// <summary>
+		/// Searches through the nodes and finds all reference nodes (nodes that contain an <see cref="IGround"/> in their connected
+		/// terminals. If there is no <see cref="IGround"/>, searches through
+		/// the nodes and chooses the first node that has a negative terminal of a source connected as the reference node. If there
+		/// are no sources then treats all nodes as reference nodes.
+		/// </summary>
+		/// <param name="nodes"></param>
+		/// <returns></returns>
+		private List<INode> FindReferenceNodes(List<INode> nodes)
+		{
+			// Filter the nodes, look for all nodes that have na IGround connected to them
+			var referenceNodes = new List<INode>(
+							nodes.Where((node) => node.ConnectedComponents.Exists((component) => component is IGround)));
+
+			// If any was found, return the list
+			if(referenceNodes.Count > 0 )
+			{
+				return referenceNodes;
+			}
+
+			// If not, go through all nodes to find a source
+			foreach (var node in nodes)
+			{
+				// Find all sources connected to the node
+				var sources = new List<ITwoTerminal>(node.ConnectedComponents.Where((component) =>
+					component is IVoltageSource || component is ICurrentSource).Select((source) => source as ITwoTerminal));
+
+				// Go through each source
+				foreach (var source in sources)
+				{
+					// If it's negative (A) terminal is connected to the node, return the node as the reference node
+					if (node.ConnectedTerminals.Contains(source.TerminalA))
+					{
+						return new List<INode>() { node };
+					}
+				}
+			}
+			
+			// If no source was found return all nodes as there is no current in the circuit
+			return new List<INode>(nodes);
+		}
 
 		/// <summary>
 		/// Fills the diagonal of a DC admittance matrix - for i-th node adds all admittances connected to it to the admittance
