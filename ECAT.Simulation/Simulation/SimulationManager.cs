@@ -102,38 +102,7 @@ namespace ECAT.Simulation
 
 		#endregion
 
-		#region Private methods
-
-		private void NortonEquivalent(List<INode> nodes)
-		{
-			nodes.ForEach((node) =>
-			{
-				List<IBaseComponent> equivalentComponents = new List<IBaseComponent>();
-				List<ITerminal> createdTerminals = new List<ITerminal>();
-
-
-				node.ConnectedComponents.ForEach((component) =>
-				{
-					if (component is IVoltageSource source)
-					{						
-						var currentSource = IoC.Resolve<IComponentFactory>().Construct<ICurrentSource>() as ICurrentSource;
-						var resistor = IoC.Resolve<IComponentFactory>().Construct<IResistor>() as IResistor;
-						currentSource.ProducedCurrent = source.ProducedVoltage * source.Admittance.Real;						
-						resistor.Admittance = source.Admittance;
-						equivalentComponents.Add(currentSource);
-						equivalentComponents.Add(resistor);
-						createdTerminals.Add(node.ConnectedTerminals.Contains(source.TerminalA) ?
-							currentSource.TerminalA : currentSource.TerminalB);
-						createdTerminals.Add(node.ConnectedTerminals.Contains(source.TerminalA) ?
-							resistor.TerminalA : resistor.TerminalB);
-					}
-				});
-
-				node.ConnectedComponents = new List<IBaseComponent>(node.ConnectedComponents.Where((component) =>
-					!(component is IVoltageSource)).Concat(equivalentComponents));
-				node.ConnectedTerminals = new List<ITerminal>(node.ConnectedTerminals.Concat(createdTerminals));
-			});
-		}
+		#region Private methods		
 
 		/// <summary>
 		/// Fills the diagonal of a DC admittance matrix - for i-th node adds all admittances connected to it to the admittance
@@ -295,36 +264,7 @@ namespace ECAT.Simulation
 			FillPassiveDCAdmittanceCMatrix(nodes, admittances, independentVoltageSources);
 			FillPassiveDCAdmittanceDMatrix(nodes, admittances);
 
-			//inactiveNodePairs.ForEach((pair) =>
-			//{
-			//	for(int i=0; i<size; ++i)
-			//	{
-			//		admittances[pair.Item2, i] = Variable.Zero;
-			//	}
-			//	admittances[pair.Item1, pair.Item2] = Variable.Zero;				
-			//});
-
-			//List<int> lastRows = new List<int>() { size - 1, size - 2 };
-
-			//for (int i = 0; i < lastRows.Count; ++i)
-			//{
-			//	if (lastRows.Contains(activeVSNodes[i]))
-			//	{
-			//		lastRows.Remove(activeVSNodes[i]);
-			//		activeVSNodes.RemoveAt(i);
-			//		--i;
-			//	}
-			//}
-
-			//activeVSNodes.ForEach((nodeIndex) =>
-			//{
-			//	for(int i=0; i<size; ++i)
-			//	{
-			//		var temp = admittances[nodeIndex, i];
-			//		admittances[nodeIndex, i] = admittances[lastRows[0], i];
-			//		admittances[lastRows[0], i] = temp;
-			//	}
-			//});
+			
 
 			AddCurrents(nodes, currents);
 			AddVoltages(nodes, currents, independentVoltageSources);
