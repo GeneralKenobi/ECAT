@@ -1,9 +1,5 @@
 ﻿using ECAT.Core;
-using Autofac;
-using System;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Text;
+using CSharpEnhanced.CoreClasses;
 
 namespace ECAT.Design
 {
@@ -12,7 +8,7 @@ namespace ECAT.Design
 	/// be set to infinity - it would not work in the calculations, however it is set to a very big value - 1e100
 	/// which corresponds to 1e-100 resistance - practically 0)
 	/// </summary>
-    public class VoltageSource : TwoTerminal, IVoltageSource
+	public class VoltageSource : TwoTerminal, IVoltageSource
     {
 		#region Constructor
 
@@ -33,6 +29,11 @@ namespace ECAT.Design
 		/// Current supplied by this <see cref="ICurrentSource"/>
 		/// </summary>
 		public double ProducedVoltage { get; set; }
+
+		/// <summary>
+		/// Current through the source, flowing from terminal A to terminal B
+		/// </summary>
+		public RefWrapperPropertyChanged<double> CurrentBA { get; set; } = new RefWrapperPropertyChanged<double>();
 
 		#endregion
 	}
