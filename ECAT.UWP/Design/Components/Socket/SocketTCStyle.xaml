@@ -35,9 +35,10 @@
 							<xaml:VisualTappedTrigger SetHandled="True"/>
 						</xaml:VisualAttachments.AttachedVisuals>
 
-						<!-- Used for testing -->
+						<!-- Used for testing TODO: Remove -->
 						<TextBlock Text="{Binding Terminal.Potential.Value, RelativeSource={RelativeSource Mode=TemplatedParent}, FallbackValue=Err}"
 							FontSize="6"
+							Visibility="Collapsed"
 							Foreground="{StaticResource BlackBrush}"
 							Margin="4 -5 0 0"/>
 
