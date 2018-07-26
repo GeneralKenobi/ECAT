@@ -24,6 +24,11 @@ namespace ECAT.Core
 		/// </summary>
 		Complex Admittance { get; set; }
 
+		/// <summary>
+		/// Voltage drop between <see cref="TerminalB"/> and <see cref="TerminalA"/> (VB - VA)
+		/// </summary>
+		double VoltageBA { get; }
+
 		#endregion
 	}
 }

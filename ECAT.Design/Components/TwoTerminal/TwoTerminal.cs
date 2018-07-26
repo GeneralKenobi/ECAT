@@ -18,6 +18,17 @@ namespace ECAT.Design
 		{
 			TerminalA = new Terminal(new PlanePosition(Complex.Zero, _TerminalAShift));
 			TerminalB = new Terminal(new PlanePosition(Complex.Zero, _TerminalBShift));
+			// TODO: Add methods notifying that terminal potential has changed
+			TerminalA.PropertyChanged += (s, e) =>
+			{
+				InvokePropertyChanged(nameof(VoltageBA));
+				TerminalA.Potential.PropertyChanged += (ss, ee) => InvokePropertyChanged(nameof(VoltageBA));
+			};
+			TerminalB.PropertyChanged += (s, e) =>
+			{
+				InvokePropertyChanged(nameof(VoltageBA));
+				TerminalB.Potential.PropertyChanged += (ss, ee) => InvokePropertyChanged(nameof(VoltageBA));
+			};
 		}
 
 		#endregion
@@ -42,12 +53,18 @@ namespace ECAT.Design
 		/// <summary>
 		/// One of the terminals in this two-terminal
 		/// </summary>
-		public ITerminal TerminalB { get; }
+		public ITerminal TerminalB { get; }		
 
 		/// <summary>
 		/// Admittance between terminals A and B
 		/// </summary>
 		public Complex Admittance { get; set; }
+
+		/// <summary>
+		/// Voltage drop between <see cref="TerminalB"/> and <see cref="TerminalA"/> (VB - VA)
+		/// </summary>
+		public double VoltageBA => TerminalB.Potential == null || TerminalA.Potential == null ? 
+			0 : TerminalB.Potential.Value - TerminalA.Potential.Value;
 
 		#endregion
 
