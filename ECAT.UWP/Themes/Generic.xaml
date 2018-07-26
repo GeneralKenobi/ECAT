@@ -12,6 +12,10 @@
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/VoltageSource/VoltageSourceTCStyle.xaml"/>
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/CurrentSource/CurrentSourceTCStyle.xaml"/>
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/Ground/GroundTCStyle.xaml"/>
+		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/VoltageDrop/VoltageDropTCStyle.xaml"/>
+		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Arrowhead/ArrowheadTCStyle.xaml"/>
 	</ResourceDictionary.MergedDictionaries>
 	    
+
+
 </ResourceDictionary>
