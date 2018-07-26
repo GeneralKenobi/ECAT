@@ -25,6 +25,8 @@
 						<local:SocketTC Canvas.Top="25" Terminal="{Binding Component.TerminalA}"/>
 						<local:SocketTC Canvas.Left="100" Canvas.Top="25" Terminal="{Binding Component.TerminalB}"/>
 
+						<local:VoltageDropTC Canvas.Left="10" Voltage="{Binding Component.VoltageBA}" Width="80" Height="25" Canvas.Top="-10"/>
+
 					</Canvas>
 				</ControlTemplate>
 			</Setter.Value>
