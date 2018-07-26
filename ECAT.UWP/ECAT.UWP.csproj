@@ -109,6 +109,10 @@
     <Compile Include="Design\Components\Wire\PlanePositionCollectionToPointCollectionConverter.cs" />
     <Compile Include="Design\Components\Wire\WireSocket\WireSocketTC.cs" />
     <Compile Include="Design\Components\Wire\WireTC.cs" />
+    <Compile Include="Design\Arrowhead\ArrowheadTC.cs" />
+    <Compile Include="Design\VoltageDrop\VoltageDropTC.cs" />
+    <Compile Include="Design\VoltageDrop\VoltageToArrowheadVisibilityConverter.cs" />
+    <Compile Include="Design\VoltageDrop\VoltageToDisplayVoltageConverter.cs" />
     <Compile Include="IoCSetup\IoCSetup.cs" />
     <Compile Include="MainPage\IBaseComponentToComponentViewModelConverter.cs" />
     <Compile Include="MainPage\IWireToWireViewModelConverter.cs" />
@@ -178,6 +182,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Design\Components\Wire\WireTCStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Design\Arrowhead\ArrowheadTCStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Design\VoltageDrop\VoltageDropTCStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
