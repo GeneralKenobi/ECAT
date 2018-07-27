@@ -19,10 +19,10 @@
 						Margin="-1">
 
 						<Grid.Resources>
-							<local:VoltageToArrowheadVisibilityConverter x:Key="ArrowheadVisibilityConverter"/>
-							<local:VoltageToDisplayVoltageConverter x:Key="DisplayVoltageConverter"/>
+							<local:DoubleToVisibilityConverter x:Key="ArrowheadVisibilityConverter"/>
 							<converters:SumConverter x:Key="SumConverter"/>
 							<converters:OppositeDoubleConverter x:Key="OppositeConverter"/>
+							<converters:AbsoluteValueConverter x:Key="AbsoluteValueConverter"/>
 						</Grid.Resources>
 
 						<!-- The body of the arrow -->
@@ -48,7 +48,7 @@
 							Margin="0 0 -10 -5"/>
 
 						<!-- The voltage -->
-						<TextBlock Text="{Binding Voltage, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource DisplayVoltageConverter}}"
+						<TextBlock Text="{Binding Voltage, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource AbsoluteValueConverter}}"
 							HorizontalAlignment="Center"
 							VerticalAlignment="Top"
 							FontSize="{StaticResource FontSizeSmaller}"
