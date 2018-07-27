@@ -1,4 +1,5 @@
 ﻿using ECAT.Core;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 
@@ -16,19 +17,8 @@ namespace ECAT.Design
 		/// </summary>
 		public TwoTerminal()
 		{
-			TerminalA = new Terminal(new PlanePosition(Complex.Zero, _TerminalAShift));
-			TerminalB = new Terminal(new PlanePosition(Complex.Zero, _TerminalBShift));
-			// TODO: Add methods notifying that terminal potential has changed
-			TerminalA.PropertyChanged += (s, e) =>
-			{
-				InvokePropertyChanged(nameof(VoltageBA));
-				TerminalA.Potential.PropertyChanged += (ss, ee) => InvokePropertyChanged(nameof(VoltageBA));
-			};
-			TerminalB.PropertyChanged += (s, e) =>
-			{
-				InvokePropertyChanged(nameof(VoltageBA));
-				TerminalB.Potential.PropertyChanged += (ss, ee) => InvokePropertyChanged(nameof(VoltageBA));
-			};
+			TerminalA = new Terminal(new PlanePosition(Complex.Zero, _TerminalAShift), TerminalPotentialChangedCallback);
+			TerminalB = new Terminal(new PlanePosition(Complex.Zero, _TerminalBShift), TerminalPotentialChangedCallback);
 		}
 
 		#endregion
@@ -79,6 +69,17 @@ namespace ECAT.Design
 		/// The shift assigned to <see cref="TerminalB"/>, override to provide custom value
 		/// </summary>
 		protected virtual Complex _TerminalBShift => new Complex(Width / 2, 0);
+
+		#endregion
+
+		#region Private methods
+
+		/// <summary>
+		/// Callback for when value of any <see cref="ITerminal"/> in this <see cref="TwoTerminal"/> changes
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void TerminalPotentialChangedCallback(object sender, EventArgs e) => InvokePropertyChanged(nameof(VoltageBA));
 
 		#endregion
 
