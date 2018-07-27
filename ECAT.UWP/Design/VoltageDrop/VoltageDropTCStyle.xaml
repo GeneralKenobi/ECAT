@@ -3,50 +3,59 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:ECAT.UWP"
 	xmlns:converters="using:UWPEnhanced.ValueConverters">
-	
+
 	<Style TargetType="local:VoltageDropTC">
+		<Setter Property="Foreground" Value="{StaticResource BlackBrush}"/>
+		<Setter Property="ArrowRotationAngle" Value="27.5"/>
+		<Setter Property="Width" Value="80"/>
+		<Setter Property="Height" Value="25"/>
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="local:VoltageDropTC">
-					<Grid HorizontalAlignment="Center" VerticalAlignment="Center"						
-						Background="Transparent"
+
+					<!-- Root container, margin = -1 to prevent the arrow's rounded corners from being clipped -->
+					<Grid HorizontalAlignment="Center"
+						VerticalAlignment="Center"
 						Margin="-1">
 
 						<Grid.Resources>
 							<local:VoltageToArrowheadVisibilityConverter x:Key="ArrowheadVisibilityConverter"/>
 							<local:VoltageToDisplayVoltageConverter x:Key="DisplayVoltageConverter"/>
+							<converters:SumConverter x:Key="SumConverter"/>
+							<converters:OppositeDoubleConverter x:Key="OppositeConverter"/>
 						</Grid.Resources>
 
-						<Path
-							Stroke="{StaticResource BlackBrush}"
-							StrokeThickness="2"
-							Name="PathControl"
+						<!-- The body of the arrow -->
+						<Path Stroke="{TemplateBinding Foreground}"
+							StrokeThickness="2"							
 							Data="{Binding PathGeometry, RelativeSource={RelativeSource Mode=TemplatedParent}}"
 							StrokeEndLineCap="Round"
 							StrokeStartLineCap="Round"/>
 
-						<local:ArrowheadTC Visibility="{Binding Voltage, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ArrowheadVisibilityConverter}, ConverterParameter=x}" RotationAngle="-23" VerticalAlignment="Bottom" Margin="0 0 0 -5"/>
-						<local:ArrowheadTC Visibility="{Binding Voltage, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ArrowheadVisibilityConverter}}" RotationAngle="203" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 0 -10 -5"/>
+						<!-- Arrow on the left, visible if Voltage is negative -->
+						<local:ArrowheadTC Visibility="{Binding Voltage, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ArrowheadVisibilityConverter}, ConverterParameter=x}"
+							RotationAngle="{Binding ArrowRotationAngle, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource OppositeConverter}}"
+							Foreground="{TemplateBinding Foreground}"
+							VerticalAlignment="Bottom"
+							Margin="0 0 0 -5"/>
 
-						<TextBlock Text="{Binding Voltage, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource DisplayVoltageConverter}}" HorizontalAlignment="Center" VerticalAlignment="Top"
-							FontSize="10"/>
-						<!--<Border Width="100" Height="80" BorderThickness="3"
-							CornerRadius="100">
-							<Border.BorderBrush>
-								<LinearGradientBrush StartPoint="0.5,1" EndPoint="0.5,0">
-									<LinearGradientBrush.GradientStops>
-										<GradientStop Color="Transparent" Offset="0"/>
-										<GradientStop Color="Transparent" Offset="0.8"/>
-										<GradientStop Color="Black" Offset="0.8"/>
-										<GradientStop Color="Black" Offset="1"/>
-									</LinearGradientBrush.GradientStops>
-								</LinearGradientBrush>
-							</Border.BorderBrush>
-						</Border>-->
+						<!-- Arrow on the right, visible of Voltage is nonnegative -->
+						<local:ArrowheadTC Visibility="{Binding Voltage, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ArrowheadVisibilityConverter}}"
+							RotationAngle="{Binding ArrowRotationAngle, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource SumConverter}, ConverterParameter=180}"
+							Foreground="{TemplateBinding Foreground}"
+							VerticalAlignment="Bottom"
+							HorizontalAlignment="Right"
+							Margin="0 0 -10 -5"/>
 
-						<!--<Line X1="0" Y1="0" X2="10" Y2="10" Stroke="Red" StrokeThickness="5"/>-->
+						<!-- The voltage -->
+						<TextBlock Text="{Binding Voltage, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource DisplayVoltageConverter}}"
+							HorizontalAlignment="Center"
+							VerticalAlignment="Top"
+							FontSize="{StaticResource FontSizeSmaller}"
+							Foreground="{TemplateBinding Foreground}"/>
 
 					</Grid>
+
 				</ControlTemplate>
 			</Setter.Value>
 		</Setter>
