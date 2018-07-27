@@ -1,5 +1,6 @@
 ﻿using CSharpEnhanced.CoreClasses;
 using ECAT.Core;
+using System;
 using System.ComponentModel;
 
 namespace ECAT.Design
@@ -14,12 +15,18 @@ namespace ECAT.Design
 		#region Constructor
 
 		/// <summary>
-		/// Default Constructor
+		/// Default constructor taking position of the terminal as a parameter
 		/// </summary>
-		public Terminal(IPlanePosition position)
-		{
-			Position = position;
-		}
+		public Terminal(IPlanePosition position) => Position = position;
+
+		/// <summary>
+		/// Constructor taking position of the terminal as a parameter as well as a callback for when the value of the potential at
+		/// the terminal changes (subscribes to <see cref="PotentialValueChanged"/> with it)
+		/// </summary>
+		/// <param name="position"></param>
+		/// <param name="potentialValueChangedCallback"></param>
+		public Terminal(IPlanePosition position, EventHandler potentialValueChangedCallback) : this(position) =>
+			PotentialValueChanged += potentialValueChangedCallback;
 
 		#endregion
 
@@ -29,6 +36,20 @@ namespace ECAT.Design
 		/// Event fired whenever a property changes its value
 		/// </summary>
 		public event PropertyChangedEventHandler PropertyChanged;
+
+		/// <summary>
+		/// Event fired whenever the value of the potential changes
+		/// </summary>
+		public EventHandler PotentialValueChanged { get; set; }
+
+		#endregion
+
+		#region Private properties
+
+		/// <summary>
+		/// Backing store for <see cref="Potential"/>
+		/// </summary>
+		private RefWrapperPropertyChanged<double> _Potential { get; set; }
 
 		#endregion
 
@@ -42,7 +63,53 @@ namespace ECAT.Design
 		/// <summary>
 		/// Reference to potential at <see cref="INode"/> that is associated with this <see cref="ITerminal"/>
 		/// </summary>
-		public RefWrapperPropertyChanged<double> Potential { get; set; }
+		public RefWrapperPropertyChanged<double> Potential
+		{
+			get => _Potential;
+			set
+			{
+				// If the new value is different
+				if (_Potential != value)
+				{
+					// If the old value wasn't null
+					if (_Potential != null)
+					{
+						// Unsubsribe from its property changed event
+						_Potential.PropertyChanged -= PropagatePotenialValueChanged;
+					}
+
+					// Assgin the new value
+					_Potential = value;
+
+					// If it's not null
+					if(_Potential != null)
+					{
+						// Subscribe to its property changed event
+						_Potential.PropertyChanged += PropagatePotenialValueChanged;
+					}
+
+					// Notify about possible change in value
+					InvokePotentialValueChanged();
+				}
+			}
+		}
+
+		#endregion
+
+		#region Private methods
+
+		/// <summary>
+		/// Invokes the potential value changed event
+		/// </summary>
+		private void InvokePotentialValueChanged() => PotentialValueChanged?.Invoke(this, EventArgs.Empty);
+
+		/// <summary>
+		/// Propagates the property changed event of <see cref="Potential"/> through <see cref="PotentialValueChanged"/>.
+		/// There's only one property on <see cref="RefWrapperPropertyChanged{T}"/> so does not check for the name of the property
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void PropagatePotenialValueChanged(object sender, PropertyChangedEventArgs e) => InvokePotentialValueChanged();		
 
 		#endregion
 	}
