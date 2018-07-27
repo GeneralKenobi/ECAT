@@ -1,0 +1,77 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:controls="using:UWPEnhanced.Controls"
+	xmlns:converters="using:UWPEnhanced.ValueConverters"
+    xmlns:local="using:ECAT.UWP">
+
+
+
+	<Style TargetType="local:CurrentFlowTC">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="local:CurrentFlowTC">
+
+					<!-- Root container -->
+					<Grid Margin="3 0">
+
+						<Grid.Resources>
+							<local:DoubleToVisibilityConverter x:Key="ArrowheadVisibilityConverter"/>
+							<converters:AbsoluteValueConverter x:Key="AbsoluteValueConverter"/>
+							<local:DoubleToChosenParameterConverter x:Key="ValueColumnConverter"/>
+						</Grid.Resources>
+
+						<Grid.RowDefinitions>
+							<!-- Arrows -->
+							<RowDefinition Height="Auto"/>
+							<!-- Value -->
+							<RowDefinition Height="Auto"/>
+						</Grid.RowDefinitions>
+
+						<Grid.ColumnDefinitions>
+							<!-- For negative current -->
+							<ColumnDefinition Width="Auto"/>
+							<!-- Unused space -->
+							<ColumnDefinition Width="*"/>
+							<!-- For positive current -->
+							<ColumnDefinition Width="Auto"/>
+						</Grid.ColumnDefinitions>
+
+						<!-- Triangle acting as an arrowhead for negative currents (flowing to the left) -->
+						<Polygon Grid.Column="0"
+							Points="10,0 10,14 0,7"
+							HorizontalAlignment="Left"
+							Stroke="{StaticResource BlackBrush}"
+							Visibility="{Binding Current, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ArrowheadVisibilityConverter}}"
+							Fill="{StaticResource BlackBrush}"
+							StrokeLineJoin="Round"
+							Margin="5 0 0 0"/>
+
+						<!-- Triangle acting as an arrowhead for positive currents (flowing to the right) -->
+						<Polygon Grid.Column="2"
+							Points="0,0 0,14 10,7"
+							HorizontalAlignment="Right"
+							Stroke="{StaticResource BlackBrush}"							
+							Fill="{StaticResource BlackBrush}"
+							StrokeLineJoin="Round"
+							Visibility="{Binding Current, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ArrowheadVisibilityConverter}, ConverterParameter=x}"
+							Margin="0 0 5 0"/>
+
+						<!-- Displayed value -->
+						<controls:ValueUnitDisplay Grid.Column="{Binding Current, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ValueColumnConverter}, ConverterParameter=0/2}"
+							HorizontalAlignment="Center"
+							Grid.Row="1"
+							Foreground="{StaticResource BlackBrush}"
+							FontSize="{StaticResource FontSizeTiny}"							
+							Value="{Binding Current, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource AbsoluteValueConverter}, ConverterParameter=x}"
+							RoundToDigit="4"
+							Unit="A"
+							Margin="0 -2 0 0"/>
+					</Grid>
+
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+</ResourceDictionary>
