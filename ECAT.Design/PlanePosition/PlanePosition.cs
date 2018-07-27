@@ -106,7 +106,7 @@ namespace ECAT.Design
 			get => _RotationAngle;
 			set
 			{
-				var reducedValue = Helpers.ReduceAngle(value, AngleUnit.Degrees);
+				var reducedValue = MathsHelpers.ReduceAngle(value, AngleUnit.Degrees);
 
 				if (reducedValue != _RotationAngle)
 				{
