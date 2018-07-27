@@ -9,7 +9,7 @@ namespace ECAT.UWP
 	/// returns collapes for values >=0, visible otherwise (opposite to null parameter).
 	/// If value is not a double always returns collapsed.
 	/// </summary>
-	public class VoltageToArrowheadVisibilityConverter : IValueConverter
+	public class DoubleToVisibilityConverter : IValueConverter
 	{
 		public object Convert(object value, Type targetType, object parameter, string language)
 		{
