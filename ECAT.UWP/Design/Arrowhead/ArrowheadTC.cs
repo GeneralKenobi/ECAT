@@ -13,6 +13,9 @@ using Windows.UI.Xaml.Media;
 
 namespace ECAT.UWP
 {
+	/// <summary>
+	/// A simple control whose purpose is to be an arrowhead
+	/// </summary>
 	public sealed class ArrowheadTC : Control
 	{
 		#region Constructor
