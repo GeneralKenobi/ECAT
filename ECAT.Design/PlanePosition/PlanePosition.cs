@@ -61,21 +61,34 @@ namespace ECAT.Design
 		/// <summary>
 		/// Event fired when the internal state of this Position changes	
 		/// </summary>
-		public event EventHandler InternalStateChanged;	
+		public event EventHandler InternalStateChanged;
+
+		#endregion
+
+		#region Private members
+
+		/// <summary>
+		/// Backing store for <see cref="_Shift"/>
+		/// </summary>
+		private Complex mShift;
 
 		#endregion
 
 		#region Private properties
-		
+
 		/// <summary>
 		/// Backing store for <see cref="Absolute"/>
 		/// </summary>
 		private Complex _Absolute { get; set; }
 
 		/// <summary>
-		/// Backign store for <see cref="Shift"/>
+		/// Backing store for <see cref="Shift"/>
 		/// </summary>
-		private Complex _Shift { get; set; }
+		private Complex _Shift
+		{
+			get => mShift;
+			set => mShift = value.RoundTo(RoundTo);
+		}
 
 		/// <summary>
 		/// Backing store for <see cref="RotationAngle"/>
