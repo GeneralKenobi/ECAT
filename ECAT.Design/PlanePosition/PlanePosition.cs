@@ -1,5 +1,4 @@
-﻿using Autofac;
-using CSharpEnhanced.Maths;
+﻿using CSharpEnhanced.Maths;
 using ECAT.Core;
 using System;
 using System.ComponentModel;
@@ -106,7 +105,7 @@ namespace ECAT.Design
 		{
 			get => _RotationAngle;
 			set
-			{				
+			{
 				var reducedValue = Helpers.ReduceAngle(value, AngleUnit.Degrees);
 
 				if (reducedValue != _RotationAngle)
@@ -115,7 +114,7 @@ namespace ECAT.Design
 					var difference = reducedValue - _RotationAngle;
 
 					// Assign the new rotation angle
-					_RotationAngle = value;
+					_RotationAngle = reducedValue;
 
 					// If the shift is 0 then rotation won't change anyting - skip it
 					if (_Shift.Magnitude != 0)
@@ -125,7 +124,6 @@ namespace ECAT.Design
 
 					InvokeInternalStateChanged();					
 				}
-
 			}
 		}
 
