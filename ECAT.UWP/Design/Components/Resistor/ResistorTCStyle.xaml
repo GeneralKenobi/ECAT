@@ -29,7 +29,7 @@
 							FontSize="{StaticResource FontSizeXLarge}"
 							HorizontalAlignment="Center"
 							VerticalAlignment="Bottom"
-							Value="{Binding Component.Admittance.Real}"
+							Value="{Binding Component.Resistance}"
 							RoundToDigit="4"
 							Unit="&#x2126;"/>
 
