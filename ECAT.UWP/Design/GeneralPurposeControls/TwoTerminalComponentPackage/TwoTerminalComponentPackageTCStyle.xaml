@@ -1,0 +1,50 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:controls="using:UWPEnhanced.Controls"
+    xmlns:local="using:ECAT.UWP">
+
+	<Style TargetType="local:TwoTerminalComponentPackageTC">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="local:TwoTerminalComponentPackageTC">
+
+					<!-- Root container -->
+					<Grid>
+
+						<!-- Presents current flow through the component -->
+						<local:CurrentFlowTC Current="{Binding Component.CurrentBA}"
+								VerticalAlignment="Center"/>
+
+						<!-- Presents voltage drop across the component -->
+						<local:VoltageDropTC ArrowRotationAngle="27.5"
+								Margin="10 -20 10 0"
+								VerticalAlignment="Top"								
+								Voltage="{Binding Component.VoltageBA}"/>
+
+						<!-- Presents a parameter associated with the component -->
+						<controls:ValueUnitDisplay Foreground="{StaticResource BlackBrush}"
+								FontSize="{StaticResource FontSizeXLarge}"
+								HorizontalAlignment="Center"
+								VerticalAlignment="Bottom"
+								Value="{Binding Component.Admittance.Real}"
+								RoundToDigit="4"/>
+
+						<!-- Socket for terminal A-->
+						<local:SocketTC Terminal="{Binding Component.TerminalA}"
+							HorizontalAlignment="Left"
+							VerticalAlignment="Center"/>
+
+						<!-- Socket for terminal B-->
+						<local:SocketTC Terminal="{Binding Component.TerminalB}"
+							HorizontalAlignment="Right"
+							VerticalAlignment="Center"/>
+
+					</Grid>
+
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+
+</ResourceDictionary>
