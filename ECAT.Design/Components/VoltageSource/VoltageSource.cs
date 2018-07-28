@@ -19,6 +19,7 @@ namespace ECAT.Design
 		{
 			Admittance = IoC.Resolve<IDefaultValues>().VoltageSourceAdmittance;
 			ProducedVoltage = IoC.Resolve<IDefaultValues>().DefaultVoltageSourceProducedVoltage;
+			ProducedCurrent.PropertyChanged += (s, e) => InvokePropertyChanged(nameof(CurrentBA));
 		}
 
 		#endregion
@@ -33,7 +34,13 @@ namespace ECAT.Design
 		/// <summary>
 		/// Current through the source, flowing from terminal A to terminal B
 		/// </summary>
-		public RefWrapperPropertyChanged<double> CurrentBA { get; set; } = new RefWrapperPropertyChanged<double>();
+		public RefWrapperPropertyChanged<double> ProducedCurrent { get; set; } = new RefWrapperPropertyChanged<double>();
+
+		/// <summary>
+		/// Current flowing from <see cref="TerminalA"/> to <see cref="TerminalB"/> - the opposite of the produced current which
+		/// is marked from the positive terminal (<see cref="TerminalB"/>) to the negative terminal (<see cref="TerminalA)"/>
+		/// </summary>
+		public override double CurrentBA => -ProducedCurrent.Value;
 
 		#endregion
 	}

@@ -17,7 +17,7 @@ namespace ECAT.Core
 		/// <summary>
 		/// Current through the source, flowing from terminal A to terminal B
 		/// </summary>
-		RefWrapperPropertyChanged<double> CurrentBA { get; set; }
+		RefWrapperPropertyChanged<double> ProducedCurrent { get; set; }
 
 		#endregion
 	}
