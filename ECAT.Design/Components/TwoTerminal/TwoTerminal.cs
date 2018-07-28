@@ -28,12 +28,12 @@ namespace ECAT.Design
 		/// <summary>
 		/// Width of the control in circuit design in the default, horizontal position
 		/// </summary>
-		public override double Width => 100;
+		public override double Width => 200;
 
 		/// <summary>
 		/// Height of the control in circuit design in the default, horizontal position
 		/// </summary>
-		public override double Height => 50;
+		public override double Height => 100;
 
 		/// <summary>
 		/// One of the terminals in this two-terminal
@@ -55,6 +55,11 @@ namespace ECAT.Design
 		/// </summary>
 		public double VoltageBA => TerminalB.Potential == null || TerminalA.Potential == null ? 
 			0 : TerminalB.Potential.Value - TerminalA.Potential.Value;
+
+		/// <summary>
+		/// Current flowing from <see cref="TerminalA"/> to <see cref="TerminalB"/>
+		/// </summary>
+		public double CurrentBA => -VoltageBA / Admittance.Real;			
 
 		#endregion
 
@@ -79,7 +84,8 @@ namespace ECAT.Design
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void TerminalPotentialChangedCallback(object sender, EventArgs e) => InvokePropertyChanged(nameof(VoltageBA));
+		private void TerminalPotentialChangedCallback(object sender, EventArgs e) =>
+			InvokePropertyChanged(nameof(VoltageBA), nameof(CurrentBA));
 
 		#endregion
 
