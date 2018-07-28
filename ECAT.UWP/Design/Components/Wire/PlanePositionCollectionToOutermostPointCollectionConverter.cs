@@ -65,7 +65,7 @@ namespace ECAT.UWP
 		/// <summary>
 		/// The offset applied to the border coordinates to simulate a nice margin around the wire
 		/// </summary>
-		public static double BorderOffset => 10;
+		public static double BorderOffset => 20;
 
 		#endregion
 	}

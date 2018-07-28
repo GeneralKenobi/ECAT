@@ -61,8 +61,8 @@
 						</Grid.ContextFlyout>
 
 						<!-- Border around the 'focused' element -->
-						<Border Margin="-1"
-							BorderThickness="1"
+						<Border Margin="-2"
+							BorderThickness="2"
 							BorderBrush="{Binding MenuPresentBorderBrush, RelativeSource={RelativeSource Mode=TemplatedParent}}">
 
 							<ContentPresenter Content="{Binding Component, Mode=OneWay, Converter={StaticResource PartControlConverter}}"

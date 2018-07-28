@@ -69,7 +69,7 @@
 						<!-- Polygon that acts as a border around the wire when context menu is present -->
 						<Polygon Points="{Binding Wire.DefiningPoints, Converter={StaticResource BorderConverter}}" 
 							Stroke="{Binding MenuPresentBorderBrush, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-							StrokeThickness="1"/>
+							StrokeThickness="2"/>
 
 						<!-- Socket on the beginning of the wire -->
 						<local:WireSocketTC Position="{Binding Wire.Beginning}"
