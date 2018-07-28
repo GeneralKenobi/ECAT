@@ -29,6 +29,11 @@ namespace ECAT.Core
 		/// </summary>
 		double VoltageBA { get; }
 
+		/// <summary>
+		/// Current flowing from <see cref="TerminalA"/> to <see cref="TerminalB"/>
+		/// </summary>
+		double CurrentBA { get; }
+
 		#endregion
 	}
 }
