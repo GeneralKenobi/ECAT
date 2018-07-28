@@ -53,7 +53,7 @@ namespace ECAT.Simulation
 			// Assign the currents through voltage sources (the remaining entries of the results)
 			for (int i = _NodePotentials.Count; i < result.Length; ++i)
 			{
-				_VoltageSourcesCurrents[i].Value = result[i].Real;
+				_VoltageSourcesCurrents[i - _NodePotentials.Count].Value = result[i].Real;
 			}
 		}
 
