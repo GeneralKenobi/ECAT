@@ -39,6 +39,11 @@ namespace ECAT.UWP
 		#region Public properties
 
 		/// <summary>
+		/// Height of the row with value display
+		/// </summary>
+		public double ValueRowHeight { get; } = 25;
+
+		/// <summary>
 		/// Describes the geometry to assgin to Path's Data property (a curve constructed with use of a Bezier segment)
 		/// </summary>
 		public Geometry PathGeometry => new PathGeometry()
@@ -48,17 +53,17 @@ namespace ECAT.UWP
 				new PathFigure()
 				{
 					// Start at the bottom
-					StartPoint = new Point(0, ActualHeight),
+					StartPoint = new Point(0, ActualHeight - ValueRowHeight),
 					Segments =new PathSegmentCollection()
 					{
 						new BezierSegment()
 						{
 							// Starting point
-							Point1 = new Point(0, ActualHeight),
+							Point1 = new Point(0, ActualHeight - ValueRowHeight),
 							// Middle at the top (control point, actual curve will be drawn more or less in the middle)
-							Point2 = new Point(ActualWidth / 2, 0),
+							Point2 = new Point(ActualWidth / 2, -(ActualHeight - ValueRowHeight)),
 							// Finish at the bottom again
-							Point3 = new Point(ActualWidth, ActualHeight),
+							Point3 = new Point(ActualWidth, ActualHeight - ValueRowHeight),
 						}
 					},					
 				}

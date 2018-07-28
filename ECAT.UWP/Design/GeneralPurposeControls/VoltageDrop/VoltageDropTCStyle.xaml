@@ -19,25 +19,34 @@
 						Margin="-1">
 
 						<Grid.Resources>
+							<converters:DoubleToGridLength x:Key="GridLengthConverter"/>
 							<local:DoubleToVisibilityConverter x:Key="ArrowheadVisibilityConverter"/>
 							<converters:SumConverter x:Key="SumConverter"/>
 							<converters:OppositeDoubleConverter x:Key="OppositeConverter"/>
 							<converters:AbsoluteValueConverter x:Key="AbsoluteValueConverter"/>
 						</Grid.Resources>
 
+						<Grid.RowDefinitions>
+							<RowDefinition Height="{Binding ValueRowHeight, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource GridLengthConverter}}"/>
+							<RowDefinition Height="*"/>
+						</Grid.RowDefinitions>					
+
 						<!-- The body of the arrow -->
 						<Path Stroke="{TemplateBinding Foreground}"
+							VerticalAlignment="Bottom"
 							StrokeThickness="4"							
 							Data="{Binding PathGeometry, RelativeSource={RelativeSource Mode=TemplatedParent}}"
 							StrokeEndLineCap="Round"
-							StrokeStartLineCap="Round"/>
+							StrokeStartLineCap="Round"
+							Grid.Row="1"/>
 
 						<!-- Arrow on the left, visible if Voltage is negative -->
 						<local:ArrowheadTC Visibility="{Binding Voltage, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ArrowheadVisibilityConverter}, ConverterParameter=x}"
 							RotationAngle="{Binding ArrowRotationAngle, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource OppositeConverter}}"
 							Foreground="{TemplateBinding Foreground}"
 							VerticalAlignment="Bottom"
-							Margin="0 0 0 -10"/>
+							Margin="0 0 0 -10"
+							Grid.Row="1"/>
 
 						<!-- Arrow on the right, visible of Voltage is nonnegative -->
 						<local:ArrowheadTC Visibility="{Binding Voltage, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ArrowheadVisibilityConverter}}"
@@ -45,7 +54,8 @@
 							Foreground="{TemplateBinding Foreground}"
 							VerticalAlignment="Bottom"
 							HorizontalAlignment="Right"
-							Margin="0 0 -20 -10"/>
+							Margin="0 0 -20 -10"
+							Grid.Row="1"/>
 
 						<!-- The voltage -->
 						<controls:ValueUnitDisplay Value="{Binding Voltage, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource AbsoluteValueConverter}}"
