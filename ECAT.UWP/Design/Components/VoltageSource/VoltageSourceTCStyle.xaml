@@ -1,56 +1,97 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:controls="using:UWPEnhanced.Controls"
     xmlns:local="using:ECAT.UWP">
+
+
+	<Style TargetType="local:TwoTerminalComponentPackageTC" x:Key="VoltageSourcePackage">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="local:TwoTerminalComponentPackageTC">
+
+					<!-- Root container -->
+					<Grid>
+
+						<!-- Presents current flow through the component -->
+						<local:CurrentFlowTC Current="{Binding Component.CurrentBA}"
+								VerticalAlignment="Center"/>					
+
+						<!-- Presents a parameter associated with the component -->
+						<controls:ValueUnitDisplay Foreground="{StaticResource BlackBrush}"
+								FontSize="{StaticResource FontSizeXLarge}"
+								HorizontalAlignment="Center"
+								VerticalAlignment="Bottom"
+								Value="{Binding Component.ProducedVoltage}"
+								RoundToDigit="4"
+								Unit="V"
+								Margin="0 0 0 -25"/>
+
+						<!-- Socket for terminal A-->
+						<local:SocketTC Terminal="{Binding Component.TerminalA}"
+							HorizontalAlignment="Left"
+							VerticalAlignment="Center"/>
+
+						<!-- Socket for terminal B-->
+						<local:SocketTC Terminal="{Binding Component.TerminalB}"
+							HorizontalAlignment="Right"
+							VerticalAlignment="Center"/>
+
+					</Grid>
+
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
 
 	<Style TargetType="local:VoltageSourceTC">
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="local:VoltageSourceTC">
-					<Canvas>
+					<Grid>
+						<Canvas>
 
-						<!-- The circle in the middle -->
-						<Ellipse Canvas.Left="54"
-							Canvas.Top="4"
-							Width="92"
-							Height="92"
-							Fill="Transparent"
-							Stroke="{StaticResource BlackBrush}"
-							StrokeThickness="4"/>
+							<!-- The circle in the middle -->
+							<Ellipse Canvas.Left="54"
+								Canvas.Top="4"
+								Width="92"
+								Height="92"
+								Fill="Transparent"
+								Stroke="{StaticResource BlackBrush}"
+								StrokeThickness="4"/>
 
-						<!-- The wire to the first socket -->
-						<Line Stroke="{StaticResource BlackBrush}"
-							StrokeThickness="10"
-							X1="0"
-							Y1="50"
-							X2="55"
-							Y2="50"/>
+							<!-- The wire to the first socket -->
+							<Line Stroke="{StaticResource BlackBrush}"
+								StrokeThickness="10"
+								X1="0"
+								Y1="50"
+								X2="55"
+								Y2="50"/>
 
-						<!-- The wire to the second socket -->
-						<Line Stroke="{StaticResource BlackBrush}"
-							StrokeThickness="10"
-							X1="145"
-							Y1="50"
-							X2="200"
-							Y2="50"/>
+							<!-- The wire to the second socket -->
+							<Line Stroke="{StaticResource BlackBrush}"
+								StrokeThickness="10"
+								X1="145"
+								Y1="50"
+								X2="200"
+								Y2="50"/>
 
-						<!-- The arrow in the circle -->
-						<Polyline Canvas.Left="50"
-							Stroke="{StaticResource BlackBrush}"
-							StrokeThickness="4"
-							StrokeMiterLimit="0"
-							StrokeLineJoin="Round"
-							StrokeStartLineCap="Round"
-							StrokeEndLineCap="Round"
-							Points="50,30 70,50 50,70 70,50 24,50"/>
+							<!-- The arrow in the circle -->
+							<Polyline Canvas.Left="50"
+								Stroke="{StaticResource BlackBrush}"
+								StrokeThickness="4"
+								StrokeMiterLimit="0"
+								StrokeLineJoin="Round"
+								StrokeStartLineCap="Round"
+								StrokeEndLineCap="Round"
+								Points="50,30 70,50 50,70 70,50 24,50"/>
 
-						<!-- First socket -->
-						<local:SocketTC Canvas.Top="50" Terminal="{Binding Component.TerminalA}"/>
+						</Canvas>
 
-						<!-- Second socket -->
-						<local:SocketTC Canvas.Left="200" Canvas.Top="50" Terminal="{Binding Component.TerminalB}"/>
+						<local:TwoTerminalComponentPackageTC Style="{StaticResource VoltageSourcePackage}"/>
 
-					</Canvas>
+					</Grid>
 				</ControlTemplate>
 			</Setter.Value>
 		</Setter>
