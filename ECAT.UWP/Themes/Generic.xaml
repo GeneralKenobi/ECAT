@@ -3,8 +3,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:ECAT.UWP">
 
-	<ResourceDictionary.MergedDictionaries>		
-		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/ComponentWrapper/ComponentWrapperTCStyle.xaml"/>
+	<ResourceDictionary.MergedDictionaries>
+		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/GeneralPurposeControls/ComponentWrapper/ComponentWrapperTCStyle.xaml"/>
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/Resistor/ResistorTCStyle.xaml"/>
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/Socket/SocketTCStyle.xaml"/>
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/Wire/WireSocket/WireSocketTCStyle.xaml"/>
@@ -15,8 +15,8 @@
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/GeneralPurposeControls/VoltageDrop/VoltageDropTCStyle.xaml"/>
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/GeneralPurposeControls/Arrowhead/ArrowheadTCStyle.xaml"/>
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/GeneralPurposeControls/CurrentFlow/CurrentFlowTCStyle.xaml"/>
+		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/GeneralPurposeControls/TwoTerminalComponentPackage/TwoTerminalComponentPackageTCStyle.xaml"/>
 	</ResourceDictionary.MergedDictionaries>
 	    
-
 
 </ResourceDictionary>
