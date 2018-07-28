@@ -8,6 +8,8 @@ namespace ECAT.Design
 	/// </summary>
     public class Resistor : TwoTerminal, IResistor
     {
+		#region Constructor
+
 		/// <summary>
 		/// Default Constructor
 		/// </summary>
@@ -15,7 +17,30 @@ namespace ECAT.Design
 		{
 			Admittance = IoC.Resolve<IDefaultValues>().DefaultResistorAdmittance;
 		}
-   
-		double Resistance { get; set; } = 1000;
+
+		#endregion
+
+		#region Public properties
+
+		/// <summary>
+		/// The resistance of this <see cref="IResistor"/>
+		/// </summary>
+		public double Resistance
+		{
+			get => 1 / Admittance.Real;
+			set
+			{
+				if(value >= IoC.Resolve<IDefaultValues>().MinimumParameterValue)
+				{
+					Admittance = 1 / value;
+				}
+				else
+				{
+					Admittance = IoC.Resolve<IDefaultValues>().MinimumParameterValue;
+				}
+			}
+		}
+
+		#endregion
 	}
 }

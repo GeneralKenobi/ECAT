@@ -1,11 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ECAT.Core
+﻿namespace ECAT.Core
 {
-    public interface IResistor : ITwoTerminal
+	/// <summary>
+	/// Interface for resistors - passive two-terminal component
+	/// </summary>
+	public interface IResistor : ITwoTerminal
     {
-
+		/// <summary>
+		/// The resistance of this <see cref="IResistor"/>
+		/// </summary>
+		double Resistance { get; set; }
     }
 }
