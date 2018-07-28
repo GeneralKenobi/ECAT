@@ -22,12 +22,12 @@ namespace ECAT.Design
 		/// <summary>
 		/// Width of the control in circuit design in the default, horizontal position
 		/// </summary>
-		public override double Width { get; } = 50;
+		public override double Width { get; } = 100;
 
 		/// <summary>
 		/// Height of the control in circuit design in the default, horizontal position
 		/// </summary>
-		public override double Height { get; } = 50;
+		public override double Height { get; } = 100;
 
 		#endregion
 	}

@@ -9,24 +9,24 @@
 				<ControlTemplate TargetType="local:GroundTC">
 					<Canvas>
 
-						<Line X1="25" X2="25" Y1="0" Y2="25"
+						<Line X1="50" X2="50" Y1="0" Y2="50"
 							Stroke="{StaticResource BlackBrush}"
-							StrokeThickness="5"/>
+							StrokeThickness="10"/>
 
-						<Line X1="5" X2="45" Y1="25" Y2="25"
+						<Line X1="10" X2="90" Y1="50" Y2="50"
 							Stroke="{StaticResource BlackBrush}"
-							StrokeThickness="4"/>
+							StrokeThickness="8"/>
 							
-						<Line X1="11" X2="39" Y1="31" Y2="31"
+						<Line X1="22" X2="78" Y1="62" Y2="62"
 							Stroke="{StaticResource BlackBrush}"
-							StrokeThickness="4"/>
+							StrokeThickness="8"/>
 
-						<Line X1="17" X2="33" Y1="37" Y2="37"
+						<Line X1="34" X2="66" Y1="74" Y2="74"
 							Stroke="{StaticResource BlackBrush}"
-							StrokeThickness="4"/>
+							StrokeThickness="8"/>
 
 						<local:SocketTC Terminal="{Binding Component.Terminal}"
-							Canvas.Left="25"/>
+							Canvas.Left="50"/>
 
 					</Canvas>
 				</ControlTemplate>

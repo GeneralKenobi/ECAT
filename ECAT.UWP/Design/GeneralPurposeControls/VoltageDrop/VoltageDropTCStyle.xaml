@@ -7,8 +7,7 @@
 	<Style TargetType="local:VoltageDropTC">
 		<Setter Property="Foreground" Value="{StaticResource BlackBrush}"/>
 		<Setter Property="ArrowRotationAngle" Value="27.5"/>
-		<Setter Property="Width" Value="80"/>
-		<Setter Property="Height" Value="25"/>
+		<Setter Property="Height" Value="50"/>
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="local:VoltageDropTC">
@@ -27,7 +26,7 @@
 
 						<!-- The body of the arrow -->
 						<Path Stroke="{TemplateBinding Foreground}"
-							StrokeThickness="2"							
+							StrokeThickness="4"							
 							Data="{Binding PathGeometry, RelativeSource={RelativeSource Mode=TemplatedParent}}"
 							StrokeEndLineCap="Round"
 							StrokeStartLineCap="Round"/>
@@ -37,7 +36,7 @@
 							RotationAngle="{Binding ArrowRotationAngle, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource OppositeConverter}}"
 							Foreground="{TemplateBinding Foreground}"
 							VerticalAlignment="Bottom"
-							Margin="0 0 0 -5"/>
+							Margin="0 0 0 -10"/>
 
 						<!-- Arrow on the right, visible of Voltage is nonnegative -->
 						<local:ArrowheadTC Visibility="{Binding Voltage, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ArrowheadVisibilityConverter}}"
@@ -45,13 +44,13 @@
 							Foreground="{TemplateBinding Foreground}"
 							VerticalAlignment="Bottom"
 							HorizontalAlignment="Right"
-							Margin="0 0 -10 -5"/>
+							Margin="0 0 -20 -10"/>
 
 						<!-- The voltage -->
 						<TextBlock Text="{Binding Voltage, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource AbsoluteValueConverter}}"
 							HorizontalAlignment="Center"
 							VerticalAlignment="Top"
-							FontSize="{StaticResource FontSizeSmaller}"
+							FontSize="{StaticResource FontSizeBig}"
 							Foreground="{TemplateBinding Foreground}"/>
 
 					</Grid>

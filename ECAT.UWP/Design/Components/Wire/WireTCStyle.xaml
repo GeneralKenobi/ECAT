@@ -52,7 +52,7 @@
 						<!-- Polyline that visualizes the wire -->
 						<Polyline Name="WirePolyline"
 							Stroke="{StaticResource BlackBrush}"
-							StrokeThickness="5"
+							StrokeThickness="10"
 							StrokeMiterLimit="0"
 							Points="{Binding Wire.ConstructionPoints, Converter={StaticResource PointsConverter}}"
 							StrokeLineJoin="Round">

@@ -13,7 +13,7 @@
 				<ControlTemplate TargetType="local:CurrentFlowTC">
 
 					<!-- Root container -->
-					<Grid Margin="3 0">
+					<Grid Margin="6 0 6 -10">
 
 						<Grid.Resources>
 							<local:DoubleToVisibilityConverter x:Key="ArrowheadVisibilityConverter"/>
@@ -39,34 +39,35 @@
 
 						<!-- Triangle acting as an arrowhead for negative currents (flowing to the left) -->
 						<Polygon Grid.Column="0"
-							Points="10,0 10,14 0,7"
+							Points="20,0 20,28 0,14"
 							HorizontalAlignment="Left"
 							Stroke="{StaticResource BlackBrush}"
 							Visibility="{Binding Current, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ArrowheadVisibilityConverter}, ConverterParameter=x}"
 							Fill="{StaticResource BlackBrush}"
 							StrokeLineJoin="Round"
-							Margin="5 0 0 0"/>
+							Margin="10 0 0 0"/>
 
 						<!-- Triangle acting as an arrowhead for positive currents (flowing to the right) -->
 						<Polygon Grid.Column="2"
-							Points="0,0 0,14 10,7"
+							Points="0,0 0,28 20,14"
 							HorizontalAlignment="Right"
 							Stroke="{StaticResource BlackBrush}"							
 							Fill="{StaticResource BlackBrush}"
 							StrokeLineJoin="Round"
 							Visibility="{Binding Current, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ArrowheadVisibilityConverter}}"
-							Margin="0 0 5 0"/>
+							Margin="0 0 10 0"/>
 
 						<!-- Displayed value -->
 						<controls:ValueUnitDisplay Grid.Column="{Binding Current, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ValueColumnConverter}, ConverterParameter=2/0}"
 							HorizontalAlignment="Center"
 							Grid.Row="1"
 							Foreground="{StaticResource BlackBrush}"
-							FontSize="{StaticResource FontSizeTiny}"							
+							FontSize="{StaticResource FontSizeSmall}"							
 							Value="{Binding Current, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource AbsoluteValueConverter}, ConverterParameter=x}"
 							RoundToDigit="4"
+							Height="14"
 							Unit="A"
-							Margin="0 -2 0 0"/>
+							Margin="0 -4 0 0"/>
 					</Grid>
 
 				</ControlTemplate>

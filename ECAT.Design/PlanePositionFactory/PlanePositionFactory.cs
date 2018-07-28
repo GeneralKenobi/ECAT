@@ -14,7 +14,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// All coordinates are rounded to multiples of this value
 		/// </summary>
-		public double RoundTo { get; } = 25;
+		public double RoundTo { get; } = 50;
 
 		/// <summary>
 		/// Constructs an <see cref="IPlanePosition"/> with all coordinates 0

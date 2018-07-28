@@ -10,51 +10,54 @@
 					<Canvas>
 
 						<!-- The outer circle -->
-						<Ellipse Canvas.Left="27"
-							Canvas.Top="2"
-							Width="46"
-							Height="46"
+						<Ellipse Canvas.Left="54"
+							Canvas.Top="4"
+							Width="92"
+							Height="92"
 							Fill="Transparent"
 							Stroke="{StaticResource BlackBrush}"
-							StrokeThickness="2"/>
+							StrokeThickness="4"/>
 
 						<!-- The inner circle -->
-						<Ellipse Canvas.Left="32"
-							Canvas.Top="7"
-							Width="36"
-							Height="36"
+						<Ellipse Canvas.Left="64"
+							Canvas.Top="14"
+							Width="72"
+							Height="72"
 							Fill="Transparent"
 							Stroke="{StaticResource BlackBrush}"
-							StrokeThickness="2"/>
+							StrokeThickness="4"/>
 
 						<!-- The wire to the first socket -->
 						<Line Stroke="{StaticResource BlackBrush}"
-							StrokeThickness="5"
+							StrokeThickness="10"
 							X1="0"
-							Y1="25"
-							X2="27"
-							Y2="25"/>
+							Y1="50"
+							X2="55"
+							Y2="50"/>
 
 						<!-- The wire to the second socket -->
 						<Line Stroke="{StaticResource BlackBrush}"
-							StrokeThickness="5"
-							X1="73"
-							Y1="25"
-							X2="100"
-							Y2="25"/>
+							StrokeThickness="10"
+							X1="145"
+							Y1="50"
+							X2="200"
+							Y2="50"/>
 
 						<!-- The arrow in the circle -->
-						<Polyline Canvas.Left="25"
+						<Polyline Canvas.Left="50"
 							Stroke="{StaticResource BlackBrush}"
-							StrokeThickness="2"
+							StrokeThickness="4"
 							StrokeMiterLimit="0"
-							Points="25,15 35,25 25,35 35,25 12,25"/>
+							StrokeLineJoin="Round"
+							StrokeStartLineCap="Round"
+							StrokeEndLineCap="Round"
+							Points="50,30 70,50 50,70 70,50 24,50"/>
 
 						<!-- First socket -->
-						<local:SocketTC Canvas.Top="25" Terminal="{Binding Component.TerminalA}"/>
+						<local:SocketTC Canvas.Top="50" Terminal="{Binding Component.TerminalA}"/>
 
 						<!-- Second socket -->
-						<local:SocketTC Canvas.Left="100" Canvas.Top="25" Terminal="{Binding Component.TerminalB}"/>
+						<local:SocketTC Canvas.Left="200" Canvas.Top="50" Terminal="{Binding Component.TerminalB}"/>
 
 					</Canvas>
 				</ControlTemplate>

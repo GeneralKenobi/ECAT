@@ -21,14 +21,15 @@
 					could, for example, allow the user to place a wire on the socket without invoking proper commands 
 					related to the socket -->
 					<Grid Background="Transparent"
+						Margin="-25"
 						Width="{Binding HitboxLength}"
 						Height="{Binding HitboxLength}">
 
 						<!-- Offset that centralizes the socket around it's assigned position -->
-						<Grid.RenderTransform>
+						<!--<Grid.RenderTransform>
 							<TranslateTransform X="{Binding HitboxLength, Converter={StaticResource Quotient}, ConverterParameter=-2}"
 								Y="{Binding HitboxLength, Converter={StaticResource Quotient}, ConverterParameter=-2}"/>
-						</Grid.RenderTransform>
+						</Grid.RenderTransform>-->
 
 						<!-- Attach a trigger that will catch and surpress tapped event from being propagated -->
 						<xaml:VisualAttachments.AttachedVisuals>
@@ -43,7 +44,7 @@
 							Margin="4 -5 0 0"/>
 
 						<!-- Visible socket -->
-						<Ellipse Fill="{StaticResource BlackBrush}"
+						<Ellipse Fill="{StaticResource BlackBrush}"							
 							Width="{Binding Component.SocketRadius, Converter={StaticResource Product}, ConverterParameter=2}"
 							Height="{Binding Component.SocketRadius, Converter={StaticResource Product}, ConverterParameter=2}">
 

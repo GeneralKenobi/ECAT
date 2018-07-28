@@ -46,7 +46,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Radius of the sockets present on a wire
 		/// </summary>
-		public double WireSocketRadius => 6;
+		public double WireSocketRadius => 12;
 
 		/// <summary>
 		/// Backing store for <see cref="DefiningPoints"/>

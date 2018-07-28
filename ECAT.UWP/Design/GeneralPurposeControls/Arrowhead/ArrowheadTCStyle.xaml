@@ -14,21 +14,21 @@
 						<!-- Rotation transform used to position the arrowhead properly -->
 						<Grid.RenderTransform>
 							<RotateTransform CenterX="0"
-								CenterY="5"
+								CenterY="10"
 								Angle="{Binding RotationAngle, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
 						</Grid.RenderTransform>
 
 						<!-- The line on the top -->
 						<Line Stroke="{TemplateBinding Foreground}"
-							StrokeThickness="2"
-							X1="0" X2="10" Y1="5" Y2="0"
+							StrokeThickness="4"
+							X1="0" X2="20" Y1="10" Y2="0"
 							StrokeStartLineCap="Round"
 							StrokeEndLineCap="Round"/>
 
 						<!-- The line on the bottom -->
 						<Line Stroke="{TemplateBinding Foreground}"
-							StrokeThickness="2"
-							X1="0" X2="10" Y1="5" Y2="10"
+							StrokeThickness="4"
+							X1="0" X2="20" Y1="10" Y2="20"
 							StrokeStartLineCap="Round"
 							StrokeEndLineCap="Round"/>
 

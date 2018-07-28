@@ -46,7 +46,7 @@
 							</xaml:VisualAttachments.AttachedVisuals>
 
 							<!-- Visible part of the socket -->
-							<Ellipse Fill="{StaticResource BlackBrush}"
+							<Ellipse Fill="{StaticResource BlackBrush}"								
 								Width="{Binding Wire.WireSocketRadius, Converter={StaticResource Product}, ConverterParameter=2}"
 								Height="{Binding Wire.WireSocketRadius, Converter={StaticResource Product}, ConverterParameter=2}">
 

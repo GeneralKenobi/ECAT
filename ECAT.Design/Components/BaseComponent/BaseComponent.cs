@@ -40,7 +40,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Radius of sockets on the component
 		/// </summary>
-		public double SocketRadius => 6.25;
+		public double SocketRadius => 12;
 
 		/// <summary>
 		/// The center of the component

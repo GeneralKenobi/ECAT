@@ -48,7 +48,7 @@ namespace ECAT.UWP
 				new PathFigure()
 				{
 					// Start at the bottom
-					StartPoint = new Point(0,ActualHeight),
+					StartPoint = new Point(0, ActualHeight),
 					Segments =new PathSegmentCollection()
 					{
 						new BezierSegment()
@@ -60,7 +60,7 @@ namespace ECAT.UWP
 							// Finish at the bottom again
 							Point3 = new Point(ActualWidth, ActualHeight),
 						}
-					}
+					},					
 				}
 			}
 		};
