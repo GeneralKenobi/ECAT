@@ -98,8 +98,8 @@
     <Compile Include="Design\ComponentAddingMenu\ComponentAddingMenu.xaml.cs">
       <DependentUpon>ComponentAddingMenu.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Design\Components\BorderWithFlyoutMenuBaseTC\BorderWithFlyoutMenuBaseTC.cs" />
-    <Compile Include="Design\Components\ComponentWrapper\ComponentWrapperTC.cs" />
+    <Compile Include="Design\GeneralPurposeControls\BorderWithFlyoutMenuBaseTC\BorderWithFlyoutMenuBaseTC.cs" />
+    <Compile Include="Design\GeneralPurposeControls\ComponentWrapper\ComponentWrapperTC.cs" />
     <Compile Include="Design\Components\CurrentSource\CurrentSourceTC.cs" />
     <Compile Include="Design\Components\Ground\GroundTC.cs" />
     <Compile Include="Design\Components\Resistor\ResistorTC.cs" />
@@ -109,10 +109,12 @@
     <Compile Include="Design\Components\Wire\PlanePositionCollectionToPointCollectionConverter.cs" />
     <Compile Include="Design\Components\Wire\WireSocket\WireSocketTC.cs" />
     <Compile Include="Design\Components\Wire\WireTC.cs" />
-    <Compile Include="Design\Arrowhead\ArrowheadTC.cs" />
-    <Compile Include="Design\VoltageDrop\VoltageDropTC.cs" />
-    <Compile Include="Design\VoltageDrop\VoltageToArrowheadVisibilityConverter.cs" />
-    <Compile Include="Design\VoltageDrop\VoltageToDisplayVoltageConverter.cs" />
+    <Compile Include="Design\GeneralPurposeControls\Arrowhead\ArrowheadTC.cs" />
+    <Compile Include="Design\GeneralPurposeControls\CurrentFlow\CurrentFlowTC.cs" />
+    <Compile Include="Design\GeneralPurposeControls\TwoTerminalComponentPackage\TwoTerminalComponentPackageTC.cs" />
+    <Compile Include="Design\GeneralPurposeControls\VoltageDrop\VoltageDropTC.cs" />
+    <Compile Include="GeneralValueConverters\DoubleToChosenParameterConverter.cs" />
+    <Compile Include="GeneralValueConverters\DoubleToVisibilityConverter.cs" />
     <Compile Include="IoCSetup\IoCSetup.cs" />
     <Compile Include="MainPage\IBaseComponentToComponentViewModelConverter.cs" />
     <Compile Include="MainPage\IWireToWireViewModelConverter.cs" />
@@ -153,7 +155,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Design\Components\ComponentWrapper\ComponentWrapperTCStyle.xaml">
+    <Page Include="Design\GeneralPurposeControls\ComponentWrapper\ComponentWrapperTCStyle.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -185,11 +187,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Design\Arrowhead\ArrowheadTCStyle.xaml">
+    <Page Include="Design\GeneralPurposeControls\Arrowhead\ArrowheadTCStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Design\VoltageDrop\VoltageDropTCStyle.xaml">
+    <Page Include="Design\GeneralPurposeControls\CurrentFlow\CurrentFlowTCStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Design\GeneralPurposeControls\TwoTerminalComponentPackage\TwoTerminalComponentPackageTCStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Design\GeneralPurposeControls\VoltageDrop\VoltageDropTCStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

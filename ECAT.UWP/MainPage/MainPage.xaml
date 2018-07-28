@@ -35,9 +35,8 @@
 						Converter="{StaticResource PositionConverter}"/>
 				</xaml:VisualAttachments.AttachedVisuals>
 
-				<!-- All parts go here -->
-				<!-- Don't use layout rounding because it blurs the parts when they're rotated,
-				especially noticeable when the control has text in it -->
+				
+				
 				<Grid x:Name="BackgroundGrid"
 					Background="Transparent"
 					UseLayoutRounding="False"
@@ -49,7 +48,8 @@
 				Tapped="MainCanvasTapped"-->
 
 				<!-- Control for wires-->
-				<ItemsControl ItemsSource="{Binding DesignVM.DesignManager.CurrentSchematic.Wires}">
+				<ItemsControl ItemsSource="{Binding DesignVM.DesignManager.CurrentSchematic.Wires}"
+					UseLayoutRounding="False">
 
 					<ItemsControl.ItemsPanel>
 						<ItemsPanelTemplate>
@@ -65,7 +65,10 @@
 				</ItemsControl>
 
 				<!-- Control for components -->
-				<ItemsControl ItemsSource="{Binding DesignVM.DesignManager.CurrentSchematic.Components}">
+				<!-- Don't use layout rounding because it blurs the parts when they're rotated,
+				especially noticeable when the control has text in it -->
+				<ItemsControl ItemsSource="{Binding DesignVM.DesignManager.CurrentSchematic.Components}"
+					UseLayoutRounding="False">
 
 					<ItemsControl.ItemsPanel>
 						<ItemsPanelTemplate>

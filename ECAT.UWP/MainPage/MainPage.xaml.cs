@@ -30,7 +30,6 @@ namespace ECAT.UWP
 			this.InitializeComponent();
 			Loaded += MainPageLoaded;
 			DataContext = AppViewModel.Singleton;
-			ScrollViewerControl.ZoomToFactor(2);
 		}
 
 		#endregion
@@ -45,12 +44,12 @@ namespace ECAT.UWP
 		private void MainPageLoaded(object sender, RoutedEventArgs e)
 		{
 			// Add a horizontal and a vertical line every 25 pixels
-			for (int i = 25; i < 2000; i += 25)
+			for (int i = 50; i < 2000; i += 50)
 			{
 				BackgroundGrid.Children.Add(new Line()
 				{
 					Stroke = App.Current.Resources["LightGrayBrush"] as SolidColorBrush,
-					StrokeThickness = 1,
+					StrokeThickness = 2,
 					X1 = 0,
 					X2 = 2000,
 					Y1 = i,
@@ -60,7 +59,7 @@ namespace ECAT.UWP
 				BackgroundGrid.Children.Add(new Line()
 				{
 					Stroke = App.Current.Resources["LightGrayBrush"] as SolidColorBrush,
-					StrokeThickness = 1,
+					StrokeThickness = 2,
 					X1 = i,
 					X2 = i,
 					Y1 = 0,
