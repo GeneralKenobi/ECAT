@@ -57,9 +57,10 @@ namespace ECAT.Design
 			0 : TerminalB.Potential.Value - TerminalA.Potential.Value;
 
 		/// <summary>
-		/// Current flowing from <see cref="TerminalA"/> to <see cref="TerminalB"/>
+		/// Current flowing from <see cref="TerminalA"/> to <see cref="TerminalB"/>, may be overriden if a specific component'
+		/// current can't be determined from its voltage and admittance (eg. voltage source)
 		/// </summary>
-		public double CurrentBA => -VoltageBA / Admittance.Real;			
+		public virtual double CurrentBA => -VoltageBA * Admittance.Real;
 
 		#endregion
 
