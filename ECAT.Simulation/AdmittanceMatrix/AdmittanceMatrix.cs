@@ -22,7 +22,7 @@ namespace ECAT.Simulation
 			_Z = zMatrix;
 
 			_NodePotentials = new List<RefWrapperPropertyChanged<double>>(nodes.Select((node) => node.Potential));
-			_VoltageSourcesCurrents = new List<RefWrapperPropertyChanged<double>>(sources.Select((source) => source.CurrentBA));			
+			_VoltageSourcesCurrents = new List<RefWrapperPropertyChanged<double>>(sources.Select((source) => source.ProducedCurrent));			
 		}
 
 		#endregion
