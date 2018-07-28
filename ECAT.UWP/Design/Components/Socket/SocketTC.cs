@@ -22,7 +22,7 @@ namespace ECAT.UWP
 
 		#endregion	
 
-		#region PartialNode Dependency Property
+		#region Terminal Dependency Property
 
 		/// <summary>
 		/// ITerminal assigned to this <see cref="SocketTC"/>
