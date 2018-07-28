@@ -15,6 +15,11 @@ namespace ECAT.Core
 		double MaximumParameterValue { get; }
 
 		/// <summary>
+		/// A minimum value for parameters in the circuit (resistance, reactance, voltage source voltage, etc)
+		/// </summary>
+		double MinimumParameterValue { get; }
+
+		/// <summary>
 		/// Admittance of a voltage source
 		/// </summary>
 		Complex VoltageSourceAdmittance { get; }

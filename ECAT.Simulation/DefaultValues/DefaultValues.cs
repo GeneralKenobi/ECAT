@@ -15,7 +15,7 @@ namespace ECAT.Simulation
 		/// Maximum value that may be assigned to parameters, backing store for <see cref="MaximumParameterValue"/>,
 		/// stored separately so as to be able to initialize public properties with it
 		/// </summary>
-		private static double _MaximumParameterValue { get; } = 1e100;
+		private static double _MaximumParameterValue { get; } = 1e+20;
 
 		#endregion
 
@@ -25,6 +25,11 @@ namespace ECAT.Simulation
 		/// A maximum value for parameters in the circuit (admittance, voltage source voltage, etc)
 		/// </summary>
 		public double MaximumParameterValue { get; } = _MaximumParameterValue;
+
+		/// <summary>
+		/// A minimum value for parameters in the circuit (resistance, reactance, voltage source voltage, etc)
+		/// </summary>
+		public double MinimumParameterValue { get; } = 1 / _MaximumParameterValue;
 
 		/// <summary>
 		/// Admittance of a voltage source
