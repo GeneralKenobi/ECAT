@@ -42,7 +42,7 @@
 							Points="10,0 10,14 0,7"
 							HorizontalAlignment="Left"
 							Stroke="{StaticResource BlackBrush}"
-							Visibility="{Binding Current, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ArrowheadVisibilityConverter}}"
+							Visibility="{Binding Current, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ArrowheadVisibilityConverter}, ConverterParameter=x}"
 							Fill="{StaticResource BlackBrush}"
 							StrokeLineJoin="Round"
 							Margin="5 0 0 0"/>
@@ -54,11 +54,11 @@
 							Stroke="{StaticResource BlackBrush}"							
 							Fill="{StaticResource BlackBrush}"
 							StrokeLineJoin="Round"
-							Visibility="{Binding Current, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ArrowheadVisibilityConverter}, ConverterParameter=x}"
+							Visibility="{Binding Current, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ArrowheadVisibilityConverter}}"
 							Margin="0 0 5 0"/>
 
 						<!-- Displayed value -->
-						<controls:ValueUnitDisplay Grid.Column="{Binding Current, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ValueColumnConverter}, ConverterParameter=0/2}"
+						<controls:ValueUnitDisplay Grid.Column="{Binding Current, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ValueColumnConverter}, ConverterParameter=2/0}"
 							HorizontalAlignment="Center"
 							Grid.Row="1"
 							Foreground="{StaticResource BlackBrush}"

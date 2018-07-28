@@ -25,7 +25,7 @@ namespace ECAT.UWP
 		#region Current Dependency Property
 
 		/// <summary>
-		/// The value of the current, flowing from right to left
+		/// The value of the current, flowing from left to right
 		/// </summary>
 		public double Current
 		{
