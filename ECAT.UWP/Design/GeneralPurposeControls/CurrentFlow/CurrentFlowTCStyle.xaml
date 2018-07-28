@@ -62,7 +62,7 @@
 							HorizontalAlignment="Center"
 							Grid.Row="1"
 							Foreground="{StaticResource BlackBrush}"
-							FontSize="{StaticResource FontSizeSmall}"							
+							FontSize="{StaticResource FontSizeSmaller}"							
 							Value="{Binding Current, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource AbsoluteValueConverter}, ConverterParameter=x}"
 							RoundToDigit="4"
 							Height="14"
