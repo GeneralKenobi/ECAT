@@ -34,6 +34,7 @@ namespace ECAT.ViewModel
 			StopActionCommand = new RelayCommand(StopAction);
 			DesignAreaClickedCommand = new RelayParametrizedCommand(DesignAreaClicked);
 			PrepareToPlaceLooseWireCommand = new RelayCommand(PrepareToPlaceLooseWire);
+			EditComponentCommand = new RelayParametrizedCommand(EditComponent);
 		}
 
 		#endregion		
@@ -52,7 +53,7 @@ namespace ECAT.ViewModel
 
 		#endregion
 
-		#region Public properties		
+		#region Public properties
 
 		/// <summary>
 		/// Provided implementation of the <see cref="IDesignManager"/> interface
@@ -86,7 +87,12 @@ namespace ECAT.ViewModel
 		/// <summary>
 		/// True if the user is currently adding components
 		/// </summary>
-		public bool AddingComponents => ComponentToAdd != null;		
+		public bool AddingComponents => ComponentToAdd != null;
+
+		/// <summary>
+		/// View model for the component edit menu
+		/// </summary>
+		public ComponentEditSectionViewModel ComponentEditSectionVM { get; } = new ComponentEditSectionViewModel();
 
 		#endregion
 
@@ -107,6 +113,11 @@ namespace ECAT.ViewModel
 		/// Prepares the view model to place a loose wire - the next click on the design area will create it in the clicked position
 		/// </summary>
 		public ICommand PrepareToPlaceLooseWireCommand { get; }
+
+		/// <summary>
+		/// Puts a component in the ComponentEditMenu. Parameter should be the view model of the component to edit
+		/// </summary>
+		public ICommand EditComponentCommand { get; }
 
 		#endregion
 
@@ -131,6 +142,19 @@ namespace ECAT.ViewModel
 		#endregion
 
 		#region Private methods
+
+		/// <summary>
+		/// Method for <see cref="EditComponentCommand"/>
+		/// </summary>
+		/// <param name="parameter"></param>
+		private void EditComponent(object parameter)
+		{
+			if(parameter is ComponentViewModel vm)
+			{
+				// Use the helper class to assign a new view model for edit menu
+				ComponentEditSectionVM.CurrentlyEditedComponentViewModel = DesignViewModelHelpers.ConstructAppropriateEditViewModel(vm);
+			}
+		}
 
 		/// <summary>
 		/// Method for <see cref="StopActionCommand"/>
