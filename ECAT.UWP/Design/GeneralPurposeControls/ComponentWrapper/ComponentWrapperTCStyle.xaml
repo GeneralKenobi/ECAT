@@ -11,7 +11,7 @@
 					<Grid Name="RootGrid" Background="Transparent">
 						<Grid.Resources>
 							<local:ReverseRotationAngleValueConverter x:Key="RotationAngleConverter"/>
-							<local:PartToPartControlConverter x:Key="PartControlConverter"/>
+							<local:ComponentToComponentControlConverter x:Key="ComponentControlConverter"/>
 							<UWPEnhancedConverters:OppositeDoubleConverter x:Key="OppositeDoubleConverter"/>
 						</Grid.Resources>
 
@@ -36,7 +36,7 @@
 								<MenuFlyoutItem Style="{StaticResource ContextMenuFlyoutItemStyle}"
 									Text="&#xE104;"
 									FontFamily="{ThemeResource SymbolThemeFontFamily}"
-									Command="{Binding EditPartCommand}"
+									Command="{Binding EditComponentCommand}"
 									CommandParameter="{Binding}"/>
 
 								<!-- Rotate 90 degrees left icon -->
@@ -65,7 +65,7 @@
 							BorderThickness="2"
 							BorderBrush="{Binding MenuPresentBorderBrush, RelativeSource={RelativeSource Mode=TemplatedParent}}">
 
-							<ContentPresenter Content="{Binding Component, Mode=OneWay, Converter={StaticResource PartControlConverter}}"
+							<ContentPresenter Content="{Binding Component, Mode=OneWay, Converter={StaticResource ComponentControlConverter}}"
 								Width="{Binding Component.Width}"
 								Height="{Binding Component.Height}"/>
 						</Border>
