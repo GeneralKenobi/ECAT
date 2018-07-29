@@ -188,6 +188,8 @@
 				<local:ComponentAddingMenu controls:Menu.Glyph="&#xE710;"/>
 
 				<!--Edit menu control-->
+				<local:ComponentEditMenuUC controls:Menu.Glyph="&#xE104;"
+					DataContext="{Binding DesignVM.ComponentEditSectionVM}"/>
 				<!--<local:EditMenu controls:Menu.Glyph="&#xE104;"/>-->
 
 			</controls:Menu.Content>
