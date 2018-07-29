@@ -15,7 +15,7 @@ namespace ECAT.Core
 		/// <summary>
 		/// Collection of names of all components that are implemented and usable
 		/// </summary>
-		ReadOnlyObservableCollection<IComponentDeclaration> ImplementedComponents { get; }
+		ReadOnlyCollection<IComponentDeclaration> ImplementedComponents { get; }
 
 		#endregion
 
@@ -49,6 +49,27 @@ namespace ECAT.Core
 		/// </summary>
 		/// <returns></returns>
 		IWire ConstructWire();
+
+		/// <summary>
+		/// Returns declaration of a component based on its ID
+		/// </summary>
+		/// <param name="componentID"></param>
+		/// <returns></returns>
+		IComponentDeclaration GetDeclaration(ComponentIDEnumeration componentID);
+
+		/// <summary>
+		/// Gets an <see cref="IComponentDeclaration"/> associated with the given type. If no declaration was found returns null
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		IComponentDeclaration GetDeclaration<T>();
+
+		/// <summary>
+		/// Gets an <see cref="IComponentDeclaration"/> associated with the given type. If no declaration was found returns null
+		/// </summary>		
+		/// <param name="type"></param>
+		/// <returns></returns>
+		IComponentDeclaration GetDeclaration(Type type);
 
 		#endregion
 	}
