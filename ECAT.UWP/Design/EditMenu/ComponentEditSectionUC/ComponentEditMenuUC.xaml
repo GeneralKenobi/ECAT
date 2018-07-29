@@ -1,0 +1,112 @@
+﻿<UserControl
+    x:Class="ECAT.UWP.ComponentEditMenuUC"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ECAT.UWP"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+	<UserControl.Resources>
+		<local:ComponentEditViewModelToComponentEditControlConverter x:Key="ComponentEditConverter"/>
+	</UserControl.Resources>
+
+
+	<Grid VerticalAlignment="Stretch"
+		HorizontalAlignment="Stretch">
+
+		<!-- There are 3 rows-->
+		<Grid.RowDefinitions>
+			<!-- First is for component name, rotations and edits specific to the given part -->
+			<RowDefinition Height="*"/>
+			<!-- Second is a buffer between the first and second -->
+			<RowDefinition Height="50"/>
+			<!-- Third is for stop editing and delete buttons -->
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+
+		<!-- Stack panel for component name, rotation buttons and edits specific to the given component -->
+		<StackPanel Grid.Row="0">
+
+			<!-- Name of the component / title of the menu header with white underline -->
+			<Border BorderThickness="0 0 0 1"
+							BorderBrush="{StaticResource WhiteBrush}"
+							Margin="0 5 0 15"
+							Padding="0 0 0 5">
+
+				<!-- TextBlock with name of the component -->
+				<TextBlock Text="{Binding HeaderName, Mode=OneWay}"
+								FontSize="{StaticResource FontSizeBig}"
+								FontFamily="{StaticResource LatoBold}"
+								Style="{StaticResource WhiteTextBlockStyle}"/>
+
+			</Border>
+
+			<!-- Rotation header -->
+			<TextBlock Text="{Binding RotationSectionHeader, Mode=OneTime}"
+				FontSize="{StaticResource FontSizeLarge}"
+				FontFamily="{StaticResource LatoThin}"
+				Style="{StaticResource WhiteTextBlockStyle}"/>
+
+			<!-- Grid for rotate left/right buttons which are placed in the same row in two columns -->
+			<Grid Margin="0 10 0 10">
+
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+				</Grid.ColumnDefinitions>
+
+				<!-- Rotate left button -->
+				<Button Style="{StaticResource StandardSideMenuButtonStyle}"
+								IsEnabled="{Binding EnableGenericButtons, Mode=OneWay}"
+								Content="&#xf0e2;"
+								FontFamily="{StaticResource FontAwesome}"
+								Margin="0 0 5 0"
+								Command="{Binding RotateLeftCommand}"/>
+
+				<!-- Rotate right button -->
+				<Button Style="{StaticResource StandardSideMenuButtonStyle}"
+								IsEnabled="{Binding EnableGenericButtons, Mode=OneWay}"
+								Content="&#xf01e;"
+								FontFamily="{StaticResource FontAwesome}"
+								Margin="5 0 0 0"
+								Command="{Binding RotateRightCommand}"
+								Grid.Column="1"/>
+
+			</Grid>
+
+			<!-- Content presenter for edits specific to the given component -->
+			<ContentPresenter Content="{Binding CurrentlyEditedComponentViewModel, Converter={StaticResource ComponentEditConverter}}"
+							Margin="0 10 0 0"/>
+
+		</StackPanel>
+
+		<!-- Stack panel for stop editing and remove buttons -->
+		<StackPanel Grid.Row="2">
+
+			<!-- Stop editing button -->
+			<Button Style="{StaticResource StandardSideMenuButtonStyle}"
+									IsEnabled="{Binding EnableGenericButtons, Mode=OneWay}"
+									Content="&#xE711;"
+									FontFamily="{StaticResource SymbolThemeFontFamily}"
+									FontSize="{StaticResource FontSizeXLarge}"
+									Margin="0 5"								
+									Command="{Binding StopEditingCommand}"
+									VerticalAlignment="Bottom"/>
+
+			<!-- Delete button -->
+			<Button Style="{StaticResource StandardSideMenuButtonStyle}"
+									IsEnabled="{Binding EnableGenericButtons, Mode=OneWay}"
+									Content="&#xE107;"
+									FontFamily="{StaticResource SymbolThemeFontFamily}"
+									FontSize="{StaticResource FontSizeXLarge}"
+									Margin="0 5"								
+									Command="{Binding RemoveCommand}"
+									VerticalAlignment="Bottom"/>
+
+		</StackPanel>
+
+	</Grid>
+</UserControl>
