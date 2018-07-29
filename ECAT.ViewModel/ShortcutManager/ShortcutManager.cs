@@ -103,7 +103,7 @@ namespace ECAT.ViewModel
 		/// </summary>
 		/// <param name="componentID"></param>
 		private void PlacePartHelper(ComponentIDEnumeration componentID) => AppViewModel.Singleton.DesignVM.ComponentToAdd =
-			IoC.Resolve<IComponentFactory>().ImplementedComponents.First((x) => x.ID == componentID);
+			IoC.Resolve<IComponentFactory>().GetDeclaration(componentID);
 		
 		#endregion
 
