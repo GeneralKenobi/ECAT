@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace ECAT.Design
 {
@@ -17,7 +18,15 @@ namespace ECAT.Design
 		/// </summary>
 		public ComponentFactory()
 		{
-			ImplementedComponents = new ReadOnlyObservableCollection<IComponentDeclaration>(_ImplementedComponents);
+			ImplementedComponents = new ReadOnlyCollection<IComponentDeclaration>(_ImplementedComponents);
+
+			// Construct the dictionary from the existing collections
+			var interfacesWithDeclarations = _AssociatedInterfaces.ToDictionary((entry) => entry.Value,
+				(entry) => _ImplementedComponents.Find((declaration) => declaration.ID == entry.Key));
+
+			_AssociatedDeclarations = _AssociatedTypes.Select((entry) => new KeyValuePair<Type, IComponentDeclaration>(entry.Value,
+			  interfacesWithDeclarations[entry.Key])).Concat(interfacesWithDeclarations).ToDictionary((x) => x.Key, (x) => x.Value);
+
 		}
 
 		#endregion
@@ -25,11 +34,9 @@ namespace ECAT.Design
 		#region Private properties
 
 		/// <summary>
-		/// Backing store for <see cref="ImplementedComponents"/>
-		/// TODO: When a file system is implemented, move the content to a file and read it from there
+		/// List of all implemented components with their declared information. TODO: Read it from a file
 		/// </summary>
-		private ObservableCollection<IComponentDeclaration> _ImplementedComponents { get; } =
-			new ObservableCollection<IComponentDeclaration>()
+		private List<IComponentDeclaration> _ImplementedComponents { get; } = new List<IComponentDeclaration>()
 		{
 			new ComponentDeclaration(ComponentIDEnumeration.Resistor, "Resistor", 2, ComponentType.Passive),
 			new ComponentDeclaration(ComponentIDEnumeration.VoltageSource, "Voltage Source", 2, ComponentType.Passive),
@@ -38,25 +45,33 @@ namespace ECAT.Design
 		};
 
 		/// <summary>
-		/// Dictionary of component IDs and types assigned to them
+		/// List of types associated with given <see cref="ComponentIDEnumeration"/>. First type is the associated interface,
+		/// second type is the implementation type
 		/// </summary>
-		private Dictionary<ComponentIDEnumeration, Type> _ComponentTypesByID { get; } = new Dictionary<ComponentIDEnumeration, Type>()
+		private Dictionary<ComponentIDEnumeration, Type> _AssociatedInterfaces { get; } = new Dictionary<ComponentIDEnumeration, Type>()
 		{
-			{ComponentIDEnumeration.Resistor, typeof(Resistor) },
-			{ComponentIDEnumeration.VoltageSource, typeof(VoltageSource) },
-			{ComponentIDEnumeration.CurrentSource, typeof(CurrentSource) },
-			{ComponentIDEnumeration.Ground, typeof(Ground) },
+			{ ComponentIDEnumeration.Resistor, typeof(IResistor) },
+			{ ComponentIDEnumeration.VoltageSource, typeof(IVoltageSource) },
+			{ ComponentIDEnumeration.CurrentSource, typeof(ICurrentSource) },
+			{ ComponentIDEnumeration.Ground, typeof(IGround) },
 		};
 
 		/// <summary>
-		/// Dictionary of component interfaces and types assigned to them
+		/// List of <see cref="ComponentIDEnumeration"/> associated with given types. Constructed based on
+		/// <see cref="_AssociatedInterfaces"/> and <see cref="_ImplementedComponents"/>
 		/// </summary>
-		private Dictionary<Type, Type> _ComponentTypesByInterface { get; } = new Dictionary<Type, Type>()
+		private Dictionary<Type, IComponentDeclaration> _AssociatedDeclarations { get; }
+
+		/// <summary>
+		/// List of types associated with given <see cref="ComponentIDEnumeration"/>. First type is the associated interface,
+		/// second type is the implementation type
+		/// </summary>
+		private Dictionary<Type, Type> _AssociatedTypes { get; } = new Dictionary<Type, Type>()
 		{
-			{typeof(IResistor), typeof(Resistor) },
-			{typeof(IVoltageSource), typeof(VoltageSource) },
-			{typeof(ICurrentSource), typeof(CurrentSource) },
-			{typeof(IGround), typeof(Ground) },
+			{ typeof(IResistor), typeof(Resistor) },
+			{ typeof(IVoltageSource), typeof(VoltageSource) },
+			{ typeof(ICurrentSource), typeof(CurrentSource) },
+			{ typeof(IGround), typeof(Ground) },
 		};
 
 		#endregion
@@ -66,11 +81,35 @@ namespace ECAT.Design
 		/// <summary>
 		/// Collection of names of all components that are implemented and usable
 		/// </summary>
-		public ReadOnlyObservableCollection<IComponentDeclaration> ImplementedComponents { get; }
+		public ReadOnlyCollection<IComponentDeclaration> ImplementedComponents { get; }
 
 		#endregion
 
-		// TODO: Implement a good way of storing and getting component types, ids and other parameters.
+		#region Public methods
+
+		/// <summary>
+		/// Returns declaration of a component based on its ID
+		/// </summary>
+		/// <param name="componentID"></param>
+		/// <returns></returns>
+		public IComponentDeclaration GetDeclaration(ComponentIDEnumeration componentID) =>
+			_ImplementedComponents.Find((component) => component.ID == componentID);
+
+		/// <summary>
+		/// Gets an <see cref="IComponentDeclaration"/> associated with the given type. If no declaration was found returns null
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		public IComponentDeclaration GetDeclaration<T>() =>
+			_AssociatedDeclarations.TryGetValue(typeof(T), out var declaration) ? declaration : null;
+
+		/// <summary>
+		/// Gets an <see cref="IComponentDeclaration"/> associated with the given type. If no declaration was found returns null
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public IComponentDeclaration GetDeclaration(Type type) =>
+			_AssociatedDeclarations.TryGetValue(type, out var declaration) ? declaration : null;
 
 		/// <summary>
 		/// Constructs and returns a component based on the given type
@@ -81,9 +120,9 @@ namespace ECAT.Design
 		/// the interface is not a final implementation (eg. it's a <see cref="ITwoTerminal"/>)</exception>
 		public IBaseComponent Construct<T>() where T : IBaseComponent
 		{
-			if(_ComponentTypesByInterface.TryGetValue(typeof(T), out var result))
+			if (_AssociatedTypes.TryGetValue(typeof(T), out var result))
 			{
-				return result.GetConstructor(Type.EmptyTypes).Invoke(new object[0]) as IBaseComponent;
+				return Activator.CreateInstance(result) as IBaseComponent;
 			}
 
 			throw new ArgumentException(nameof(T) + " is not a recognized (or final) component type");
@@ -103,9 +142,10 @@ namespace ECAT.Design
 		/// <returns></returns>
 		public IBaseComponent Construct(ComponentIDEnumeration componentID)
 		{
-			if (_ComponentTypesByID.TryGetValue(componentID, out var result))
+			if (_AssociatedInterfaces.TryGetValue(componentID, out var associatedInterface) &&
+				_AssociatedTypes.TryGetValue(associatedInterface, out var result))
 			{
-				return result.GetConstructor(Type.EmptyTypes).Invoke(new object[0]) as IBaseComponent;
+				return Activator.CreateInstance(result) as IBaseComponent;				
 			}
 			
 			throw new ArgumentException($"No component matches the ID: {componentID}");
@@ -116,5 +156,7 @@ namespace ECAT.Design
 		/// </summary>
 		/// <returns></returns>
 		public IWire ConstructWire() => new Wire();
+
+		#endregion
 	}
 }
