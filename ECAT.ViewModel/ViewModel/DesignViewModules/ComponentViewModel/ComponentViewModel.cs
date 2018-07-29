@@ -55,6 +55,8 @@ namespace ECAT.ViewModel
 
 		#region Commands
 
+		public ICommand EditComponentCommand { get; } = AppViewModel.Singleton.DesignVM.EditComponentCommand;
+
 		/// <summary>
 		/// Command for rotating the part 90 degrees left
 		/// </summary>
