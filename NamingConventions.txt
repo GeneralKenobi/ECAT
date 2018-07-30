@@ -22,8 +22,7 @@ The naming conventions for projects in this solution:
 
 
 4. Member fields:
-- public: Pascal Case (eg. PublicField)
-- protected and private: PascalCase, start with 'm' (eg. mPrivateField)
+- private: PascalCase, start with 'm' (eg. mPrivateField)
 
 
 5. Methods:
@@ -41,3 +40,37 @@ The naming conventions for projects in this solution:
 7. (UWP) User Controls:
 - PascalCase
 - End with UC (eg. MyUserControlUC)
+
+
+8. Regions should be in the following order:
+
+Constructor
+Events
+Private fields
+Private properties
+Protected properties
+Internal properties
+Public properties
+*All dependency properties with one region per dependency property*
+Commands
+Private methods
+Protected methods
+Internal methods
+Public methods
+Private static fields
+Private static properties
+Protected static properties
+Internal static properties
+Public static properties
+Private static methods
+Protected static methods
+Internal static methods
+Public static methods
+
+Custom regions may be utilized but they can't break the convention given above.
+All entities should be fit to the regions given above.
+If a class is large or there are a lot of entities of the same type (eg. private methods), the region may be split into sub-regions
+
+9. Private fields should always be prefered as backing stores over private properties, unless:
+- the backing store is readonly (then doesn't matter)
+- logic is required in getter/setter
