@@ -71,15 +71,15 @@ namespace ECAT.ViewModel
 				if(_CurrentlyEditedComponentViewModel == null)
 				{
 					// mCurrentEditViewModel and value can't be null at the same time due to the check above
-					changeType = EditedComponentChanged.NullToPart;
+					changeType = EditedComponentChanged.NullToComponent;
 				}
 				else if(value == null)
 				{
-					changeType = EditedComponentChanged.PartToNull;
+					changeType = EditedComponentChanged.ComponentToNull;
 				}
 				else
 				{
-					changeType = EditedComponentChanged.PartToPart;
+					changeType = EditedComponentChanged.ComponentToComponent;
 				}
 
 				// Assign the value

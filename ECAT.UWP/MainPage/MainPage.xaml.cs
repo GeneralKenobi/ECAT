@@ -149,9 +149,9 @@ namespace ECAT.UWP
 		{
 			switch (args.Change)
 			{
-				case EditedComponentChanged.NullToPart:
+				case EditedComponentChanged.NullToComponent:
 				case EditedComponentChanged.NoChange:
-				case EditedComponentChanged.PartToPart:
+				case EditedComponentChanged.ComponentToComponent:
 					{
 						// Show the edit menu if it wasn't shown
 						if (SideMenu.GetSelectedContentIndex() != 1)
@@ -163,7 +163,7 @@ namespace ECAT.UWP
 					}
 					break;
 
-				case EditedComponentChanged.PartToNull:
+				case EditedComponentChanged.ComponentToNull:
 					{
 						// Hide the menu
 						SideMenu.IsOpen = false;
