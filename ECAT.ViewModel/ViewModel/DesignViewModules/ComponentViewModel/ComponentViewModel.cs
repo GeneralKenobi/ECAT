@@ -37,7 +37,7 @@ namespace ECAT.ViewModel
 		public double HitboxLength => AppViewModel.Singleton.RoundTo;
 
 		/// <summary>
-		/// The component 
+		/// The component
 		/// </summary>
 		public IBaseComponent Component { get; private set; }
 
@@ -99,6 +99,13 @@ namespace ECAT.ViewModel
 		/// </summary>
 		private void RemoveComponent()
 		{
+			// If this component is currently edited
+			if(AppViewModel.Singleton.DesignVM.ComponentEditSectionVM.CurrentlyEditedComponentViewModel.IsComponentEdited(Component))
+			{
+				// Stop editing
+				AppViewModel.Singleton.DesignVM.ComponentEditSectionVM.CurrentlyEditedComponentViewModel = null;
+			}
+
 			AppViewModel.Singleton.DesignVM.DesignManager.RemoveComponent(Component);
 
 			Component = null;
