@@ -1,5 +1,6 @@
-﻿using ECAT.Design;
+﻿using ECAT.Core;
 using System;
+using System.Collections.Generic;
 using Windows.UI.Xaml.Data;
 
 namespace ECAT.UWP
@@ -12,7 +13,7 @@ namespace ECAT.UWP
 		#region Public methods
 
 		/// <summary>
-		/// Converts a component to an appropriate control
+		/// Converts a component to an appropriate component edit control
 		/// </summary>
 		/// <param name="value"></param>
 		/// <param name="targetType"></param>
@@ -21,34 +22,14 @@ namespace ECAT.UWP
 		/// <returns></returns>
 		public object Convert(object value, Type targetType, object parameter, string language)
 		{
-			if(value is Resistor)
+			// Try to get the control type
+			if (value != null && _AssociatedControls.TryGetValue(IoC.Resolve<IComponentFactory>().GetDeclaration(value.GetType()).ID,
+				out var controlType))
 			{
-				return new ResistorTC();
+				// If successful, create an instance and return it
+				return Activator.CreateInstance(controlType);
 			}
 
-			if(value is VoltageSource)
-			{
-				return new VoltageSourceTC();
-			}
-
-			if(value is CurrentSource)
-			{
-				return new CurrentSourceTC();
-			}
-
-			if (value is Ground)
-			{
-				return new GroundTC();
-			}
-
-			//if (value is BasePart part && ControlsHelpers.TryGetUIControl(part, out FrameworkElement element))
-			//{
-			//	return element;
-			//}
-			//else
-			//{
-			//	return null;
-			//}
 			return null;
 		}
 
@@ -64,6 +45,22 @@ namespace ECAT.UWP
 		{
 			throw new NotImplementedException();
 		}
+
+		#endregion
+
+		#region Private static properties
+
+		/// <summary>
+		/// Dictionary containing types of controls associated with different <see cref="ComponentIDEnumeration"/>s
+		/// </summary>
+		private static Dictionary<ComponentIDEnumeration, Type> _AssociatedControls { get; } =
+			new Dictionary<ComponentIDEnumeration, Type>()
+		{
+			{ComponentIDEnumeration.Resistor, typeof(ResistorTC) },
+			{ComponentIDEnumeration.VoltageSource, typeof(VoltageSourceTC) },
+			{ComponentIDEnumeration.CurrentSource, typeof(CurrentSourceTC) },
+			{ComponentIDEnumeration.Ground, typeof(GroundTC) },
+		};
 
 		#endregion
 	}
