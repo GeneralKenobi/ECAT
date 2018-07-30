@@ -63,5 +63,16 @@ namespace ECAT.ViewModel
 		public ICommand RemoveComponentCommand => _EditedComponentViewModel.RemoveComponentCommand;
 
 		#endregion
+
+		#region Public methods
+
+		/// <summary>
+		/// Returns true if the edited component is <paramref name="component"/>
+		/// </summary>
+		/// <param name="component"></param>
+		/// <returns></returns>
+		public bool IsComponentEdited(IBaseComponent component) => _EditedComponent == component;
+
+		#endregion
 	}
 }
