@@ -1,5 +1,7 @@
 ﻿using ECAT.ViewModel;
 using System;
+using System.Collections.Generic;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
 namespace ECAT.UWP
@@ -21,53 +23,19 @@ namespace ECAT.UWP
 		/// <returns></returns>
 		public object Convert(object value, Type targetType, object parameter, string language)
 		{
-			if(value is ResistorEditViewModel)
+			// Try to get the control type
+			if(_AssociatedControls.TryGetValue(value.GetType(), out var controlType))
 			{
-				return new ResistorEditUC()
-				{
-					DataContext = value,
-				};
+				// If successful, create an instance
+				var control = Activator.CreateInstance(controlType) as FrameworkElement;
+
+				// Assign data context
+				control.DataContext = value;
+
+				// And return it
+				return control;
 			}
-
-			if (value is VoltageSourceEditViewModel)
-			{
-				return new VoltageSourceEditUC()
-				{
-					DataContext = value,
-				};
-			}
-
-			if (value is CurrentSourceEditViewModel)
-			{
-				return new CurrentSourceEditUC()
-				{
-					DataContext = value,
-				};
-			}
-
-			//if(value is VoltageSource)
-			//{
-			//	return new VoltageSourceTC();
-			//}
-
-			//if(value is CurrentSource)
-			//{
-			//	return new CurrentSourceTC();
-			//}
-
-			//if (value is Ground)
-			//{
-			//	return new GroundTC();
-			//}
-
-			//if (value is BasePart part && ControlsHelpers.TryGetUIControl(part, out FrameworkElement element))
-			//{
-			//	return element;
-			//}
-			//else
-			//{
-			//	return null;
-			//}
+			
 			return null;
 		}
 
@@ -83,6 +51,20 @@ namespace ECAT.UWP
 		{
 			throw new NotImplementedException();
 		}
+
+		#endregion
+
+		#region Private static properties
+
+		/// <summary>
+		/// Dictionary containing types of controls associated with different ComponentEditViewModels
+		/// </summary>
+		private static Dictionary<Type, Type> _AssociatedControls { get; } = new Dictionary<Type, Type>()
+		{
+			{typeof(ResistorEditViewModel), typeof(ResistorEditUC) },
+			{typeof(VoltageSourceEditViewModel), typeof(VoltageSourceEditUC) },
+			{typeof(CurrentSourceEditViewModel), typeof(CurrentSourceEditUC) },
+		};
 
 		#endregion
 	}
