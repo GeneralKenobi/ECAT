@@ -36,7 +36,7 @@ namespace ECAT.ViewModel
 
 		#endregion
 
-		#region Public Properties
+		#region Public properties
 
 		/// <summary>
 		/// The declaration of the currently edited component

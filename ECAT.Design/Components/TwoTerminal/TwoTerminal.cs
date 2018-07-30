@@ -23,6 +23,20 @@ namespace ECAT.Design
 
 		#endregion
 
+		#region Protected properties
+
+		/// <summary>
+		/// The shift assigned to <see cref="TerminalA"/>, override to provide custom value
+		/// </summary>
+		protected virtual Complex _TerminalAShift => new Complex(-Width / 2, 0);
+
+		/// <summary>
+		/// The shift assigned to <see cref="TerminalB"/>, override to provide custom value
+		/// </summary>
+		protected virtual Complex _TerminalBShift => new Complex(Width / 2, 0);
+
+		#endregion
+
 		#region Public properties		
 
 		/// <summary>
@@ -61,20 +75,6 @@ namespace ECAT.Design
 		/// current can't be determined from its voltage and admittance (eg. voltage source)
 		/// </summary>
 		public virtual double CurrentBA => -VoltageBA * Admittance.Real;
-
-		#endregion
-
-		#region Protected properties
-
-		/// <summary>
-		/// The shift assigned to <see cref="TerminalA"/>, override to provide custom value
-		/// </summary>
-		protected virtual Complex _TerminalAShift => new Complex(-Width / 2, 0);
-
-		/// <summary>
-		/// The shift assigned to <see cref="TerminalB"/>, override to provide custom value
-		/// </summary>
-		protected virtual Complex _TerminalBShift => new Complex(Width / 2, 0);
 
 		#endregion
 

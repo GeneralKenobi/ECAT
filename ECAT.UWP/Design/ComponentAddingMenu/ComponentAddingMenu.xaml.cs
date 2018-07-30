@@ -30,7 +30,7 @@ namespace ECAT.UWP
 
 		#endregion
 
-		#region Private Members
+		#region Private members
 
 		/// <summary>
 		/// Index selected in the list with input parts
@@ -49,7 +49,7 @@ namespace ECAT.UWP
 
 		#endregion
 
-		#region Public Properties
+		#region Public properties
 
 		/// <summary>
 		/// Index selected in the list with input parts
@@ -117,7 +117,7 @@ namespace ECAT.UWP
 
 		#endregion
 
-		#region Private Methods
+		#region Private methods
 
 		/// <summary>
 		/// If the clicked item was selected deselects it. Normally it has to be done by ctrl+click

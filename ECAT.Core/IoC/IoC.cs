@@ -8,20 +8,6 @@ namespace ECAT.Core
 	/// </summary>
 	public static class IoC
 	{
-		#region Public static properties		
-
-		/// <summary>
-		/// Indicates whether the IoC was setup
-		/// </summary>
-		public static bool Ready => Container == null;
-
-		/// <summary>
-		/// Container with component registration
-		/// </summary>
-		public static IContainer Container { get; private set; } = null;
-
-		#endregion
-
 		#region Public methods
 
 		/// <summary>
@@ -60,6 +46,20 @@ namespace ECAT.Core
 		/// <param name="container"></param>
 		/// <returns></returns>
 		private static bool NecessaryElementsRegistered(IContainer container) => container.IsRegistered<IDesignManager>();
+
+		#endregion
+
+		#region Public static properties		
+
+		/// <summary>
+		/// Indicates whether the IoC was setup
+		/// </summary>
+		public static bool Ready => Container == null;
+
+		/// <summary>
+		/// Container with component registration
+		/// </summary>
+		public static IContainer Container { get; private set; } = null;
 
 		#endregion
 	}

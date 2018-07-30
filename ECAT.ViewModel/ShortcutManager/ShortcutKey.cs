@@ -34,15 +34,6 @@ namespace ECAT.ViewModel
 
 		#endregion
 
-		#region Public static properties
-
-		/// <summary>
-		/// Undefined shortcut
-		/// </summary>
-		public static ShortcutKey Empty { get; } = new ShortcutKey(string.Empty);
-
-		#endregion
-
 		#region Public methods
 
 		/// <summary>
@@ -66,6 +57,15 @@ namespace ECAT.ViewModel
 		/// </summary>
 		/// <returns></returns>
 		public override int GetHashCode() => Key.ToUpper().GetHashCode() * 17 + ActiveModifiers.GetHashCode();
+
+		#endregion
+
+		#region Public static properties
+
+		/// <summary>
+		/// Undefined shortcut
+		/// </summary>
+		public static ShortcutKey Empty { get; } = new ShortcutKey(string.Empty);
 
 		#endregion
 	}

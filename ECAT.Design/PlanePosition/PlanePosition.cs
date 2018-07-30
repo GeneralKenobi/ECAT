@@ -160,16 +160,7 @@ namespace ECAT.Design
 		public double Y => Absolute.Imaginary + Shift.Imaginary;
 
 		#endregion
-
-		#region Public static properties
-
-		/// <summary>
-		/// All coordinates are rounded to multiples of this value
-		/// </summary>
-		public static double RoundTo { get; } = IoC.Resolve<IPlanePositionFactory>().RoundTo;
-
-		#endregion
-
+		
 		#region Private methods
 
 		/// <summary>
@@ -206,6 +197,15 @@ namespace ECAT.Design
 		/// </summary>
 		/// <returns></returns>
 		public override string ToString() => $"({X}, {Y})";
+
+		#endregion
+
+		#region Public static properties
+
+		/// <summary>
+		/// All coordinates are rounded to multiples of this value
+		/// </summary>
+		public static double RoundTo { get; } = IoC.Resolve<IPlanePositionFactory>().RoundTo;
 
 		#endregion
 	}

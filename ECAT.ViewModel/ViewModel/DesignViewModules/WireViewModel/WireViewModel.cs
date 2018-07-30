@@ -30,6 +30,20 @@ namespace ECAT.ViewModel
 
 		#endregion
 
+		#region Public properties
+
+		/// <summary>
+		/// The wire this viewmodel is for
+		/// </summary>
+		public IWire Wire { get; private set; }
+
+		/// <summary>
+		/// Length of the hitbox for sockets and wire stroke
+		/// </summary>
+		public double HitboxLength => AppViewModel.Singleton.RoundTo;
+
+		#endregion
+
 		#region Commands
 
 		/// <summary>
@@ -46,20 +60,6 @@ namespace ECAT.ViewModel
 		/// Handles clicks made on a wire
 		/// </summary>
 		public ICommand WireClickedCommand { get; }
-
-		#endregion
-
-		#region Public properties
-
-		/// <summary>
-		/// The wire this viewmodel is for
-		/// </summary>
-		public IWire Wire { get; private set; }
-
-		/// <summary>
-		/// Length of the hitbox for sockets and wire stroke
-		/// </summary>
-		public double HitboxLength => AppViewModel.Singleton.RoundTo;
 
 		#endregion
 

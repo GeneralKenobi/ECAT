@@ -36,7 +36,9 @@ namespace ECAT.UWP
 
 		#endregion
 
-		#region On Loaded
+		#region Private Methods
+
+		#region On loaded
 
 		/// <summary>
 		/// Adds the background grid
@@ -72,7 +74,7 @@ namespace ECAT.UWP
 
 		#endregion
 
-		#region Main Canvas Tapped
+		#region Main canvas tapped
 
 		/// <summary>
 		/// Manages 'Tapped' events on the main canvas (invokes the
@@ -89,7 +91,7 @@ namespace ECAT.UWP
 
 		#endregion
 
-		#region Drag Event
+		#region Drag event
 
 		/// <summary>
 		/// Handles drops that occur on the MainCanvas
@@ -135,7 +137,7 @@ namespace ECAT.UWP
 
 		#endregion
 
-		#region Private Methods
+		#region Edited component changed
 
 		/// <summary>
 		/// Handles changes in edited components (hides/shows side menu when necessary)
@@ -169,6 +171,10 @@ namespace ECAT.UWP
 			}
 		}
 
+		#endregion
+
+		#region Key pressed
+
 		/// <summary>
 		/// Handles key presses
 		/// </summary>
@@ -188,6 +194,8 @@ namespace ECAT.UWP
 				shift | ctrl | alt));
 			
 		}
+
+		#endregion
 
 		#endregion
 	}

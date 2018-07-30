@@ -7,7 +7,7 @@ namespace ECAT.ViewModel
 	/// </summary>
 	public class BaseViewModel : INotifyPropertyChanged
 	{
-		#region Property changed
+		#region Events
 
 		/// <summary>
 		/// The event that is fired when any child property changed its value

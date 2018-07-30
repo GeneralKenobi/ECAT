@@ -39,7 +39,7 @@ namespace ECAT.ViewModel
 
 		#endregion
 
-		#region Public Properties
+		#region Public properties
 		
 		/// <summary>
 		/// Header for rotation section of the menu
@@ -128,7 +128,7 @@ namespace ECAT.ViewModel
 
 		#endregion
 
-		#region Private Methods
+		#region Private methods
 
 		/// <summary>
 		/// Stops editing the current part

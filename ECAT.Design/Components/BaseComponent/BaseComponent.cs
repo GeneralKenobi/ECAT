@@ -80,29 +80,15 @@ namespace ECAT.Design
 
 		#endregion
 
-		#region Public methods
+		#region Private methods
 
 		/// <summary>
-		/// Returns a list with all terminals in this component
+		/// Method used to call <see cref="UpdateAbsoluteTerminalPositions"/> whenever the <see cref="Center"/> changes or one of its values
+		/// changes
 		/// </summary>
-		/// <returns></returns>
-		public abstract List<ITerminal> GetTerminals();
-
-		/// <summary>
-		/// Rotates the component by <paramref name="degrees"/>
-		/// </summary>
-		/// <param name="degrees">Number of degrees to rotate the component by</param>
-		public void Rotate(double degrees)
-		{
-			Center.RotationAngle += degrees;
-
-			RotateTerminals(degrees);
-		}
-
-		/// <summary>
-		/// Disposes of the component
-		/// </summary>
-		public virtual void Dispose() { }
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void CenterChangedCallback(object sender, EventArgs e) => UpdateAbsoluteTerminalPositions();
 
 		#endregion
 
@@ -133,15 +119,29 @@ namespace ECAT.Design
 
 		#endregion
 
-		#region Private methods
+		#region Public methods
 
 		/// <summary>
-		/// Method used to call <see cref="UpdateAbsoluteTerminalPositions"/> whenever the <see cref="Center"/> changes or one of its values
-		/// changes
+		/// Returns a list with all terminals in this component
 		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void CenterChangedCallback(object sender, EventArgs e) => UpdateAbsoluteTerminalPositions();
+		/// <returns></returns>
+		public abstract List<ITerminal> GetTerminals();
+
+		/// <summary>
+		/// Rotates the component by <paramref name="degrees"/>
+		/// </summary>
+		/// <param name="degrees">Number of degrees to rotate the component by</param>
+		public void Rotate(double degrees)
+		{
+			Center.RotationAngle += degrees;
+
+			RotateTerminals(degrees);
+		}
+
+		/// <summary>
+		/// Disposes of the component
+		/// </summary>
+		public virtual void Dispose() { }
 
 		#endregion
 	}

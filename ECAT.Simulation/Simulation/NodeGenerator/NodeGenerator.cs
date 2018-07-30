@@ -9,27 +9,6 @@ namespace ECAT.Simulation
 	/// </summary>
 	public static class NodeGenerator
     {
-		#region Public static methods
-
-		/// <summary>
-		/// Generates nodes for all components, one node connects all terminals (components) that have the same position or that
-		/// are connected through wire(s)
-		/// </summary>
-		/// <param name="schematic"></param>
-		/// <returns></returns>
-		public static List<INode> Generate(ISchematic schematic)
-		{
-			// Generate nodes located on the same position
-			var nodes = GenerateSamePositionNodes(new List<IBaseComponent>(schematic.Components));
-
-			// Merge them based on the wire connections
-			nodes = MergeNodesConnectedByWires(nodes, new List<IWire>(schematic.Wires));
-
-			return nodes;
-		}
-
-		#endregion
-
 		#region Private static methods
 
 		/// <summary>
@@ -196,6 +175,27 @@ namespace ECAT.Simulation
 			validEntries.ForEach((item) => terminalsWithComponents.Remove(item.Key));
 
 			return node;
+		}
+
+		#endregion
+
+		#region Public static methods
+
+		/// <summary>
+		/// Generates nodes for all components, one node connects all terminals (components) that have the same position or that
+		/// are connected through wire(s)
+		/// </summary>
+		/// <param name="schematic"></param>
+		/// <returns></returns>
+		public static List<INode> Generate(ISchematic schematic)
+		{
+			// Generate nodes located on the same position
+			var nodes = GenerateSamePositionNodes(new List<IBaseComponent>(schematic.Components));
+
+			// Merge them based on the wire connections
+			nodes = MergeNodesConnectedByWires(nodes, new List<IWire>(schematic.Wires));
+
+			return nodes;
 		}
 
 		#endregion

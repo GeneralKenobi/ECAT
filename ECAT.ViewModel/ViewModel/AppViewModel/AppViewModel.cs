@@ -7,15 +7,6 @@ namespace ECAT.ViewModel
 	/// </summary>
 	public class AppViewModel : BaseViewModel
     {
-		#region Singleton
-
-		/// <summary>
-		/// The singleton ViewModel for the whole app
-		/// </summary>
-		public static AppViewModel Singleton { get; } = new AppViewModel();
-
-		#endregion
-
 		#region Public properties
 
 		/// <summary>
@@ -58,6 +49,15 @@ namespace ECAT.ViewModel
 				return AppState.Idle;
 			}
 		}
+
+		#endregion
+		
+		#region Singleton
+
+		/// <summary>
+		/// The singleton ViewModel for the whole app
+		/// </summary>
+		public static AppViewModel Singleton { get; } = new AppViewModel();
 
 		#endregion
 	}

@@ -44,20 +44,21 @@ The naming conventions for projects in this solution:
 
 8. Regions should be in the following order:
 
-Constructor
+Constructors
 Events
-Private fields
+Private members
 Private properties
 Protected properties
 Internal properties
 Public properties
 *All dependency properties with one region per dependency property*
 Commands
+Singleton
 Private methods
 Protected methods
 Internal methods
 Public methods
-Private static fields
+Private static members
 Private static properties
 Protected static properties
 Internal static properties

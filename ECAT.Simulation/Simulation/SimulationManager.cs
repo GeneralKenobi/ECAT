@@ -20,36 +20,6 @@ namespace ECAT.Simulation
 
 		#endregion
 
-		#region Public methods
-
-		/// <summary>
-		/// Performs a single DC sweep for the given schematic
-		/// </summary>
-		/// <param name="schematic"></param>
-		public void SingleDCSweep(ISchematic schematic)
-		{
-			// Generate nodes using helper class
-			var nodes = NodeGenerator.Generate(schematic);
-
-			// Assign the potentials from the nodes to the associated terminals
-			nodes.ForEach((node) => node.ConnectedTerminals.ForEach((terminal) => terminal.Potential = node.Potential));
-
-			// Find, assign and remove the reference (ground) nodes
-			ProcessReferenceNodes(nodes);
-
-			// Construct a DC admittance matrix
-			var admittanceMatrix = DCAdmittanceMatrix.Construct(nodes, new List<IVoltageSource>(schematic.Components.Where(
-				(component) => component is IVoltageSource).Select((component) => component as IVoltageSource)));
-
-			try
-			{
-				// Solve it (for now try-catch for debugging)
-				admittanceMatrix.Solve();
-			} catch(Exception e) { }
-		}
-
-		#endregion
-
 		#region Private methods
 
 		/// <summary>
@@ -113,6 +83,36 @@ namespace ECAT.Simulation
 			return new List<INode>(nodes);
 		}
 		
+		#endregion
+
+		#region Public methods
+
+		/// <summary>
+		/// Performs a single DC sweep for the given schematic
+		/// </summary>
+		/// <param name="schematic"></param>
+		public void SingleDCSweep(ISchematic schematic)
+		{
+			// Generate nodes using helper class
+			var nodes = NodeGenerator.Generate(schematic);
+
+			// Assign the potentials from the nodes to the associated terminals
+			nodes.ForEach((node) => node.ConnectedTerminals.ForEach((terminal) => terminal.Potential = node.Potential));
+
+			// Find, assign and remove the reference (ground) nodes
+			ProcessReferenceNodes(nodes);
+
+			// Construct a DC admittance matrix
+			var admittanceMatrix = DCAdmittanceMatrix.Construct(nodes, new List<IVoltageSource>(schematic.Components.Where(
+				(component) => component is IVoltageSource).Select((component) => component as IVoltageSource)));
+
+			try
+			{
+				// Solve it (for now try-catch for debugging)
+				admittanceMatrix.Solve();
+			} catch(Exception e) { }
+		}
+
 		#endregion
 	}
 }

@@ -9,16 +9,6 @@ namespace ECAT.Simulation
 	/// </summary>
 	public class DefaultValues : IDefaultValues
 	{
-		#region Private static properties
-
-		/// <summary>
-		/// Maximum value that may be assigned to parameters, backing store for <see cref="MaximumParameterValue"/>,
-		/// stored separately so as to be able to initialize public properties with it
-		/// </summary>
-		private static double _MaximumParameterValue { get; } = 1e+20;
-
-		#endregion
-
 		#region Public properties
 
 		/// <summary>
@@ -55,6 +45,16 @@ namespace ECAT.Simulation
 		/// Default value for <see cref="IVoltageSource"/>'s produced voltage
 		/// </summary>
 		public double DefaultVoltageSourceProducedVoltage { get; } = 1;
+
+		#endregion
+
+		#region Private static properties
+
+		/// <summary>
+		/// Maximum value that may be assigned to parameters, backing store for <see cref="MaximumParameterValue"/>,
+		/// stored separately so as to be able to initialize public properties with it
+		/// </summary>
+		private static double _MaximumParameterValue { get; } = 1e+20;
 
 		#endregion
 	}

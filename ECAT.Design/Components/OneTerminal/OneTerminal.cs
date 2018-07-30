@@ -21,6 +21,15 @@ namespace ECAT.Design
 
 		#endregion
 
+		#region Protected properties
+
+		/// <summary>
+		/// The shift assigned to <see cref="Terminal"/>, override to provide custom value
+		/// </summary>
+		protected virtual Complex _TerminalShift { get; } = Complex.Zero;
+
+		#endregion
+
 		#region Public properties
 
 		/// <summary>
@@ -32,15 +41,6 @@ namespace ECAT.Design
 		/// Input admittance of <see cref="Terminal"/>
 		/// </summary>
 		public Complex Admittance { get ; set; }
-
-		#endregion
-
-		#region Protected properties
-
-		/// <summary>
-		/// The shift assigned to <see cref="Terminal"/>, override to provide custom value
-		/// </summary>
-		protected virtual Complex _TerminalShift { get; } = Complex.Zero;
 
 		#endregion
 

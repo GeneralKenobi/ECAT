@@ -99,6 +99,87 @@ namespace ECAT.Design
 
 		#endregion
 
+		#region Private methods
+
+		/// <summary>
+		/// Gets all <see cref="IWire"/>s connected to this <see cref="IWire"/>
+		/// </summary>
+		/// <param name="alreadyFoundWires"></param>
+		/// <returns></returns>
+		private List<IWire> GetConnectedWiresRecursively(List<IWire> alreadyFoundWires)
+		{
+			// Make a list of results, including this instance to prevent the wires connected to it from quering it
+			List<IWire> result = new List<IWire>() { this, };
+
+			// For each connected wire
+			mConnectedWires.ForEach((wire) =>
+			{
+				// If it's not in the already found wires
+				if (!alreadyFoundWires.Contains(wire))
+				{
+					// If it's a Wire, query it and give it a list of all connected wires, if it's only an IWire then use the
+					// public method to obtain all connected wires
+					result.AddRange(wire is Wire castedWire ?
+						castedWire.GetConnectedWiresRecursively(result) : wire.GetAllConnectedWires());
+				}
+			});
+
+			return result;
+		}
+
+		/// <summary>
+		/// Adds a point to the end of the wire, adds necessary points to <see cref="_ConstructionPoints"/>
+		/// </summary>
+		/// <param name="point"></param>
+		private void AddPointAtEnd(IPlanePosition point)
+		{
+			_DefiningPoints.Add(point);
+
+			if (_ConstructionPoints.Count > 0)
+			{
+				_ConstructionPoints.Add(new PlanePosition(point.X, _ConstructionPoints[_ConstructionPoints.Count - 1].Y));
+			}
+
+			_ConstructionPoints.Add(point);
+		}
+
+		/// <summary>
+		/// Adds a point to the beginning of the wire, adds necessary points to <see cref="_ConstructionPoints"/>
+		/// </summary>
+		/// <param name="point"></param>
+		private void AddPointAtBeginning(IPlanePosition point)
+		{
+			_DefiningPoints.Insert(0, point);
+
+			if (_ConstructionPoints.Count > 0)
+			{
+				_ConstructionPoints.Insert(0, new PlanePosition(point.X, _ConstructionPoints[0].Y));
+			}
+
+			_ConstructionPoints.Insert(0, point);
+		}
+
+		/// <summary>
+		/// Callback for changes in <see cref="_DefiningPoints"/>, raises <see cref="PropertyChanged"/> on <see cref="DefiningPoints"/>
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void DefiningPointsChanged(object sender, NotifyCollectionChangedEventArgs e) => PropertyChanged?.Invoke(
+			this, new PropertyChangedEventArgs(nameof(DefiningPoints)));
+
+		/// <summary>
+		/// Callback for ConstructionPointsChanged
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnConstructionPointsChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Beginning)));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Ending)));
+		}
+
+		#endregion
+
 		#region Public methods
 
 		/// <summary>
@@ -239,87 +320,6 @@ namespace ECAT.Design
 			}
 
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ConstructionPoints)));
-		}
-
-		#endregion
-
-		#region Private methods
-
-		/// <summary>
-		/// Gets all <see cref="IWire"/>s connected to this <see cref="IWire"/>
-		/// </summary>
-		/// <param name="alreadyFoundWires"></param>
-		/// <returns></returns>
-		private List<IWire> GetConnectedWiresRecursively(List<IWire> alreadyFoundWires)
-		{
-			// Make a list of results, including this instance to prevent the wires connected to it from quering it
-			List<IWire> result = new List<IWire>() { this, };
-
-			// For each connected wire
-			mConnectedWires.ForEach((wire) =>
-			{
-				// If it's not in the already found wires
-				if (!alreadyFoundWires.Contains(wire))
-				{
-					// If it's a Wire, query it and give it a list of all connected wires, if it's only an IWire then use the
-					// public method to obtain all connected wires
-					result.AddRange(wire is Wire castedWire ?
-						castedWire.GetConnectedWiresRecursively(result) : wire.GetAllConnectedWires());
-				}
-			});
-
-			return result;
-		}
-
-		/// <summary>
-		/// Adds a point to the end of the wire, adds necessary points to <see cref="_ConstructionPoints"/>
-		/// </summary>
-		/// <param name="point"></param>
-		private void AddPointAtEnd(IPlanePosition point)
-		{
-			_DefiningPoints.Add(point);
-
-			if (_ConstructionPoints.Count > 0)
-			{
-				_ConstructionPoints.Add(new PlanePosition(point.X, _ConstructionPoints[_ConstructionPoints.Count - 1].Y));
-			}
-
-			_ConstructionPoints.Add(point);
-		}
-
-		/// <summary>
-		/// Adds a point to the beginning of the wire, adds necessary points to <see cref="_ConstructionPoints"/>
-		/// </summary>
-		/// <param name="point"></param>
-		private void AddPointAtBeginning(IPlanePosition point)
-		{
-			_DefiningPoints.Insert(0, point);
-
-			if (_ConstructionPoints.Count > 0)
-			{
-				_ConstructionPoints.Insert(0, new PlanePosition(point.X, _ConstructionPoints[0].Y));
-			}
-
-			_ConstructionPoints.Insert(0, point);
-		}
-
-		/// <summary>
-		/// Callback for changes in <see cref="_DefiningPoints"/>, raises <see cref="PropertyChanged"/> on <see cref="DefiningPoints"/>
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void DefiningPointsChanged(object sender, NotifyCollectionChangedEventArgs e) => PropertyChanged?.Invoke(
-			this, new PropertyChangedEventArgs(nameof(DefiningPoints)));
-
-		/// <summary>
-		/// Callback for ConstructionPointsChanged
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void OnConstructionPointsChanged(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Beginning)));
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Ending)));
 		}
 
 		#endregion

@@ -20,7 +20,7 @@ namespace ECAT.ViewModel
 
 		#endregion
 
-		#region Public Properties
+		#region Public properties
 
 		/// <summary>
 		/// Type of change that occured

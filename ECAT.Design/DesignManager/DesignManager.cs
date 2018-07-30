@@ -108,6 +108,44 @@ namespace ECAT.Design
 		public bool PlacingWire => _PlacedWire != null;
 
 		#endregion
+
+		#region Private methods
+
+		/// <summary>
+		/// Connects the given wire with the currently placed wire in the given position
+		/// </summary>
+		/// <param name="wire"></param>
+		/// <param name="connectionPosition"></param>
+		private void ConnectWithPlacedWire(IWire wire, IPlanePosition connectionPosition)
+		{
+			// Connect it with the clicked wire
+			wire.ConnectedWires.Add(_PlacedWire);
+			_PlacedWire.ConnectedWires.Add(wire);
+
+			// Add the intermediate point to the wire (to make sure the connection won't be broken by accident)
+			wire.AddIntermediatePoint(connectionPosition);
+
+			// Add the point to the placed wire
+			AddPointToPlacedWire(connectionPosition);
+		}
+
+		/// <summary>
+		/// Creates a new <see cref="IWire"/>, assigns it to <see cref="_PlacedWire"/>, adds it to the current schematic and marks
+		/// that it's extended at the end
+		/// </summary>
+		private void CreateWireToPlace()
+		{
+			// Create a new wire
+			_PlacedWire = new Wire();
+
+			// Signal that it's extended at the end
+			_ExtendWireAtEnd = true;
+
+			// Add the wire to the current schematic
+			CurrentSchematic.AddWire(_PlacedWire);
+		}
+
+		#endregion
 		
 		#region Public methods
 
@@ -345,44 +383,6 @@ namespace ECAT.Design
 
 				ConnectWithPlacedWire(wire, clickPosition);
 			}			
-		}
-
-		#endregion
-
-		#region Private methods
-
-		/// <summary>
-		/// Connects the given wire with the currently placed wire in the given position
-		/// </summary>
-		/// <param name="wire"></param>
-		/// <param name="connectionPosition"></param>
-		private void ConnectWithPlacedWire(IWire wire, IPlanePosition connectionPosition)
-		{
-			// Connect it with the clicked wire
-			wire.ConnectedWires.Add(_PlacedWire);
-			_PlacedWire.ConnectedWires.Add(wire);
-
-			// Add the intermediate point to the wire (to make sure the connection won't be broken by accident)
-			wire.AddIntermediatePoint(connectionPosition);
-
-			// Add the point to the placed wire
-			AddPointToPlacedWire(connectionPosition);
-		}
-
-		/// <summary>
-		/// Creates a new <see cref="IWire"/>, assigns it to <see cref="_PlacedWire"/>, adds it to the current schematic and marks
-		/// that it's extended at the end
-		/// </summary>
-		private void CreateWireToPlace()
-		{
-			// Create a new wire
-			_PlacedWire = new Wire();
-
-			// Signal that it's extended at the end
-			_ExtendWireAtEnd = true;
-
-			// Add the wire to the current schematic
-			CurrentSchematic.AddWire(_PlacedWire);
 		}
 
 		#endregion

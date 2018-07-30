@@ -125,26 +125,6 @@ namespace ECAT.ViewModel
 
 		#endregion
 
-		#region Public methods		
-
-		/// <summary>
-		/// Adds a component on the given position
-		/// </summary>
-		/// <param name="clickPosition"></param>
-		public void AddComponent(IPlanePosition clickPosition)
-		{
-			if (AddingComponents)
-			{
-				var newComponent = IoC.Resolve<IComponentFactory>().Construct(ComponentToAdd);
-
-				newComponent.Center = clickPosition;
-				
-				DesignManager.CurrentSchematic.AddComponent(newComponent);				
-			}
-		}		
-
-		#endregion
-
 		#region Private methods
 
 		/// <summary>
@@ -241,6 +221,26 @@ namespace ECAT.ViewModel
 				_PlaceLooseWireOnNextClick = false;
 			}
 		}
+
+		#endregion
+
+		#region Public methods		
+
+		/// <summary>
+		/// Adds a component on the given position
+		/// </summary>
+		/// <param name="clickPosition"></param>
+		public void AddComponent(IPlanePosition clickPosition)
+		{
+			if (AddingComponents)
+			{
+				var newComponent = IoC.Resolve<IComponentFactory>().Construct(ComponentToAdd);
+
+				newComponent.Center = clickPosition;
+				
+				DesignManager.CurrentSchematic.AddComponent(newComponent);				
+			}
+		}		
 
 		#endregion
 	}

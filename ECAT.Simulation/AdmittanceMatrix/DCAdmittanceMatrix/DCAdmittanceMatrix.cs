@@ -59,43 +59,6 @@ namespace ECAT.Simulation
 
 		#endregion
 
-		#region Public static methods
-
-		/// <summary>
-		/// Constructs a <see cref="DCAdmittanceMatrix"/> from the given nodes and given independent <see cref="IVoltageSource"/>s.
-		/// </summary>
-		/// <param name="nodes"></param>
-		/// <param name="independentVS">Collection of all independent <see cref="IVoltageSource"/>s in the schematic</param>
-		/// <returns></returns>
-		public static DCAdmittanceMatrix Construct(List<INode> nodes, List<IVoltageSource> independentVS)
-		{
-			// The size of the system
-			int size = nodes.Count + independentVS.Count;
-
-			// Create the arrays
-			var aMatrix = ArrayHelpers.CreateAndInitialize<IExpression>(Variable.Zero, size, size);
-			var zMatrix = ArrayHelpers.CreateAndInitialize<IExpression>(Variable.Zero, size);
-
-			// TODO: When added, handle the active components
-
-			// Fill all parts of the A matrix
-			FillPassiveGMatrixDiagonal(nodes, aMatrix);
-			FillPassiveGMatrixNonDiagonal(nodes, aMatrix);
-
-			FillPassiveBMatrix(nodes, aMatrix, independentVS);
-			FillPassiveCMatrix(nodes, aMatrix, independentVS);
-			FillPassiveDMatrix(nodes, aMatrix);
-
-			// Fill all parts of Z matrix
-			FillZMatrixCurrents(nodes, zMatrix);
-			FillZMatrixVoltages(nodes, zMatrix, independentVS);
-
-			// Construct a new instance and return it
-			return new DCAdmittanceMatrix(aMatrix, zMatrix, nodes, independentVS);
-		}
-
-		#endregion
-
 		#region Private static methods
 
 		/// <summary>
@@ -290,6 +253,43 @@ namespace ECAT.Simulation
 				// Add its voltge to the i-th entry plus the number of nodes (currents present above in the matrix)
 				currents[nodes.Count + i] = new Variable.VariableSource(voltageSources[i].ProducedVoltage).Variable;
 			}
+		}
+
+		#endregion
+
+		#region Public static methods
+
+		/// <summary>
+		/// Constructs a <see cref="DCAdmittanceMatrix"/> from the given nodes and given independent <see cref="IVoltageSource"/>s.
+		/// </summary>
+		/// <param name="nodes"></param>
+		/// <param name="independentVS">Collection of all independent <see cref="IVoltageSource"/>s in the schematic</param>
+		/// <returns></returns>
+		public static DCAdmittanceMatrix Construct(List<INode> nodes, List<IVoltageSource> independentVS)
+		{
+			// The size of the system
+			int size = nodes.Count + independentVS.Count;
+
+			// Create the arrays
+			var aMatrix = ArrayHelpers.CreateAndInitialize<IExpression>(Variable.Zero, size, size);
+			var zMatrix = ArrayHelpers.CreateAndInitialize<IExpression>(Variable.Zero, size);
+
+			// TODO: When added, handle the active components
+
+			// Fill all parts of the A matrix
+			FillPassiveGMatrixDiagonal(nodes, aMatrix);
+			FillPassiveGMatrixNonDiagonal(nodes, aMatrix);
+
+			FillPassiveBMatrix(nodes, aMatrix, independentVS);
+			FillPassiveCMatrix(nodes, aMatrix, independentVS);
+			FillPassiveDMatrix(nodes, aMatrix);
+
+			// Fill all parts of Z matrix
+			FillZMatrixCurrents(nodes, zMatrix);
+			FillZMatrixVoltages(nodes, zMatrix, independentVS);
+
+			// Construct a new instance and return it
+			return new DCAdmittanceMatrix(aMatrix, zMatrix, nodes, independentVS);
 		}
 
 		#endregion
