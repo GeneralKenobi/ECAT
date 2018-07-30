@@ -3,11 +3,16 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:ECAT.UWP"
+	xmlns:converts="using:UWPEnhanced.ValueConverters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
+
+	<UserControl.Resources>
+		<converts:DoubleToSIStringConverter x:Key="SIStringConverter"/>
+	</UserControl.Resources>
 
 	<StackPanel>
 
@@ -19,7 +24,7 @@
 
 		<!-- TextBox with the produced voltage settings -->
 		<TextBox Style="{StaticResource SideMenuTextBoxStyleUnder8}"
-			Text="{Binding ProducedVoltage, Mode=TwoWay}"			
+			Text="{Binding ProducedVoltage, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"
 			Grid.ColumnSpan="2"/>
 
 	</StackPanel>
