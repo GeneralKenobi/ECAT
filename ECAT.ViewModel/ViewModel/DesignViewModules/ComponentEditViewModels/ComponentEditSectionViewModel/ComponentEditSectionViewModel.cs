@@ -1,4 +1,5 @@
 ﻿using CSharpEnhanced.ICommands;
+using PropertyChanged;
 using System;
 using System.Windows.Input;
 
@@ -35,6 +36,7 @@ namespace ECAT.ViewModel
 		/// <summary>
 		/// View model for the currently presented part (or null if nothing is presented)
 		/// </summary>
+		[DoNotNotify]
 		private BaseComponentEditViewModel _CurrentlyEditedComponentViewModel { get; set; }
 
 		#endregion
