@@ -101,7 +101,8 @@ namespace ECAT.ViewModel
 		private void RemoveComponent()
 		{
 			// If this component is currently edited
-			if(AppViewModel.Singleton.DesignVM.ComponentEditSectionVM.CurrentlyEditedComponentViewModel.IsComponentEdited(Component))
+			if(AppViewModel.Singleton.DesignVM.ComponentEditSectionVM.CurrentlyEditedComponentViewModel != null &&
+				AppViewModel.Singleton.DesignVM.ComponentEditSectionVM.CurrentlyEditedComponentViewModel.IsComponentEdited(Component))
 			{
 				// Stop editing
 				AppViewModel.Singleton.DesignVM.ComponentEditSectionVM.CurrentlyEditedComponentViewModel = null;
