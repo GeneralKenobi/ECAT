@@ -1,19 +1,13 @@
 ﻿using ECAT.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Input;
 
 namespace ECAT.UWP
 {
 	/// <summary>
 	/// Control for sockets on wires
 	/// </summary>
-    public class WireSocketTC : Control
+	public class WireSocketTC : Control
     {
 		#region Constructor
 

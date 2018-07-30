@@ -1,20 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI.Xaml.Data;
 
 namespace ECAT.UWP
 {
 	/// <summary>
-	/// Convert which takes a normal rotation angle (anti clockwise) in degrees (as a double) and returns a clockwise rotation
+	/// Converter which takes a normal rotation angle (anti clockwise) in degrees (as a double) and returns a clockwise rotation
 	/// </summary>
 	public class ReverseRotationAngleValueConverter : IValueConverter
 	{
+		#region Public methods
+
+		/// <summary>
+		/// Converter which takes a normal rotation angle (anti clockwise) in degrees (as a double) and returns a clockwise rotation
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="targetType"></param>
+		/// <param name="parameter"></param>
+		/// <param name="language"></param>
+		/// <returns></returns>
 		public object Convert(object value, Type targetType, object parameter, string language)
 		{
-			if(value is double d)
+			if (value is double d)
 			{
 				return -d;
 			}
@@ -22,9 +28,19 @@ namespace ECAT.UWP
 			return 0;
 		}
 
+		/// <summary>
+		/// Not implemented
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="targetType"></param>
+		/// <param name="parameter"></param>
+		/// <param name="language"></param>
+		/// <returns></returns>
 		public object ConvertBack(object value, Type targetType, object parameter, string language)
 		{
 			throw new NotImplementedException();
 		}
+
+		#endregion
 	}
 }

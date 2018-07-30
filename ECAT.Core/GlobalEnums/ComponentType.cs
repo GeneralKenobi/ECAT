@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ECAT.Core
+﻿namespace ECAT.Core
 {
 	/// <summary>
 	/// Defines types of components
 	/// </summary>
-    public enum ComponentType
+	public enum ComponentType
     {
 		/// <summary>
 		/// Passive components cannot affect the flow of electrons (eg. resistors, capacitors)

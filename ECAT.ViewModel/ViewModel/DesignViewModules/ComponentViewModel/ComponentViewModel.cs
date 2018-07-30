@@ -1,8 +1,6 @@
-﻿using Autofac;
-using CSharpEnhanced.ICommands;
+﻿using CSharpEnhanced.ICommands;
 using ECAT.Core;
 using System;
-using System.Numerics;
 using System.Windows.Input;
 
 namespace ECAT.ViewModel
@@ -55,6 +53,9 @@ namespace ECAT.ViewModel
 
 		#region Commands
 
+		/// <summary>
+		/// Command which puts the component into the edit menu thus starting to edit the component
+		/// </summary>
 		public ICommand EditComponentCommand { get; } = AppViewModel.Singleton.DesignVM.EditComponentCommand;
 
 		/// <summary>

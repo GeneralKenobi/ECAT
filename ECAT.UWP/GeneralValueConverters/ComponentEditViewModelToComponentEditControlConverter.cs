@@ -1,12 +1,24 @@
-﻿using ECAT.Design;
-using ECAT.ViewModel;
+﻿using ECAT.ViewModel;
 using System;
 using Windows.UI.Xaml.Data;
 
 namespace ECAT.UWP
 {
+	/// <summary>
+	/// Converts a component view model to an appropriate component edit control
+	/// </summary>
 	public class ComponentEditViewModelToComponentEditControlConverter : IValueConverter
 	{
+		#region Public methods
+
+		/// <summary>
+		/// Converts a component view model to an appropriate component edit control
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="targetType"></param>
+		/// <param name="parameter"></param>
+		/// <param name="language"></param>
+		/// <returns></returns>
 		public object Convert(object value, Type targetType, object parameter, string language)
 		{
 			if(value is ResistorEditViewModel)
@@ -43,9 +55,19 @@ namespace ECAT.UWP
 			return null;
 		}
 
+		/// <summary>
+		/// Not implemented
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="targetType"></param>
+		/// <param name="parameter"></param>
+		/// <param name="language"></param>
+		/// <returns></returns>
 		public object ConvertBack(object value, Type targetType, object parameter, string language)
 		{
 			throw new NotImplementedException();
 		}
+
+		#endregion
 	}
 }

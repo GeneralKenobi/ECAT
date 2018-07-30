@@ -1,5 +1,4 @@
 ﻿using CSharpEnhanced.ICommands;
-using PropertyChanged;
 using System;
 using System.Windows.Input;
 
@@ -31,13 +30,12 @@ namespace ECAT.ViewModel
 
 		#endregion
 
-		#region Private properties
+		#region Private members
 
 		/// <summary>
-		/// View model for the currently presented part (or null if nothing is presented)
-		/// </summary>
-		[DoNotNotify]
-		private BaseComponentEditViewModel _CurrentlyEditedComponentViewModel { get; set; }
+		/// Backing store for <see cref="CurrentlyEditedComponentViewModel"/>
+		/// </summary>		
+		private BaseComponentEditViewModel mCurrentlyEditedComponentViewModel;
 
 		#endregion
 
@@ -53,11 +51,11 @@ namespace ECAT.ViewModel
 		/// </summary>
 		public BaseComponentEditViewModel CurrentlyEditedComponentViewModel
 		{
-			get => _CurrentlyEditedComponentViewModel;
+			get => mCurrentlyEditedComponentViewModel;
 			set
 			{
 				// If the value is identical, return
-				if (_CurrentlyEditedComponentViewModel == value)
+				if (mCurrentlyEditedComponentViewModel == value)
 				{
 					if (value != null)
 					{
@@ -70,7 +68,7 @@ namespace ECAT.ViewModel
 				EditedComponentChanged changeType;
 
 				// Determine the change type
-				if(_CurrentlyEditedComponentViewModel == null)
+				if(mCurrentlyEditedComponentViewModel == null)
 				{
 					// mCurrentEditViewModel and value can't be null at the same time due to the check above
 					changeType = EditedComponentChanged.NullToComponent;
@@ -85,7 +83,7 @@ namespace ECAT.ViewModel
 				}
 
 				// Assign the value
-				_CurrentlyEditedComponentViewModel = value;
+				mCurrentlyEditedComponentViewModel = value;
 
 				// Fire the event
 				EditedPartChangedEvent?.Invoke(this, new EditedComponentChangedEventArgs(changeType));

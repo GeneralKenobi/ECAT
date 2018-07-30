@@ -1,15 +1,13 @@
 ﻿using Autofac;
 using ECAT.Core;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ECAT.ViewModel
 {
 	/// <summary>
 	/// ViewModel for simulation module
 	/// </summary>
-    public class SimulationViewModel : BaseViewModel
+	public class SimulationViewModel : BaseViewModel
     {
 		#region Constructor
 
@@ -36,12 +34,6 @@ namespace ECAT.ViewModel
 		/// Provided implementation of the <see cref="IDesignManager"/> interface
 		/// </summary>
 		public ISimulationManager SimulationManager { get; private set; }
-
-		#endregion
-
-		#region Commands
-
-
 
 		#endregion
 	}

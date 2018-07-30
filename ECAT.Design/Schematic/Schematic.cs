@@ -4,6 +4,9 @@ using System.ComponentModel;
 
 namespace ECAT.Design
 {
+	/// <summary>
+	/// Default implementation of <see cref="ISchematic"/>, holds all components and wires making up one schematic
+	/// </summary>
 	public class Schematic : ISchematic
     {
 		#region Constructor
@@ -16,6 +19,15 @@ namespace ECAT.Design
 			Components = new ReadOnlyObservableCollection<IBaseComponent>(_Components);
 			Wires = new ReadOnlyObservableCollection<IWire>(_Wires);
 		}
+
+		#endregion
+
+		#region Events
+
+		/// <summary>
+		/// Event fired whenever a property changes its value
+		/// </summary>
+		public event PropertyChangedEventHandler PropertyChanged;
 
 		#endregion
 
@@ -45,16 +57,7 @@ namespace ECAT.Design
 		/// </summary>
 		public ReadOnlyObservableCollection<IWire> Wires { get; }
 
-		#endregion
-
-		#region Events
-
-		/// <summary>
-		/// Event fired whenever a property changes its value
-		/// </summary>
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		#endregion
+		#endregion		
 
 		#region Public Methods
 

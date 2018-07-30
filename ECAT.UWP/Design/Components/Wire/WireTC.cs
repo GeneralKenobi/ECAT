@@ -1,9 +1,6 @@
-﻿using ECAT.Design;
-using ECAT.ViewModel;
+﻿using ECAT.ViewModel;
 using System.Windows.Input;
-using UWPEnhanced.Xaml;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Input;
 
 namespace ECAT.UWP
 {

@@ -4,8 +4,21 @@ using Windows.UI.Xaml.Data;
 
 namespace ECAT.UWP
 {
+	/// <summary>
+	/// Converts a component to an appropriate control
+	/// </summary>
 	public class ComponentToComponentControlConverter : IValueConverter
 	{
+		#region Public methods
+
+		/// <summary>
+		/// Converts a component to an appropriate control
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="targetType"></param>
+		/// <param name="parameter"></param>
+		/// <param name="language"></param>
+		/// <returns></returns>
 		public object Convert(object value, Type targetType, object parameter, string language)
 		{
 			if(value is Resistor)
@@ -39,9 +52,19 @@ namespace ECAT.UWP
 			return null;
 		}
 
+		/// <summary>
+		/// Not implemented
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="targetType"></param>
+		/// <param name="parameter"></param>
+		/// <param name="language"></param>
+		/// <returns></returns>
 		public object ConvertBack(object value, Type targetType, object parameter, string language)
 		{
 			throw new NotImplementedException();
 		}
+
+		#endregion
 	}
 }

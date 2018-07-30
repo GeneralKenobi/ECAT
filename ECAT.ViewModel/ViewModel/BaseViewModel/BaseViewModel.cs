@@ -1,9 +1,4 @@
-﻿using PropertyChanged;
-using System;
-using System.ComponentModel;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using System.Windows.Input;
+﻿using System.ComponentModel;
 
 namespace ECAT.ViewModel
 {
@@ -12,7 +7,7 @@ namespace ECAT.ViewModel
 	/// </summary>
 	public class BaseViewModel : INotifyPropertyChanged
 	{
-		#region Property Changed
+		#region Property changed
 
 		/// <summary>
 		/// The event that is fired when any child property changed its value

@@ -1,30 +1,12 @@
-﻿using Autofac;
-using CSharpEnhanced.ICommands;
-using ECAT.Core;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Input;
+﻿using ECAT.Core;
 
 namespace ECAT.ViewModel
 {
 	/// <summary>
 	/// ViewModel for the app in general (eg. for the main page)
 	/// </summary>
-    public class AppViewModel : BaseViewModel
+	public class AppViewModel : BaseViewModel
     {
-		#region Constructor
-
-		/// <summary>
-		/// Default Constructor
-		/// </summary>
-		private AppViewModel()
-		{
-
-		}
-
-		#endregion
-
 		#region Singleton
 
 		/// <summary>

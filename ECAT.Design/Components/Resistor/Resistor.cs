@@ -1,12 +1,11 @@
 ﻿using ECAT.Core;
-using System.Numerics;
 
 namespace ECAT.Design
 {
 	/// <summary>
 	/// Resistor is a passive component that is characterized by resistance - a real component of impedance
 	/// </summary>
-    public class Resistor : TwoTerminal, IResistor
+	public class Resistor : TwoTerminal, IResistor
     {
 		#region Constructor
 

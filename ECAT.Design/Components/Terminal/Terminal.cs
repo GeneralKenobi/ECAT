@@ -44,12 +44,12 @@ namespace ECAT.Design
 
 		#endregion
 
-		#region Private properties
+		#region Private members
 
 		/// <summary>
 		/// Backing store for <see cref="Potential"/>
 		/// </summary>
-		private RefWrapperPropertyChanged<double> _Potential { get; set; }
+		private RefWrapperPropertyChanged<double> mPotential;
 
 		#endregion
 
@@ -65,27 +65,27 @@ namespace ECAT.Design
 		/// </summary>
 		public RefWrapperPropertyChanged<double> Potential
 		{
-			get => _Potential;
+			get => mPotential;
 			set
 			{
 				// If the new value is different
-				if (_Potential != value)
+				if (mPotential != value)
 				{
 					// If the old value wasn't null
-					if (_Potential != null)
+					if (mPotential != null)
 					{
 						// Unsubsribe from its property changed event
-						_Potential.PropertyChanged -= PropagatePotenialValueChanged;
+						mPotential.PropertyChanged -= PropagatePotenialValueChanged;
 					}
 
 					// Assgin the new value
-					_Potential = value;
+					mPotential = value;
 
 					// If it's not null
-					if(_Potential != null)
+					if(mPotential != null)
 					{
 						// Subscribe to its property changed event
-						_Potential.PropertyChanged += PropagatePotenialValueChanged;
+						mPotential.PropertyChanged += PropagatePotenialValueChanged;
 					}
 
 					// Notify about possible change in value

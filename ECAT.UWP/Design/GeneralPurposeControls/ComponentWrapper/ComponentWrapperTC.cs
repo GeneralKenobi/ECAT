@@ -1,21 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using UWPEnhanced.Xaml;
-using Windows.UI;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Documents;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-
-// The Templated Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234235
+﻿using Windows.UI.Xaml;
 
 namespace ECAT.UWP
 {
+	/// <summary>
+	/// Control wrapping controls specific to components with a common utility
+	/// </summary>
 	public sealed class ComponentWrapperTC : BorderWithFlyoutMenuBaseTC
 	{
 		#region Constructor

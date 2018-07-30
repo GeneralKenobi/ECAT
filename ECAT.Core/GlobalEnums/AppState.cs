@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ECAT.Core
+﻿namespace ECAT.Core
 {
 	/// <summary>
 	/// Defines states the app may be in
 	/// </summary>
-    public enum AppState
+	public enum AppState
     {
 		/// <summary>
 		/// App is in idle state - nothing is going on

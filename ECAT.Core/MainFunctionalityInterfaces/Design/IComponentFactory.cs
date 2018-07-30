@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 
 namespace ECAT.Core
 {
 	/// <summary>
 	/// A Factory producing <see cref="IBaseComponent"/> 
 	/// </summary>
-    public interface IComponentFactory
+	public interface IComponentFactory
     {
 		#region Properties
 

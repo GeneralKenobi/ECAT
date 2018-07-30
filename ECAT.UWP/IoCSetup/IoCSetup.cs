@@ -10,6 +10,8 @@ namespace ECAT.UWP
 	/// </summary>
 	public static class IoCSetup
 	{
+		#region Public static methods
+
 		/// <summary>
 		/// Injects dependencies to <see cref="ECAT.Core.IoC"/>. Should be invoked at the beginning 
 		/// </summary>
@@ -28,7 +30,8 @@ namespace ECAT.UWP
 
 
 			IoC.Build(builder);
-
 		}
+
+		#endregion
 	}
 }

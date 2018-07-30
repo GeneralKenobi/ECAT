@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Text;
 
 namespace ECAT.Core
 {
 	/// <summary>
 	/// Interface for a single schematic (one circuit)
 	/// </summary>
-    public interface ISchematic : INotifyPropertyChanged
+	public interface ISchematic : INotifyPropertyChanged
     {
 		#region Properties
 

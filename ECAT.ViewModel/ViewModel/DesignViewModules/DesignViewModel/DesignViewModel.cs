@@ -37,19 +37,23 @@ namespace ECAT.ViewModel
 			EditComponentCommand = new RelayParametrizedCommand(EditComponent);
 		}
 
-		#endregion		
+		#endregion
+
+		#region Private members
+
+		/// <summary>
+		/// Backing store for <see cref="ComponentToAdd"/>
+		/// </summary>
+		private IComponentDeclaration mComponentToAdd;
+
+		#endregion
 
 		#region Private properties
 
 		/// <summary>
 		/// Flag which, if set, ensures the next click on the design area will place a new wire in that position
 		/// </summary>
-		private bool _PlaceLooseWireOnNextClick { get; set; } = false;
-
-		/// <summary>
-		/// Backing store for <see cref="ComponentToAdd"/>
-		/// </summary>
-		private IComponentDeclaration _ComponentToAdd { get; set; }
+		private bool _PlaceLooseWireOnNextClick { get; set; } = false;		
 
 		#endregion
 
@@ -66,7 +70,7 @@ namespace ECAT.ViewModel
 		/// </summary>
 		public IComponentDeclaration ComponentToAdd
 		{
-			get => _ComponentToAdd;
+			get => mComponentToAdd;
 			set
 			{
 				if(value != null && DesignManager.PlacingWire)
@@ -74,8 +78,8 @@ namespace ECAT.ViewModel
 					DesignManager.StopPlacingWire();
 				}
 
-				_ComponentToAdd = value;
-				InfoLogger.Log(_ComponentToAdd == null ? string.Empty : "Tap on the schematic to place a(n) " + _ComponentToAdd.DisplayName);
+				mComponentToAdd = value;
+				InfoLogger.Log(mComponentToAdd == null ? string.Empty : "Tap on the schematic to place a(n) " + mComponentToAdd.DisplayName);
 			}
 		}
 

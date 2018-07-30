@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 
 namespace ECAT.Design
@@ -41,12 +40,21 @@ namespace ECAT.Design
 
 		#endregion
 
+		#region Private members
+
+		/// <summary>
+		/// Backing store for <see cref="ConnectedWires"/>
+		/// </summary>
+		private List<IWire> mConnectedWires = new List<IWire>();
+
+		#endregion
+
 		#region Private properties
-		
+
 		/// <summary>
 		/// Radius of the sockets present on a wire
 		/// </summary>
-		public double WireSocketRadius => 12;
+		public double WireSocketRadius { get; } = 12;
 
 		/// <summary>
 		/// Backing store for <see cref="DefiningPoints"/>
@@ -57,12 +65,7 @@ namespace ECAT.Design
 		/// Backing store for <see cref="ConstructionPoints"/>
 		/// </summary>
 		private ObservableCollection<IPlanePosition> _ConstructionPoints { get; } = new ObservableCollection<IPlanePosition>();
-
-		/// <summary>
-		/// Backing store for <see cref="ConnectedWires"/>
-		/// </summary>
-		private List<IWire> _ConnectedWires { get; set; } = new List<IWire>();
-
+				
 		#endregion
 
 		#region Public properties
@@ -81,7 +84,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// List with all wires that are connected to this wire somewhere in the middle
 		/// </summary>
-		public IList<IWire> ConnectedWires => _ConnectedWires;
+		public IList<IWire> ConnectedWires => mConnectedWires;
 
 		/// <summary>
 		/// Collection of points that define the intermediate points of the wire. Point indexed 0 is the neighbour of <see cref="Beginning"/>,
@@ -253,7 +256,7 @@ namespace ECAT.Design
 			List<IWire> result = new List<IWire>() { this, };
 
 			// For each connected wire
-			_ConnectedWires.ForEach((wire) =>
+			mConnectedWires.ForEach((wire) =>
 			{
 				// If it's not in the already found wires
 				if (!alreadyFoundWires.Contains(wire))

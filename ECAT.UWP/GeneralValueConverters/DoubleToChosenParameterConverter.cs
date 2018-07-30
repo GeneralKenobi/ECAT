@@ -12,6 +12,20 @@ namespace ECAT.UWP
 	/// </summary>
 	public class DoubleToChosenParameterConverter : IValueConverter
     {
+		#region Public methods
+
+		/// <summary>
+		/// If value is a double and it's positive: checks if parameter is a string, if it contains a backslash ("/"),
+		/// splits the parameter on the backslash, if there were at least two substrings created tries to parse both of them to ints.
+		/// If all this is successfull returns the int on the left of the backslash if value was nonnegative, otherwise returns the
+		/// int on the right of the backslash.
+		/// If any of the conditions described above is not met returns null.
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="targetType"></param>
+		/// <param name="parameter"></param>
+		/// <param name="language"></param>
+		/// <returns></returns>
 		public object Convert(object value, Type targetType, object parameter, string language)
 		{
 			// Check if value is a double, if parameter is a string and if it contains a backslash
@@ -32,9 +46,19 @@ namespace ECAT.UWP
 			return null;
 		}
 
+		/// <summary>
+		/// Not implemented
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="targetType"></param>
+		/// <param name="parameter"></param>
+		/// <param name="language"></param>
+		/// <returns></returns>
 		public object ConvertBack(object value, Type targetType, object parameter, string language)
 		{
 			throw new NotImplementedException();
 		}
+
+		#endregion
 	}
 }

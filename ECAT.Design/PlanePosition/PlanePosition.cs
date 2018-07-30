@@ -39,7 +39,7 @@ namespace ECAT.Design
 		/// Constructor with absolute position parameter
 		/// </summary>
 		/// <param name="absolute"></param>
-		public PlanePosition(Complex absolute) => _Absolute = absolute.RoundTo(RoundTo);
+		public PlanePosition(Complex absolute) => mAbsolute = absolute.RoundTo(RoundTo);
 
 		/// <summary>
 		/// Constructor with absolute as well as shift parameters
@@ -71,14 +71,19 @@ namespace ECAT.Design
 		/// </summary>
 		private Complex mShift;
 
-		#endregion
-
-		#region Private properties
-
 		/// <summary>
 		/// Backing store for <see cref="Absolute"/>
 		/// </summary>
-		private Complex _Absolute { get; set; }
+		private Complex mAbsolute;
+
+		/// <summary>
+		/// Backing store for <see cref="RotationAngle"/>
+		/// </summary>
+		private double mRotationAngle;
+
+		#endregion
+
+		#region Private properties
 
 		/// <summary>
 		/// Backing store for <see cref="Shift"/>
@@ -87,12 +92,7 @@ namespace ECAT.Design
 		{
 			get => mShift;
 			set => mShift = value.RoundTo(RoundTo);
-		}
-
-		/// <summary>
-		/// Backing store for <see cref="RotationAngle"/>
-		/// </summary>
-		private double _RotationAngle { get; set; }
+		}		
 
 		#endregion
 
@@ -103,18 +103,18 @@ namespace ECAT.Design
 		/// </summary>
 		public double RotationAngle
 		{
-			get => _RotationAngle;
+			get => mRotationAngle;
 			set
 			{
 				var reducedValue = MathsHelpers.ReduceAngle(value, AngleUnit.Degrees);
 
-				if (reducedValue != _RotationAngle)
+				if (reducedValue != mRotationAngle)
 				{
 					// To rotate to the desired angle we need to compensate for the already applied rotation
-					var difference = reducedValue - _RotationAngle;
+					var difference = reducedValue - mRotationAngle;
 
 					// Assign the new rotation angle
-					_RotationAngle = reducedValue;
+					mRotationAngle = reducedValue;
 
 					// If the shift is 0 then rotation won't change anyting - skip it
 					if (_Shift.Magnitude != 0)
@@ -132,12 +132,12 @@ namespace ECAT.Design
 		/// </summary>
 		public Complex Absolute
 		{
-			get => _Absolute;
+			get => mAbsolute;
 			set
 			{
-				if(_Absolute != value)
+				if(mAbsolute != value)
 				{
-					_Absolute = value.RoundTo(RoundTo);
+					mAbsolute = value.RoundTo(RoundTo);
 
 					InvokeInternalStateChanged();					
 				}

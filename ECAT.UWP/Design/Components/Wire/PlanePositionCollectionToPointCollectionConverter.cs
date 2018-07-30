@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
@@ -15,6 +13,16 @@ namespace ECAT.UWP
 	/// </summary>
 	public class PlanePositionCollectionToPointCollectionConverter : IValueConverter
 	{
+		#region Public methods
+
+		/// <summary>
+		/// Converts an <see cref="ICollection{T}"/> of <see cref="IPlanePosition"/> to a <see cref="PointCollection"/>
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="targetType"></param>
+		/// <param name="parameter"></param>
+		/// <param name="language"></param>
+		/// <returns></returns>
 		public object Convert(object value, Type targetType, object parameter, string language)
 		{
 			if(value is ICollection<IPlanePosition> collection)
@@ -34,9 +42,19 @@ namespace ECAT.UWP
 			return null;
 		}
 
+		/// <summary>
+		/// Not implemented
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="targetType"></param>
+		/// <param name="parameter"></param>
+		/// <param name="language"></param>
+		/// <returns></returns>
 		public object ConvertBack(object value, Type targetType, object parameter, string language)
 		{
 			throw new NotImplementedException();
 		}
+
+		#endregion
 	}
 }

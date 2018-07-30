@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 namespace ECAT.Core
 {
+	/// <summary>
+	/// Interface for nodes. Node is a class that connects <see cref="IBaseComponent"/>s and is used as the basis of simulation
+	/// (nodal analysis calculates potentials at all nodes)
+	/// </summary>
 	public interface INode
 	{
 		#region Properties

@@ -1,9 +1,7 @@
-﻿using Autofac;
-using ECAT.Core;
+﻿using ECAT.Core;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Threading.Tasks;
 
 namespace ECAT.Design
 {
@@ -22,6 +20,15 @@ namespace ECAT.Design
 			Schematics = new ReadOnlyObservableCollection<ISchematic>(_Schematics);
 			ChangeCurrentSchematic(0);
 		}
+
+		#endregion
+
+		#region Events
+
+		/// <summary>
+		/// Event fired whenever a property changes its value
+		/// </summary>
+		public event PropertyChangedEventHandler PropertyChanged;
 
 		#endregion
 
@@ -101,16 +108,7 @@ namespace ECAT.Design
 		public bool PlacingWire => _PlacedWire != null;
 
 		#endregion
-
-		#region Events
-
-		/// <summary>
-		/// Event fired whenever a property changes its value
-		/// </summary>
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		#endregion
-
+		
 		#region Public methods
 
 		/// <summary>

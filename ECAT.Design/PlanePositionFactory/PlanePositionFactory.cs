@@ -1,8 +1,5 @@
 ﻿using ECAT.Core;
-using System;
-using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
 
 namespace ECAT.Design
 {
@@ -11,10 +8,16 @@ namespace ECAT.Design
 	/// </summary>
 	public class PlanePositionFactory : IPlanePositionFactory
 	{
+		#region Public properties
+
 		/// <summary>
 		/// All coordinates are rounded to multiples of this value
 		/// </summary>
 		public double RoundTo { get; } = 50;
+
+		#endregion
+
+		#region Public methods
 
 		/// <summary>
 		/// Constructs an <see cref="IPlanePosition"/> with all coordinates 0
@@ -54,5 +57,7 @@ namespace ECAT.Design
 		/// <param name="shift"></param>
 		/// <returns></returns>
 		public IPlanePosition Construct(Complex absolute, Complex shift) => new PlanePosition(absolute, shift);
+
+		#endregion
 	}
 }

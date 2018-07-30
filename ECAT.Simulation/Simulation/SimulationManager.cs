@@ -11,18 +11,6 @@ namespace ECAT.Simulation
 	/// </summary>
 	public class SimulationManager : ISimulationManager
 	{
-		#region Constructor
-
-		/// <summary>
-		/// Default Constructor
-		/// </summary>
-		public SimulationManager()
-		{
-			
-		}
-
-		#endregion
-
 		#region Events
 
 		/// <summary>

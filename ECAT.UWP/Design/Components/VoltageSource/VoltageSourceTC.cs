@@ -1,14 +1,22 @@
 ﻿using Windows.UI.Xaml.Controls;
 
-// The Templated Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234235
-
 namespace ECAT.UWP
 {
+	/// <summary>
+	/// Control for an <see cref="IVoltageSource"/>
+	/// </summary>
 	public sealed class VoltageSourceTC : Control
 	{
+		#region Constructor
+
+		/// <summary>
+		/// Default constructor
+		/// </summary>
 		public VoltageSourceTC()
 		{
 			this.DefaultStyleKey = typeof(VoltageSourceTC);
 		}
+
+		#endregion
 	}
 }

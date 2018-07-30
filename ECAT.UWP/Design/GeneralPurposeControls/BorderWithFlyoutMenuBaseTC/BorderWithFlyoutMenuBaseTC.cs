@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UWPEnhanced.Xaml;
 using Windows.UI;
 using Windows.UI.Xaml;
@@ -32,28 +28,6 @@ namespace ECAT.UWP
 		}
 
 		#endregion		
-
-		#region OnLoaded
-
-		/// <summary>
-		/// Invoked when the control loads, assigns event handlers to events of the flyout menu
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void OnLoaded(object sender, RoutedEventArgs e)
-		{
-			if (this.TryFindChild(out var contextMenuOwner, _ContextMenuOwnerName) && contextMenuOwner.ContextFlyout != null)
-			{
-				contextMenuOwner.ContextFlyout.Opening += MenuFlyoutOpenClose;
-				contextMenuOwner.ContextFlyout.Closed += MenuFlyoutOpenClose;
-			}
-			else
-			{
-				throw new Exception("Can't find child with name " + _ContextMenuOwnerName + " or it has no ContextFlyout defined");
-			}
-		}
-
-		#endregion
 
 		#region Events
 
@@ -93,6 +67,24 @@ namespace ECAT.UWP
 		#endregion
 
 		#region Private methods
+
+		/// <summary>
+		/// Invoked when the control loads, assigns event handlers to events of the flyout menu
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnLoaded(object sender, RoutedEventArgs e)
+		{
+			if (this.TryFindChild(out var contextMenuOwner, _ContextMenuOwnerName) && contextMenuOwner.ContextFlyout != null)
+			{
+				contextMenuOwner.ContextFlyout.Opening += MenuFlyoutOpenClose;
+				contextMenuOwner.ContextFlyout.Closed += MenuFlyoutOpenClose;
+			}
+			else
+			{
+				throw new Exception("Can't find child with name " + _ContextMenuOwnerName + " or it has no ContextFlyout defined");
+			}
+		}
 
 		/// <summary>
 		/// Toggles the <see cref="ShowBorder"/> flag
