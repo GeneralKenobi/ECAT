@@ -24,7 +24,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Admittance of a voltage source
 		/// </summary>
-		public Complex VoltageSourceAdmittance { get; } = new Complex(0, 0);
+		public Complex VoltageSourceAdmittance { get; } = Complex.Zero;
 
 		/// <summary>
 		/// Admittance of a current source
@@ -34,17 +34,17 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Default admittance for a <see cref="IResistor"/>
 		/// </summary>
-		public Complex DefaultResistorAdmittance { get; } = new Complex(1, 0);
+		public Complex DefaultResistorAdmittance { get; } = new Complex(1e-3, 0);
 
 		/// <summary>
 		/// Default value for <see cref="ICurrentSource"/>'s produced current
 		/// </summary>
-		public double DefaultCurrentSourceProducedCurrent { get; } = 1;
+		public double DefaultCurrentSourceProducedCurrent { get; } = 1e-3;
 
 		/// <summary>
 		/// Default value for <see cref="IVoltageSource"/>'s produced voltage
 		/// </summary>
-		public double DefaultVoltageSourceProducedVoltage { get; } = 1;
+		public double DefaultVoltageSourceProducedVoltage { get; } = 5;
 
 		#endregion
 
