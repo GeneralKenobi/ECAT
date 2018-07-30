@@ -1,5 +1,4 @@
-﻿using Autofac;
-using ECAT.Core;
+﻿using ECAT.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -40,15 +39,6 @@ namespace ECAT.Design
 
 		#endregion
 
-		#region Private members
-
-		/// <summary>
-		/// Backing store for <see cref="ConnectedWires"/>
-		/// </summary>
-		private List<IWire> mConnectedWires = new List<IWire>();
-
-		#endregion
-
 		#region Private properties
 
 		/// <summary>
@@ -82,11 +72,6 @@ namespace ECAT.Design
 				_ConstructionPoints[_ConstructionPoints.Count - 1] : new PlanePosition();
 
 		/// <summary>
-		/// List with all wires that are connected to this wire somewhere in the middle
-		/// </summary>
-		public IList<IWire> ConnectedWires => mConnectedWires;
-
-		/// <summary>
 		/// Collection of points that define the intermediate points of the wire. Point indexed 0 is the neighbour of <see cref="Beginning"/>,
 		/// point at the last index is the neighbour of <see cref="Ending"/>
 		/// </summary>
@@ -99,32 +84,61 @@ namespace ECAT.Design
 
 		#endregion
 
-		#region Private methods
+		#region Private methods		
+
+		/// <summary>
+		/// Returns true if the point given by <paramref name="position"/> belongs to wire but is not in construction points yet,
+		/// assigns the index of its preceding construction point to <paramref name="index"/>. If the point doesn't belong to wire
+		/// returns false and assigns -1 to <paramref name="index"/>
+		/// </summary>
+		/// <param name="position"></param>
+		/// <param name="index"></param>
+		/// <returns></returns>
+		private bool FindPrecidingConstructionPoint(IPlanePosition position, out int index)
+		{
+			for (int i = 0; i < ConstructionPoints.Count - 1; ++i)
+			{
+				// If the point lies on the line between two subsequent points
+				if ((ConstructionPoints[i].X == position.X && ConstructionPoints[i + 1].X == position.X &&
+					(position.Y - ConstructionPoints[i].Y) * (position.Y - ConstructionPoints[i + 1].Y) < 0) ||
+					(ConstructionPoints[i].Y == position.Y && ConstructionPoints[i + 1].Y == position.Y &&
+					(position.X - ConstructionPoints[i].X) * (position.X - ConstructionPoints[i + 1].X) < 0))
+				{
+					index = i;
+					return true;
+				}
+			}
+
+			index = -1;
+			return false;
+		}
 
 		/// <summary>
 		/// Gets all <see cref="IWire"/>s connected to this <see cref="IWire"/>
 		/// </summary>
 		/// <param name="alreadyFoundWires"></param>
 		/// <returns></returns>
-		private List<IWire> GetConnectedWiresRecursively(List<IWire> alreadyFoundWires)
+		private List<IWire> GetConnectedWiresRecursively(List<IWire> alreadyFoundWires, IEnumerable<IWire> allWires)
 		{
-			// Make a list of results, including this instance to prevent the wires connected to it from quering it
-			List<IWire> result = new List<IWire>() { this, };
+			// Add this instance to already found wires
+			alreadyFoundWires.Add(this);			
 
-			// For each connected wire
-			mConnectedWires.ForEach((wire) =>
+			// For each wire in the collection of all wires
+			foreach(var wire in allWires)
 			{
-				// If it's not in the already found wires
-				if (!alreadyFoundWires.Contains(wire))
+				// If it's not in the already found wires and either of its ends lies on this wire or either of this wire's
+				// ends lies on the inspected wire
+				if (!alreadyFoundWires.Contains(wire) && (BelongsToWire(wire.Beginning) || BelongsToWire(wire.Ending) ||
+					wire.BelongsToWire(Beginning) || wire.BelongsToWire(Ending)))
 				{
-					// If it's a Wire, query it and give it a list of all connected wires, if it's only an IWire then use the
-					// public method to obtain all connected wires
-					result.AddRange(wire is Wire castedWire ?
-						castedWire.GetConnectedWiresRecursively(result) : wire.GetAllConnectedWires());
+					// Add all of the wire's connected wires to the already found wires list, additionally if it's also a Wire
+					// use this private method
+					alreadyFoundWires.AddRange(wire is Wire castedWire ?
+						castedWire.GetConnectedWiresRecursively(alreadyFoundWires, allWires) : wire.GetAllConnectedWires(allWires));
 				}
-			});
+			}
 
-			return result;
+			return alreadyFoundWires;
 		}
 
 		/// <summary>
@@ -183,23 +197,27 @@ namespace ECAT.Design
 		#region Public methods
 
 		/// <summary>
-		/// Returns an IList of all wires connected to this <see cref="IWire"/> (including connections through other wires, excluding
-		/// this instance)
+		/// Returns true if point given by <paramref name="position"/> belongs to this wire
 		/// </summary>
+		/// <param name="position"></param>
 		/// <returns></returns>
-		public IList<IWire> GetAllConnectedWires() =>
-			// Use the private helper method, filter out this instance and get only distinct elements
-			new List<IWire>(GetConnectedWiresRecursively(new List<IWire>()).Where((wire) => wire != this).Distinct());
+		public bool BelongsToWire(IPlanePosition position) => FindPrecidingConstructionPoint(position, out var dummy) ||
+			ConstructionPoints.FirstOrDefault((constructionPoint) => position.Equals(constructionPoint)) != null;
 
 		/// <summary>
-		/// Disposes of the wire (disconnets itself from all other wires)
+		/// Returns an IList of all wires connected to this <see cref="IWire"/> (including connections through other wires)
+		/// </summary>
+		/// <returns></returns>
+		public IList<IWire> GetAllConnectedWires(IEnumerable<IWire> allWires) =>
+			// Use the private helper method, get only distinct elements
+			new List<IWire>(GetConnectedWiresRecursively(new List<IWire>(), allWires).Distinct());			
+
+		/// <summary>
+		/// Disposes of the wire
 		/// </summary>
 		public void Dispose()
 		{
-			foreach(var wire in ConnectedWires)
-			{
-				wire.ConnectedWires.Remove(this);
-			}
+			
 		}
 
 		/// <summary>
@@ -208,15 +226,6 @@ namespace ECAT.Design
 		/// <param name="wire"></param>
 		public void MergeWith(IWire wire, bool mergeToEnd, bool mergeFromEnd)
 		{
-			// Swap all connections to the new wire
-			foreach (var x in wire.ConnectedWires)
-			{
-				x.ConnectedWires[x.ConnectedWires.IndexOf(wire)] = this;
-			}
-
-			// Clear the connections from the old wire
-			wire.ConnectedWires.Clear();
-						
 			if (mergeFromEnd)
 			{
 				// If the wire is merged from end
@@ -280,27 +289,22 @@ namespace ECAT.Design
 				throw new Exception("Can't add an intermediate point to a wire with less than 2 coords");
 			}
 
-			// If the point that we add is already on the wire just return
+			// If the point that we add is already a construction point return
 			if(ConstructionPoints.FirstOrDefault((position) => position.Equals(point)) != null)
 			{
 				return;
 			}
 
-			for (int i = 0; i < ConstructionPoints.Count - 1; ++i)
+			// If the point is not included in the wire as a construction point but it does lie on the wire
+			if (FindPrecidingConstructionPoint(point, out int index))
 			{
-				// If the point lies on the line between two subsequent points
-				if ((ConstructionPoints[i].X == point.X && ConstructionPoints[i + 1].X == point.X &&
-					(point.Y - ConstructionPoints[i].Y) * (point.Y - ConstructionPoints[i + 1].Y) < 0) ||
-					(ConstructionPoints[i].Y == point.Y && ConstructionPoints[i + 1].Y == point.Y &&
-					(point.X - ConstructionPoints[i].X) * (point.X - ConstructionPoints[i + 1].X) < 0))
-				{
-					// Add it to the wire's construction points
-					_ConstructionPoints.Insert(i + 1, point);
-					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ConstructionPoints)));
-					return;
-				}
+				// Add it to the wire's construction points
+				_ConstructionPoints.Insert(index + 1, point);
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ConstructionPoints)));
+				return;
 			}
 
+			// Otherwise signal error
 			throw new Exception("The given position doesn't lie on the wire");
 		}
 

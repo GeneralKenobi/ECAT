@@ -28,11 +28,6 @@ namespace ECAT.Core
 		IPlanePosition Ending { get; }
 
 		/// <summary>
-		/// Collection of all wires connected to this instance
-		/// </summary>
-		IList<IWire> ConnectedWires { get; }
-
-		/// <summary>
 		/// Collection of points that define the corners of the wire on the plane.
 		/// Element at index 0 is a neighbour of <see cref="Beginning"/>, element at the last index is a neighbour of <see cref="Ending"/>
 		/// </summary>
@@ -46,6 +41,13 @@ namespace ECAT.Core
 		#endregion
 
 		#region Methods
+
+		/// <summary>
+		/// Returns true if point given by <paramref name="position"/> belongs to this wire
+		/// </summary>
+		/// <param name="position"></param>
+		/// <returns></returns>
+		bool BelongsToWire(IPlanePosition position);
 
 		/// <summary>
 		/// Merges this instance with <paramref name="wire"/>. After the method completes <paramref name="wire"/> is obselete.
@@ -69,11 +71,10 @@ namespace ECAT.Core
 		void AddPoint(IPlanePosition point, bool addAtEnd = true);
 
 		/// <summary>
-		/// Returns an IList of all wires connected to this <see cref="IWire"/> (including connections through other wires, excluding
-		/// this instance)
+		/// Returns an IList of all wires connected to this <see cref="IWire"/> (including connections through other wires)
 		/// </summary>
 		/// <returns></returns>
-		IList<IWire> GetAllConnectedWires();
+		IList<IWire> GetAllConnectedWires(IEnumerable<IWire> allWires);
 
 		#endregion
 	}
