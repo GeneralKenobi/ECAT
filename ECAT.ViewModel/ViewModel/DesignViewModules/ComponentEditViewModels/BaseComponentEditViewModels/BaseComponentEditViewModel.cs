@@ -17,7 +17,7 @@ namespace ECAT.ViewModel
 		public BaseComponentEditViewModel(ComponentViewModel componentViewModel)
 		{
 			_EditedComponentViewModel = componentViewModel;
-			EditedComponentDeclaration = IoC.Resolve<IComponentFactory>().GetDeclaration<IResistor>();
+			EditedComponentDeclaration = IoC.Resolve<IComponentFactory>().GetDeclaration(componentViewModel.Component.GetType());
 		}
 
 		#endregion
