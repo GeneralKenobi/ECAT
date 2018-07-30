@@ -36,6 +36,13 @@ namespace ECAT.Core
 		/// <returns></returns>
 		public static T Resolve<T>() => Container.Resolve<T>();
 
+		/// <summary>
+		/// Shortcut to log messages through <see cref="IInfoLogger"/>
+		/// </summary>
+		/// <param name="message"></param>
+		/// <param name="loggerID"></param>
+		public static void Log(string message, int loggerID) => Container.Resolve<IInfoLogger>().Log(message);
+
 		#endregion
 
 		#region Private static methods
