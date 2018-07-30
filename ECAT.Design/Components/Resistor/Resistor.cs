@@ -33,10 +33,6 @@ namespace ECAT.Design
 				{
 					Admittance = 1 / value;
 				}
-				else
-				{
-					Admittance = IoC.Resolve<IDefaultValues>().MinimumParameterValue;
-				}
 			}
 		}
 
