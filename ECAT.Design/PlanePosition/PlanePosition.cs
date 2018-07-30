@@ -1,5 +1,6 @@
 ﻿using CSharpEnhanced.Maths;
 using ECAT.Core;
+using PropertyChanged;
 using System;
 using System.ComponentModel;
 using System.Numerics;
@@ -16,7 +17,10 @@ namespace ECAT.Design
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public PlanePosition() { }
+		public PlanePosition()
+		{
+			InternalStateChanged += InternalStateChnagedCallback;
+		}
 
 		/// <summary>
 		/// Constructor with absolute position parameters
@@ -39,7 +43,7 @@ namespace ECAT.Design
 		/// Constructor with absolute position parameter
 		/// </summary>
 		/// <param name="absolute"></param>
-		public PlanePosition(Complex absolute) => mAbsolute = absolute.RoundTo(RoundTo);
+		public PlanePosition(Complex absolute) : this() => mAbsolute = absolute.RoundTo(RoundTo);
 
 		/// <summary>
 		/// Constructor with absolute as well as shift parameters
@@ -152,11 +156,13 @@ namespace ECAT.Design
 		/// <summary>
 		/// Final X coordinate of this position (with applied shift)
 		/// </summary>
+		[DoNotNotify]
 		public double X => Absolute.Real + Shift.Real;
 
 		/// <summary>
 		/// Final Y coordinate of this position (with applied shift)
 		/// </summary>
+		[DoNotNotify]
 		public double Y => Absolute.Imaginary + Shift.Imaginary;
 
 		#endregion
@@ -167,6 +173,15 @@ namespace ECAT.Design
 		/// Invokes the <see cref="InternalStateChanged"/> event
 		/// </summary>
 		private void InvokeInternalStateChanged() => InternalStateChanged?.Invoke(this, EventArgs.Empty);
+
+		/// <summary>
+		/// Callback for internal state changed, invokes property changed event for <see cref="X"/> and <see cref="Y"/>
+		/// </summary>
+		private void InternalStateChnagedCallback(object sender, EventArgs e)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(X)));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Y)));
+		}
 
 		#endregion
 
