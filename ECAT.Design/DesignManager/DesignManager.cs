@@ -118,10 +118,6 @@ namespace ECAT.Design
 		/// <param name="connectionPosition"></param>
 		private void ConnectWithPlacedWire(IWire wire, IPlanePosition connectionPosition)
 		{
-			// Connect it with the clicked wire
-			wire.ConnectedWires.Add(_PlacedWire);
-			_PlacedWire.ConnectedWires.Add(wire);
-
 			// Add the intermediate point to the wire (to make sure the connection won't be broken by accident)
 			wire.AddIntermediatePoint(connectionPosition);
 
