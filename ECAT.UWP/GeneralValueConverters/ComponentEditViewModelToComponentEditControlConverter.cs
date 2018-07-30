@@ -24,7 +24,7 @@ namespace ECAT.UWP
 		public object Convert(object value, Type targetType, object parameter, string language)
 		{
 			// Try to get the control type
-			if(_AssociatedControls.TryGetValue(value.GetType(), out var controlType))
+			if(value != null && _AssociatedControls.TryGetValue(value.GetType(), out var controlType))
 			{
 				// If successful, create an instance
 				var control = Activator.CreateInstance(controlType) as FrameworkElement;
