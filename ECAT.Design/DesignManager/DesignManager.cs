@@ -10,7 +10,7 @@ namespace ECAT.Design
 	/// </summary>
 	public class DesignManager : IDesignManager
 	{
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default Constructor

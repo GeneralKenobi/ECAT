@@ -8,7 +8,7 @@ namespace ECAT.Core
 	/// </summary>
 	public partial class Node : INode
     {
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default constructor

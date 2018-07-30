@@ -7,7 +7,7 @@ namespace ECAT.ViewModel
 	/// </summary>
 	public class ShortcutKey
 	{
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Constructor with parameters

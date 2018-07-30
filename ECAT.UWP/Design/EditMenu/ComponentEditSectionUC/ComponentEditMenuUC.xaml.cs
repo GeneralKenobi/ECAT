@@ -7,7 +7,7 @@ namespace ECAT.UWP
 	/// </summary>
 	public sealed partial class ComponentEditMenuUC : UserControl
     {
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default constructor

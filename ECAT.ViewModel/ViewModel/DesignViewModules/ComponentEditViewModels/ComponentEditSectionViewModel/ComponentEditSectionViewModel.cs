@@ -9,7 +9,7 @@ namespace ECAT.ViewModel
 	/// </summary>
 	public class ComponentEditSectionViewModel : BaseViewModel
     {
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default constructor, assigns commands

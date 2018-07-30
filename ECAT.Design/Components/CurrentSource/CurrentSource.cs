@@ -7,7 +7,7 @@ namespace ECAT.Design
 	/// </summary>
 	public class CurrentSource : TwoTerminal, ICurrentSource
 	{
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default Constructor

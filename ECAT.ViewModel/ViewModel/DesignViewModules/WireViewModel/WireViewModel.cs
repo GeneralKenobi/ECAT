@@ -14,7 +14,7 @@ namespace ECAT.ViewModel
 	/// </summary>
 	public class WireViewModel : BaseViewModel
 	{
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default Constructor

@@ -9,7 +9,7 @@ namespace ECAT.ViewModel
 	/// </summary>
 	public class SimulationViewModel : BaseViewModel
     {
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default Constructor

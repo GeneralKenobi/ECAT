@@ -9,7 +9,7 @@ namespace ECAT.UWP
 	/// </summary>
 	public sealed class WireTC : BorderWithFlyoutMenuBaseTC
 	{
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default constructor

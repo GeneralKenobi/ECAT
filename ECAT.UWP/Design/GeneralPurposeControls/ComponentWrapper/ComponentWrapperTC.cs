@@ -7,7 +7,7 @@ namespace ECAT.UWP
 	/// </summary>
 	public sealed class ComponentWrapperTC : BorderWithFlyoutMenuBaseTC
 	{
-		#region Constructor
+		#region Constructors
 		
 		/// <summary>
 		/// Default constructor

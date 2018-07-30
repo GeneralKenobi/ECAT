@@ -23,7 +23,7 @@ namespace ECAT.Simulation
 	/// </summary>
 	public class DCAdmittanceMatrix : AdmittanceMatrix
 	{
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default Constructor

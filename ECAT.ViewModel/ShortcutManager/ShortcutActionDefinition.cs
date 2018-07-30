@@ -7,7 +7,7 @@ namespace ECAT.ViewModel
 	/// </summary>
 	public class ShortcutActionDefinition
 	{
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default Constructor

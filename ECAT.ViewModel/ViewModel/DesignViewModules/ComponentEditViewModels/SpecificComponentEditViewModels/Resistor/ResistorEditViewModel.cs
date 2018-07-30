@@ -7,7 +7,7 @@ namespace ECAT.ViewModel
 	/// </summary>
 	public class ResistorEditViewModel : SpecificComponentEditViewModel<IResistor>
     {
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default constructor

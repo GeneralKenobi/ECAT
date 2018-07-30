@@ -11,7 +11,7 @@ namespace ECAT.Simulation
 	/// </summary>
 	public abstract class AdmittanceMatrix
     {
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default Constructor

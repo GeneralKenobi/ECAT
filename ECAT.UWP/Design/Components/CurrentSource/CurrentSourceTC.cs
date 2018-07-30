@@ -7,7 +7,7 @@ namespace ECAT.UWP
 	/// </summary>
 	public sealed class CurrentSourceTC : Control
 	{
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default constructor

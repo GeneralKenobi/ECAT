@@ -11,7 +11,7 @@ namespace ECAT.Design
 	/// </summary>
 	public class PlanePosition : IPlanePosition
 	{
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default constructor

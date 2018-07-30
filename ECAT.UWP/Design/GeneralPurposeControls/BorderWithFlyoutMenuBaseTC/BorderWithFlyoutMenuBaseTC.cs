@@ -13,7 +13,7 @@ namespace ECAT.UWP
 	/// </summary>
 	public class BorderWithFlyoutMenuBaseTC : Control, INotifyPropertyChanged
 	{
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default constructor

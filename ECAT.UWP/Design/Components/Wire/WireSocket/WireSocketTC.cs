@@ -9,7 +9,7 @@ namespace ECAT.UWP
 	/// </summary>
 	public class WireSocketTC : Control
     {
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default Constructor

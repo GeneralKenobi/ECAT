@@ -7,7 +7,7 @@ namespace ECAT.Design
 	/// </summary>
 	public class Resistor : TwoTerminal, IResistor
     {
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default Constructor

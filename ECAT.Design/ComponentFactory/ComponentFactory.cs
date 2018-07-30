@@ -11,7 +11,7 @@ namespace ECAT.Design
 	/// </summary>
 	public class ComponentFactory : IComponentFactory
 	{
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default Constructor

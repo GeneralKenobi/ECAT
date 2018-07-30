@@ -7,7 +7,7 @@ namespace ECAT.ViewModel
 	/// </summary>
 	public class EditedComponentChangedEventArgs : EventArgs
     {
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Constructor with a parameter

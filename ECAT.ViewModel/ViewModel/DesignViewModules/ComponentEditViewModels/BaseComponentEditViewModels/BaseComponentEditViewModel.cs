@@ -8,7 +8,7 @@ namespace ECAT.ViewModel
 	/// </summary>
 	public class BaseComponentEditViewModel : BaseViewModel
     {
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default constructor which takes as an argument the view model of the component to edit

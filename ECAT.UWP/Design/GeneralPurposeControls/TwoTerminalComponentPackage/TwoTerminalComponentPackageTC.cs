@@ -9,7 +9,7 @@ namespace ECAT.UWP
 	/// </summary>
 	public sealed class TwoTerminalComponentPackageTC : Control
 	{
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default constructor

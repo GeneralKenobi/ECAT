@@ -9,7 +9,7 @@ namespace ECAT.ViewModel
 	/// <typeparam name="T"></typeparam>
 	public class SpecificComponentEditViewModel<T> : BaseComponentEditViewModel
     {
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default constructor

@@ -10,7 +10,7 @@ namespace ECAT.ViewModel
 	/// </summary>
 	public class ComponentViewModel : BaseViewModel
 	{
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default Constructor

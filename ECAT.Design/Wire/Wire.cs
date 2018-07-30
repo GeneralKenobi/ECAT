@@ -15,7 +15,7 @@ namespace ECAT.Design
 	/// </summary>
 	public class Wire : IWire
     {
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default Constructor

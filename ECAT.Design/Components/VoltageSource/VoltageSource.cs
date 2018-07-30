@@ -10,7 +10,7 @@ namespace ECAT.Design
 	/// </summary>
 	public class VoltageSource : TwoTerminal, IVoltageSource
     {
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default Constructor

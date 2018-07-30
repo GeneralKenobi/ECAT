@@ -9,7 +9,7 @@ namespace ECAT.Design
 	/// </summary>
 	public class Schematic : ISchematic
     {
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default Constructor

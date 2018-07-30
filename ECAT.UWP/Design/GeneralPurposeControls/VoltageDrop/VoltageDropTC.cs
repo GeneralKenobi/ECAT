@@ -12,7 +12,7 @@ namespace ECAT.UWP
 	/// </summary>
 	public sealed class VoltageDropTC : Control, INotifyPropertyChanged
 	{
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default constructor

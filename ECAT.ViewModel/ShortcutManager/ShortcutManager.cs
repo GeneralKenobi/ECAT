@@ -11,7 +11,7 @@ namespace ECAT.ViewModel
 	/// </summary>
 	public class ShortcutManager
 	{
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default Constructor

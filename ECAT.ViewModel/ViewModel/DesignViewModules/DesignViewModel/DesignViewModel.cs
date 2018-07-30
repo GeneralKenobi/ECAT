@@ -13,7 +13,7 @@ namespace ECAT.ViewModel
 	/// </summary>
 	public class DesignViewModel : BaseViewModel
     {
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default Constructor

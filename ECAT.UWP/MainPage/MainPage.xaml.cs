@@ -17,7 +17,7 @@ namespace ECAT.UWP
 	/// </summary>
 	public sealed partial class MainPage : Page
 	{
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default constructor

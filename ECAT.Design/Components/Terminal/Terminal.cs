@@ -12,7 +12,7 @@ namespace ECAT.Design
 	/// </summary>
 	public class Terminal : ITerminal
     {
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default constructor taking position of the terminal as a parameter

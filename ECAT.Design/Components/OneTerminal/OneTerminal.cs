@@ -9,7 +9,7 @@ namespace ECAT.Design
 	/// </summary>
 	public abstract class OneTerminal : BaseComponent, IOneTerminal
 	{
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default Constructor

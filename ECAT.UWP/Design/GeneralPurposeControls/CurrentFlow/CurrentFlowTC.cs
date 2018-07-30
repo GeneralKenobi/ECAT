@@ -8,7 +8,7 @@ namespace ECAT.UWP
 	/// </summary>
 	public sealed class CurrentFlowTC : Control
     {
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default constructor

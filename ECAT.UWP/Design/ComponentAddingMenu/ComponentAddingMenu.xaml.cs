@@ -9,7 +9,7 @@ namespace ECAT.UWP
 	/// </summary>
 	public sealed partial class ComponentAddingMenu : UserControl, INotifyPropertyChanged
 	{
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default constructor

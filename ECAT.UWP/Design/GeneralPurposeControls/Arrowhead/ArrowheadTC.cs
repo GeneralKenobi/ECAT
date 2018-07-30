@@ -8,7 +8,7 @@ namespace ECAT.UWP
 	/// </summary>
 	public sealed class ArrowheadTC : Control
 	{
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default constructor

@@ -7,7 +7,7 @@ namespace ECAT.Design
 	/// </summary>
 	public class ComponentDeclaration : IComponentDeclaration
 	{
-		#region Constructor
+		#region Constructors
 
 		/// <summary>
 		/// Default Constructor
