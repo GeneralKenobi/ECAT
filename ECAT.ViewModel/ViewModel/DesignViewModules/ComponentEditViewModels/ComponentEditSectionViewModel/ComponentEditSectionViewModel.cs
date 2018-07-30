@@ -94,8 +94,9 @@ namespace ECAT.ViewModel
 		/// Getter to the header of the edit menu (generic header if <see cref="CurrentlyEditedComponentViewModel"/> is null or
 		/// current part's display name)
 		/// </summary>
-		public string HeaderName => CurrentlyEditedComponentViewModel == null ? "Component edit menu" :
-			CurrentlyEditedComponentViewModel.EditedComponentDeclaration.DisplayName;
+		public string HeaderName => 
+			CurrentlyEditedComponentViewModel == null || CurrentlyEditedComponentViewModel.EditedComponentDeclaration == null ?
+			"Component edit menu" : CurrentlyEditedComponentViewModel.EditedComponentDeclaration.DisplayName;
 
 		/// <summary>
 		/// When true, generic buttons (those that are present for every part, for example rotation buttons) should be enabled
