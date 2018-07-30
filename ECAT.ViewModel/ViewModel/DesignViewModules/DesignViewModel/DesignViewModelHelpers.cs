@@ -19,6 +19,7 @@ namespace ECAT.ViewModel
 		{
 			{ ComponentIDEnumeration.Resistor, typeof(ResistorEditViewModel) },
 			{ ComponentIDEnumeration.VoltageSource, typeof(VoltageSourceEditViewModel) },
+			{ ComponentIDEnumeration.CurrentSource, typeof(CurrentSourceEditViewModel) },
 		};
 
 		#endregion

@@ -37,6 +37,14 @@ namespace ECAT.UWP
 				};
 			}
 
+			if (value is CurrentSourceEditViewModel)
+			{
+				return new CurrentSourceEditUC()
+				{
+					DataContext = value,
+				};
+			}
+
 			//if(value is VoltageSource)
 			//{
 			//	return new VoltageSourceTC();
