@@ -28,8 +28,13 @@ namespace ECAT.UWP
 		public MainPage()
 		{
 			this.InitializeComponent();
-			Loaded += MainPageLoaded;
+
+			// Assign data context
 			DataContext = AppViewModel.Singleton;
+
+			// Subscribe to events
+			Loaded += MainPageLoaded;
+			AppViewModel.Singleton.DesignVM.ComponentEditSectionVM.EditedPartChangedEvent += OnEditedComponentChanged;
 		}
 
 		#endregion
@@ -136,35 +141,35 @@ namespace ECAT.UWP
 		#region Private Methods
 
 		/// <summary>
-		/// Handles changes in edited parts (hides/shows side menu when necessary)
+		/// Handles changes in edited components (hides/shows side menu when necessary)
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="args"></param>
-		private void OnEditedPartChanged(object sender, /*EditedPartChangedEventArgs*/object args)
+		private void OnEditedComponentChanged(object sender, EditedComponentChangedEventArgs args)
 		{
-			//switch (args.ChangeType)
-			//{
-			//	case EditedPartChangeType.NullToPart:
-			//	case EditedPartChangeType.TheSame:
-			//	case EditedPartChangeType.PartToPart:
-			//		{
-			//			// Swaps to the edit menu if it wasn't shown
-			//			if (SideMenu.GetSelectedContentIndex() != 2)
-			//			{
-			//				SideMenu.SetSelectedContentFromIndex(2);
-			//			}
+			switch (args.Change)
+			{
+				case EditedComponentChanged.NullToPart:
+				case EditedComponentChanged.NoChange:
+				case EditedComponentChanged.PartToPart:
+					{
+						// Show the edit menu if it wasn't shown
+						if (SideMenu.GetSelectedContentIndex() != 1)
+						{
+							SideMenu.SetSelectedContentFromIndex(1);
+						}
 
-			//			SideMenu.IsOpen = true;
-			//		}
-			//		break;
+						SideMenu.IsOpen = true;
+					}
+					break;
 
-			//	case EditedPartChangeType.PartToNull:
-			//		{
-			//			// Hides the menu
-			//			SideMenu.IsOpen = false;
-			//		}
-			//		break;
-			//}
+				case EditedComponentChanged.PartToNull:
+					{
+						// Hide the menu
+						SideMenu.IsOpen = false;
+					}
+					break;
+			}
 		}
 
 		/// <summary>
