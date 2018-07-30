@@ -98,11 +98,14 @@
     <Compile Include="Design\ComponentAddingMenu\ComponentAddingMenu.xaml.cs">
       <DependentUpon>ComponentAddingMenu.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Design\EditMenu\ComponentEditSectionUC\ComponentEditMenuUC.xaml.cs">
+    <Compile Include="Design\EditMenu\ComponentEditSection\ComponentEditMenuUC.xaml.cs">
       <DependentUpon>ComponentEditMenuUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Design\EditMenu\ResistorEditUC\ResistorEditUC.xaml.cs">
+    <Compile Include="Design\EditMenu\ResistorEdit\ResistorEditUC.xaml.cs">
       <DependentUpon>ResistorEditUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Design\EditMenu\VoltageSourceEdit\VoltageSourceEditUC.xaml.cs">
+      <DependentUpon>VoltageSourceEditUC.xaml</DependentUpon>
     </Compile>
     <Compile Include="Design\GeneralPurposeControls\BorderWithFlyoutMenuBaseTC\BorderWithFlyoutMenuBaseTC.cs" />
     <Compile Include="Design\GeneralPurposeControls\ComponentWrapper\ComponentWrapperTC.cs" />
@@ -162,11 +165,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Design\EditMenu\ComponentEditSectionUC\ComponentEditMenuUC.xaml">
+    <Page Include="Design\EditMenu\ComponentEditSection\ComponentEditMenuUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Design\EditMenu\ResistorEditUC\ResistorEditUC.xaml">
+    <Page Include="Design\EditMenu\ResistorEdit\ResistorEditUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Design\EditMenu\VoltageSourceEdit\VoltageSourceEditUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

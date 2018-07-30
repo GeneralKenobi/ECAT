@@ -18,6 +18,7 @@ namespace ECAT.ViewModel
 			new Dictionary<ComponentIDEnumeration, Type>()
 		{
 			{ ComponentIDEnumeration.Resistor, typeof(ResistorEditViewModel) },
+			{ ComponentIDEnumeration.VoltageSource, typeof(VoltageSourceEditViewModel) },
 		};
 
 		#endregion
