@@ -1,5 +1,4 @@
-﻿using CSharpEnhanced.Maths;
-using ECAT.Core;
+﻿using ECAT.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -22,11 +21,6 @@ namespace ECAT.Design
 		#endregion
 
 		#region Private members
-
-		/// <summary>
-		/// Backing store for <see cref="RotationAngle"/>
-		/// </summary>
-		private double mRotationAngle = 0;
 
 		/// <summary>
 		/// Backing store for <see cref="Center"/>
@@ -147,11 +141,8 @@ namespace ECAT.Design
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void CenterChangedCallback(object sender, EventArgs e)
-		{
-			UpdateAbsoluteTerminalPositions();			
-		}
-		
+		private void CenterChangedCallback(object sender, EventArgs e) => UpdateAbsoluteTerminalPositions();
+
 		#endregion
 	}
 }
