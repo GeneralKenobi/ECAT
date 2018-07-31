@@ -118,6 +118,19 @@ namespace ECAT.Design
 		}
 
 		/// <summary>
+		/// Logs a new message anonymously (the message won't be removable by the means of <see cref="RemoveLog(int)"/>.
+		/// The message has to contain at least one non-white space character to be logged. To remove messages
+		/// use <see cref="RemoveLog(int)"/>
+		/// </summary>
+		/// <param name="message"></param>		
+		/// <param name="duration">Maximum lifetime of the message, if the message was still presented after the time expires,
+		/// it will be removed. By default it's infinite</param>
+		public void Log(string message, InfoLoggerMessageDuration duration = InfoLoggerMessageDuration.Infinite) =>
+			// Log an anonymous message, generate a random id for the caller (necessary so as if there are multiple limited time
+			// messages they won't be removed by previous tasks completing (which would happen if an identical ID was passed everytime)
+			Log(message, _RandomNumberGenerator.Next(), duration);
+
+		/// <summary>
 		/// Logs a new message. The message has to contain at least one non-white space character to be logged. To remove messages
 		/// use <see cref="RemoveLog(int)"/>
 		/// </summary>

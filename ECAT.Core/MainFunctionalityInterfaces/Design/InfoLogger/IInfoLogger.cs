@@ -17,6 +17,16 @@
 		#region Methods
 
 		/// <summary>
+		/// Logs a new message anonymously (the message won't be removable by the means of <see cref="RemoveLog(int)"/>.
+		/// The message has to contain at least one non-white space character to be logged. To remove messages
+		/// use <see cref="RemoveLog(int)"/>
+		/// </summary>
+		/// <param name="message"></param>		
+		/// <param name="duration">Maximum lifetime of the message, if the message was still presented after the time expires,
+		/// it will be removed. By default it's infinite</param>
+		void Log(string message, InfoLoggerMessageDuration duration = InfoLoggerMessageDuration.Infinite);
+
+		/// <summary>
 		/// Logs a new message. The message has to contain at least one non-white space character to be logged. To remove messages
 		/// use <see cref="RemoveLog(int)"/>
 		/// </summary>

@@ -72,6 +72,15 @@ namespace ECAT.Core
 			Container.Resolve<IInfoLogger>().Log(message, loggerID, duration);
 
 		/// <summary>
+		/// Shortcut to log anonymous messages through <see cref="IInfoLogger"/>
+		/// </summary>
+		/// <param name="message"></param>		
+		/// <param name="duration">Maximum lifetime of the message, if the message was still presented after the time expires,
+		/// it will be removed. By default it's infinite</param>
+		public static void Log(string message, InfoLoggerMessageDuration duration = InfoLoggerMessageDuration.Infinite) =>
+			Container.Resolve<IInfoLogger>().Log(message, duration);
+
+		/// <summary>
 		/// Shortcut to remove logged messages through <see cref="IInfoLogger"/>
 		/// </summary>
 		/// <param name="loggerID"></param>
