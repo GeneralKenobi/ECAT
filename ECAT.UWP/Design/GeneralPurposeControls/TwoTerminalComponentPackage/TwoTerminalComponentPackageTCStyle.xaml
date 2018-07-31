@@ -27,7 +27,14 @@
 								HorizontalAlignment="Center"
 								VerticalAlignment="Bottom"
 								Value="{Binding Component.Admittance.Real}"
-								RoundToDigit="4"/>
+								RoundToDigit="4"
+								RenderTransformOrigin="0.5 0.5">
+
+							<controls:ValueUnitDisplay.RenderTransform>
+								<RotateTransform Angle="{Binding Component.Center.RotationAngle, Converter={StaticResource TextPositionFixConverter}}"/>
+							</controls:ValueUnitDisplay.RenderTransform>
+
+						</controls:ValueUnitDisplay>
 
 						<!-- Socket for terminal A-->
 						<local:SocketTC Terminal="{Binding Component.TerminalA}"

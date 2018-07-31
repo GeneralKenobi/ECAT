@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:ECAT.UWP">
 
+	<local:TextPositionFixRotationConverter x:Key="TextPositionFixConverter"/>
 
 
 	<Style TargetType="local:TwoTerminalComponentPackageTC" x:Key="ResistorPackage">
@@ -31,7 +32,15 @@
 							VerticalAlignment="Bottom"
 							Value="{Binding Component.Resistance}"
 							RoundToDigit="4"
-							Unit="&#x2126;"/>
+							Unit="&#x2126;"
+							Margin="0 0 0 -3"
+							RenderTransformOrigin="0.5 0.5">
+
+							<controls:ValueUnitDisplay.RenderTransform>
+								<RotateTransform Angle="{Binding Component.Center.RotationAngle, Converter={StaticResource TextPositionFixConverter}}"/>
+							</controls:ValueUnitDisplay.RenderTransform>
+
+						</controls:ValueUnitDisplay>
 
 						<!-- Socket for terminal A-->
 						<local:SocketTC Terminal="{Binding Component.TerminalA}"

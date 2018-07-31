@@ -128,6 +128,7 @@
     <Compile Include="GeneralValueConverters\ComponentEditViewModelToComponentEditControlConverter.cs" />
     <Compile Include="GeneralValueConverters\DoubleToChosenParameterConverter.cs" />
     <Compile Include="GeneralValueConverters\DoubleToVisibilityConverter.cs" />
+    <Compile Include="GeneralValueConverters\TextPositionFixRotationConverter.cs" />
     <Compile Include="IoCSetup\IoCSetup.cs" />
     <Compile Include="MainPage\IBaseComponentToComponentViewModelConverter.cs" />
     <Compile Include="MainPage\IWireToWireViewModelConverter.cs" />

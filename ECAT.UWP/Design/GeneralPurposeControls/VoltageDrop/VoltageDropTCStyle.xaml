@@ -24,6 +24,7 @@
 							<converters:SumConverter x:Key="SumConverter"/>
 							<converters:OppositeDoubleConverter x:Key="OppositeConverter"/>
 							<converters:AbsoluteValueConverter x:Key="AbsoluteValueConverter"/>
+							<local:TextPositionFixRotationConverter x:Key="TextPositionFixConverter"/>
 						</Grid.Resources>
 
 						<Grid.RowDefinitions>
@@ -64,7 +65,14 @@
 							FontSize="{StaticResource FontSizeBig}"
 							Foreground="{TemplateBinding Foreground}"
 							Unit="V"
-							RoundToDigit="4"/>						
+							RenderTransformOrigin="0.5 0.5"
+							RoundToDigit="4">
+
+							<controls:ValueUnitDisplay.RenderTransform>
+								<RotateTransform Angle="{Binding Component.Center.RotationAngle, Converter={StaticResource TextPositionFixConverter}}"/>
+							</controls:ValueUnitDisplay.RenderTransform>
+							
+						</controls:ValueUnitDisplay>
 
 					</Grid>
 

@@ -4,6 +4,9 @@
 	xmlns:controls="using:UWPEnhanced.Controls"
     xmlns:local="using:ECAT.UWP">
 
+	<local:TextPositionFixRotationConverter x:Key="TextPositionFixConverter"/>
+
+
 	<Style TargetType="local:TwoTerminalComponentPackageTC" x:Key="CurrentSourcePackage">
 		<Setter Property="Template">
 			<Setter.Value>
@@ -27,7 +30,14 @@
 								Value="{Binding Component.ProducedCurrent}"
 								RoundToDigit="4"
 								Margin="0 0 0 -25"
-								Unit="A"/>
+								Unit="A"
+								RenderTransformOrigin="0.5 0.5">
+
+							<controls:ValueUnitDisplay.RenderTransform>
+								<RotateTransform Angle="{Binding Component.Center.RotationAngle, Converter={StaticResource TextPositionFixConverter}}"/>
+							</controls:ValueUnitDisplay.RenderTransform>
+
+						</controls:ValueUnitDisplay>
 
 						<!-- Socket for terminal A-->
 						<local:SocketTC Terminal="{Binding Component.TerminalA}"
