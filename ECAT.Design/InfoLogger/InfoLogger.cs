@@ -1,6 +1,7 @@
 ﻿using ECAT.Core;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Threading.Tasks;
 
@@ -11,6 +12,18 @@ namespace ECAT.Design
 	/// </summary>
 	public class InfoLogger : IInfoLogger, INotifyPropertyChanged
     {
+		#region Constructor
+
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		public InfoLogger()
+		{
+			ExtendedLog = new ReadOnlyObservableCollection<string>(_ExtendedLog);
+		}
+
+		#endregion
+
 		#region Events
 
 		/// <summary>
@@ -20,7 +33,21 @@ namespace ECAT.Design
 
 		#endregion
 
+		#region Private members
+
+		/// <summary>
+		/// Backing store for <see cref="Message"/>
+		/// </summary>
+		private string mMessage;
+
+		#endregion
+
 		#region Private properties
+
+		/// <summary>
+		/// Backing store for <see cref="ExtendedLog"/>
+		/// </summary>
+		private ObservableCollection<string> _ExtendedLog { get; } = new ObservableCollection<string>();
 
 		/// <summary>
 		/// The ID of the last logger (the currently displayed message)
@@ -59,7 +86,26 @@ namespace ECAT.Design
 		/// <summary>
 		/// Message that is currently presented
 		/// </summary>
-		public string Message { get; private set; }
+		public string Message
+		{
+			get => mMessage;
+
+			private set
+			{
+				mMessage = value;
+
+				// If the message is not empty, add it to the log
+				if(!string.IsNullOrWhiteSpace(value))
+				{
+					_ExtendedLog.Add(value);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Collection with all logged messages
+		/// </summary>
+		public ReadOnlyObservableCollection<string> ExtendedLog { get; }
 
 		#endregion
 
