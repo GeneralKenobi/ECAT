@@ -13,7 +13,7 @@ namespace ECAT.Core
 		/// Constructs a DC admittance matrix for the given schematic
 		/// </summary>
 		/// <param name="schematic"></param>
-		void SingleDCSweep(ISchematic schematic);
+		void DCBias(ISchematic schematic);
 
 		#endregion
 	}

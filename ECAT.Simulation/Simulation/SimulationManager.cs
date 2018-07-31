@@ -91,7 +91,7 @@ namespace ECAT.Simulation
 		/// Performs a single DC sweep for the given schematic
 		/// </summary>
 		/// <param name="schematic"></param>
-		public void SingleDCSweep(ISchematic schematic)
+		public void DCBias(ISchematic schematic)
 		{
 			// Generate nodes using helper class
 			var nodes = NodeGenerator.Generate(schematic);
