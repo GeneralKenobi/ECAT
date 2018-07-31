@@ -11,10 +11,10 @@
 
 					<!-- Root container -->
 					<Grid>
-
+					
 						<!-- Presents voltage drop across the component -->
-						<local:VoltageDropTC ArrowRotationAngle="34"
-								Margin="10 -35 10 0"
+						<local:VoltageDropTC ArrowRotationAngle="40"
+								Margin="30 -30 30 0"
 								VerticalAlignment="Top"
 								Height="60"
 								Voltage="{Binding Component.VoltageBA}"/>
