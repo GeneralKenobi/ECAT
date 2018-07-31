@@ -14,11 +14,6 @@ namespace ECAT.Core
 		/// </summary>
 		string Message { get; }
 
-		/// <summary>
-		/// Collection with all logged messages
-		/// </summary>
-		ReadOnlyObservableCollection<string> ExtendedLog { get; }
-
 		#endregion
 
 		#region Methods
