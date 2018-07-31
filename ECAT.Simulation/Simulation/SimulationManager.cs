@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 
 namespace ECAT.Simulation
@@ -93,6 +94,12 @@ namespace ECAT.Simulation
 		/// <param name="schematic"></param>
 		public void DCBias(ISchematic schematic)
 		{
+			// Create a stopwatch to measure the duration of procedures 
+			Stopwatch watch = new Stopwatch();
+
+			// Start it for admittance matrix creation
+			watch.Start();
+
 			// Generate nodes using helper class
 			var nodes = NodeGenerator.Generate(schematic);
 
@@ -106,11 +113,21 @@ namespace ECAT.Simulation
 			var admittanceMatrix = DCAdmittanceMatrix.Construct(nodes, new List<IVoltageSource>(schematic.Components.Where(
 				(component) => component is IVoltageSource).Select((component) => component as IVoltageSource)));
 
+			// Log the success and duration
+			IoC.Log($"Constructed DC Admittance Matrix in {watch.ElapsedMilliseconds}ms", InfoLoggerMessageDuration.Short);
+						
+			watch.Restart();
+
 			try
 			{
 				// Solve it (for now try-catch for debugging)
 				admittanceMatrix.Solve();
-			} catch(Exception e) { }
+
+				IoC.Log($"Calcualted the result in {watch.ElapsedMilliseconds}ms", InfoLoggerMessageDuration.Short);
+			}
+			catch (Exception e) { }
+
+			watch.Reset();
 		}
 
 		#endregion
