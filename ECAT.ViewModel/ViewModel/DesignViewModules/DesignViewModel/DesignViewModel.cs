@@ -51,13 +51,23 @@ namespace ECAT.ViewModel
 		#region Private properties
 
 		/// <summary>
+		/// ID to use when logging messages to <see cref="IInfoLogger"/>
+		/// </summary>
+		private int _LoggerID { get; } = new Random().Next();
+
+		/// <summary>
 		/// Flag which, if set, ensures the next click on the design area will place a new wire in that position
 		/// </summary>
-		private bool _PlaceLooseWireOnNextClick { get; set; } = false;		
+		private bool _PlaceLooseWireOnNextClick { get; set; } = false;
 
 		#endregion
 
 		#region Public properties
+
+		/// <summary>
+		/// InfoLogger for this app
+		/// </summary>
+		public IInfoLogger InfoLogger { get; } = IoC.Resolve<IInfoLogger>();
 
 		/// <summary>
 		/// Provided implementation of the <see cref="IDesignManager"/> interface
@@ -79,14 +89,17 @@ namespace ECAT.ViewModel
 				}
 
 				mComponentToAdd = value;
-				InfoLogger.Log(mComponentToAdd == null ? string.Empty : "Tap on the schematic to place a(n) " + mComponentToAdd.DisplayName);
+
+				if(mComponentToAdd == null)
+				{
+					InfoLogger.RemoveLog(_LoggerID);
+				}
+				else
+				{
+					InfoLogger.Log("Tap on the schematic to place a(n) " + mComponentToAdd.DisplayName, _LoggerID);
+				}
 			}
 		}
-
-		/// <summary>
-		/// InfoLogger for this app
-		/// </summary>
-		public IInfoLogger InfoLogger { get; } = IoC.Resolve<IInfoLogger>();
 
 		/// <summary>
 		/// True if the user is currently adding components
@@ -204,7 +217,7 @@ namespace ECAT.ViewModel
 				// Set the flag
 				_PlaceLooseWireOnNextClick = true;
 
-				InfoLogger.Log("Tap on the schematic to place a wire");
+				IoC.Log("Tap on the schematic to place a wire", _LoggerID);
 			}
 		}
 

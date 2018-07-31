@@ -44,6 +44,11 @@ namespace ECAT.Design
 		#region Private properties
 
 		/// <summary>
+		/// ID to use when logging messages to <see cref="IInfoLogger"/>
+		/// </summary>
+		private int _LoggerID { get; } = new Random().Next();
+
+		/// <summary>
 		/// Backing store for <see cref="Schematic"/>
 		/// </summary>
 		private ObservableCollection<ISchematic> _Schematics { get; } = new ObservableCollection<ISchematic>()
@@ -72,16 +77,16 @@ namespace ECAT.Design
 						// Remove it (as it's too short to be usable)
 						RemoveWire(mPlacedWire);
 
-						IoC.Resolve<IInfoLogger>().Log("Due to insufficient number of points the wire was removed");
+						IoC.Log("Due to insufficient number of points the wire was removed", _LoggerID, InfoLoggerMessageDuration.Short);
 					}
 					else
 					{
-						IoC.Resolve<IInfoLogger>().Log(string.Empty);
+						IoC.RemoveLog(_LoggerID);
 					}
 				}
 				else
 				{
-					IoC.Resolve<IInfoLogger>().Log("Tap the schematic to extend the wire");
+					IoC.Log("Tap the schematic to extend the wire", _LoggerID);
 				}
 
 				mPlacedWire = value;
