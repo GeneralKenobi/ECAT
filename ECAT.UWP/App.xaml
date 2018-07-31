@@ -16,6 +16,7 @@
 				<ResourceDictionary Source="Styles/Expanders.xaml"/>
 				<ResourceDictionary Source="Styles/ListViews.xaml"/>
 				<ResourceDictionary Source="Styles/MenuFlyoutItems.xaml"/>
+				<ResourceDictionary Source="Styles/Icons.xaml"/>
 			</ResourceDictionary.MergedDictionaries>
 		</ResourceDictionary>
 	</Application.Resources>
