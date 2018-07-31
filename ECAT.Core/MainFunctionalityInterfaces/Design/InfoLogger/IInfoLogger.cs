@@ -1,4 +1,6 @@
-﻿namespace ECAT.Core
+﻿using System.Collections.ObjectModel;
+
+namespace ECAT.Core
 {
 	/// <summary>
 	/// Interface for a class that acts as a logger of information on screen, for example to present current action
@@ -11,6 +13,11 @@
 		/// Message that is currently presented
 		/// </summary>
 		string Message { get; }
+
+		/// <summary>
+		/// Collection with all logged messages
+		/// </summary>
+		ReadOnlyObservableCollection<string> ExtendedLog { get; }
 
 		#endregion
 
