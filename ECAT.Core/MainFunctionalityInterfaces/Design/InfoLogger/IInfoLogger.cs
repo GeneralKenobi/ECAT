@@ -1,6 +1,4 @@
-﻿using System.Collections.ObjectModel;
-
-namespace ECAT.Core
+﻿namespace ECAT.Core
 {
 	/// <summary>
 	/// Interface for a class that acts as a logger of information on screen, for example to present current action
