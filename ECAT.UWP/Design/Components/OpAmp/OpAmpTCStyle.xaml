@@ -1,0 +1,139 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ECAT.UWP">
+
+
+
+
+	<Style TargetType="local:OpAmpTC">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="local:OpAmpTC">
+					<StackPanel Orientation="Horizontal" FlowDirection="LeftToRight" Background="Transparent" BorderThickness="0" BorderBrush="Red">
+
+						<!-- Wires to input terminals, input terminals -->
+						<Grid Width="50">
+
+							<Grid.RowDefinitions>
+								<!-- Top terminal -->
+								<RowDefinition Height="*"/>
+								<!-- Bottom terminal -->
+								<RowDefinition Height="*"/>
+							</Grid.RowDefinitions>
+
+							<!-- Wire to the top input, negative right margin hides a small gap between the triangle and this wire -->
+							<Rectangle Fill="{StaticResource BlackBrush}"
+								Height="10"
+								Margin="0 0 -1 0"
+								VerticalAlignment="Center"
+								HorizontalAlignment="Stretch"/>
+
+							<!-- Socket for top terminal -->
+							<local:SocketTC Terminal="{Binding Component.TerminalA}"
+								HorizontalAlignment="Left"
+								VerticalAlignment="Center"/>
+
+							<!-- Wire to the bottom input, negative right margin hides a small gap between the triangle and this wire -->
+							<Rectangle Fill="{StaticResource BlackBrush}"
+								Height="10"
+								VerticalAlignment="Center"
+								HorizontalAlignment="Stretch"
+								Margin="0 0 -1 0"
+								Grid.Row="1"/>
+								
+							<!-- Socket for bottom terminal -->
+							<local:SocketTC Terminal="{Binding Component.TerminalB}"
+								HorizontalAlignment="Left"
+								VerticalAlignment="Center"
+								Grid.Row="1"/>
+
+						</Grid>
+
+						<!-- Triangle with plus/minus signs -->
+						<Grid Width="200">
+
+							<Grid.ColumnDefinitions>
+								<!-- Offset for the plus/minus signs -->
+								<ColumnDefinition Width="5"/>
+								<!-- Column with plus/minus signs -->
+								<ColumnDefinition Width="*"/>
+								<!-- Blank space used to obtain the 1/4 ratio for plus/minus signs column -->
+								<ColumnDefinition Width="3*"/>
+							</Grid.ColumnDefinitions>
+
+							<Grid.RowDefinitions>
+								<!-- Row for top sign -->
+								<RowDefinition Height="*"/>
+								<!-- Row for bottom sign -->
+								<RowDefinition Height="*"/>
+							</Grid.RowDefinitions>
+
+							<!-- Horizontal part of the plus sign -->
+							<Rectangle Fill="{StaticResource BlackBrush}"
+								Height="3"
+								Width="25"
+								VerticalAlignment="Center"
+								HorizontalAlignment="Center"								
+								Grid.Column="1"/>
+
+							<!-- Vertical part of the plus sign -->
+							<Rectangle Fill="{StaticResource BlackBrush}"
+								Height="25"
+								Width="3"
+								VerticalAlignment="Center"
+								HorizontalAlignment="Center"								
+								Grid.Column="1"/>
+
+							<!-- Minus sign -->
+							<Rectangle Fill="{StaticResource BlackBrush}"
+								Height="3"
+								Width="25"
+								VerticalAlignment="Center"
+								HorizontalAlignment="Center"
+								Grid.Row="1"
+								Grid.Column="1"
+								RenderTransformOrigin="0.5 0.5">
+
+								<Rectangle.RenderTransform>
+									<RotateTransform Angle="{Binding Component.Center.RotationAngle}"/>
+								</Rectangle.RenderTransform>
+								
+							</Rectangle>
+
+							<!-- The triangle body of the op-amp -->
+							<Polygon Stroke="{StaticResource BlackBrush}"
+								Grid.ColumnSpan="3"
+								Grid.RowSpan="2"
+								StrokeThickness="10"
+								StrokeStartLineCap="Round"
+								StrokeEndLineCap="Round"
+								StrokeLineJoin="Round"
+								StrokeMiterLimit="0"
+								Points="5,5 195,100 5,195"/>
+						</Grid>
+						
+						<!-- Wire to the output terminal, output terminal -->
+						<Grid Width="50">
+
+							<!-- Wire, negative left margin is included to have a smooth connection with the triangle body -->
+							<Rectangle Fill="{StaticResource BlackBrush}"
+									Height="10"
+									VerticalAlignment="Center"
+									HorizontalAlignment="Stretch"
+									Margin="-4 0 0 0"/>
+
+							<!-- Socket for output terminal -->
+							<local:SocketTC Terminal="{Binding Component.TerminalC}"
+								HorizontalAlignment="Right"
+								VerticalAlignment="Center"/>
+
+						</Grid>
+
+					</StackPanel>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+</ResourceDictionary>
