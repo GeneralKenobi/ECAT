@@ -110,8 +110,11 @@ namespace ECAT.Simulation
 			ProcessReferenceNodes(nodes);
 
 			// Construct a DC admittance matrix
-			var admittanceMatrix = DCAdmittanceMatrix.Construct(nodes, new List<IVoltageSource>(schematic.Components.Where(
-				(component) => component is IVoltageSource).Select((component) => component as IVoltageSource)));
+			var admittanceMatrix = DCAdmittanceMatrix.Construct(nodes,
+				new List<IVoltageSource>(schematic.Components.Where(
+				(component) => component is IVoltageSource).Select((component) => component as IVoltageSource)),
+				new List<IOpAmp>(schematic.Components.Where(
+				(component) => component is IOpAmp).Select((component) => component as IOpAmp)));
 
 			// Log the success and duration
 			IoC.Log($"Constructed DC Admittance Matrix in {watch.ElapsedMilliseconds}ms", InfoLoggerMessageDuration.Short);
@@ -125,7 +128,10 @@ namespace ECAT.Simulation
 
 				IoC.Log($"Calcualted the result in {watch.ElapsedMilliseconds}ms", InfoLoggerMessageDuration.Short);
 			}
-			catch (Exception e) { }
+			catch (Exception e)
+			{
+				Debug.WriteLine(e.Message);
+			}
 
 			watch.Reset();
 		}
