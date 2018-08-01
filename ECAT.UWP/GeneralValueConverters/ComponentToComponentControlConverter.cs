@@ -60,6 +60,7 @@ namespace ECAT.UWP
 			{ComponentIDEnumeration.VoltageSource, typeof(VoltageSourceTC) },
 			{ComponentIDEnumeration.CurrentSource, typeof(CurrentSourceTC) },
 			{ComponentIDEnumeration.Ground, typeof(GroundTC) },
+			{ComponentIDEnumeration.OpAmp, typeof(OpAmpTC) },
 		};
 
 		#endregion

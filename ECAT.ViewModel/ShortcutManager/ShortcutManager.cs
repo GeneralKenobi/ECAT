@@ -93,6 +93,9 @@ namespace ECAT.ViewModel
 				"Place Ground", new ShortcutKey("G"), () => PlacePartHelper(ComponentIDEnumeration.Ground)));
 
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
+				"Place Ground", new ShortcutKey("O"), () => PlacePartHelper(ComponentIDEnumeration.OpAmp)));
+
+			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
 				"Run Single DC Sweep", new ShortcutKey("T"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.DCBias(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic)));
 
 			// TODO: Change the ShortcutKeys to ShortcutKey.Empty and load the saved combinations from a local file

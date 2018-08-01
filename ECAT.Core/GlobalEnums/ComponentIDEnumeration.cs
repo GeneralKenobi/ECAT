@@ -12,5 +12,7 @@
 		CurrentSource = 2,
 
 		Ground = 3,
+
+		OpAmp = 4,
     }
 }

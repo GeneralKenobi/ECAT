@@ -98,6 +98,7 @@
     <Compile Include="Design\ComponentAddingMenu\ComponentAddingMenu.xaml.cs">
       <DependentUpon>ComponentAddingMenu.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Design\Components\OpAmp\OpAmpTC.cs" />
     <Compile Include="Design\EditMenu\ComponentEditSection\ComponentEditMenuUC.xaml.cs">
       <DependentUpon>ComponentEditMenuUC.xaml</DependentUpon>
     </Compile>
@@ -166,6 +167,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="Design\ComponentAddingMenu\ComponentAddingMenu.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Design\Components\OpAmp\OpAmpTCStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

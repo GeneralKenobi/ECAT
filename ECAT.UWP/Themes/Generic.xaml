@@ -16,6 +16,7 @@
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/GeneralPurposeControls/Arrowhead/ArrowheadTCStyle.xaml"/>
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/GeneralPurposeControls/CurrentFlow/CurrentFlowTCStyle.xaml"/>
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/GeneralPurposeControls/TwoTerminalComponentPackage/TwoTerminalComponentPackageTCStyle.xaml"/>
+		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/OpAmp/OpAmpTCStyle.xaml"/>
 	</ResourceDictionary.MergedDictionaries>
 	    
 
