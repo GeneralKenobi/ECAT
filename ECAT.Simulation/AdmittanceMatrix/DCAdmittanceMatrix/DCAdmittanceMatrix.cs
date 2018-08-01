@@ -77,10 +77,10 @@ namespace ECAT.Simulation
 				nodes[i].ConnectedComponents.ForEach((component) =>
 				{
 					// If the component is a two terminal and imaginary part of its admittance is zero (non-existant)
-					if (component is ITwoTerminal twoTerminal && twoTerminal.Admittance.Imaginary == 0)
+					if (component is ITwoTerminal twoTerminal && twoTerminal.AdmittanceVar.Value.Imaginary == 0)
 					{
 						// Add its admittance to the matrix
-						admittances[i, i] = admittances[i, i].Add(new Variable.VariableSource(twoTerminal.Admittance.Real).Variable);
+						admittances[i, i] = admittances[i, i].Add(twoTerminal.AdmittanceVar);
 					}
 					// Currently components other than two terminals are not supported
 					else throw new NotImplementedException();
@@ -111,16 +111,14 @@ namespace ECAT.Simulation
 					admittancesBetweenNodesij.ForEach((component) =>
 					{
 						// If the component is a two terminal and imaginary part of its admittance is zero (non-existant)
-						if (component is ITwoTerminal twoTerminal && twoTerminal.Admittance.Imaginary == 0)
+						if (component is ITwoTerminal twoTerminal && twoTerminal.AdmittanceVar.Value.Imaginary == 0)
 						{
 							// Subtract its admittance to the matrix
-							admittances[i, j] = admittances[i, j].Subtract(
-								new Variable.VariableSource(twoTerminal.Admittance.Real).Variable);
+							admittances[i, j] = admittances[i, j].Subtract(twoTerminal.AdmittanceVar);
 
 							// And do the same to the entry j,i - admittances between node i,j are identical to admittances
 							// between nodes j,i
-							admittances[j, i] = admittances[j, i].Subtract(
-								new Variable.VariableSource(twoTerminal.Admittance.Real).Variable);
+							admittances[j, i] = admittances[j, i].Subtract(twoTerminal.AdmittanceVar);
 						}
 						// Currently components other than two terminals are not supported
 						else throw new NotImplementedException();
@@ -227,12 +225,12 @@ namespace ECAT.Simulation
 						// If the positive terminal is connected, add the current
 						if (nodes[i].ConnectedTerminals.Contains(source.TerminalB))
 						{
-							currents[i] = currents[i].Add(new Variable.VariableSource(source.ProducedCurrent).Variable);
+							currents[i] = currents[i].Add(source.ProducedCurrentVar);
 						}
 						// If the negative terminal is connected, subtract the current
 						else
 						{
-							currents[i] = currents[i].Subtract(new Variable.VariableSource(source.ProducedCurrent).Variable);
+							currents[i] = currents[i].Subtract(source.ProducedCurrentVar);
 						}
 					}
 				});
@@ -251,7 +249,7 @@ namespace ECAT.Simulation
 			for (int i = 0; i < voltageSources.Count; ++i)
 			{
 				// Add its voltge to the i-th entry plus the number of nodes (currents present above in the matrix)
-				currents[nodes.Count + i] = new Variable.VariableSource(voltageSources[i].ProducedVoltage).Variable;
+				currents[nodes.Count + i] = voltageSources[i].ProducedVoltageVar;
 			}
 		}
 

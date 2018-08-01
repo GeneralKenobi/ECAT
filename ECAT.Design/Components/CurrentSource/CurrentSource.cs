@@ -1,4 +1,5 @@
-﻿using ECAT.Core;
+﻿using CSharpEnhanced.Maths;
+using ECAT.Core;
 
 namespace ECAT.Design
 {
@@ -16,7 +17,18 @@ namespace ECAT.Design
 		{
 			Admittance = IoC.Resolve<IDefaultValues>().CurrentSourceAdmittance;
 			ProducedCurrent = IoC.Resolve<IDefaultValues>().DefaultCurrentSourceProducedCurrent;
+
+			ProducedCurrentVar = _ProducedCurrentVarSource.Variable;
 		}
+
+		#endregion
+
+		#region Protected properties
+
+		/// <summary>
+		/// Source of <see cref="ProducedCurrentVar"/> and a backing store for produced current of this <see cref="ICurrentSource"/>
+		/// </summary>
+		protected Variable.VariableSource _ProducedCurrentVarSource { get; } = new Variable.VariableSource();
 
 		#endregion
 
@@ -25,7 +37,16 @@ namespace ECAT.Design
 		/// <summary>
 		/// Current supplied by this <see cref="ICurrentSource"/>
 		/// </summary>
-		public double ProducedCurrent { get; set; }
+		public Variable ProducedCurrentVar { get; }
+
+		/// <summary>
+		/// Accessor to the current supplied by this <see cref="ICurrentSource"/>
+		/// </summary>
+		public double ProducedCurrent
+		{
+			get => _ProducedCurrentVarSource.Value.Real;
+			set => _ProducedCurrentVarSource.Value = value;
+		}
 
 		#endregion
 	}

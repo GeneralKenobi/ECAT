@@ -1,4 +1,5 @@
 ﻿using CSharpEnhanced.CoreClasses;
+using CSharpEnhanced.Maths;
 
 namespace ECAT.Core
 {
@@ -11,6 +12,11 @@ namespace ECAT.Core
 
 		/// <summary>
 		/// Current supplied by this <see cref="ICurrentSource"/>
+		/// </summary>
+		Variable ProducedVoltageVar { get; }
+
+		/// <summary>
+		/// Accessor to the produced current of this <see cref="IVoltageSource"/>
 		/// </summary>
 		double ProducedVoltage { get; set; }
 
