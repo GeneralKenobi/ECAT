@@ -1,7 +1,6 @@
 ﻿using CSharpEnhanced.Helpers;
 using CSharpEnhanced.Maths;
 using ECAT.Core;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -51,7 +50,7 @@ namespace ECAT.Simulation
 			}
 
 			// Assign the currents through voltage sources (the remaining entries of the results)
-			for (int i = _NodePotentials.Count; i < result.Length; ++i)
+			for (int i = _NodePotentials.Count; i < _NodePotentials.Count; ++i)
 			{
 				_VoltageSourcesCurrents[i - _NodePotentials.Count].Value = result[i].Real;
 			}
@@ -81,9 +80,7 @@ namespace ECAT.Simulation
 					{
 						// Add its admittance to the matrix
 						admittances[i, i] = admittances[i, i].Add(twoTerminal.AdmittanceVar);
-					}
-					// Currently components other than two terminals are not supported
-					else throw new NotImplementedException();
+					}					
 				});
 			}
 		}
@@ -120,8 +117,6 @@ namespace ECAT.Simulation
 							// between nodes j,i
 							admittances[j, i] = admittances[j, i].Subtract(twoTerminal.AdmittanceVar);
 						}
-						// Currently components other than two terminals are not supported
-						else throw new NotImplementedException();
 					});
 				}
 			}
@@ -134,26 +129,72 @@ namespace ECAT.Simulation
 		/// <param name="admittances"></param>
 		/// <param name="voltageSources"></param>
 		private static void FillPassiveBMatrix(List<INode> nodes, IExpression[,] admittances,
-			List<IVoltageSource> voltageSources)
+			List<IVoltageSource> voltageSources, List<IOpAmp> opAmps)
 		{
-			// All entries in B are 0 by default
+			// Consider voltage sources, start column is the one on the right of G matrix (whose size is the number of nodes)
+			FillBMatrixBasedOnVoltageSources(nodes, admittances, voltageSources, nodes.Count);
+
+			// Consider op-amps, start column is after column related to nodes and voltage sources
+			FillBMatrixBasedOnOpAmps(nodes, admittances, opAmps, nodes.Count + voltageSources.Count);
+		}
+
+		/// <summary>
+		/// Helper of <see cref="FillPassiveBMatrix(List{INode}, IExpression[,], List{IVoltageSource}, List{IOpAmp})"/>, fills the
+		/// B part of admittance matrix with -1, 0 or 1 based on voltage sources present in the circuit
+		/// </summary>
+		/// <param name="nodes"></param>
+		/// <param name="admittances"></param>
+		/// <param name="voltageSources"></param>
+		/// <param name="startColumn"></param>
+		private static void FillBMatrixBasedOnVoltageSources(List<INode> nodes, IExpression[,] admittances,
+			List<IVoltageSource> voltageSources, int startColumn)
+		{
 			// For every voltage source
 			for (int i = 0; i < voltageSources.Count; ++i)
 			{
 				// If there exists a node to which TerminalB is connected (it's possible it may not exist due to removed ground node)
 				if (nodes.Exists((node) => node.ConnectedTerminals.Contains(voltageSources[i].TerminalB)))
 				{
-					// Fill the entry in the row corresponding to the node and column corresponding to the source (plus number of nodes
-					// which is the size of matrix G on the left) with 1 (positive terminal)
-					admittances[nodes.FindIndex((node) => node.ConnectedTerminals.Contains(voltageSources[i].TerminalB)), nodes.Count + i] = Variable.One;
+					// Fill the entry in the row corresponding to the node and column corresponding to the source (plus start column)
+					// with 1 (positive terminal)
+					admittances[nodes.FindIndex((node) => node.ConnectedTerminals.Contains(voltageSources[i].TerminalB)),
+						startColumn + i] = Variable.One;
 				}
 
 				// If there exists a node to which TerminalA is connected (it's possible it may not exist due to removed ground node)
 				if (nodes.Exists((node) => node.ConnectedTerminals.Contains(voltageSources[i].TerminalA)))
 				{
-					// Fill the entry in the row corresponding to the node and column corresponding to the source (plus number of nodes
-					// which is the size of matrix G on the left) with -1 (negative terminal)
-					admittances[nodes.FindIndex((node) => node.ConnectedTerminals.Contains(voltageSources[i].TerminalA)), nodes.Count + i] = Variable.NegativeOne;
+					// Fill the entry in the row corresponding to the node and column corresponding to the source (plus start column)
+					// with -1 (negative terminal)
+					admittances[nodes.FindIndex((node) => node.ConnectedTerminals.Contains(voltageSources[i].TerminalA)),
+						startColumn + i] = Variable.NegativeOne;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Helper of <see cref="FillPassiveBMatrix(List{INode}, IExpression[,], List{IVoltageSource}, List{IOpAmp})"/>, fills the
+		/// B part of admittance matrix with -1, 0 or 1 based on op-amps present in the circuit (treats their output as a voltage
+		/// source)
+		/// </summary>
+		/// <param name="nodes"></param>
+		/// <param name="admittances"></param>
+		/// <param name="voltageSources"></param>
+		/// <param name="startColumn"></param>
+		private static void FillBMatrixBasedOnOpAmps(List<INode> nodes, IExpression[,] admittances, List<IOpAmp> opAmps,
+			int startColumn)
+		{
+			// For every op-amp
+			for (int i = 0; i < opAmps.Count; ++i)
+			{
+				// If there exists a node to which TerminalC (op-amps output) is connected
+				// (it's possible it may not exist due to removed ground node)
+				if (nodes.Exists((node) => node.ConnectedTerminals.Contains(opAmps[i].TerminalC)))
+				{
+					// Fill the entry in the row corresponding to the node and column corresponding to the source
+					// (plus start column) with 1 (positive terminal)
+					admittances[nodes.FindIndex((node) => node.ConnectedTerminals.Contains(opAmps[i].TerminalC)), startColumn + i] =
+						Variable.One;
 				}
 			}
 		}
@@ -165,26 +206,84 @@ namespace ECAT.Simulation
 		/// <param name="admittances"></param>
 		/// <param name="voltageSources"></param>
 		private static void FillPassiveCMatrix(List<INode> nodes, IExpression[,] admittances,
-			List<IVoltageSource> voltageSources)
+			List<IVoltageSource> voltageSources, List<IOpAmp> opAmps)
 		{
 			// All entries in C are 0 by default
+
+			// Consider voltage sources, the work area in admittance matrix start on the left, below G matrix (size equal to
+			// number of nodes)
+			FillCMatrixBasedOnVoltageSources(nodes, admittances, voltageSources, nodes.Count);
+
+			// Consider op-amps , the work area in admittance matrix start on the left, below G matrix and rows associated with
+			// voltage sources (number of nodes plus number of voltage sources)
+			FillCMatrixBasedOnOpAmps(nodes, admittances, opAmps, nodes.Count + voltageSources.Count);
+		}
+
+		/// <summary>
+		/// Helper of <see cref="FillPassiveCMatrix(List{INode}, IExpression[,], List{IVoltageSource}, List{IOpAmp})"/>,
+		/// fills C part of admittance matrix with -1, 0 or 1 based on voltage sources present in the circuit
+		/// </summary>
+		/// <param name="nodes"></param>
+		/// <param name="admittances"></param>
+		/// <param name="voltageSources"></param>
+		/// <param name="startRow"></param>
+		private static void FillCMatrixBasedOnVoltageSources(List<INode> nodes, IExpression[,] admittances,
+			List<IVoltageSource> voltageSources, int startRow)
+		{
 			// For every voltage source
 			for (int i = 0; i < voltageSources.Count; ++i)
 			{
 				// If there exists a node to which TerminalB is connected (it's possible it may not exist due to removed ground node)
 				if (nodes.Exists((node) => node.ConnectedTerminals.Contains(voltageSources[i].TerminalB)))
 				{
-					// Fill the entry in the row corresponding to the source (plus number of
-					// nodes which is the size of matrix G above) and column corresponding to the node with 1 (positive terminal)
-					admittances[nodes.Count + i, nodes.FindIndex((node) => node.ConnectedTerminals.Contains(voltageSources[i].TerminalB))] = Variable.One;
+					// Fill the entry in the row corresponding to the source (plus starting row)
+					// and column corresponding to the node with 1 (positive terminal)
+					admittances[startRow + i,
+						nodes.FindIndex((node) => node.ConnectedTerminals.Contains(voltageSources[i].TerminalB))] = Variable.One;
 				}
 
 				// If there exists a node to which TerminalA is connected (it's possible it may not exist due to removed ground node)
 				if (nodes.Exists((node) => node.ConnectedTerminals.Contains(voltageSources[i].TerminalA)))
 				{
-					// Fill the entry in the row corresponding to the source (plus number of
-					// nodes which is the size of matrix G above) and column corresponding to the node with -1 (negative terminal)
-					admittances[nodes.Count + i, nodes.FindIndex((node) => node.ConnectedTerminals.Contains(voltageSources[i].TerminalA))] = Variable.NegativeOne;
+					// Fill the entry in the row corresponding to the source (plus starting row)
+					// and column corresponding to the node with -1 (negative terminal)
+					admittances[startRow + i,
+						nodes.FindIndex((node) => node.ConnectedTerminals.Contains(voltageSources[i].TerminalA))] = Variable.NegativeOne;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Helper of <see cref="FillPassiveCMatrix(List{INode}, IExpression[,], List{IVoltageSource}, List{IOpAmp})"/>,
+		/// fills C part of admittance matrix with -1, 0 or 1 based on op-amps present in the circuit
+		/// </summary>
+		/// <param name="nodes"></param>
+		/// <param name="admittances"></param>
+		/// <param name="opAmps"></param>
+		/// <param name="startRow"></param>
+		private static void FillCMatrixBasedOnOpAmps(List<INode> nodes, IExpression[,] admittances,	List<IOpAmp> opAmps, int startRow)
+		{
+			// For every op-amp
+			for (int i = 0; i < opAmps.Count; ++i)
+			{
+				// If there exists a node to which TerminalA (non-inverting input) is connected
+				// (it's possible it may not exist due to removed ground node)
+				if (nodes.Exists((node) => node.ConnectedTerminals.Contains(opAmps[i].TerminalA)))
+				{
+					// Fill the entry in the row corresponding to the op-amp (plus starting row)
+					// and column corresponding to the node with 1 (positive terminal)
+					admittances[i + startRow,
+						nodes.FindIndex((node) => node.ConnectedTerminals.Contains(opAmps[i].TerminalA))] = Variable.One;
+				}
+
+				// If there exists a node to which TerminalB (inverting input) is connected
+				// (it's possible it may not exist due to removed ground node)
+				if (nodes.Exists((node) => node.ConnectedTerminals.Contains(opAmps[i].TerminalB)))
+				{
+					// Fill the entry in the row corresponding to the op-amp (plus starting row)
+					// and column corresponding to the node with -1 (positive terminal)
+					admittances[i + startRow,
+						nodes.FindIndex((node) => node.ConnectedTerminals.Contains(opAmps[i].TerminalB))] = Variable.NegativeOne;
 				}
 			}
 		}
@@ -263,10 +362,10 @@ namespace ECAT.Simulation
 		/// <param name="nodes"></param>
 		/// <param name="independentVS">Collection of all independent <see cref="IVoltageSource"/>s in the schematic</param>
 		/// <returns></returns>
-		public static DCAdmittanceMatrix Construct(List<INode> nodes, List<IVoltageSource> independentVS)
+		public static DCAdmittanceMatrix Construct(List<INode> nodes, List<IVoltageSource> independentVS, List<IOpAmp> opAmps)
 		{
 			// The size of the system
-			int size = nodes.Count + independentVS.Count;
+			int size = nodes.Count + independentVS.Count + opAmps.Count;
 
 			// Create the arrays
 			var aMatrix = ArrayHelpers.CreateAndInitialize<IExpression>(Variable.Zero, size, size);
@@ -278,8 +377,8 @@ namespace ECAT.Simulation
 			FillPassiveGMatrixDiagonal(nodes, aMatrix);
 			FillPassiveGMatrixNonDiagonal(nodes, aMatrix);
 
-			FillPassiveBMatrix(nodes, aMatrix, independentVS);
-			FillPassiveCMatrix(nodes, aMatrix, independentVS);
+			FillPassiveBMatrix(nodes, aMatrix, independentVS, opAmps);
+			FillPassiveCMatrix(nodes, aMatrix, independentVS, opAmps);
 			FillPassiveDMatrix(nodes, aMatrix);
 
 			// Fill all parts of Z matrix
