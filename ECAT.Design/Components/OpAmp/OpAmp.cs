@@ -8,6 +8,7 @@ namespace ECAT.Design
 	{
 		public Variable PositiveSupplyVoltage { get; } = new Variable.VariableSource(15).Variable;
 		public Variable NegativeSupplyVoltage { get; } = new Variable.VariableSource(-15).Variable;
+		public Variable OpenLoopGain { get; } = new Variable.VariableSource(1e6).Variable;
 
 		public override double Width { get; } = 300;
 

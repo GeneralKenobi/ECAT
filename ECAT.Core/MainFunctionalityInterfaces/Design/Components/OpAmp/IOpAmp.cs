@@ -9,5 +9,7 @@ namespace ECAT.Core
     {
 		Variable PositiveSupplyVoltage { get; }
 		Variable NegativeSupplyVoltage { get; }
+
+		Variable OpenLoopGain { get; }
 	}
 }
