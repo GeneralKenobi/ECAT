@@ -19,9 +19,9 @@ namespace ECAT.Design
 		public VoltageSource()
 		{
 			Admittance = IoC.Resolve<IDefaultValues>().VoltageSourceAdmittance;
-			ProducedVoltage = IoC.Resolve<IDefaultValues>().DefaultVoltageSourceProducedVoltage;
+			ProducedDCVoltage = IoC.Resolve<IDefaultValues>().DefaultVoltageSourceProducedVoltage;
 
-			ProducedVoltageVar = _ProducedVoltageVarSource.Variable;
+			ProducedDCVoltageVar = _ProducedVoltageVarSource.Variable;
 
 			ProducedCurrent.PropertyChanged += (s, e) => InvokePropertyChanged(nameof(CurrentBA));
 		}
@@ -31,7 +31,7 @@ namespace ECAT.Design
 		#region Protected properties
 
 		/// <summary>
-		/// Source of <see cref="ProducedVoltageVar"/> and a backing store for produced current of this <see cref="IVoltageSource"/>
+		/// Source of <see cref="ProducedDCVoltageVar"/> and a backing store for produced current of this <see cref="IVoltageSource"/>
 		/// </summary>
 		protected Variable.VariableSource _ProducedVoltageVarSource { get; } = new Variable.VariableSource();
 
@@ -42,12 +42,12 @@ namespace ECAT.Design
 		/// <summary>
 		/// Voltage supplied by this <see cref="IVoltageSource"/>
 		/// </summary>
-		public Variable ProducedVoltageVar { get; }
+		public Variable ProducedDCVoltageVar { get; }
 
 		/// <summary>
 		/// Accessor to the voltage produced by this <see cref="IVoltageSource"/>
 		/// </summary>
-		public double ProducedVoltage
+		public double ProducedDCVoltage
 		{
 			get => _ProducedVoltageVarSource.Value.Real;
 			set => _ProducedVoltageVarSource.Value = value;

@@ -21,15 +21,15 @@ namespace ECAT.ViewModel
 		/// <summary>
 		/// The header for the edit with produced voltage
 		/// </summary>
-		public string ProducedVoltageEditHeader { get; } = "Produced Voltage [V]";
+		public string ProducedVoltageEditHeader { get; } = "Produced DC Voltage [V]";
 
 		/// <summary>
 		/// Accessor to the produced voltage on the edited <see cref="IVoltageSource"/>
 		/// </summary>
-		public double ProducedVoltage
+		public double ProducedDCVoltage
 		{
-			get => _EditedComponent.ProducedVoltage;
-			set => _EditedComponent.ProducedVoltage = value; 
+			get => _EditedComponent.ProducedDCVoltage;
+			set => _EditedComponent.ProducedDCVoltage = value; 
 		}
 
 		#endregion

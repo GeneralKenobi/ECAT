@@ -13,12 +13,12 @@ namespace ECAT.Core
 		/// <summary>
 		/// Current supplied by this <see cref="ICurrentSource"/>
 		/// </summary>
-		Variable ProducedVoltageVar { get; }
+		Variable ProducedDCVoltageVar { get; }
 
 		/// <summary>
 		/// Accessor to the produced current of this <see cref="IVoltageSource"/>
 		/// </summary>
-		double ProducedVoltage { get; set; }
+		double ProducedDCVoltage { get; set; }
 
 		/// <summary>
 		/// Current through the source, flowing from terminal A to terminal B
