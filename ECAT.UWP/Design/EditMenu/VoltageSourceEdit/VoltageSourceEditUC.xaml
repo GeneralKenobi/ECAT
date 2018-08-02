@@ -24,7 +24,7 @@
 
 		<!-- TextBox with the produced voltage settings -->
 		<TextBox Style="{StaticResource SideMenuTextBoxStyleUnder8}"
-			Text="{Binding ProducedVoltage, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"
+			Text="{Binding ProducedDCVoltage, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"
 			Grid.ColumnSpan="2"/>
 
 	</StackPanel>
