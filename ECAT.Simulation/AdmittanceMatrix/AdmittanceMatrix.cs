@@ -97,7 +97,7 @@ namespace ECAT.Simulation
 		/// Part of admittance matrix located in the bottom left corner - based on independent voltage sources (excluding op-amp outputs)
 		/// and inputs of op-amps
 		/// </summary>
-		private int[,] _C { get; set; }
+		private IExpression[,] _C { get; set; }
 
 		/// <summary>
 		/// Part of admittance matrix located in the bottom right corner - based on dependent sources
@@ -165,7 +165,7 @@ namespace ECAT.Simulation
 		{
 			_G = ArrayHelpers.CreateAndInitialize<IExpression>(Variable.Zero, _BigDimension, _BigDimension);
 			_B = ArrayHelpers.CreateAndInitialize(0, _BigDimension, _SmallDimension);
-			_C = ArrayHelpers.CreateAndInitialize(0, _SmallDimension, _BigDimension);
+			_C = ArrayHelpers.CreateAndInitialize<IExpression>(Variable.Zero, _SmallDimension, _BigDimension);
 			_D = ArrayHelpers.CreateAndInitialize(Complex.Zero, _SmallDimension, _SmallDimension);
 			_I = ArrayHelpers.CreateAndInitialize<IExpression>(Variable.Zero, _Size);
 			_E = ArrayHelpers.CreateAndInitialize<IExpression>(Variable.Zero, _Size);
@@ -417,7 +417,7 @@ namespace ECAT.Simulation
 				{
 					// Fill the entry in the row corresponding to the source (plus starting row)
 					// and column corresponding to the node with 1 (positive terminal)
-					_C[i, _Nodes.FindIndex((node) => node.ConnectedTerminals.Contains(_VoltageSources[i].TerminalB))] = 1;
+					_C[i, _Nodes.FindIndex((node) => node.ConnectedTerminals.Contains(_VoltageSources[i].TerminalB))] = Variable.One;
 				}
 
 				// If there exists a node to which TerminalA is connected (it's possible it may not exist due to removed ground node)
@@ -425,7 +425,7 @@ namespace ECAT.Simulation
 				{
 					// Fill the entry in the row corresponding to the source (plus starting row)
 					// and column corresponding to the node with -1 (negative terminal)
-					_C[i, _Nodes.FindIndex((node) => node.ConnectedTerminals.Contains(_VoltageSources[i].TerminalA))] = -1;
+					_C[i, _Nodes.FindIndex((node) => node.ConnectedTerminals.Contains(_VoltageSources[i].TerminalA))] = Variable.NegativeOne;
 				}
 			}
 		}
@@ -444,8 +444,8 @@ namespace ECAT.Simulation
 				if (_Nodes.Exists((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalA)))
 				{
 					// Fill the entry in the row corresponding to the op-amp (plus starting row)
-					// and column corresponding to the node with 1 (positive terminal)
-					_C[i + _VoltageSources.Count, _Nodes.FindIndex((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalA))] = 1;
+					// and column corresponding to the node (positive terminal) with -OpenLoopGain
+					_C[i + _VoltageSources.Count, _Nodes.FindIndex((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalA))] = _OpAmps[i].OpenLoopGain.Multiply(Variable.NegativeOne);
 				}
 
 				// If there exists a node to which TerminalB (inverting input) is connected
@@ -453,8 +453,17 @@ namespace ECAT.Simulation
 				if (_Nodes.Exists((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalB)))
 				{
 					// Fill the entry in the row corresponding to the op-amp (plus starting row)
-					// and column corresponding to the node with -1 (positive terminal)
-					_C[i + _VoltageSources.Count, _Nodes.FindIndex((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalB))] = -1;
+					// and column corresponding to the node (positive terminal) with OpenLoopGain
+					_C[i + _VoltageSources.Count, _Nodes.FindIndex((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalB))] = _OpAmps[i].OpenLoopGain;
+				}
+
+				// If there exists a node to which TerminalB (inverting input) is connected
+				// (it's possible it may not exist due to removed ground node)
+				if (_Nodes.Exists((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalC)))
+				{
+					// Fill the entry in the row corresponding to the op-amp (plus starting row)
+					// and column corresponding to the node (positive terminal) with 1 
+					_C[i + _VoltageSources.Count, _Nodes.FindIndex((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalC))] = Variable.One;
 				}
 			}
 		}
@@ -545,7 +554,7 @@ namespace ECAT.Simulation
 			{
 				for (int columnIndex = 0; columnIndex < _BigDimension; ++columnIndex)
 				{
-					result[rowIndex + _BigDimension, columnIndex] = _C[rowIndex, columnIndex];
+					result[rowIndex + _BigDimension, columnIndex] = _C[rowIndex, columnIndex].Evaluate();
 				}
 			}
 
@@ -582,6 +591,11 @@ namespace ECAT.Simulation
 			return result;
 		}
 
+		private void CheckOpAmpOperation()
+		{
+
+		}
+
 		#endregion
 
 		#region Public methods
@@ -592,35 +606,54 @@ namespace ECAT.Simulation
 		/// </summary>
 		public void Solve()
 		{
-			var evaluatedA = ComputeA();
-			var evaluatedZ = ComputeZ();
-
-
 			Complex[] result = null;
-
-
-			//var aCopy = new Complex[evaluatedA.GetLength(0), evaluatedA.GetLength(1)];
-			//var zCopy = new Complex[evaluatedZ.Length];
-
-			//for (int i = 0; i < aCopy.GetLength(0); ++i)
-			//{
-			//	for (int j = 0; j < aCopy.GetLength(1); ++j)
-			//	{
-			//		aCopy[i, j] = evaluatedA[i, j];
-			//	}
-			//}
-			//for (int i = 0; i < aCopy.GetLength(0); ++i)
-			//{
-			//	zCopy[i] = evaluatedZ[i];
-			//}
-			// Evaluate the matrices and solve the system
-			try
-			{ 
-				result = LinearEquations.SimplifiedGaussJordanElimination(evaluatedA, evaluatedZ);
-			}
-			catch (Exception e)
+			while (true)
 			{
+				var evaluatedA = ComputeA();
+				var evaluatedZ = ComputeZ();
+				
+				try
+				{
+					result = LinearEquations.SimplifiedGaussJordanElimination(evaluatedA, evaluatedZ);
+				}
+				catch (Exception e)
+				{
+					break;
+				}
+				bool adjustedOPAMP = false;
+				for(int i=0; i<_OpAmps.Count; ++i)
+				{					
+					if(result[_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalC)))].Real > _OpAmps[i].PositiveSupplyVoltage.Value.Real)
+					{
+						_B[_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalC))), _VoltageSources.Count + i] = 1;
+						_C[_VoltageSources.Count + i, _Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalB)))] = Variable.Zero;
+						_C[_VoltageSources.Count + i, _Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalA)))] = Variable.Zero;
+						_C[_VoltageSources.Count + i, _Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalC)))] = Variable.One;
 
+						_E[_VoltageSources.Count + i] = _OpAmps[i].PositiveSupplyVoltage;
+
+						adjustedOPAMP = true;
+						continue;
+					}
+					else
+					if (result[_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalC)))].Real < _OpAmps[i].NegativeSupplyVoltage.Value.Real)
+					{
+						_B[_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalC))), _VoltageSources.Count + i] = 1;
+						_C[_VoltageSources.Count + i, _Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalB)))] = Variable.Zero;
+						_C[_VoltageSources.Count + i, _Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalA)))] = Variable.Zero;
+						_C[_VoltageSources.Count + i, _Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalC)))] = Variable.One;
+
+						_E[_VoltageSources.Count + i] = _OpAmps[i].NegativeSupplyVoltage;
+
+						adjustedOPAMP = true;
+						continue;
+					}
+				}
+
+				if(!adjustedOPAMP)
+				{
+					break;
+				}
 			}
 
 			// Assign the node potentials (entries from 0 to the number of nodes - 1)
