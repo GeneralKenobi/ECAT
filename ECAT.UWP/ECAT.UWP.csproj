@@ -105,6 +105,9 @@
     <Compile Include="Design\EditMenu\CurrentSourceEdit\CurrentSourceEditUC.xaml.cs">
       <DependentUpon>CurrentSourceEditUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Design\EditMenu\OpAmpEdit\OpAmpEditUC.xaml.cs">
+      <DependentUpon>OpAmpEditUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Design\EditMenu\ResistorEdit\ResistorEditUC.xaml.cs">
       <DependentUpon>ResistorEditUC.xaml</DependentUpon>
     </Compile>
@@ -179,6 +182,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Design\EditMenu\CurrentSourceEdit\CurrentSourceEditUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Design\EditMenu\OpAmpEdit\OpAmpEditUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
