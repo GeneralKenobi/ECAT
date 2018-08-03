@@ -69,6 +69,12 @@ namespace ECAT.Simulation
 		private List<IOpAmp> _OpAmps { get; set; }
 
 		/// <summary>
+		/// Dictionary with op-amps and indexes of their nodes (in order: non-inverting, inverting and output). If a node is grounded
+		/// then it is given by -1
+		/// </summary>
+		private Dictionary<IOpAmp, Tuple<int, int, int>> _OpAmpNodes { get; set; } = new Dictionary<IOpAmp, Tuple<int, int, int>>();
+
+		/// <summary>
 		/// Size of G part of the admittance matrix (dependent on nodes)
 		/// </summary>
 		private int _BigDimension => _Nodes.Count;
@@ -192,6 +198,14 @@ namespace ECAT.Simulation
 		}
 
 		/// <summary>
+		/// Finds all nodes connected with op-amps and stores them in a dictionary for an easy and fast look-up
+		/// </summary>
+		private void FindOpAmpNodes() => _OpAmps.ForEach((opAmp) => _OpAmpNodes.Add(opAmp, new Tuple<int, int, int>(
+			_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(opAmp.TerminalA))),
+			_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(opAmp.TerminalB))),
+			_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(opAmp.TerminalC))))));
+
+		/// <summary>
 		/// Builds the matrix - it's essential to call this method right after constructor
 		/// </summary>
 		private void Build()
@@ -204,6 +218,7 @@ namespace ECAT.Simulation
 
 			ConstructInitialAdmittanceMatrix();
 
+			FindOpAmpNodes();
 		}
 
 		/// <summary>
@@ -591,9 +606,57 @@ namespace ECAT.Simulation
 			return result;
 		}
 
-		private void CheckOpAmpOperation()
+		/// <summary>
+		/// Checks if <see cref="IOpAmp"/>s operate in the proper region (if they didn't exceed their supply voltages.) If they don't,
+		/// adjusts the <see cref="_B"/>, <see cref="_C"/> and <see cref="_E"/> matrices so that, instead of being variable voltage
+		/// sources, they are independent voltage sources capped at their supply voltage value. Returns true if an <see cref="IOpAmp"/>
+		/// was adjusted and calculations need to be redone, false otherwise
+		/// </summary>
+		/// <param name="result"></param>
+		/// <returns></returns>
+		private bool CheckOpAmpOperation(Complex[] result)
 		{
+			for (int i = 0; i < _OpAmps.Count; ++i)
+			{
+				// The considered op-amp
+				var opAmp = _OpAmps[i];
+				// Indexes of its nodes
+				var nodes = _OpAmpNodes[opAmp];
 
+				// If the output is not grounded TODO: remove the check then the rule that voltage source outputs are not allowed to be
+				// grounded is enforced
+				if(nodes.Item3 != -1 && (result[nodes.Item3].Real < opAmp.NegativeSupplyVoltage.Value.Real ||
+					(result[nodes.Item3].Real > opAmp.PositiveSupplyVoltage.Value.Real)))
+				{
+					// Op-amp needs adjusting, it's output will now be modeled as an independent voltage source now
+
+					// Set the entry in _B corresponding to the output node to 1
+					_B[nodes.Item3, _VoltageSources.Count + i] = 1;
+					// And the entry in _C corresponding to the output node to 1
+					_C[_VoltageSources.Count + i, nodes.Item3] = Variable.One;
+
+					// If the non-inverting input is not grounded, reset its entry in the _C matrix
+					if (nodes.Item1 != -1)
+					{
+						_C[_VoltageSources.Count + i, nodes.Item1] = Variable.Zero;
+					}
+
+					// If the inverting input is not grounded, reset its entry in the _C matrix
+					if (nodes.Item2 != -1)
+					{
+						_C[_VoltageSources.Count + i, nodes.Item2] = Variable.Zero;
+					}
+
+					// Finally, depending on which supply was exceeded, set the value of the source to either positive or negative
+					// supply voltage
+					_E[_VoltageSources.Count + i] = result[nodes.Item3].Real > opAmp.PositiveSupplyVoltage.Value.Real ?
+						opAmp.PositiveSupplyVoltage : opAmp.NegativeSupplyVoltage;
+
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		#endregion
@@ -620,37 +683,8 @@ namespace ECAT.Simulation
 				{
 					break;
 				}
-				bool adjustedOPAMP = false;
-				for(int i=0; i<_OpAmps.Count; ++i)
-				{					
-					if(result[_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalC)))].Real > _OpAmps[i].PositiveSupplyVoltage.Value.Real)
-					{
-						_B[_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalC))), _VoltageSources.Count + i] = 1;
-						_C[_VoltageSources.Count + i, _Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalB)))] = Variable.Zero;
-						_C[_VoltageSources.Count + i, _Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalA)))] = Variable.Zero;
-						_C[_VoltageSources.Count + i, _Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalC)))] = Variable.One;
 
-						_E[_VoltageSources.Count + i] = _OpAmps[i].PositiveSupplyVoltage;
-
-						adjustedOPAMP = true;
-						continue;
-					}
-					else
-					if (result[_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalC)))].Real < _OpAmps[i].NegativeSupplyVoltage.Value.Real)
-					{
-						_B[_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalC))), _VoltageSources.Count + i] = 1;
-						_C[_VoltageSources.Count + i, _Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalB)))] = Variable.Zero;
-						_C[_VoltageSources.Count + i, _Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalA)))] = Variable.Zero;
-						_C[_VoltageSources.Count + i, _Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalC)))] = Variable.One;
-
-						_E[_VoltageSources.Count + i] = _OpAmps[i].NegativeSupplyVoltage;
-
-						adjustedOPAMP = true;
-						continue;
-					}
-				}
-
-				if(!adjustedOPAMP)
+				if(!CheckOpAmpOperation(result))
 				{
 					break;
 				}
