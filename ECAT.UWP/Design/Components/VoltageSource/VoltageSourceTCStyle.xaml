@@ -16,7 +16,7 @@
 
 						<!-- Presents current flow through the component -->
 						<local:CurrentFlowTC Current="{Binding Component.CurrentBA}"
-								VerticalAlignment="Center"/>					
+								VerticalAlignment="Center"/>
 
 						<!-- Presents a parameter associated with the component -->
 						<controls:ValueUnitDisplay Foreground="{StaticResource BlackBrush}"
@@ -57,49 +57,88 @@
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="local:VoltageSourceTC">
+
 					<Grid>
-						<Canvas>
+
+						<Grid.ColumnDefinitions>
+							<!-- Wire to the left socket -->
+							<ColumnDefinition Width="50"/>
+							<!-- The body of the source -->
+							<ColumnDefinition Width="100"/>
+							<!-- The wire to the right socket -->
+							<ColumnDefinition Width="50"/>
+						</Grid.ColumnDefinitions>
+
+						<!-- The body of the source -->
+						<Grid Grid.Column="1">
+
+							<Grid.ColumnDefinitions>
+								<!-- Plus sign -->
+								<ColumnDefinition Width="*"/>
+								<!-- Minus sign -->
+								<ColumnDefinition Width="*"/>
+							</Grid.ColumnDefinitions>
 
 							<!-- The circle in the middle -->
-							<Ellipse Canvas.Left="54"
-								Canvas.Top="4"
+							<Ellipse Grid.ColumnSpan="2"
 								Width="92"
 								Height="92"
+								HorizontalAlignment="Center"
+								VerticalAlignment="Center"
 								Fill="Transparent"
 								Stroke="{StaticResource BlackBrush}"
 								StrokeThickness="4"/>
 
-							<!-- The wire to the first socket -->
-							<Line Stroke="{StaticResource BlackBrush}"
-								StrokeThickness="10"
-								X1="0"
-								Y1="50"
-								X2="55"
-								Y2="50"/>
+							<!-- Horizontal part of the plus sign -->
+							<Rectangle Fill="{StaticResource BlackBrush}"
+								Height="3"
+								Width="25"
+								VerticalAlignment="Center"
+								HorizontalAlignment="Center"
+								Grid.Column="1"/>
 
-							<!-- The wire to the second socket -->
-							<Line Stroke="{StaticResource BlackBrush}"
-								StrokeThickness="10"
-								X1="145"
-								Y1="50"
-								X2="200"
-								Y2="50"/>
+							<!-- Vertical part of the plus sign -->
+							<Rectangle Fill="{StaticResource BlackBrush}"
+								Height="25"
+								Width="3"
+								VerticalAlignment="Center"
+								HorizontalAlignment="Center"
+								Grid.Column="1"/>
 
-							<!-- The arrow in the circle -->
-							<Polyline Canvas.Left="50"
-								Stroke="{StaticResource BlackBrush}"
-								StrokeThickness="4"
-								StrokeMiterLimit="0"
-								StrokeLineJoin="Round"
-								StrokeStartLineCap="Round"
-								StrokeEndLineCap="Round"
-								Points="50,30 70,50 50,70 70,50 24,50"/>
+							<!-- Minus sign -->
+							<Rectangle Fill="{StaticResource BlackBrush}"
+								Height="3"
+								Width="25"
+								VerticalAlignment="Center"
+								HorizontalAlignment="Center"
+								RenderTransformOrigin="0.5 0.5">
 
-						</Canvas>
+								<Rectangle.RenderTransform>
+									<RotateTransform Angle="{Binding Component.Center.RotationAngle}"/>
+								</Rectangle.RenderTransform>
 
-						<local:TwoTerminalComponentPackageTC Style="{StaticResource VoltageSourcePackage}"/>
+							</Rectangle>
+
+						</Grid>
+
+						<!-- Wire to the left socket -->
+						<Rectangle Height="10"
+							HorizontalAlignment="Stretch"
+							Fill="{StaticResource BlackBrush}"
+							Margin="0 0 -5 0"/>
+
+						<!-- Wire to the right socket -->
+						<Rectangle Height="10"
+							Grid.Column="2"
+							HorizontalAlignment="Stretch"
+							Fill="{StaticResource BlackBrush}"
+							Margin="-5 0 0 0"/>
+
+						<local:TwoTerminalComponentPackageTC Style="{StaticResource VoltageSourcePackage}"
+							Grid.ColumnSpan="3"/>
 
 					</Grid>
+
 				</ControlTemplate>
 			</Setter.Value>
 		</Setter>

@@ -14,7 +14,7 @@
 
 					<!-- Root container -->
 					<Grid>
-					
+
 						<!-- Presents voltage drop across the component -->
 						<local:VoltageDropTC ArrowRotationAngle="40"
 								Margin="30 -30 30 0"
@@ -60,10 +60,34 @@
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="local:CurrentSourceTC">
-					<Grid>
-						<Canvas>
 
-							<!-- The outer circle -->
+					<Grid>
+
+						<Grid.ColumnDefinitions>
+							<!-- Wire to the left socket -->
+							<ColumnDefinition Width="50"/>
+							<!-- The body of the source -->
+							<ColumnDefinition Width="100"/>
+							<!-- The wire to the right socket -->
+							<ColumnDefinition Width="50"/>
+						</Grid.ColumnDefinitions>
+
+						<!-- Wire to the left socket -->
+						<Rectangle Height="10"
+							HorizontalAlignment="Stretch"
+							Fill="{StaticResource BlackBrush}"
+							Margin="0 0 -5 0"/>
+
+						<!-- Wire to the right socket -->
+						<Rectangle Height="10"
+							Grid.Column="2"
+							HorizontalAlignment="Stretch"
+							Fill="{StaticResource BlackBrush}"
+							Margin="-5 0 0 0"/>
+
+						<!-- The body of the source -->
+						<Grid Grid.Column="1">
+							<!-- The circle in the middle -->
 							<Ellipse Canvas.Left="54"
 								Canvas.Top="4"
 								Width="92"
@@ -71,31 +95,6 @@
 								Fill="Transparent"
 								Stroke="{StaticResource BlackBrush}"
 								StrokeThickness="4"/>
-
-							<!-- The inner circle -->
-							<Ellipse Canvas.Left="64"
-								Canvas.Top="14"
-								Width="72"
-								Height="72"
-								Fill="Transparent"
-								Stroke="{StaticResource BlackBrush}"
-								StrokeThickness="4"/>
-
-							<!-- The wire to the first socket -->
-							<Line Stroke="{StaticResource BlackBrush}"
-								StrokeThickness="10"
-								X1="0"
-								Y1="50"
-								X2="55"
-								Y2="50"/>
-
-							<!-- The wire to the second socket -->
-							<Line Stroke="{StaticResource BlackBrush}"
-								StrokeThickness="10"
-								X1="145"
-								Y1="50"
-								X2="200"
-								Y2="50"/>
 
 							<!-- The arrow in the circle -->
 							<Polyline Canvas.Left="50"
@@ -106,12 +105,13 @@
 								StrokeStartLineCap="Round"
 								StrokeEndLineCap="Round"
 								Points="50,30 70,50 50,70 70,50 24,50"/>
+						</Grid>
 
-						</Canvas>
-
-						<local:TwoTerminalComponentPackageTC Style="{StaticResource CurrentSourcePackage}"/>
+						<local:TwoTerminalComponentPackageTC Style="{StaticResource CurrentSourcePackage}"
+							Grid.ColumnSpan="3"/>
 
 					</Grid>
+
 				</ControlTemplate>
 			</Setter.Value>
 		</Setter>
