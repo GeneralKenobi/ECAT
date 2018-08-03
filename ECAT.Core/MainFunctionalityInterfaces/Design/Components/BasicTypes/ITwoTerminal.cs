@@ -1,5 +1,4 @@
-﻿using CSharpEnhanced.Maths;
-using System.Numerics;
+﻿using System.Numerics;
 
 namespace ECAT.Core
 {
@@ -21,12 +20,7 @@ namespace ECAT.Core
 		ITerminal TerminalB { get; }
 
 		/// <summary>
-		/// The admittance between the two terminals
-		/// </summary>
-		Variable AdmittanceVar { get; }
-
-		/// <summary>
-		/// Accessor to admittance of this <see cref="ITwoTerminal"/>
+		/// Admittance between <see cref="TerminalA"/> and <see cref="TerminalB"/>
 		/// </summary>
 		Complex Admittance { get; set; }
 

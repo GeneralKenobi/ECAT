@@ -1,5 +1,4 @@
-﻿using CSharpEnhanced.Maths;
-using ECAT.Core;
+﻿using ECAT.Core;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
@@ -9,7 +8,7 @@ namespace ECAT.Design
 	/// <summary>
 	/// Base class for all two-terminal components
 	/// </summary>
-    public abstract class TwoTerminal : BaseComponent, ITwoTerminal
+	public abstract class TwoTerminal : BaseComponent, ITwoTerminal
     {
 		#region Constructors
 
@@ -20,18 +19,11 @@ namespace ECAT.Design
 		{
 			TerminalA = new Terminal(new PlanePosition(Complex.Zero, _TerminalAShift), TerminalPotentialChangedCallback);
 			TerminalB = new Terminal(new PlanePosition(Complex.Zero, _TerminalBShift), TerminalPotentialChangedCallback);
-
-			AdmittanceVar = _AdmittanceVarSource.Variable;
 		}
 
 		#endregion
 
-		#region Protected properties
-
-		/// <summary>
-		/// Source of <see cref="AdmittanceVar"/> and a backing store for admittance of this <see cref="ITwoTerminal"/>
-		/// </summary>
-		protected Variable.VariableSource _AdmittanceVarSource { get; } = new Variable.VariableSource();
+		#region Protected properties		
 
 		/// <summary>
 		/// The shift assigned to <see cref="TerminalA"/>, override to provide custom value
@@ -65,21 +57,12 @@ namespace ECAT.Design
 		/// <summary>
 		/// One of the terminals in this two-terminal
 		/// </summary>
-		public ITerminal TerminalB { get; }		
+		public ITerminal TerminalB { get; }
 
 		/// <summary>
-		/// Admittance between terminals A and B
+		/// Admittance between <see cref="TerminalA"/> and <see cref="TerminalB"/>
 		/// </summary>
-		public Complex Admittance
-		{
-			get => _AdmittanceVarSource.Value;
-			set => _AdmittanceVarSource.Value = value;
-		}
-
-		/// <summary>
-		/// Variable holding the current value of admittance
-		/// </summary>
-		public Variable AdmittanceVar { get; }
+		public Complex Admittance { get; set; }
 
 		/// <summary>
 		/// Voltage drop between <see cref="TerminalB"/> and <see cref="TerminalA"/> (VB - VA)

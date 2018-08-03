@@ -92,7 +92,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Part of admittance matrix located in the top left corner, built based on nodes and admittances connected to them
 		/// </summary>
-		private IExpression[,] _G { get; set; }
+		private Complex[,] _G { get; set; }
 
 		/// <summary>
 		/// Part of admittance matrix located in the top right corner - based on independent voltage sources (including op-amp outputs)
@@ -103,7 +103,7 @@ namespace ECAT.Simulation
 		/// Part of admittance matrix located in the bottom left corner - based on independent voltage sources (excluding op-amp outputs)
 		/// and inputs of op-amps
 		/// </summary>
-		private IExpression[,] _C { get; set; }
+		private Complex[,] _C { get; set; }
 
 		/// <summary>
 		/// Part of admittance matrix located in the bottom right corner - based on dependent sources
@@ -113,12 +113,12 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Top part of the vector of free terms, based on current sources
 		/// </summary>
-		private IExpression[] _I { get; set; }
+		private Complex[] _I { get; set; }
 
 		/// <summary>
 		/// Bottom part of the vector of free terms, based on voltage sources (including op-amp outputs)
 		/// </summary>
-		private IExpression[] _E { get; set; }
+		private Complex[] _E { get; set; }
 
 		#endregion
 
@@ -169,12 +169,12 @@ namespace ECAT.Simulation
 		/// </summary>
 		private void InitializeSubMatrices()
 		{
-			_G = ArrayHelpers.CreateAndInitialize<IExpression>(Variable.Zero, _BigDimension, _BigDimension);
+			_G = ArrayHelpers.CreateAndInitialize(Complex.Zero, _BigDimension, _BigDimension);
 			_B = ArrayHelpers.CreateAndInitialize(0, _BigDimension, _SmallDimension);
-			_C = ArrayHelpers.CreateAndInitialize<IExpression>(Variable.Zero, _SmallDimension, _BigDimension);
+			_C = ArrayHelpers.CreateAndInitialize(Complex.Zero, _SmallDimension, _BigDimension);
 			_D = ArrayHelpers.CreateAndInitialize(Complex.Zero, _SmallDimension, _SmallDimension);
-			_I = ArrayHelpers.CreateAndInitialize<IExpression>(Variable.Zero, _Size);
-			_E = ArrayHelpers.CreateAndInitialize<IExpression>(Variable.Zero, _Size);
+			_I = ArrayHelpers.CreateAndInitialize(Complex.Zero, _Size);
+			_E = ArrayHelpers.CreateAndInitialize(Complex.Zero, _Size);
 		}
 
 		/// <summary>
@@ -295,10 +295,10 @@ namespace ECAT.Simulation
 				_Nodes[i].ConnectedComponents.ForEach((component) =>
 				{
 					// If the component is a two terminal and imaginary part of its admittance is zero (non-existant)
-					if (component is ITwoTerminal twoTerminal && twoTerminal.AdmittanceVar.Value.Imaginary == 0)
+					if (component is ITwoTerminal twoTerminal && twoTerminal.Admittance.Imaginary == 0)
 					{
 						// Add its admittance to the matrix
-						_G[i, i] = _G[i, i].Add(twoTerminal.AdmittanceVar);
+						_G[i, i] += twoTerminal.Admittance;
 					}
 				});
 			}
@@ -325,14 +325,14 @@ namespace ECAT.Simulation
 					admittancesBetweenNodesij.ForEach((component) =>
 					{
 						// If the component is a two terminal and imaginary part of its admittance is zero (non-existant)
-						if (component is ITwoTerminal twoTerminal && twoTerminal.AdmittanceVar.Value.Imaginary == 0)
+						if (component is ITwoTerminal twoTerminal && twoTerminal.Admittance.Imaginary == 0)
 						{
 							// Subtract its admittance to the matrix
-							_G[i, j] = _G[i, j].Subtract(twoTerminal.AdmittanceVar);
+							_G[i, j] -= twoTerminal.Admittance;
 
 							// And do the same to the entry j,i - admittances between node i,j are identical to admittances
 							// between nodes j,i
-							_G[j, i] = _G[j, i].Subtract(twoTerminal.AdmittanceVar);
+							_G[j, i] -= twoTerminal.Admittance;
 						}
 					});
 				}
@@ -432,7 +432,7 @@ namespace ECAT.Simulation
 				{
 					// Fill the entry in the row corresponding to the source (plus starting row)
 					// and column corresponding to the node with 1 (positive terminal)
-					_C[i, _Nodes.FindIndex((node) => node.ConnectedTerminals.Contains(_VoltageSources[i].TerminalB))] = Variable.One;
+					_C[i, _Nodes.FindIndex((node) => node.ConnectedTerminals.Contains(_VoltageSources[i].TerminalB))] = 1;
 				}
 
 				// If there exists a node to which TerminalA is connected (it's possible it may not exist due to removed ground node)
@@ -440,7 +440,7 @@ namespace ECAT.Simulation
 				{
 					// Fill the entry in the row corresponding to the source (plus starting row)
 					// and column corresponding to the node with -1 (negative terminal)
-					_C[i, _Nodes.FindIndex((node) => node.ConnectedTerminals.Contains(_VoltageSources[i].TerminalA))] = Variable.NegativeOne;
+					_C[i, _Nodes.FindIndex((node) => node.ConnectedTerminals.Contains(_VoltageSources[i].TerminalA))] = -1;
 				}
 			}
 		}
@@ -460,7 +460,7 @@ namespace ECAT.Simulation
 				{
 					// Fill the entry in the row corresponding to the op-amp (plus starting row)
 					// and column corresponding to the node (positive terminal) with -OpenLoopGain
-					_C[i + _VoltageSources.Count, _Nodes.FindIndex((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalA))] = _OpAmps[i].OpenLoopGain.Multiply(Variable.NegativeOne);
+					_C[i + _VoltageSources.Count, _Nodes.FindIndex((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalA))] = -_OpAmps[i].OpenLoopGain;
 				}
 
 				// If there exists a node to which TerminalB (inverting input) is connected
@@ -478,7 +478,7 @@ namespace ECAT.Simulation
 				{
 					// Fill the entry in the row corresponding to the op-amp (plus starting row)
 					// and column corresponding to the node (positive terminal) with 1 
-					_C[i + _VoltageSources.Count, _Nodes.FindIndex((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalC))] = Variable.One;
+					_C[i + _VoltageSources.Count, _Nodes.FindIndex((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalC))] = 1;
 				}
 			}
 		}
@@ -515,12 +515,12 @@ namespace ECAT.Simulation
 						// If the positive terminal is connected, add the current
 						if (_Nodes[i].ConnectedTerminals.Contains(source.TerminalB))
 						{
-							_I[i] = _I[i].Add(source.ProducedCurrentVar);
+							_I[i] += source.ProducedCurrent;
 						}
 						// If the negative terminal is connected, subtract the current
 						else
 						{
-							_I[i] = _I[i].Subtract(source.ProducedCurrentVar);
+							_I[i] -= source.ProducedCurrent;
 						}
 					}
 				});
@@ -536,8 +536,61 @@ namespace ECAT.Simulation
 			for (int i = 0; i < _VoltageSources.Count; ++i)
 			{
 				// Add its voltge to the i-th entry plus the number of nodes (currents present above in the matrix)
-				_E[i] = _VoltageSources[i].ProducedDCVoltageVar;
+				_E[i] = _VoltageSources[i].ProducedDCVoltage;
 			}
+		}
+
+		/// <summary>
+		/// Checks if <see cref="IOpAmp"/>s operate in the proper region (if they didn't exceed their supply voltages.) If they don't,
+		/// adjusts the <see cref="_B"/>, <see cref="_C"/> and <see cref="_E"/> matrices so that, instead of being variable voltage
+		/// sources, they are independent voltage sources capped at their supply voltage value. Returns true if an <see cref="IOpAmp"/>
+		/// was adjusted and calculations need to be redone, false otherwise
+		/// </summary>
+		/// <param name="result"></param>
+		/// <returns></returns>
+		private bool CheckOpAmpOperation(Complex[] result)
+		{
+			for (int i = 0; i < _OpAmps.Count; ++i)
+			{
+				// The considered op-amp
+				var opAmp = _OpAmps[i];
+				// Indexes of its nodes
+				var nodes = _OpAmpNodes[opAmp];
+
+				// If the output is not grounded TODO: remove the check then the rule that voltage source outputs are not allowed to be
+				// grounded is enforced
+				if(nodes.Item3 != -1 && (result[nodes.Item3].Real < opAmp.NegativeSupplyVoltage ||
+					(result[nodes.Item3].Real > opAmp.PositiveSupplyVoltage)))
+				{
+					// Op-amp needs adjusting, it's output will now be modeled as an independent voltage source now
+
+					// Set the entry in _B corresponding to the output node to 1
+					_B[nodes.Item3, _VoltageSources.Count + i] = 1;
+					// And the entry in _C corresponding to the output node to 1
+					_C[_VoltageSources.Count + i, nodes.Item3] = 1;
+
+					// If the non-inverting input is not grounded, reset its entry in the _C matrix
+					if (nodes.Item1 != -1)
+					{
+						_C[_VoltageSources.Count + i, nodes.Item1] = 0;
+					}
+
+					// If the inverting input is not grounded, reset its entry in the _C matrix
+					if (nodes.Item2 != -1)
+					{
+						_C[_VoltageSources.Count + i, nodes.Item2] = 0;
+					}
+
+					// Finally, depending on which supply was exceeded, set the value of the source to either positive or negative
+					// supply voltage
+					_E[_VoltageSources.Count + i] = result[nodes.Item3].Real > opAmp.PositiveSupplyVoltage ?
+						opAmp.PositiveSupplyVoltage : opAmp.NegativeSupplyVoltage;
+
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		/// <summary>
@@ -553,7 +606,7 @@ namespace ECAT.Simulation
 			{
 				for (int columnIndex = 0; columnIndex < _BigDimension; ++columnIndex)
 				{
-					result[rowIndex, columnIndex] = _G[rowIndex, columnIndex].Evaluate();
+					result[rowIndex, columnIndex] = _G[rowIndex, columnIndex];
 				}
 			}
 
@@ -569,7 +622,7 @@ namespace ECAT.Simulation
 			{
 				for (int columnIndex = 0; columnIndex < _BigDimension; ++columnIndex)
 				{
-					result[rowIndex + _BigDimension, columnIndex] = _C[rowIndex, columnIndex].Evaluate();
+					result[rowIndex + _BigDimension, columnIndex] = _C[rowIndex, columnIndex];
 				}
 			}
 
@@ -595,68 +648,15 @@ namespace ECAT.Simulation
 
 			for (int i = 0; i < _BigDimension; ++i)
 			{
-				result[i] = _I[i].Evaluate();
+				result[i] = _I[i];
 			}
 
 			for (int i = 0; i < _SmallDimension; ++i)
 			{
-				result[i + _BigDimension] = _E[i].Evaluate();
+				result[i + _BigDimension] = _E[i];
 			}
 
 			return result;
-		}
-
-		/// <summary>
-		/// Checks if <see cref="IOpAmp"/>s operate in the proper region (if they didn't exceed their supply voltages.) If they don't,
-		/// adjusts the <see cref="_B"/>, <see cref="_C"/> and <see cref="_E"/> matrices so that, instead of being variable voltage
-		/// sources, they are independent voltage sources capped at their supply voltage value. Returns true if an <see cref="IOpAmp"/>
-		/// was adjusted and calculations need to be redone, false otherwise
-		/// </summary>
-		/// <param name="result"></param>
-		/// <returns></returns>
-		private bool CheckOpAmpOperation(Complex[] result)
-		{
-			for (int i = 0; i < _OpAmps.Count; ++i)
-			{
-				// The considered op-amp
-				var opAmp = _OpAmps[i];
-				// Indexes of its nodes
-				var nodes = _OpAmpNodes[opAmp];
-
-				// If the output is not grounded TODO: remove the check then the rule that voltage source outputs are not allowed to be
-				// grounded is enforced
-				if(nodes.Item3 != -1 && (result[nodes.Item3].Real < opAmp.NegativeSupplyVoltage.Value.Real ||
-					(result[nodes.Item3].Real > opAmp.PositiveSupplyVoltage.Value.Real)))
-				{
-					// Op-amp needs adjusting, it's output will now be modeled as an independent voltage source now
-
-					// Set the entry in _B corresponding to the output node to 1
-					_B[nodes.Item3, _VoltageSources.Count + i] = 1;
-					// And the entry in _C corresponding to the output node to 1
-					_C[_VoltageSources.Count + i, nodes.Item3] = Variable.One;
-
-					// If the non-inverting input is not grounded, reset its entry in the _C matrix
-					if (nodes.Item1 != -1)
-					{
-						_C[_VoltageSources.Count + i, nodes.Item1] = Variable.Zero;
-					}
-
-					// If the inverting input is not grounded, reset its entry in the _C matrix
-					if (nodes.Item2 != -1)
-					{
-						_C[_VoltageSources.Count + i, nodes.Item2] = Variable.Zero;
-					}
-
-					// Finally, depending on which supply was exceeded, set the value of the source to either positive or negative
-					// supply voltage
-					_E[_VoltageSources.Count + i] = result[nodes.Item3].Real > opAmp.PositiveSupplyVoltage.Value.Real ?
-						opAmp.PositiveSupplyVoltage : opAmp.NegativeSupplyVoltage;
-
-					return true;
-				}
-			}
-
-			return false;
 		}
 
 		#endregion
@@ -671,13 +671,10 @@ namespace ECAT.Simulation
 		{
 			Complex[] result = null;
 			while (true)
-			{
-				var evaluatedA = ComputeA();
-				var evaluatedZ = ComputeZ();
-				
+			{				
 				try
 				{
-					result = LinearEquations.SimplifiedGaussJordanElimination(evaluatedA, evaluatedZ);
+					result = LinearEquations.SimplifiedGaussJordanElimination(ComputeA(), ComputeZ());
 				}
 				catch (Exception e)
 				{

@@ -1,6 +1,5 @@
 ﻿using ECAT.Core;
 using CSharpEnhanced.CoreClasses;
-using CSharpEnhanced.Maths;
 
 namespace ECAT.Design
 {
@@ -21,37 +20,17 @@ namespace ECAT.Design
 			Admittance = IoC.Resolve<IDefaultValues>().VoltageSourceAdmittance;
 			ProducedDCVoltage = IoC.Resolve<IDefaultValues>().DefaultVoltageSourceProducedVoltage;
 
-			ProducedDCVoltageVar = _ProducedVoltageVarSource.Variable;
-
 			ProducedCurrent.PropertyChanged += (s, e) => InvokePropertyChanged(nameof(CurrentBA));
 		}
 
 		#endregion
 
-		#region Protected properties
+		#region Public properties		
 
 		/// <summary>
-		/// Source of <see cref="ProducedDCVoltageVar"/> and a backing store for produced current of this <see cref="IVoltageSource"/>
+		/// DC voltage produced by this <see cref="IVoltageSource"/>
 		/// </summary>
-		protected Variable.VariableSource _ProducedVoltageVarSource { get; } = new Variable.VariableSource();
-
-		#endregion
-
-		#region Public properties
-
-		/// <summary>
-		/// Voltage supplied by this <see cref="IVoltageSource"/>
-		/// </summary>
-		public Variable ProducedDCVoltageVar { get; }
-
-		/// <summary>
-		/// Accessor to the voltage produced by this <see cref="IVoltageSource"/>
-		/// </summary>
-		public double ProducedDCVoltage
-		{
-			get => _ProducedVoltageVarSource.Value.Real;
-			set => _ProducedVoltageVarSource.Value = value;
-		}
+		public double ProducedDCVoltage { get; set; }		
 
 		/// <summary>
 		/// Current through the source, flowing from terminal A to terminal B

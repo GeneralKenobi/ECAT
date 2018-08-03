@@ -7,9 +7,9 @@ namespace ECAT.Core
 	/// </summary>
 	public interface IOpAmp : IThreeTerminal
     {
-		Variable PositiveSupplyVoltage { get; }
-		Variable NegativeSupplyVoltage { get; }
+		double PositiveSupplyVoltage { get; }
+		double NegativeSupplyVoltage { get; }
 
-		Variable OpenLoopGain { get; }
+		double OpenLoopGain { get; }
 	}
 }

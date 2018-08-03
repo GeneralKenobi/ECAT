@@ -6,9 +6,9 @@ namespace ECAT.Design
 {
 	public class OpAmp : ThreeTerminal, IOpAmp
 	{
-		public Variable PositiveSupplyVoltage { get; } = new Variable.VariableSource(15).Variable;
-		public Variable NegativeSupplyVoltage { get; } = new Variable.VariableSource(-15).Variable;
-		public Variable OpenLoopGain { get; } = new Variable.VariableSource(1e6).Variable;
+		public double PositiveSupplyVoltage { get; } = 15;
+		public double NegativeSupplyVoltage { get; } = -15;
+		public double OpenLoopGain { get; } = 1e6;
 
 		public override double Width { get; } = 300;
 

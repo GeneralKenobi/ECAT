@@ -10,12 +10,7 @@ namespace ECAT.Core
 		#region Properties
 
 		/// <summary>
-		/// Frequency of the produced voltage
-		/// </summary>
-		Variable FrequencyVar { get; }
-
-		/// <summary>
-		/// Accessor to the frequency of produced voltage
+		/// Frequency of the AC voltage produced by this <see cref="IACVoltageSource"/>
 		/// </summary>
 		double Frequency { get; set; }
 
