@@ -1,7 +1,8 @@
 ﻿namespace ECAT.Core
 {
 	/// <summary>
-	/// Interface for operational amplifiers
+	/// Interface for operational amplifiers. <see cref="IThreeTerminal.TerminalA"/> is the non-inverting input,
+	/// <see cref="IThreeTerminal.TerminalB"/> is the inverting input and <see cref="IThreeTerminal.TerminalC"/> is the output.
 	/// </summary>
 	public interface IOpAmp : IThreeTerminal
 	{
