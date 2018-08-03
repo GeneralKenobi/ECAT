@@ -21,6 +21,7 @@ namespace ECAT.ViewModel
 			{ ComponentIDEnumeration.VoltageSource, typeof(VoltageSourceEditViewModel) },
 			{ ComponentIDEnumeration.CurrentSource, typeof(CurrentSourceEditViewModel) },
 			{ ComponentIDEnumeration.Ground, typeof(SpecificComponentEditViewModel<IGround>) },
+			{ ComponentIDEnumeration.OpAmp, typeof(OpAmpEditViewModel) },
 		};
 
 		#endregion

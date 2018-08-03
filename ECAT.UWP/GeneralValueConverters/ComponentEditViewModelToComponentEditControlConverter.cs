@@ -64,6 +64,7 @@ namespace ECAT.UWP
 			{typeof(ResistorEditViewModel), typeof(ResistorEditUC) },
 			{typeof(VoltageSourceEditViewModel), typeof(VoltageSourceEditUC) },
 			{typeof(CurrentSourceEditViewModel), typeof(CurrentSourceEditUC) },
+			{typeof(OpAmpEditViewModel), typeof(OpAmpEditUC) },
 		};
 
 		#endregion
