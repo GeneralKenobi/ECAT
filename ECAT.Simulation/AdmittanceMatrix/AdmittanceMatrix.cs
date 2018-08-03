@@ -5,11 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System.Text;
 
 namespace ECAT.Simulation
 {
-    public class AdmittanceMatrix
+	/// <summary>
+	/// Class building and solving admittance matrices for <see cref="ISchematic"/>s
+	/// </summary>
+	public class AdmittanceMatrix
     {
 		#region Constructor
 
@@ -22,7 +24,6 @@ namespace ECAT.Simulation
 		}
 
 		#endregion
-
 
 		#region Private properties
 
@@ -214,11 +215,11 @@ namespace ECAT.Simulation
 
 			ExtractSpecialComponents();
 
+			FindOpAmpNodes();
+
 			InitializeSubMatrices();
 
 			ConstructInitialAdmittanceMatrix();
-
-			FindOpAmpNodes();
 		}
 
 		/// <summary>
@@ -454,31 +455,47 @@ namespace ECAT.Simulation
 			// For every op-amp
 			for (int i = 0; i < _OpAmps.Count; ++i)
 			{
+				var opAmp = _OpAmps[i];
+				var nodes = _OpAmpNodes[opAmp];
+
+				// Very important: in case the non-inverting input and output are short-circuited (they are the same node) then
+				// the value of 1 should be entered into the corresponding cell in _C array. This comes from the fact that having
+				// -OpenLoopGain and OpenLoogGain in the _C in the same row enforces potentials at both inputs to be equal. However
+				// if the non-inverting input is shorted then the OpenLoopGain value has no place in _C and 1 from the output should
+				// be put there.
+				// If the inverting input is shorted with the output then the OpenLoopGain should be put int the corresponding cell
+				// instead of 1. That's because the initial assumption that V+ = V- is made and if Vout = V- (the same node) then
+				// The OpenLoopGain has to be used to guarantee both voltages will be equal
+				// (so matrix looks like : ... -k ... k ... | 0 which boils down to kV- = kV+ which means V- = V+)
+				// That's why it is very important that if (when) this method is modified the rules presented above are obeyed.
+
 				// If there exists a node to which TerminalA (non-inverting input) is connected
 				// (it's possible it may not exist due to removed ground node)
-				if (_Nodes.Exists((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalA)))
+				if (nodes.Item1 != -1)
 				{
 					// Fill the entry in the row corresponding to the op-amp (plus starting row)
 					// and column corresponding to the node (positive terminal) with -OpenLoopGain
-					_C[i + _VoltageSources.Count, _Nodes.FindIndex((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalA))] = -_OpAmps[i].OpenLoopGain;
+					_C[i + _VoltageSources.Count, nodes.Item1] = -opAmp.OpenLoopGain;
 				}
 
 				// If there exists a node to which TerminalB (inverting input) is connected
 				// (it's possible it may not exist due to removed ground node)
-				if (_Nodes.Exists((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalB)))
+				if (nodes.Item2 != -1)
 				{
 					// Fill the entry in the row corresponding to the op-amp (plus starting row)
 					// and column corresponding to the node (positive terminal) with OpenLoopGain
-					_C[i + _VoltageSources.Count, _Nodes.FindIndex((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalB))] = _OpAmps[i].OpenLoopGain;
+					_C[i + _VoltageSources.Count, nodes.Item2] = opAmp.OpenLoopGain;
 				}
 
 				// If there exists a node to which TerminalB (inverting input) is connected
 				// (it's possible it may not exist due to removed ground node)
-				if (_Nodes.Exists((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalC)))
+				// TODO: When initial check of matrix is added the second condition is not necessary (outputs of voltage sources can't
+				// be grounded)
+				if (nodes.Item3 != nodes.Item2 && nodes.Item3 != -1)
 				{
 					// Fill the entry in the row corresponding to the op-amp (plus starting row)
 					// and column corresponding to the node (positive terminal) with 1 
-					_C[i + _VoltageSources.Count, _Nodes.FindIndex((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalC))] = 1;
+					_C[i + _VoltageSources.Count, nodes.Item3] = 1;
 				}
 			}
 		}
@@ -563,12 +580,7 @@ namespace ECAT.Simulation
 					(result[nodes.Item3].Real > opAmp.PositiveSupplyVoltage)))
 				{
 					// Op-amp needs adjusting, it's output will now be modeled as an independent voltage source now
-
-					// Set the entry in _B corresponding to the output node to 1
-					_B[nodes.Item3, _VoltageSources.Count + i] = 1;
-					// And the entry in _C corresponding to the output node to 1
-					_C[_VoltageSources.Count + i, nodes.Item3] = 1;
-
+					
 					// If the non-inverting input is not grounded, reset its entry in the _C matrix
 					if (nodes.Item1 != -1)
 					{
@@ -580,6 +592,16 @@ namespace ECAT.Simulation
 					{
 						_C[_VoltageSources.Count + i, nodes.Item2] = 0;
 					}
+
+					// Set the entry in _B corresponding to the output node to 1
+					_B[nodes.Item3, _VoltageSources.Count + i] = 1;
+
+					// And the entry in _C corresponding to the output node to 1
+					// It is important that, when non-inverting input is connected directly to the output, the entry in _B
+					// corresponding to that node is 1 (and not 0 like the if above would set it). Because this assigning is done after
+					// the one for non-inverting input no special conditions are necessary however it's very important to remeber about
+					// it if (when) this method is modified
+					_C[_VoltageSources.Count + i, nodes.Item3] = 1;
 
 					// Finally, depending on which supply was exceeded, set the value of the source to either positive or negative
 					// supply voltage
@@ -594,14 +616,13 @@ namespace ECAT.Simulation
 		}
 
 		/// <summary>
-		/// Combines matrices <see cref="_G"/> (which is evaluated at the moment of the call), <see cref="_B"/>, <see cref="_C"/>,
-		/// <see cref="_D"/> to create admittance matrix
+		/// Combines matrices <see cref="_G"/>, <see cref="_B"/>, <see cref="_C"/>, <see cref="_D"/> to create admittance matrix
 		/// </summary>
 		private Complex[,] ComputeA()
 		{
 			var result = new Complex[_Size, _Size];
 
-			// Evaluate G part
+			// _G
 			for (int rowIndex = 0; rowIndex < _BigDimension; ++rowIndex)
 			{
 				for (int columnIndex = 0; columnIndex < _BigDimension; ++columnIndex)
@@ -610,6 +631,7 @@ namespace ECAT.Simulation
 				}
 			}
 
+			// _B
 			for (int rowIndex = 0; rowIndex < _BigDimension; ++rowIndex)
 			{
 				for (int columnIndex = 0; columnIndex < _SmallDimension; ++columnIndex)
@@ -618,6 +640,7 @@ namespace ECAT.Simulation
 				}
 			}
 
+			// _C
 			for (int rowIndex = 0; rowIndex < _SmallDimension; ++rowIndex)
 			{
 				for (int columnIndex = 0; columnIndex < _BigDimension; ++columnIndex)
@@ -626,6 +649,7 @@ namespace ECAT.Simulation
 				}
 			}
 
+			// _D
 			for (int rowIndex = 0; rowIndex < _SmallDimension; ++rowIndex)
 			{
 				for (int columnIndex = 0; columnIndex < _SmallDimension; ++columnIndex)
@@ -638,19 +662,20 @@ namespace ECAT.Simulation
 		}
 
 		/// <summary>
-		/// Combines matrices <see cref="_I"/> and <see cref="_E"/> (both are evaluated at the moment of the call) to create a
-		/// vector of free terms for the admittance matrix
+		/// Combines matrices <see cref="_I"/> and <see cref="_E"/> to create a vector of free terms for the admittance matrix
 		/// </summary>
 		/// <returns></returns>
 		private Complex[] ComputeZ()
 		{
 			var result = new Complex[_BigDimension + _SmallDimension];
 
+			// _I
 			for (int i = 0; i < _BigDimension; ++i)
 			{
 				result[i] = _I[i];
 			}
 
+			// _E
 			for (int i = 0; i < _SmallDimension; ++i)
 			{
 				result[i + _BigDimension] = _E[i];
@@ -705,6 +730,11 @@ namespace ECAT.Simulation
 
 		#region Public static methods
 
+		/// <summary>
+		/// Constructs and returns an admittance matrix
+		/// </summary>
+		/// <param name="schematic"></param>
+		/// <returns></returns>
 		public static AdmittanceMatrix Construct(ISchematic schematic)
 		{
 			var matrix = new AdmittanceMatrix(schematic);
