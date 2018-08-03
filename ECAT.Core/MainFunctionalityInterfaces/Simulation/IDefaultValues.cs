@@ -44,6 +44,21 @@ namespace ECAT.Core
 		/// </summary>
 		double DefaultVoltageSourceProducedVoltage { get; }
 
+		/// <summary>
+		/// Default value for <see cref="IOpAmp.PositiveSupplyVoltage"/>
+		/// </summary>
+		double DefaultOpAmpPositiveSupplyVoltage { get; }
+
+		/// <summary>
+		/// Default value for <see cref="IOpAmp.NegativeSupplyVoltage"/>
+		/// </summary>
+		double DefaultOpAmpNegativeSupplyVoltage { get; }
+
+		/// <summary>
+		/// Default value for <see cref="IOpAmp.OpenLoopGain"/>
+		/// </summary>
+		double DefaultOpAmpOpenLoopGain { get; }
+
 		#endregion
 	}
 }

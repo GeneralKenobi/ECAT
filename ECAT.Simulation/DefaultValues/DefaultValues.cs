@@ -46,6 +46,21 @@ namespace ECAT.Simulation
 		/// </summary>
 		public double DefaultVoltageSourceProducedVoltage { get; } = 5;
 
+		/// <summary>
+		/// Default value for <see cref="IOpAmp.PositiveSupplyVoltage"/>
+		/// </summary>
+		public double DefaultOpAmpPositiveSupplyVoltage { get; } = 15;
+
+		/// <summary>
+		/// Default value for <see cref="IOpAmp.NegativeSupplyVoltage"/>
+		/// </summary>
+		public double DefaultOpAmpNegativeSupplyVoltage { get; } = 15;
+
+		/// <summary>
+		/// Default value for <see cref="IOpAmp.OpenLoopGain"/>
+		/// </summary>
+		public double DefaultOpAmpOpenLoopGain { get; } = 1e5;
+
 		#endregion
 
 		#region Private static properties

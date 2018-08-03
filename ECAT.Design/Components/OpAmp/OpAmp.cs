@@ -34,17 +34,17 @@ namespace ECAT.Design
 		/// <summary>		
 		/// Positive supply voltage - output cannot be greater than this value
 		/// </summary>
-		public double PositiveSupplyVoltage { get; set; } = 15;
+		public double PositiveSupplyVoltage { get; set; } = IoC.Resolve<IDefaultValues>().DefaultOpAmpPositiveSupplyVoltage;
 
 		/// <summary>
 		/// Negative supply voltage - output cannot be smaller than this value
 		/// </summary>
-		public double NegativeSupplyVoltage { get; set; } = -15;
+		public double NegativeSupplyVoltage { get; set; } = IoC.Resolve<IDefaultValues>().DefaultOpAmpNegativeSupplyVoltage;
 
 		/// <summary>
 		/// Open loop gain - voltage gain defined as output voltage divided by differential voltage (U+ - U-)
 		/// </summary>
-		public double OpenLoopGain { get; set; } = 1e6;
+		public double OpenLoopGain { get; set; } = IoC.Resolve<IDefaultValues>().DefaultOpAmpOpenLoopGain;
 
 		/// <summary>
 		/// Width of the <see cref="OpAmp"/> in horizontal position
