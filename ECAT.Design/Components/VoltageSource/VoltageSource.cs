@@ -5,9 +5,8 @@ using System.Numerics;
 namespace ECAT.Design
 {
 	/// <summary>
-	/// Component representing an ideal voltage source (well almost ideal because the internal admittance can't
-	/// be set to infinity - it would not work in the calculations, however it is set to a very big value - 1e100
-	/// which corresponds to 1e-100 resistance - practically 0)
+	/// Component representing an ideal voltage source (<see cref="TwoTerminal.TerminalA"/> corresponds to the negative terminal and
+	/// <see cref="TwoTerminal.TerminalB"/> corresponds to the positive terminal)
 	/// </summary>
 	public class VoltageSource : TwoTerminal, IVoltageSource
 	{

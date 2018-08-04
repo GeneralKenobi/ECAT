@@ -3,7 +3,8 @@
 namespace ECAT.Core
 {
 	/// <summary>
-	/// Interface for voltage sources
+	/// Interface for voltage sources (<see cref="ITwoTerminal.TerminalA"/> corresponds to the negative terminal and
+	/// <see cref="ITwoTerminal.TerminalB"/> corresponds to the positive terminal)
 	/// </summary>
 	public interface IVoltageSource : ITwoTerminal
     {

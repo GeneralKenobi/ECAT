@@ -5,6 +5,8 @@ namespace ECAT.Design
 {
 	/// <summary>
 	/// Current source is an ideal source that can supply a chosen value of current to an arbitrary load
+	/// (<see cref="TwoTerminal.TerminalA"/> corresponds to the negative terminal and
+	/// <see cref="TwoTerminal.TerminalB"/> corresponds to the positive terminal)
 	/// </summary>
 	public class CurrentSource : TwoTerminal, ICurrentSource
 	{
