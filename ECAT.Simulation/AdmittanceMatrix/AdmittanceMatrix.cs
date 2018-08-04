@@ -58,10 +58,24 @@ namespace ECAT.Simulation
 		private List<IVoltageSource> _VoltageSources { get; set; }
 
 		/// <summary>
+		/// Dictionary with voltage sources and indexes of their nodes (in order: negative, positive). If a node is grounded
+		/// then it is given by -1
+		/// </summary>
+		private Dictionary<IVoltageSource, Tuple<int, int>> _VoltageSourcesNodes { get; set; } =
+			new Dictionary<IVoltageSource, Tuple<int, int>>();
+
+		/// <summary>
 		/// List with all voltage sources in the <see cref="_Schematic"/>, order is important - position in the list indicates the
 		/// index of the source which directly affects the admittance matrix. Does not include op amp outputs
 		/// </summary>
 		private List<ICurrentSource> _CurrentSources { get; set; }
+
+		/// <summary>
+		/// Dictionary with current sources and indexes of their nodes (in order: negative, positive). If a node is grounded
+		/// then it is given by -1
+		/// </summary>
+		private Dictionary<ICurrentSource, Tuple<int, int>> _CurrentSourcesNodes { get; set; } =
+			new Dictionary<ICurrentSource, Tuple<int, int>>();
 
 		/// <summary>
 		/// List with all op-amps in the <see cref="_Schematic"/>, order is important - position in the list indicates the
@@ -193,12 +207,30 @@ namespace ECAT.Simulation
 		}
 
 		/// <summary>
-		/// Finds all nodes connected with op-amps and stores them in a dictionary for an easy and fast look-up
+		/// Finds all nodes connected with importnant elements (<see cref="IOpAmp"/>s, <see cref="IVoltageSource"/>s,
+		/// <see cref="ICurrentSource"/>s) and stores them in dictionaries for an easy and fast look-up
 		/// </summary>
-		private void FindOpAmpNodes() => _OpAmps.ForEach((opAmp) => _OpAmpNodes.Add(opAmp, new Tuple<int, int, int>(
-			_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(opAmp.TerminalA))),
-			_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(opAmp.TerminalB))),
-			_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(opAmp.TerminalC))))));
+		private void FindImportantNodes()
+		{
+			// Get the nodes of voltage sources
+			_VoltageSourcesNodes = new Dictionary<IVoltageSource, Tuple<int, int>>(_VoltageSources.ToDictionary((source) => source,
+				(source) => new Tuple<int, int>(
+				_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(source.TerminalA))),
+				_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(source.TerminalB))))));
+
+			// Get the nodes of current sources
+			_CurrentSourcesNodes = new Dictionary<ICurrentSource, Tuple<int, int>>(_CurrentSources.ToDictionary((source) => source,
+				(source) => new Tuple<int, int>(
+				_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(source.TerminalA))),
+				_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(source.TerminalB))))));
+
+			// Get the nodes of op-amps
+			_OpAmpNodes = new Dictionary<IOpAmp, Tuple<int, int, int>>(_OpAmps.ToDictionary((opAmp) => opAmp,
+				(opAmp) => new Tuple<int, int, int>(
+				_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(opAmp.TerminalA))),
+				_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(opAmp.TerminalB))),
+				_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(opAmp.TerminalC))))));
+		}
 
 		/// <summary>
 		/// Builds the matrix - it's essential to call this method right after constructor
@@ -209,7 +241,7 @@ namespace ECAT.Simulation
 
 			ExtractSpecialComponents();
 
-			FindOpAmpNodes();
+			FindImportantNodes();
 
 			InitializeSubMatrices();
 
@@ -358,20 +390,23 @@ namespace ECAT.Simulation
 			// For every voltage source
 			for (int i = 0; i < _VoltageSources.Count; ++i)
 			{
-				// If there exists a node to which TerminalB is connected (it's possible it may not exist due to removed ground node)
-				if (_Nodes.Exists((node) => node.ConnectedTerminals.Contains(_VoltageSources[i].TerminalB)))
+				// Get the voltage source's nodes
+				var nodes = _VoltageSourcesNodes[_VoltageSources[i]];
+
+				// If the positive terminal is not grounded (TODO: When initial checks for schematics are implemented this isn't necessary
+				if (nodes.Item2 != -1)
 				{
 					// Fill the entry in the row corresponding to the node and column corresponding to the source (plus start column)
 					// with 1 (positive terminal)
-					_B[_Nodes.FindIndex((node) => node.ConnectedTerminals.Contains(_VoltageSources[i].TerminalB)), i] = 1;
+					_B[nodes.Item2, i] = 1;
 				}
 
-				// If there exists a node to which TerminalA is connected (it's possible it may not exist due to removed ground node)
-				if (_Nodes.Exists((node) => node.ConnectedTerminals.Contains(_VoltageSources[i].TerminalA)))
+				// If the negative terminal is not grounded
+				if (nodes.Item1 != -1)
 				{
 					// Fill the entry in the row corresponding to the node and column corresponding to the source (plus start column)
 					// with -1 (negative terminal)
-					_B[_Nodes.FindIndex((node) => node.ConnectedTerminals.Contains(_VoltageSources[i].TerminalA)), i] = -1;
+					_B[nodes.Item1, i] = -1;
 				}
 			}
 		}
@@ -422,20 +457,23 @@ namespace ECAT.Simulation
 			// For every voltage source
 			for (int i = 0; i < _VoltageSources.Count; ++i)
 			{
-				// If there exists a node to which TerminalB is connected (it's possible it may not exist due to removed ground node)
-				if (_Nodes.Exists((node) => node.ConnectedTerminals.Contains(_VoltageSources[i].TerminalB)))
+				// Get the voltage source's nodes
+				var nodes = _VoltageSourcesNodes[_VoltageSources[i]];
+								
+				// If the positive terminal is not grounded (TODO: When initial checks for schematics are implemented this isn't necessary
+				if (nodes.Item2 != -1)
 				{
 					// Fill the entry in the row corresponding to the source (plus starting row)
 					// and column corresponding to the node with 1 (positive terminal)
-					_C[i, _Nodes.FindIndex((node) => node.ConnectedTerminals.Contains(_VoltageSources[i].TerminalB))] = 1;
+					_C[i, nodes.Item2] = 1;
 				}
-
-				// If there exists a node to which TerminalA is connected (it's possible it may not exist due to removed ground node)
-				if (_Nodes.Exists((node) => node.ConnectedTerminals.Contains(_VoltageSources[i].TerminalA)))
+				
+				// If the negative terminal is not grounded
+				if (nodes.Item1 != -1)
 				{
 					// Fill the entry in the row corresponding to the source (plus starting row)
 					// and column corresponding to the node with -1 (negative terminal)
-					_C[i, _Nodes.FindIndex((node) => node.ConnectedTerminals.Contains(_VoltageSources[i].TerminalA))] = -1;
+					_C[i, nodes.Item1] = -1;
 				}
 			}
 		}
@@ -515,26 +553,26 @@ namespace ECAT.Simulation
 		private void FillZMatrixCurrents()
 		{
 			// For every node
-			for (int i = 0; i < _BigDimension; ++i)
+			for (int i = 0; i < _CurrentSources.Count; ++i)
 			{
-				// Go through each connected component
-				_Nodes[i].ConnectedComponents.ForEach((component) =>
+				// Get the source
+				var source = _CurrentSources[i];
+				// And its nodes
+				var nodes = _CurrentSourcesNodes[source];
+
+				// If the positive terminal is not grounded
+				if (nodes.Item2 != -1)
 				{
-					// If it's a current source
-					if (component is ICurrentSource source)
-					{
-						// If the positive terminal is connected, add the current
-						if (_Nodes[i].ConnectedTerminals.Contains(source.TerminalB))
-						{
-							_I[i] += source.ProducedCurrent;
-						}
-						// If the negative terminal is connected, subtract the current
-						else
-						{
-							_I[i] -= source.ProducedCurrent;
-						}
-					}
-				});
+					// Add the produced current to the corresponding entry in _I
+					_I[nodes.Item2] += source.ProducedCurrent;
+				}
+
+				// If the negative terminal is not grounded
+				if (nodes.Item1 != -1)
+				{
+					// Subtract the produced current from the corresponding entry in _I
+					_I[nodes.Item1] -= source.ProducedCurrent;
+				}
 			}
 		}
 
