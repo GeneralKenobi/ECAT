@@ -35,6 +35,7 @@ namespace ECAT.Core
 
 		/// <summary>
 		/// Admittance between <see cref="TerminalA"/> and <see cref="TerminalB"/>
+		/// <paramref name="frequency">Frequency of the considered signal, cannot be smaller than 0, 0 indicates DC signal</paramref>
 		/// </summary>
 		Complex GetAdmittance(double frequency);
 
