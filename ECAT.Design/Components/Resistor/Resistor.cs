@@ -36,14 +36,14 @@ namespace ECAT.Design
 
 		#endregion
 
-		#region Public methods
+		#region Protected methods
 
 		/// <summary>
 		/// Returns the admittance of this resistor equal to the reciprocal of <see cref="Resistance"/>
 		/// </summary>
 		/// <param name="frequency"></param>
 		/// <returns></returns>
-		public override Complex GetAdmittance(double frequency) => 1 / Resistance;
+		protected override Complex CalculateAdmittance(double frequency) => 1 / Resistance;
 
 		#endregion
 	}

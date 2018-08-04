@@ -18,14 +18,14 @@ namespace ECAT.Design
 
 		#endregion
 
-		#region Public methods
+		#region Protected methods
 
 		/// <summary>
 		/// Returns the admittance of this <see cref="Capacitor"/>
 		/// </summary>
 		/// <param name="frequency"></param>
 		/// <returns></returns>
-		public override Complex GetAdmittance(double frequency) => new Complex(0, 2 * Math.PI * Capacitance);
+		protected override Complex CalculateAdmittance(double frequency) => new Complex(0, 2 * Math.PI * Capacitance);
 
 		#endregion
 	}

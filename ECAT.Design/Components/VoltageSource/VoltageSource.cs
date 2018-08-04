@@ -52,14 +52,14 @@ namespace ECAT.Design
 
 		#endregion
 
-		#region Public methods
+		#region Protected methods
 
 		/// <summary>
 		/// Returns the admittance of an <see cref="IVoltageSource"/>
 		/// </summary>
 		/// <param name="frequency"></param>
 		/// <returns></returns>
-		public override Complex GetAdmittance(double frequency) => _Admittance;
+		protected override Complex CalculateAdmittance(double frequency) => _Admittance;
 
 		#endregion
 	}

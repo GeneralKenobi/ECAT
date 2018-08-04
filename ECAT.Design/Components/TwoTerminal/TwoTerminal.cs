@@ -106,6 +106,11 @@ namespace ECAT.Design
 			TerminalB.Position.RotationAngle += degrees;
 		}
 
+		/// <summary>
+		/// Returns admittance between <see cref="TerminalA"/> and <see cref="TerminalB"/>, called by <see cref="GetAdmittance(double)"/>
+		/// </summary>
+		protected abstract Complex CalculateAdmittance(double frequency);		
+
 		#endregion
 
 		#region Public methods
@@ -121,9 +126,19 @@ namespace ECAT.Design
 		};
 
 		/// <summary>
-		/// Admittance between <see cref="TerminalA"/> and <see cref="TerminalB"/>
+		/// Returns admittance between <see cref="TerminalA"/> and <see cref="TerminalB"/>
 		/// </summary>
-		public abstract Complex GetAdmittance(double frequency);
+		public Complex GetAdmittance(double frequency)
+		{
+			// Check if the frequency is in the allowed range (nonnegative)
+			if(frequency < 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(frequency) + " cannot be negative");
+			}
+
+			// Call the helper method
+			return CalculateAdmittance(frequency);
+		}
 
 		#endregion
 	}

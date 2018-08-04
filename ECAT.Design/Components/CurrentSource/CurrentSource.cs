@@ -33,7 +33,7 @@ namespace ECAT.Design
 		/// </summary>
 		/// <param name="frequency"></param>
 		/// <returns></returns>
-		public override Complex GetAdmittance(double frequency) => _Admittance;
+		protected override Complex CalculateAdmittance(double frequency) => _Admittance;
 
 		#endregion
 	}
