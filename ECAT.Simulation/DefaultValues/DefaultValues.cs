@@ -54,7 +54,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Default value for <see cref="IOpAmp.NegativeSupplyVoltage"/>
 		/// </summary>
-		public double DefaultOpAmpNegativeSupplyVoltage { get; } = 15;
+		public double DefaultOpAmpNegativeSupplyVoltage { get; } = -15;
 
 		/// <summary>
 		/// Default value for <see cref="IOpAmp.OpenLoopGain"/>
