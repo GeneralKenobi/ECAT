@@ -60,11 +60,6 @@ namespace ECAT.Design
 		public ITerminal TerminalB { get; }
 
 		/// <summary>
-		/// Admittance between <see cref="TerminalA"/> and <see cref="TerminalB"/>
-		/// </summary>
-		public Complex Admittance { get; set; }
-
-		/// <summary>
 		/// Voltage drop between <see cref="TerminalB"/> and <see cref="TerminalA"/> (VB - VA)
 		/// </summary>
 		public double VoltageBA => TerminalB.Potential == null || TerminalA.Potential == null ? 
@@ -74,7 +69,7 @@ namespace ECAT.Design
 		/// Current flowing from <see cref="TerminalA"/> to <see cref="TerminalB"/>, may be overriden if a specific component'
 		/// current can't be determined from its voltage and admittance (eg. voltage source)
 		/// </summary>
-		public virtual double CurrentBA => -VoltageBA * Admittance.Real;
+		public virtual double CurrentBA => -VoltageBA * GetAdmittance(0).Real;
 
 		#endregion
 
@@ -124,6 +119,11 @@ namespace ECAT.Design
 			TerminalA,
 			TerminalB,
 		};
+
+		/// <summary>
+		/// Admittance between <see cref="TerminalA"/> and <see cref="TerminalB"/>
+		/// </summary>
+		public abstract Complex GetAdmittance(double frequency);
 
 		#endregion
 	}

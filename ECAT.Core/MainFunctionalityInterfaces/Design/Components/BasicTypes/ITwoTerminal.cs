@@ -17,12 +17,7 @@ namespace ECAT.Core
 		/// <summary>
 		/// One of the terminals in this two-terminal
 		/// </summary>
-		ITerminal TerminalB { get; }
-
-		/// <summary>
-		/// Admittance between <see cref="TerminalA"/> and <see cref="TerminalB"/>
-		/// </summary>
-		Complex Admittance { get; set; }
+		ITerminal TerminalB { get; }		
 
 		/// <summary>
 		/// Voltage drop between <see cref="TerminalB"/> and <see cref="TerminalA"/> (VB - VA)
@@ -33,6 +28,15 @@ namespace ECAT.Core
 		/// Current flowing from <see cref="TerminalA"/> to <see cref="TerminalB"/>
 		/// </summary>
 		double CurrentBA { get; }
+
+		#endregion
+
+		#region Methods
+
+		/// <summary>
+		/// Admittance between <see cref="TerminalA"/> and <see cref="TerminalB"/>
+		/// </summary>
+		Complex GetAdmittance(double frequency);
 
 		#endregion
 	}

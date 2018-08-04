@@ -1,5 +1,6 @@
 ﻿using ECAT.Core;
 using CSharpEnhanced.CoreClasses;
+using System.Numerics;
 
 namespace ECAT.Design
 {
@@ -9,7 +10,7 @@ namespace ECAT.Design
 	/// which corresponds to 1e-100 resistance - practically 0)
 	/// </summary>
 	public class VoltageSource : TwoTerminal, IVoltageSource
-    {
+	{
 		#region Constructors
 
 		/// <summary>
@@ -17,11 +18,17 @@ namespace ECAT.Design
 		/// </summary>
 		public VoltageSource()
 		{
-			Admittance = IoC.Resolve<IDefaultValues>().VoltageSourceAdmittance;
-			ProducedDCVoltage = IoC.Resolve<IDefaultValues>().DefaultVoltageSourceProducedVoltage;
-
 			ProducedCurrent.PropertyChanged += (s, e) => InvokePropertyChanged(nameof(CurrentBA));
 		}
+
+		#endregion
+
+		#region Private properties
+
+		/// <summary>
+		/// The admittance of a voltage source (constant value)
+		/// </summary>
+		private Complex _Admittance { get; } = IoC.Resolve<IDefaultValues>().VoltageSourceAdmittance;
 
 		#endregion
 
@@ -30,7 +37,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// DC voltage produced by this <see cref="IVoltageSource"/>
 		/// </summary>
-		public double ProducedDCVoltage { get; set; }		
+		public double ProducedDCVoltage { get; set; } = IoC.Resolve<IDefaultValues>().DefaultVoltageSourceProducedVoltage;
 
 		/// <summary>
 		/// Current through the source, flowing from terminal A to terminal B
@@ -42,6 +49,17 @@ namespace ECAT.Design
 		/// is marked from the positive terminal (<see cref="TerminalB"/>) to the negative terminal (<see cref="TerminalA)"/>
 		/// </summary>
 		public override double CurrentBA => -ProducedCurrent.Value;
+
+		#endregion
+
+		#region Public methods
+
+		/// <summary>
+		/// Returns the admittance of an <see cref="IVoltageSource"/>
+		/// </summary>
+		/// <param name="frequency"></param>
+		/// <returns></returns>
+		public override Complex GetAdmittance(double frequency) => _Admittance;
 
 		#endregion
 	}

@@ -123,12 +123,6 @@ namespace ECAT.Simulation
 
 		#endregion
 
-		#region Public properties
-
-
-
-		#endregion
-
 		#region Private methods
 
 		/// <summary>
@@ -296,10 +290,10 @@ namespace ECAT.Simulation
 				_Nodes[i].ConnectedComponents.ForEach((component) =>
 				{
 					// If the component is a two terminal and imaginary part of its admittance is zero (non-existant)
-					if (component is ITwoTerminal twoTerminal && twoTerminal.Admittance.Imaginary == 0)
+					if (component is ITwoTerminal twoTerminal && twoTerminal.GetAdmittance(0).Imaginary == 0)
 					{
 						// Add its admittance to the matrix
-						_G[i, i] += twoTerminal.Admittance;
+						_G[i, i] += twoTerminal.GetAdmittance(0);
 					}
 				});
 			}
@@ -326,14 +320,14 @@ namespace ECAT.Simulation
 					admittancesBetweenNodesij.ForEach((component) =>
 					{
 						// If the component is a two terminal and imaginary part of its admittance is zero (non-existant)
-						if (component is ITwoTerminal twoTerminal && twoTerminal.Admittance.Imaginary == 0)
+						if (component is ITwoTerminal twoTerminal && twoTerminal.GetAdmittance(0).Imaginary == 0)
 						{
 							// Subtract its admittance to the matrix
-							_G[i, j] -= twoTerminal.Admittance;
+							_G[i, j] -= twoTerminal.GetAdmittance(0);
 
 							// And do the same to the entry j,i - admittances between node i,j are identical to admittances
 							// between nodes j,i
-							_G[j, i] -= twoTerminal.Admittance;
+							_G[j, i] -= twoTerminal.GetAdmittance(0);
 						}
 					});
 				}

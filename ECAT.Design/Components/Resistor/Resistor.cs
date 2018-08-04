@@ -1,4 +1,5 @@
-﻿using ECAT.Core;
+﻿using System.Numerics;
+using ECAT.Core;
 
 namespace ECAT.Design
 {
@@ -7,15 +8,12 @@ namespace ECAT.Design
 	/// </summary>
 	public class Resistor : TwoTerminal, IResistor
     {
-		#region Constructors
+		#region Private members
 
 		/// <summary>
-		/// Default Constructor
+		/// Backing store for <see cref="Resistance"/>
 		/// </summary>
-		public Resistor()
-		{
-			Admittance = IoC.Resolve<IDefaultValues>().DefaultResistorAdmittance;
-		}
+		private double mResistance = IoC.Resolve<IDefaultValues>().DefaultResistorResistance;
 
 		#endregion
 
@@ -26,15 +24,26 @@ namespace ECAT.Design
 		/// </summary>
 		public double Resistance
 		{
-			get => 1 / Admittance.Real;
+			get => mResistance;
 			set
 			{
 				if(value >= IoC.Resolve<IDefaultValues>().MinimumParameterValue)
 				{
-					Admittance = 1 / value;
+					mResistance = value;
 				}
 			}
 		}
+
+		#endregion
+
+		#region Public methods
+
+		/// <summary>
+		/// Returns the admittance of this resistor equal to the reciprocal of <see cref="Resistance"/>
+		/// </summary>
+		/// <param name="frequency"></param>
+		/// <returns></returns>
+		public override Complex GetAdmittance(double frequency) => 1 / Resistance;
 
 		#endregion
 	}

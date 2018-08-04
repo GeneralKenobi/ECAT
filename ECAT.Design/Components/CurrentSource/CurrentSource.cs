@@ -1,4 +1,5 @@
 ﻿using ECAT.Core;
+using System.Numerics;
 
 namespace ECAT.Design
 {
@@ -7,26 +8,33 @@ namespace ECAT.Design
 	/// </summary>
 	public class CurrentSource : TwoTerminal, ICurrentSource
 	{
-		#region Constructors
+		#region Private properties
 
 		/// <summary>
-		/// Default Constructor
+		/// Admittance of this <see cref="ICurrentSource"/> (constant value)
 		/// </summary>
-		public CurrentSource()
-		{
-			Admittance = IoC.Resolve<IDefaultValues>().CurrentSourceAdmittance;
-			ProducedCurrent = IoC.Resolve<IDefaultValues>().DefaultCurrentSourceProducedCurrent;
-		}
+		private Complex _Admittance { get; } = IoC.Resolve<IDefaultValues>().CurrentSourceAdmittance;
 
 		#endregion
-		
+
 		#region Public properties
-				
+
 		/// <summary>
 		/// Accessor to the current supplied by this <see cref="ICurrentSource"/>
 		/// </summary>
-		public double ProducedCurrent { get; set; }
-		
+		public double ProducedCurrent { get; set; } = IoC.Resolve<IDefaultValues>().DefaultCurrentSourceProducedCurrent;
+
+		#endregion
+
+		#region Public methods
+
+		/// <summary>
+		/// Returns the admittance of this <see cref="ICurrentSource"/>
+		/// </summary>
+		/// <param name="frequency"></param>
+		/// <returns></returns>
+		public override Complex GetAdmittance(double frequency) => _Admittance;
+
 		#endregion
 	}
 }
