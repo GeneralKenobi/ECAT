@@ -32,7 +32,7 @@ namespace ECAT.Core
 		/// <summary>
 		/// Default admittance for a <see cref="IResistor"/>
 		/// </summary>
-		Complex DefaultResistorAdmittance { get; }
+		double DefaultResistorResistance { get; }
 
 		/// <summary>
 		/// Default value for <see cref="ICurrentSource"/>'s produced current
