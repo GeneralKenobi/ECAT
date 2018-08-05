@@ -98,6 +98,8 @@
     <Compile Include="Design\ComponentAddingMenu\ComponentAddingMenu.xaml.cs">
       <DependentUpon>ComponentAddingMenu.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Design\Components\ACVoltageSource\ACVoltageSourceTC.cs" />
+    <Compile Include="Design\Components\Capacitor\CapacitorTC.cs" />
     <Compile Include="Design\Components\OpAmp\OpAmpTC.cs" />
     <Compile Include="Design\EditMenu\ComponentEditSection\ComponentEditMenuUC.xaml.cs">
       <DependentUpon>ComponentEditMenuUC.xaml</DependentUpon>
@@ -170,6 +172,14 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="Design\ComponentAddingMenu\ComponentAddingMenu.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Design\Components\ACVoltageSource\ACVoltageSourceTCStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Design\Components\Capacitor\CapacitorTCStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
