@@ -1,22 +1,98 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+	xmlns:controls="using:UWPEnhanced.Controls"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:ECAT.UWP">
 
+	<local:TextPositionFixRotationConverter x:Key="TextPositionFixConverter"/>
 
-	<Style TargetType="local:CapacitorTC">
+
+	<Style TargetType="local:TwoTerminalComponentPackageTC" x:Key="ResistorPackage">
 		<Setter Property="Template">
 			<Setter.Value>
-				<ControlTemplate TargetType="local:CapacitorTC">
-					<Border
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}">
-					</Border>
+				<ControlTemplate TargetType="local:TwoTerminalComponentPackageTC">
+
+					<!-- Root container -->
+					<Grid>
+
+						<!-- Presents current flow through the component -->
+						<local:CurrentFlowTC Current="{Binding Component.CurrentBA}"
+							VerticalAlignment="Center"/>
+
+						<!-- Presents voltage drop across the component -->
+						<local:VoltageDropTC ArrowRotationAngle="27.5"
+							Margin="30 -26 30 0"
+							VerticalAlignment="Top"								
+							Voltage="{Binding Component.VoltageBA}"/>
+
+						<Grid Margin="-5 0 0 0">
+
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="2*"/>
+								<ColumnDefinition Width="3*"/>
+							</Grid.ColumnDefinitions>
+
+							<!-- Presents a parameter associated with the component -->
+							<controls:ValueUnitDisplay Foreground="{StaticResource BlackBrush}"
+								FontSize="{StaticResource FontSizeXLarge}"
+								HorizontalAlignment="Right"
+								VerticalAlignment="Bottom"								
+								Value="{Binding Component.Resistance}"
+								RoundToDigit="4"
+								Unit="F"
+								Margin="-5 0 0 10"							
+								RenderTransformOrigin="0.5 0.5">
+
+								<controls:ValueUnitDisplay.RenderTransform>
+									<RotateTransform Angle="{Binding Component.Center.RotationAngle, Converter={StaticResource TextPositionFixConverter}}"/>
+								</controls:ValueUnitDisplay.RenderTransform>
+
+							</controls:ValueUnitDisplay>
+						</Grid>
+						<!-- Socket for terminal A-->
+						<local:SocketTC Terminal="{Binding Component.TerminalA}"
+						HorizontalAlignment="Left"
+						VerticalAlignment="Center"/>
+
+						<!-- Socket for terminal B-->
+						<local:SocketTC Terminal="{Binding Component.TerminalB}"
+						HorizontalAlignment="Right"
+						VerticalAlignment="Center"/>
+
+					</Grid>
+
 				</ControlTemplate>
 			</Setter.Value>
 		</Setter>
 	</Style>
 
+	<Style TargetType="local:CapacitorTC">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="local:CapacitorTC">
+					<Grid>
+						<Canvas>
+
+							<!-- The wire and plate on the left -->
+							<Polyline Stroke="{StaticResource BlackBrush}"
+									StrokeThickness="10"
+									Points="0,50 90,50 90,15 90,85 90,50"
+									StrokeMiterLimit="0"/>
+
+							<!-- The wire and plate on the right -->
+							<Polyline Stroke="{StaticResource BlackBrush}"
+									StrokeThickness="10"
+									Points="200,50 110,50 110,15 110,85 110,50"
+									StrokeMiterLimit="0"/>
+
+						</Canvas>
+
+						<local:TwoTerminalComponentPackageTC Style="{StaticResource ResistorPackage}"/>
+
+					</Grid>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
 
 </ResourceDictionary>

@@ -1,23 +1,116 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:controls="using:UWPEnhanced.Controls"
     xmlns:local="using:ECAT.UWP">
 
+	<local:TextPositionFixRotationConverter x:Key="TextPositionFixConverter"/>
+
+	<Style TargetType="local:TwoTerminalComponentPackageTC" x:Key="VoltageSourcePackage">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="local:TwoTerminalComponentPackageTC">
+
+					<!-- Root container -->
+					<Grid>
+
+						<!-- Presents current flow through the component -->
+						<local:CurrentFlowTC Current="{Binding Component.CurrentBA}"
+								VerticalAlignment="Center"/>
+
+						<!-- Presents a parameter associated with the component -->
+						<controls:ValueUnitDisplay Foreground="{StaticResource BlackBrush}"
+								FontSize="{StaticResource FontSizeXLarge}"
+								HorizontalAlignment="Center"
+								VerticalAlignment="Bottom"
+								Value="{Binding Component.ProducedDCVoltage}"
+								RoundToDigit="4"
+								Unit="V"
+								Margin="0 0 0 -25"
+								RenderTransformOrigin="0.5 0.5">
+
+							<controls:ValueUnitDisplay.RenderTransform>
+								<RotateTransform Angle="{Binding Component.Center.RotationAngle, Converter={StaticResource TextPositionFixConverter}}"/>
+							</controls:ValueUnitDisplay.RenderTransform>
+
+						</controls:ValueUnitDisplay>
+
+						<!-- Socket for terminal A-->
+						<local:SocketTC Terminal="{Binding Component.TerminalA}"
+							HorizontalAlignment="Left"
+							VerticalAlignment="Center"/>
+
+						<!-- Socket for terminal B-->
+						<local:SocketTC Terminal="{Binding Component.TerminalB}"
+							HorizontalAlignment="Right"
+							VerticalAlignment="Center"/>
+
+					</Grid>
+
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
 
 
 	<Style TargetType="local:ACVoltageSourceTC">
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="local:ACVoltageSourceTC">
-					<Border
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}">
-					</Border>
+
+					<Grid>
+
+						<Grid.ColumnDefinitions>
+							<!-- Wire to the left socket -->
+							<ColumnDefinition Width="50"/>
+							<!-- The body of the source -->
+							<ColumnDefinition Width="100"/>
+							<!-- The wire to the right socket -->
+							<ColumnDefinition Width="50"/>
+						</Grid.ColumnDefinitions>
+
+						<!-- The body of the source -->
+						<Grid Grid.Column="1">							
+
+							<!-- The circle in the middle -->
+							<Ellipse Width="92"
+								Height="92"
+								HorizontalAlignment="Center"
+								VerticalAlignment="Center"
+								Fill="Transparent"
+								Stroke="{StaticResource BlackBrush}"
+								StrokeThickness="4"/>
+
+							<!-- The sine icon -->
+							<Path Data="M15,50 Q32.5,15 50,50 Q67.5,85 85,50"
+								Stroke="{StaticResource BlackBrush}"
+								StrokeThickness="4"
+								StrokeStartLineCap="Square"
+								StrokeEndLineCap="Square"/>
+
+						</Grid>
+
+						<!-- Wire to the left socket -->
+						<Rectangle Height="10"
+							HorizontalAlignment="Stretch"
+							Fill="{StaticResource BlackBrush}"
+							Margin="0 0 -5 0"/>
+
+						<!-- Wire to the right socket -->
+						<Rectangle Height="10"
+							Grid.Column="2"
+							HorizontalAlignment="Stretch"
+							Fill="{StaticResource BlackBrush}"
+							Margin="-5 0 0 0"/>
+
+						<local:TwoTerminalComponentPackageTC Style="{StaticResource VoltageSourcePackage}"
+							Grid.ColumnSpan="3"/>
+
+					</Grid>
+
 				</ControlTemplate>
 			</Setter.Value>
 		</Setter>
 	</Style>
-
 
 </ResourceDictionary>
