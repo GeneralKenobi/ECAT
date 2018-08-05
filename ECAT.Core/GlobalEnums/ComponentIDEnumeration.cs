@@ -14,5 +14,9 @@
 		Ground = 3,
 
 		OpAmp = 4,
+
+		ACVoltageSource = 5,
+
+		Capacitor = 6,
     }
 }
