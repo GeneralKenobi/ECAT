@@ -17,6 +17,8 @@
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/GeneralPurposeControls/CurrentFlow/CurrentFlowTCStyle.xaml"/>
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/GeneralPurposeControls/TwoTerminalComponentPackage/TwoTerminalComponentPackageTCStyle.xaml"/>
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/OpAmp/OpAmpTCStyle.xaml"/>
+		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/Capacitor/CapacitorTCStyle.xaml"/>
+		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/ACVoltageSource/ACVoltageSourceTCStyle.xaml"/>
 	</ResourceDictionary.MergedDictionaries>
 	    
 
