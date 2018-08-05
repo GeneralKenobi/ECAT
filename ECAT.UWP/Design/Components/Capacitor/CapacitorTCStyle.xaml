@@ -37,7 +37,7 @@
 								FontSize="{StaticResource FontSizeXLarge}"
 								HorizontalAlignment="Right"
 								VerticalAlignment="Bottom"								
-								Value="{Binding Component.Resistance}"
+								Value="{Binding Component.Capacitance}"
 								RoundToDigit="4"
 								Unit="F"
 								Margin="-5 0 0 10"							
