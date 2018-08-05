@@ -96,6 +96,12 @@ namespace ECAT.ViewModel
 				"Place Ground", new ShortcutKey("O"), () => PlacePartHelper(ComponentIDEnumeration.OpAmp)));
 
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
+				"Place AC Voltage Source", new ShortcutKey("V", KeyModifiers.Shift), () => PlacePartHelper(ComponentIDEnumeration.ACVoltageSource)));
+
+			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
+				"Place Capacitor", new ShortcutKey("C", KeyModifiers.Shift), () => PlacePartHelper(ComponentIDEnumeration.Capacitor)));
+
+			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
 				"Run Single DC Sweep", new ShortcutKey("T"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.DCBias(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic)));
 
 			// TODO: Change the ShortcutKeys to ShortcutKey.Empty and load the saved combinations from a local file
