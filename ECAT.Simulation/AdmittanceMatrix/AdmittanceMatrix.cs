@@ -65,6 +65,22 @@ namespace ECAT.Simulation
 			new Dictionary<IVoltageSource, Tuple<int, int>>();
 
 		/// <summary>
+		/// List with all AC voltage sources in the <see cref="_Schematic"/>, order is important - position in the list indicates the
+		/// index of the source which directly affects the admittance matrix. All sources are also found in the
+		/// <see cref="_VoltageSources"/> (because an AC voltage source is also alwayks a DC voltage source due to possible DC offset
+		/// present in the produced sine)
+		/// </summary>
+		private List<IACVoltageSource> _ACVoltageSources { get; set; }
+
+		/// <summary>
+		/// Dictionary with AC voltage sources and indexes of their nodes (in order: negative, positive). If a node is grounded
+		/// then it is given by -1. All nodes are also found in the <see cref="_VoltageSourcesNodes"/> (because an AC voltage source
+		/// is also always a DC voltage source due to possible DC offset present in the produced sine)
+		/// </summary>
+		private Dictionary<IACVoltageSource, Tuple<int, int>> _ACVoltageSourcesNodes { get; set; } =
+			new Dictionary<IACVoltageSource, Tuple<int, int>>();
+
+		/// <summary>
 		/// List with all voltage sources in the <see cref="_Schematic"/>, order is important - position in the list indicates the
 		/// index of the source which directly affects the admittance matrix. Does not include op amp outputs
 		/// </summary>
@@ -164,6 +180,10 @@ namespace ECAT.Simulation
 			_VoltageSources = new List<IVoltageSource>(_Schematic.Components.Where((component) => component is IVoltageSource).
 				Cast<IVoltageSource>());
 
+			// Get the AC voltage sources
+			_ACVoltageSources = new List<IACVoltageSource>(_VoltageSources.Where((source) => source is IACVoltageSource).
+				Cast<IACVoltageSource>());
+
 			// Get the current sources
 			_CurrentSources = new List<ICurrentSource>(_Schematic.Components.Where((component) => component is ICurrentSource).
 				Cast<ICurrentSource>());
@@ -217,6 +237,10 @@ namespace ECAT.Simulation
 				(source) => new Tuple<int, int>(
 				_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(source.TerminalA))),
 				_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(source.TerminalB))))));
+
+			// Get the nodes of the AC voltage sources
+			_ACVoltageSourcesNodes = new Dictionary<IACVoltageSource, Tuple<int, int>>(_VoltageSourcesNodes.Where((entry) =>
+				 entry.Key is IACVoltageSource).ToDictionary((entry) => entry.Key as IACVoltageSource, (entry) => entry.Value));				
 
 			// Get the nodes of current sources
 			_CurrentSourcesNodes = new Dictionary<ICurrentSource, Tuple<int, int>>(_CurrentSources.ToDictionary((source) => source,
