@@ -221,6 +221,9 @@ namespace ECAT.Simulation
 
 			FillPassiveDMatrix();
 
+			// Configure each op-amp for active operation (by default)
+			_OpAmps.ForEach((opAmp) => ConfigureForActiveOperation(opAmp));
+
 			FillZMatrixCurrents();
 
 			FillZMatrixVoltages();
@@ -393,16 +396,10 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Fills the B matrix, rules are described in a separate text file
 		/// </summary>
-		/// <param name="nodes"></param>
-		/// <param name="admittances"></param>
-		/// <param name="voltageSources"></param>
 		private void FillPassiveBMatrix()
 		{
 			// Consider voltage sources, start column is the one on the right of G matrix (whose size is the number of nodes)
 			FillBMatrixBasedOnVoltageSources();
-
-			// Consider op-amps, start column is after column related to nodes and voltage sources
-			FillBMatrixBasedOnOpAmps();
 		}
 
 		/// <summary>
@@ -436,27 +433,6 @@ namespace ECAT.Simulation
 		}
 
 		/// <summary>
-		/// Helper of <see cref="FillPassiveBMatrix(List{INode}, IExpression[,], List{IVoltageSource}, List{IOpAmp})"/>, fills the
-		/// B part of admittance matrix with -1, 0 or 1 based on op-amps present in the circuit (treats their output as a voltage
-		/// source)
-		/// </summary>
-		private void FillBMatrixBasedOnOpAmps()
-		{
-			// For every op-amp
-			for (int i = 0; i < _OpAmps.Count; ++i)
-			{
-				// If there exists a node to which TerminalC (op-amps output) is connected
-				// (it's possible it may not exist due to removed ground node)
-				if (_Nodes.Exists((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalC)))
-				{
-					// Fill the entry in the row corresponding to the node and column corresponding to the source
-					// (plus start column) with 1 (positive terminal)
-					_B[_Nodes.FindIndex((node) => node.ConnectedTerminals.Contains(_OpAmps[i].TerminalC)),i + _VoltageSources.Count] = 1;
-				}
-			}
-		}
-
-		/// <summary>
 		/// Fills the C matrix, rules are described in a separate text file
 		/// </summary>
 		private void FillPassiveCMatrix()
@@ -466,10 +442,6 @@ namespace ECAT.Simulation
 			// Consider voltage sources, the work area in admittance matrix start on the left, below G matrix (size equal to
 			// number of nodes)
 			FillCMatrixBasedOnVoltageSources();
-
-			// Consider op-amps , the work area in admittance matrix start on the left, below G matrix and rows associated with
-			// voltage sources (number of nodes plus number of voltage sources)
-			FillCMatrixBasedOnOpAmps();
 		}
 
 		/// <summary>
@@ -500,61 +472,7 @@ namespace ECAT.Simulation
 					_C[i, nodes.Item1] = -1;
 				}
 			}
-		}
-
-		/// <summary>
-		/// Helper of <see cref="FillPassiveCMatrix(List{INode}, IExpression[,], List{IVoltageSource}, List{IOpAmp})"/>,
-		/// fills C part of admittance matrix with -1, 0 or 1 based on op-amps present in the circuit
-		/// </summary>
-		private void FillCMatrixBasedOnOpAmps()
-		{
-			// For every op-amp
-			for (int i = 0; i < _OpAmps.Count; ++i)
-			{
-				var opAmp = _OpAmps[i];
-				var nodes = _OpAmpNodes[opAmp];
-
-				// Very important: in case the non-inverting input and output are short-circuited (they are the same node) then
-				// the value of 1 should be entered into the corresponding cell in _C array. This comes from the fact that having
-				// -OpenLoopGain and OpenLoogGain in the _C in the same row enforces potentials at both inputs to be equal. However
-				// if the non-inverting input is shorted then the OpenLoopGain value has no place in _C and 1 from the output should
-				// be put there.
-				// If the inverting input is shorted with the output then the OpenLoopGain should be put int the corresponding cell
-				// instead of 1. That's because the initial assumption that V+ = V- is made and if Vout = V- (the same node) then
-				// The OpenLoopGain has to be used to guarantee both voltages will be equal
-				// (so matrix looks like : ... -k ... k ... | 0 which boils down to kV- = kV+ which means V- = V+)
-				// That's why it is very important that if (when) this method is modified the rules presented above are obeyed.
-
-				// If there exists a node to which TerminalA (non-inverting input) is connected
-				// (it's possible it may not exist due to removed ground node)
-				if (nodes.Item1 != -1)
-				{
-					// Fill the entry in the row corresponding to the op-amp (plus starting row)
-					// and column corresponding to the node (positive terminal) with -OpenLoopGain
-					_C[i + _VoltageSources.Count, nodes.Item1] = -opAmp.OpenLoopGain;
-				}
-
-				// If there exists a node to which TerminalB (inverting input) is connected
-				// (it's possible it may not exist due to removed ground node)
-				if (nodes.Item2 != -1)
-				{
-					// Fill the entry in the row corresponding to the op-amp (plus starting row)
-					// and column corresponding to the node (positive terminal) with OpenLoopGain
-					_C[i + _VoltageSources.Count, nodes.Item2] = opAmp.OpenLoopGain;
-				}
-
-				// If there exists a node to which TerminalB (inverting input) is connected
-				// (it's possible it may not exist due to removed ground node)
-				// TODO: When initial check of matrix is added the second condition is not necessary (outputs of voltage sources can't
-				// be grounded)
-				if (nodes.Item3 != nodes.Item2 && nodes.Item3 != -1)
-				{
-					// Fill the entry in the row corresponding to the op-amp (plus starting row)
-					// and column corresponding to the node (positive terminal) with 1 
-					_C[i + _VoltageSources.Count, nodes.Item3] = 1;
-				}
-			}
-		}
+		}		
 
 		/// <summary>
 		/// Fills the D matrix according to rules described in a separate text file
@@ -614,6 +532,112 @@ namespace ECAT.Simulation
 		}
 
 		/// <summary>
+		/// Configures submatrices so that <paramref name="opAmp"/> is considered to work in active operation (output is between
+		/// supply voltages)
+		/// </summary>
+		/// <param name="opAmp"></param>
+		private void ConfigureForActiveOperation(IOpAmp opAmp)
+		{
+			// Get the index of the op-amp
+			var opAmpIndex = _OpAmps.IndexOf(opAmp);
+			// Indexes of its nodes
+			var nodes = _OpAmpNodes[opAmp];
+
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//																													 //
+			// Very important: in case the non-inverting input and output are short-circuited (they are the same node) then		 //
+			// the value of 1 should be entered into the corresponding cell in _C array. This comes from the fact that having	 //
+			// -OpenLoopGain and OpenLoogGain in the _C in the same row enforces potentials at both inputs to be equal. However  //
+			// if the non-inverting input is shorted then the OpenLoopGain value has no place in _C and 1 from the output should //
+			// be put there.																									 //
+			// If the inverting input is shorted with the output then the OpenLoopGain should be put int the corresponding cell  //
+			// instead of 1. That's because the initial assumption that V+ = V- is made and if Vout = V- (the same node) then	 //
+			// The OpenLoopGain has to be used to guarantee both voltages will be equal											 //
+			// (so matrix looks like : ... -k ... k ... | 0 which boils down to kV- = kV+ which means V- = V+)					 //
+			// That's why it is very important that if (when) this method is modified the rules presented above are obeyed.		 //
+			//																													 //
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+			// If there exists a node to which TerminalA (non-inverting input) is connected
+			// (it's possible it may not exist due to removed ground node)
+			if (nodes.Item1 != -1)
+			{
+				// Fill the entry in the row corresponding to the op-amp (plus starting row)
+				// and column corresponding to the node (positive terminal) with -OpenLoopGain
+				_C[_VoltageSources.Count + opAmpIndex, nodes.Item1] = -opAmp.OpenLoopGain;
+			}
+
+			// If there exists a node to which TerminalB (inverting input) is connected
+			// (it's possible it may not exist due to removed ground node)
+			if (nodes.Item2 != -1)
+			{
+				// Fill the entry in the row corresponding to the op-amp (plus starting row)
+				// and column corresponding to the node (positive terminal) with OpenLoopGain
+				_C[_VoltageSources.Count + opAmpIndex, nodes.Item2] = opAmp.OpenLoopGain;
+			}
+
+			// Set the entry in _B corresponding to the output node to 1
+			_B[nodes.Item3, _VoltageSources.Count + opAmpIndex] = 1;
+
+			// If there exists a node to which TerminalB (inverting input) is connected
+			// (it's possible it may not exist due to removed ground node)
+			// TODO: When initial check of matrix is added the second condition is not necessary (outputs of voltage sources can't
+			// be grounded)
+			// If the output is not shorted with the inverting input
+			if (nodes.Item3 != nodes.Item2 && nodes.Item3 != -1)
+			{
+				_C[_VoltageSources.Count + opAmpIndex, nodes.Item3] = 1;
+			}
+
+			// Fill the entry in the row corresponding to the op-amp (plus starting row)
+			// and column corresponding to the node (positive terminal) with 1 
+			_E[_VoltageSources.Count + opAmpIndex] = 0;
+		}
+
+		/// <summary>
+		/// Configures submatrices so that <paramref name="opAmp"/> is considered to work in active operation (output is between
+		/// supply voltages)
+		/// </summary>
+		/// <param name="opAmp"></param>
+		/// <param name="positiveSaturation">If true, the output is set to positive supply voltage, if false to the negative
+		/// supply</param>
+		private void ConfigureForSaturation(IOpAmp opAmp, bool positiveSaturation)
+		{
+			// Get the index of the op-amp
+			var opAmpIndex = _OpAmps.IndexOf(opAmp);
+			// Indexes of its nodes
+			var nodes = _OpAmpNodes[opAmp];
+
+			// Op-amp needs adjusting, it's output will now be modeled as an independent voltage source now
+
+			// If the non-inverting input is not grounded, reset its entry in the _C matrix
+			if (nodes.Item1 != -1)
+			{
+				_C[_VoltageSources.Count + opAmpIndex, nodes.Item1] = 0;
+			}
+
+			// If the inverting input is not grounded, reset its entry in the _C matrix
+			if (nodes.Item2 != -1)
+			{
+				_C[_VoltageSources.Count + opAmpIndex, nodes.Item2] = 0;
+			}
+
+			// Set the entry in _B corresponding to the output node to 1
+			_B[nodes.Item3, _VoltageSources.Count + opAmpIndex] = 1;
+
+			// And the entry in _C corresponding to the output node to 1
+			// It is important that, when non-inverting input is connected directly to the output, the entry in _B
+			// corresponding to that node is 1 (and not 0 like the if above would set it). Because this assigning is done after
+			// the one for non-inverting input no special conditions are necessary however it's very important to remeber about
+			// it if (when) this method is modified
+			_C[_VoltageSources.Count + opAmpIndex, nodes.Item3] = 1;
+
+			// Finally, depending on which supply was exceeded, set the value of the source to either positive or negative
+			// supply voltage
+			_E[_VoltageSources.Count + opAmpIndex] = positiveSaturation ? opAmp.PositiveSupplyVoltage : opAmp.NegativeSupplyVoltage;
+		}
+
+		/// <summary>
 		/// Checks if <see cref="IOpAmp"/>s operate in the proper region (if they didn't exceed their supply voltages.) If they don't,
 		/// adjusts the <see cref="_B"/>, <see cref="_C"/> and <see cref="_E"/> matrices so that, instead of being variable voltage
 		/// sources, they are independent voltage sources capped at their supply voltage value. Returns true if an <see cref="IOpAmp"/>
@@ -636,33 +660,7 @@ namespace ECAT.Simulation
 					(result[nodes.Item3].Real > opAmp.PositiveSupplyVoltage)))
 				{
 					// Op-amp needs adjusting, it's output will now be modeled as an independent voltage source now
-					
-					// If the non-inverting input is not grounded, reset its entry in the _C matrix
-					if (nodes.Item1 != -1)
-					{
-						_C[_VoltageSources.Count + i, nodes.Item1] = 0;
-					}
-
-					// If the inverting input is not grounded, reset its entry in the _C matrix
-					if (nodes.Item2 != -1)
-					{
-						_C[_VoltageSources.Count + i, nodes.Item2] = 0;
-					}
-
-					// Set the entry in _B corresponding to the output node to 1
-					_B[nodes.Item3, _VoltageSources.Count + i] = 1;
-
-					// And the entry in _C corresponding to the output node to 1
-					// It is important that, when non-inverting input is connected directly to the output, the entry in _B
-					// corresponding to that node is 1 (and not 0 like the if above would set it). Because this assigning is done after
-					// the one for non-inverting input no special conditions are necessary however it's very important to remeber about
-					// it if (when) this method is modified
-					_C[_VoltageSources.Count + i, nodes.Item3] = 1;
-
-					// Finally, depending on which supply was exceeded, set the value of the source to either positive or negative
-					// supply voltage
-					_E[_VoltageSources.Count + i] = result[nodes.Item3].Real > opAmp.PositiveSupplyVoltage ?
-						opAmp.PositiveSupplyVoltage : opAmp.NegativeSupplyVoltage;
+					ConfigureForSaturation(opAmp, result[nodes.Item3].Real > opAmp.PositiveSupplyVoltage);
 
 					return true;
 				}
@@ -767,6 +765,8 @@ namespace ECAT.Simulation
 					break;
 				}
 			}
+
+			//while(true)
 
 			// Assign the node potentials (entries from 0 to the number of nodes - 1)
 			for (int i = 0; i < _BigDimension; ++i)
