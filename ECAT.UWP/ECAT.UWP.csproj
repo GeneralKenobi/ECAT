@@ -101,6 +101,9 @@
     <Compile Include="Design\Components\ACVoltageSource\ACVoltageSourceTC.cs" />
     <Compile Include="Design\Components\Capacitor\CapacitorTC.cs" />
     <Compile Include="Design\Components\OpAmp\OpAmpTC.cs" />
+    <Compile Include="Design\EditMenu\ACVoltageSource\ACVoltageSourceEditUC.xaml.cs">
+      <DependentUpon>ACVoltageSourceEditUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Design\EditMenu\CapacitorEdit\CapacitorEditUC.xaml.cs">
       <DependentUpon>CapacitorEditUC.xaml</DependentUpon>
     </Compile>
@@ -187,6 +190,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Design\Components\OpAmp\OpAmpTCStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Design\EditMenu\ACVoltageSource\ACVoltageSourceEditUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
