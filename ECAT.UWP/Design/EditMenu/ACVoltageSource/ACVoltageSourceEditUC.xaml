@@ -1,0 +1,54 @@
+﻿<UserControl
+    x:Class="ECAT.UWP.ACVoltageSourceEditUC"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ECAT.UWP"
+    xmlns:converters="using:UWPEnhanced.ValueConverters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+	<UserControl.Resources>
+		<converters:DoubleToSIStringConverter x:Key="SIStringConverter"/>
+	</UserControl.Resources>
+
+	<StackPanel>
+
+		<!-- Frequency -->
+		<TextBlock Style="{StaticResource WhiteTextBlockStyle}"
+			FontSize="{StaticResource FontSizeBig}"
+			Text="{Binding FrequencyEditHeader, Mode=OneTime}"
+			Margin="0 0 0 10"/>
+
+		<!-- TextBox with the frequency settings -->
+		<TextBox Style="{StaticResource SideMenuTextBoxStyleUnder8}"
+			Text="{Binding Frequency, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"
+			Grid.ColumnSpan="2"/>
+
+		<!-- Produced AC voltage label -->
+		<TextBlock Style="{StaticResource WhiteTextBlockStyle}"
+			FontSize="{StaticResource FontSizeBig}"
+			Text="{Binding PeakProducedVoltageEditHeader, Mode=OneTime}"
+			Margin="0 20 0 10"/>
+
+		<!-- TextBox with the produced AC voltage settings -->
+		<TextBox Style="{StaticResource SideMenuTextBoxStyleUnder8}"
+			Text="{Binding PeakProducedVoltage, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"
+			Grid.ColumnSpan="2"/>
+
+		<!-- DC Offset header -->
+		<TextBlock Style="{StaticResource WhiteTextBlockStyle}"
+			FontSize="{StaticResource FontSizeBig}"
+			Text="{Binding DCOffsetEditHeader, Mode=OneTime}"
+			Margin="0 20 0 10"/>
+
+		<!-- TextBox with the DC Offset settings -->
+		<TextBox Style="{StaticResource SideMenuTextBoxStyleUnder8}"
+			Text="{Binding DCOffset, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"
+			Grid.ColumnSpan="2"/>		
+
+	</StackPanel>
+
+</UserControl>
