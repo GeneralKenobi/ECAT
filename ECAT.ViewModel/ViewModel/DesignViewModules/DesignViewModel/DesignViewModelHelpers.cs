@@ -23,6 +23,7 @@ namespace ECAT.ViewModel
 			{ ComponentIDEnumeration.Ground, typeof(SpecificComponentEditViewModel<IGround>) },
 			{ ComponentIDEnumeration.OpAmp, typeof(OpAmpEditViewModel) },
 			{ ComponentIDEnumeration.Capacitor, typeof(CapacitorEditViewModel) },
+			{ ComponentIDEnumeration.ACVoltageSource, typeof(ACVoltageSourceEditViewModel) },
 		};
 
 		#endregion
