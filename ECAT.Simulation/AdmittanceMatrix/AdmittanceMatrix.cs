@@ -29,9 +29,14 @@ namespace ECAT.Simulation
 		#region Private properties
 
 		/// <summary>
+		/// The total number of voltage sources in the <see cref="ISchematic"/>
+		/// </summary>
+		private int _TotalVoltageSourcesCount => _DCVoltageSources.Count + _ACVoltageSources.Count;
+
+		/// <summary>
 		/// True if the circuit is DC only (there are no <see cref="IACVoltageSource"/>s)
 		/// </summary>
-		private bool _IsPureDC => !_VoltageSources.Exists((source) => source is IACVoltageSource);
+		private bool _IsPureDC => !_DCVoltageSources.Exists((source) => source is IACVoltageSource);
 
 		/// <summary>
 		/// True if the circuit is AC only (there are no <see cref="IOpAmp"/>s, no <see cref="ICurrentSource"/>s and
@@ -39,7 +44,7 @@ namespace ECAT.Simulation
 		/// equal to 0)
 		/// </summary>
 		private bool _IsPureAC => _OpAmps.Count == 0 && _CurrentSources.Count == 0 &&
-			_VoltageSources.All((source) => source is IACVoltageSource && source.ProducedDCVoltage == 0);
+			_DCVoltageSources.All((source) => source is IACVoltageSource && source.ProducedDCVoltage == 0);
 
 		/// <summary>
 		/// Schematic on which the matrix is based
@@ -56,26 +61,26 @@ namespace ECAT.Simulation
 		/// List with all voltage sources in the <see cref="_Schematic"/>, order is important - position in the list indicates the
 		/// index of the source which directly affects the admittance matrix. Does not include op amp outputs
 		/// </summary>
-		private List<IVoltageSource> _VoltageSources { get; set; }
+		private List<IVoltageSource> _DCVoltageSources { get; set; }
 
 		/// <summary>
 		/// Dictionary with voltage sources and indexes of their nodes (in order: negative, positive). If a node is grounded
 		/// then it is given by -1
 		/// </summary>
-		private Dictionary<IVoltageSource, Tuple<int, int>> _VoltageSourcesNodes { get; set; } =
+		private Dictionary<IVoltageSource, Tuple<int, int>> _DCVoltageSourcesNodes { get; set; } =
 			new Dictionary<IVoltageSource, Tuple<int, int>>();
 
 		/// <summary>
 		/// List with all AC voltage sources in the <see cref="_Schematic"/>, order is important - position in the list indicates the
 		/// index of the source which directly affects the admittance matrix. All sources are also found in the
-		/// <see cref="_VoltageSources"/> (because an AC voltage source is also alwayks a DC voltage source due to possible DC offset
+		/// <see cref="_DCVoltageSources"/> (because an AC voltage source is also alwayks a DC voltage source due to possible DC offset
 		/// present in the produced sine)
 		/// </summary>
 		private List<IACVoltageSource> _ACVoltageSources { get; set; }
 
 		/// <summary>
 		/// Dictionary with AC voltage sources and indexes of their nodes (in order: negative, positive). If a node is grounded
-		/// then it is given by -1. All nodes are also found in the <see cref="_VoltageSourcesNodes"/> (because an AC voltage source
+		/// then it is given by -1. All nodes are also found in the <see cref="_DCVoltageSourcesNodes"/> (because an AC voltage source
 		/// is also always a DC voltage source due to possible DC offset present in the produced sine)
 		/// </summary>
 		private Dictionary<IACVoltageSource, Tuple<int, int>> _ACVoltageSourcesNodes { get; set; } =
@@ -114,7 +119,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Size of D part of admittance matrix (depends on the number of independent voltage sources, with op-amp outputs included)
 		/// </summary>
-		private int _SmallDimension => _VoltageSources.Count + _OpAmps.Count;
+		private int _SmallDimension => _TotalVoltageSourcesCount + _OpAmps.Count;
 		
 		/// <summary>
 		/// Size of the whole admittance matrix
@@ -188,11 +193,11 @@ namespace ECAT.Simulation
 		private void ExtractSpecialComponents()
 		{
 			// Get the voltage sources
-			_VoltageSources = new List<IVoltageSource>(_Schematic.Components.Where((component) => component is IVoltageSource).
+			_DCVoltageSources = new List<IVoltageSource>(_Schematic.Components.Where((component) => component is IVoltageSource).
 				Cast<IVoltageSource>());
 
 			// Get the AC voltage sources
-			_ACVoltageSources = new List<IACVoltageSource>(_VoltageSources.Where((source) => source is IACVoltageSource).
+			_ACVoltageSources = new List<IACVoltageSource>(_DCVoltageSources.Where((source) => source is IACVoltageSource).
 				Cast<IACVoltageSource>());
 
 			// Get the current sources
@@ -234,10 +239,6 @@ namespace ECAT.Simulation
 
 			// Configure each op-amp for active operation (by default)
 			_OpAmps.ForEach((opAmp) => ConfigureForActiveOperation(opAmp));
-
-			FillZMatrixCurrents();
-
-			FillZMatrixVoltages();
 		}
 
 		/// <summary>
@@ -247,13 +248,13 @@ namespace ECAT.Simulation
 		private void FindImportantNodes()
 		{
 			// Get the nodes of voltage sources
-			_VoltageSourcesNodes = new Dictionary<IVoltageSource, Tuple<int, int>>(_VoltageSources.ToDictionary((source) => source,
+			_DCVoltageSourcesNodes = new Dictionary<IVoltageSource, Tuple<int, int>>(_DCVoltageSources.ToDictionary((source) => source,
 				(source) => new Tuple<int, int>(
 				_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(source.TerminalA))),
 				_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(source.TerminalB))))));
 
 			// Get the nodes of the AC voltage sources
-			_ACVoltageSourcesNodes = new Dictionary<IACVoltageSource, Tuple<int, int>>(_VoltageSourcesNodes.Where((entry) =>
+			_ACVoltageSourcesNodes = new Dictionary<IACVoltageSource, Tuple<int, int>>(_DCVoltageSourcesNodes.Where((entry) =>
 				 entry.Key is IACVoltageSource).ToDictionary((entry) => entry.Key as IACVoltageSource, (entry) => entry.Value));				
 
 			// Get the nodes of current sources
@@ -409,21 +410,24 @@ namespace ECAT.Simulation
 		/// </summary>
 		private void FillPassiveBMatrix()
 		{
-			// Consider voltage sources, start column is the one on the right of G matrix (whose size is the number of nodes)
-			FillBMatrixBasedOnVoltageSources();
+			// Fill columns of DC voltage sources
+			FillBMatrixBasedOnDCVoltageSources();
+
+			// Fill columns of AC voltage sources
+			FillBMatrixBasedOnACVoltageSources();
 		}
 
 		/// <summary>
-		/// Helper of <see cref="FillPassiveBMatrix(List{INode}, IExpression[,], List{IVoltageSource}, List{IOpAmp})"/>, fills the
-		/// B part of admittance matrix with -1, 0 or 1 based on voltage sources present in the circuit
+		/// Helper of <see cref="FillPassiveBMatrix"/>, fills the
+		/// B part of admittance matrix with -1, 0 or 1 based on DC voltage sources present in the circuit
 		/// </summary>
-		private void FillBMatrixBasedOnVoltageSources()
+		private void FillBMatrixBasedOnDCVoltageSources()
 		{
 			// For every voltage source
-			for (int i = 0; i < _VoltageSources.Count; ++i)
+			for (int i = 0; i < _DCVoltageSources.Count; ++i)
 			{
 				// Get the voltage source's nodes
-				var nodes = _VoltageSourcesNodes[_VoltageSources[i]];
+				var nodes = _DCVoltageSourcesNodes[_DCVoltageSources[i]];
 
 				// If the positive terminal is not grounded (TODO: When initial checks for schematics are implemented this isn't necessary
 				if (nodes.Item2 != -1)
@@ -444,28 +448,197 @@ namespace ECAT.Simulation
 		}
 
 		/// <summary>
+		/// Helper of <see cref="FillPassiveBMatrix"/>, fills the
+		/// B part of admittance matrix with -1, 0 or 1 based on AC voltage sources present in the circuit
+		/// </summary>
+		private void FillBMatrixBasedOnACVoltageSources()
+		{
+			// For every voltage source
+			for (int i = 0; i < _ACVoltageSources.Count; ++i)
+			{
+				// Get the voltage source's nodes
+				var nodes = _ACVoltageSourcesNodes[_ACVoltageSources[i]];
+
+				// If the positive terminal is not grounded (TODO: When initial checks for schematics are implemented this isn't necessary
+				if (nodes.Item2 != -1)
+				{
+					// Fill the entry in the row corresponding to the node and column corresponding to the source (plus start column)
+					// with 1 (positive terminal)
+					_B[nodes.Item2, i + _DCVoltageSources.Count] = 1;
+				}
+
+				// If the negative terminal is not grounded
+				if (nodes.Item1 != -1)
+				{
+					// Fill the entry in the row corresponding to the node and column corresponding to the source (plus start column)
+					// with -1 (negative terminal)
+					_B[nodes.Item1, i + _DCVoltageSources.Count] = -1;
+				}
+			}
+		}
+
+		/// <summary>
 		/// Fills the C matrix, rules are described in a separate text file
 		/// </summary>
 		private void FillPassiveCMatrix()
 		{
-			// All entries in C are 0 by default
+			// Fill rows of DC voltage sources
+			FillCMatrixBasedOnDCVoltageSources();
 
-			// Consider voltage sources, the work area in admittance matrix start on the left, below G matrix (size equal to
-			// number of nodes)
-			FillCMatrixBasedOnVoltageSources();
+			// Fill rows of AC voltage sources
+			FillCMatrixBasedOnACVoltageSources();
 		}
 
 		/// <summary>
-		/// Helper of <see cref="FillPassiveCMatrix(List{INode}, IExpression[,], List{IVoltageSource}, List{IOpAmp})"/>,
-		/// fills C part of admittance matrix with -1, 0 or 1 based on voltage sources present in the circuit
+		/// Activates all DC voltage sources
 		/// </summary>
-		private void FillCMatrixBasedOnVoltageSources()
+		private void ActivateDCVoltageSources()
+		{
+			for(int i=0;i<_DCVoltageSources.Count; ++i)
+			{
+				ActivateDCVoltageSource(i);
+			}
+		}
+
+		/// <summary>
+		/// Dezactivates all DC voltage sources
+		/// </summary>
+		private void DezactivateDCVoltageSources()
+		{
+			for (int i = 0; i < _DCVoltageSources.Count; ++i)
+			{
+				DezactivateDCVoltageSource(i);
+			}
+		}
+
+		/// <summary>
+		/// Activates all DC voltage sources
+		/// </summary>
+		private void ActivateCurrentSources()
+		{
+			for (int i = 0; i < _CurrentSources.Count; ++i)
+			{
+				ActivateCurrentSource(i);
+			}
+		}
+
+		/// <summary>
+		/// Dezactivates all DC voltage sources
+		/// </summary>
+		private void DezactivateCurrentSources()
+		{
+			for (int i = 0; i < _CurrentSources.Count; ++i)
+			{
+				DezactivateCurrentSource(i);
+			}
+		}
+
+		/// <summary>
+		/// Activates all AC voltage sources
+		/// </summary>
+		private void ActivateACVoltageSources()
+		{
+			for (int i = 0; i < _ACVoltageSources.Count; ++i)
+			{
+				ActivateACVoltageSource(i);
+			}
+		}
+
+		/// <summary>
+		/// Dezactivates all AC voltage sources
+		/// </summary>
+		private void DezactivateACVoltageSources()
+		{
+			for (int i = 0; i < _ACVoltageSources.Count; ++i)
+			{
+				DezactivateACVoltageSource(i);
+			}
+		}
+
+		/// <summary>
+		/// Activates the DC voltage sources given by the index
+		/// </summary>
+		/// <param name="sourceIndex"></param>
+		private void ActivateDCVoltageSource(int sourceIndex) => _E[sourceIndex] = _DCVoltageSources[sourceIndex].ProducedDCVoltage;
+
+		/// <summary>
+		/// Dezactivates the DC voltage source given by the index
+		/// </summary>
+		/// <param name="sourceIndex"></param>
+		private void DezactivateDCVoltageSource(int sourceIndex) => _E[sourceIndex] = 0;
+
+		/// <summary>
+		/// Activates the AC voltage source given by the index
+		/// </summary>
+		/// <param name="sourceIndex"></param>
+		private void ActivateACVoltageSource(int sourceIndex) => _E[sourceIndex + _DCVoltageSources.Count] =
+			_DCVoltageSources[sourceIndex].ProducedDCVoltage;
+
+		/// <summary>
+		/// Dezactivates the AC voltage source given by the index
+		/// </summary>
+		/// <param name="sourceIndex"></param>
+		private void DezactivateACVoltageSource(int sourceIndex) => _E[sourceIndex + _DCVoltageSources.Count] = 0;
+
+		/// <summary>
+		/// Activates the current source given by the index
+		/// </summary>
+		/// <param name="sourceIndex"></param>
+		private void ActivateCurrentSource(int sourceIndex)
+		{
+			// Get the nodes
+			var nodes = _CurrentSourcesNodes[_CurrentSources[sourceIndex]];
+
+			// If the negative terminal is not grounded
+			if (nodes.Item1 != -1)
+			{
+				// Subtract source's current from the node
+				_I[nodes.Item1] -= _CurrentSources[sourceIndex].ProducedCurrent;
+			}
+
+			// If the positive terminal is not grounded
+			if (nodes.Item2 != -1)
+			{
+				// Add source's current to the node
+				_I[nodes.Item2] += _CurrentSources[sourceIndex].ProducedCurrent;
+			}
+		}
+
+		/// <summary>
+		/// Dezactivates the current source given by the index
+		/// </summary>
+		/// <param name="sourceIndex"></param>
+		private void DezactivateCurrentSource(int sourceIndex)
+		{
+			// Get the nodes
+			var nodes = _CurrentSourcesNodes[_CurrentSources[sourceIndex]];
+
+			// If the negative terminal is not grounded
+			if (nodes.Item1 != -1)
+			{
+				// Add source's current to the node (to eliminate the value subtracted when the source was activated)
+				_I[nodes.Item1] += _CurrentSources[sourceIndex].ProducedCurrent;
+			}
+
+			// If the positive terminal is not grounded
+			if (nodes.Item2 != -1)
+			{
+				// Subtract source's current from the node (to eliminate the value added when the source was activated)
+				_I[nodes.Item2] -= _CurrentSources[sourceIndex].ProducedCurrent;
+			}
+		}
+
+		/// <summary>
+		/// Helper of <see cref="FillPassiveCMatrix"/>,
+		/// fills C part of admittance matrix with -1, 0 or 1 based on DC voltage sources present in the circuit
+		/// </summary>
+		private void FillCMatrixBasedOnDCVoltageSources()
 		{
 			// For every voltage source
-			for (int i = 0; i < _VoltageSources.Count; ++i)
+			for (int i = 0; i < _DCVoltageSources.Count; ++i)
 			{
 				// Get the voltage source's nodes
-				var nodes = _VoltageSourcesNodes[_VoltageSources[i]];
+				var nodes = _DCVoltageSourcesNodes[_DCVoltageSources[i]];
 								
 				// If the positive terminal is not grounded (TODO: When initial checks for schematics are implemented this isn't necessary
 				if (nodes.Item2 != -1)
@@ -483,7 +656,37 @@ namespace ECAT.Simulation
 					_C[i, nodes.Item1] = -1;
 				}
 			}
-		}		
+		}
+
+		/// <summary>
+		/// Helper of <see cref="FillPassiveCMatrix"/>,
+		/// fills C part of admittance matrix with -1, 0 or 1 based on AC voltage sources present in the circuit
+		/// </summary>
+		private void FillCMatrixBasedOnACVoltageSources()
+		{
+			// For every voltage source
+			for (int i = 0; i < _ACVoltageSources.Count; ++i)
+			{
+				// Get the voltage source's nodes
+				var nodes = _ACVoltageSourcesNodes[_ACVoltageSources[i]];
+
+				// If the positive terminal is not grounded (TODO: When initial checks for schematics are implemented this isn't necessary
+				if (nodes.Item2 != -1)
+				{
+					// Fill the entry in the row corresponding to the source (plus starting row)
+					// and column corresponding to the node with 1 (positive terminal)
+					_C[i, nodes.Item2 + _DCVoltageSources.Count] = 1;
+				}
+
+				// If the negative terminal is not grounded
+				if (nodes.Item1 != -1)
+				{
+					// Fill the entry in the row corresponding to the source (plus starting row)
+					// and column corresponding to the node with -1 (negative terminal)
+					_C[i, nodes.Item1 + _DCVoltageSources.Count] = -1;
+				}
+			}
+		}
 
 		/// <summary>
 		/// Fills the D matrix according to rules described in a separate text file
@@ -497,48 +700,6 @@ namespace ECAT.Simulation
 				{
 					_D[i, j] = 0;
 				}
-			}
-		}
-
-		/// <summary>
-		/// Fills the currents in the Z matrix (the top part)
-		/// </summary>
-		private void FillZMatrixCurrents()
-		{
-			// For every node
-			for (int i = 0; i < _CurrentSources.Count; ++i)
-			{
-				// Get the source
-				var source = _CurrentSources[i];
-				// And its nodes
-				var nodes = _CurrentSourcesNodes[source];
-
-				// If the positive terminal is not grounded
-				if (nodes.Item2 != -1)
-				{
-					// Add the produced current to the corresponding entry in _I
-					_I[nodes.Item2] += source.ProducedCurrent;
-				}
-
-				// If the negative terminal is not grounded
-				if (nodes.Item1 != -1)
-				{
-					// Subtract the produced current from the corresponding entry in _I
-					_I[nodes.Item1] -= source.ProducedCurrent;
-				}
-			}
-		}
-
-		/// <summary>
-		/// Fills the voltages in the Z matrix (the bottom part)
-		/// </summary>
-		private void FillZMatrixVoltages()
-		{
-			// For each voltage source
-			for (int i = 0; i < _VoltageSources.Count; ++i)
-			{
-				// Add its voltge to the i-th entry plus the number of nodes (currents present above in the matrix)
-				_E[i] = _VoltageSources[i].ProducedDCVoltage;
 			}
 		}
 
@@ -575,7 +736,7 @@ namespace ECAT.Simulation
 			{
 				// Fill the entry in the row corresponding to the op-amp (plus starting row)
 				// and column corresponding to the node (positive terminal) with -OpenLoopGain
-				_C[_VoltageSources.Count + opAmpIndex, nodes.Item1] = -opAmp.OpenLoopGain;
+				_C[_DCVoltageSources.Count + opAmpIndex, nodes.Item1] = -opAmp.OpenLoopGain;
 			}
 
 			// If there exists a node to which TerminalB (inverting input) is connected
@@ -584,11 +745,11 @@ namespace ECAT.Simulation
 			{
 				// Fill the entry in the row corresponding to the op-amp (plus starting row)
 				// and column corresponding to the node (positive terminal) with OpenLoopGain
-				_C[_VoltageSources.Count + opAmpIndex, nodes.Item2] = opAmp.OpenLoopGain;
+				_C[_DCVoltageSources.Count + opAmpIndex, nodes.Item2] = opAmp.OpenLoopGain;
 			}
 
 			// Set the entry in _B corresponding to the output node to 1
-			_B[nodes.Item3, _VoltageSources.Count + opAmpIndex] = 1;
+			_B[nodes.Item3, _DCVoltageSources.Count + opAmpIndex] = 1;
 
 			// If there exists a node to which TerminalB (inverting input) is connected
 			// (it's possible it may not exist due to removed ground node)
@@ -597,12 +758,12 @@ namespace ECAT.Simulation
 			// If the output is not shorted with the inverting input
 			if (nodes.Item3 != nodes.Item2 && nodes.Item3 != -1)
 			{
-				_C[_VoltageSources.Count + opAmpIndex, nodes.Item3] = 1;
+				_C[_DCVoltageSources.Count + opAmpIndex, nodes.Item3] = 1;
 			}
 
 			// Fill the entry in the row corresponding to the op-amp (plus starting row)
 			// and column corresponding to the node (positive terminal) with 1 
-			_E[_VoltageSources.Count + opAmpIndex] = 0;
+			_E[_DCVoltageSources.Count + opAmpIndex] = 0;
 		}
 
 		/// <summary>
@@ -624,28 +785,28 @@ namespace ECAT.Simulation
 			// If the non-inverting input is not grounded, reset its entry in the _C matrix
 			if (nodes.Item1 != -1)
 			{
-				_C[_VoltageSources.Count + opAmpIndex, nodes.Item1] = 0;
+				_C[_DCVoltageSources.Count + opAmpIndex, nodes.Item1] = 0;
 			}
 
 			// If the inverting input is not grounded, reset its entry in the _C matrix
 			if (nodes.Item2 != -1)
 			{
-				_C[_VoltageSources.Count + opAmpIndex, nodes.Item2] = 0;
+				_C[_DCVoltageSources.Count + opAmpIndex, nodes.Item2] = 0;
 			}
 
 			// Set the entry in _B corresponding to the output node to 1
-			_B[nodes.Item3, _VoltageSources.Count + opAmpIndex] = 1;
+			_B[nodes.Item3, _DCVoltageSources.Count + opAmpIndex] = 1;
 
 			// And the entry in _C corresponding to the output node to 1
 			// It is important that, when non-inverting input is connected directly to the output, the entry in _B
 			// corresponding to that node is 1 (and not 0 like the if above would set it). Because this assigning is done after
 			// the one for non-inverting input no special conditions are necessary however it's very important to remeber about
 			// it if (when) this method is modified
-			_C[_VoltageSources.Count + opAmpIndex, nodes.Item3] = 1;
+			_C[_DCVoltageSources.Count + opAmpIndex, nodes.Item3] = 1;
 
 			// Finally, depending on which supply was exceeded, set the value of the source to either positive or negative
 			// supply voltage
-			_E[_VoltageSources.Count + opAmpIndex] = positiveSaturation ? opAmp.PositiveSupplyVoltage : opAmp.NegativeSupplyVoltage;
+			_E[_DCVoltageSources.Count + opAmpIndex] = positiveSaturation ? opAmp.PositiveSupplyVoltage : opAmp.NegativeSupplyVoltage;
 		}
 
 		/// <summary>
@@ -783,6 +944,9 @@ namespace ECAT.Simulation
 		/// </summary>
 		public void DCBias()
 		{
+			ActivateDCVoltageSources();
+			ActivateCurrentSources();
+
 			Complex[] result = null;
 			do
 			{
@@ -821,9 +985,9 @@ namespace ECAT.Simulation
 			}
 
 			// Assign the currents through voltage sources (the remaining entries of the results)
-			for (int i = 0; i < _VoltageSources.Count; ++i)
+			for (int i = 0; i < _DCVoltageSources.Count; ++i)
 			{
-				_VoltageSources[i].ProducedCurrent.Value = result[i + _BigDimension].Real;
+				_DCVoltageSources[i].ProducedCurrent.Value = result[i + _BigDimension].Real;
 			}
 
 		}
