@@ -2,6 +2,7 @@
 using CSharpEnhanced.Maths;
 using ECAT.Core;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -150,6 +151,16 @@ namespace ECAT.Simulation
 		/// Bottom part of the vector of free terms, based on voltage sources (including op-amp outputs)
 		/// </summary>
 		private Complex[] _E { get; set; }
+
+		/// <summary>
+		/// Used to store op-amps that were determined to be saturated
+		/// </summary>
+		private List<IOpAmp> _SaturatedOpAmps { get; set; } = new List<IOpAmp>();
+
+		/// <summary>
+		/// Used to store tested combinations of opamps when searching for false-positives
+		/// </summary>
+		private BitArray _TestedCombinations { get; set; }
 
 		#endregion
 
@@ -360,7 +371,7 @@ namespace ECAT.Simulation
 
 		/// <summary>
 		/// Fills the non-diagonal entries of a DC admittance matrix - for i,j admittance subtracts from it all admittances located
-		/// between node i and node j		
+		/// between node i and node j
 		/// </summary>
 		private void FillPassiveGMatrixNonDiagonal()
 		{
@@ -661,7 +672,7 @@ namespace ECAT.Simulation
 				{
 					// Op-amp needs adjusting, it's output will now be modeled as an independent voltage source now
 					ConfigureForSaturation(opAmp, result[nodes.Item3].Real > opAmp.PositiveSupplyVoltage);
-
+					_SaturatedOpAmps.Add(opAmp);
 					return true;
 				}
 			}
@@ -669,6 +680,30 @@ namespace ECAT.Simulation
 			return false;
 		}
 
+		/// <summary>
+		/// Checks if <see cref="IOpAmp"/>s operate in the proper region (if they didn't exceed their supply voltages.) If they don't,
+		/// adjusts the <see cref="_B"/>, <see cref="_C"/> and <see cref="_E"/> matrices so that, instead of being variable voltage
+		/// sources, they are independent voltage sources capped at their supply voltage value. Returns true if an <see cref="IOpAmp"/>
+		/// was adjusted and calculations need to be redone, false otherwise
+		/// </summary>
+		/// <param name="result"></param>
+		/// <returns></returns>
+		private void CheckOpAmpOperationFalsePositives(Complex[] result)
+		{
+			for (int i = 0; i < _TestedCombinations.Count; i++)
+			{
+				bool previous = _TestedCombinations[i];
+				_TestedCombinations[i] = !previous;
+				if (previous)
+				{
+					// Found a clear bit - now that we've set it, we're done
+					ConfigureForActiveOperation(_SaturatedOpAmps[i]);
+					return;
+				}
+				
+			}
+		}
+		
 		/// <summary>
 		/// Combines matrices <see cref="_G"/>, <see cref="_B"/>, <see cref="_C"/>, <see cref="_D"/> to create admittance matrix
 		/// </summary>
@@ -749,8 +784,8 @@ namespace ECAT.Simulation
 		public void DCBias()
 		{
 			Complex[] result = null;
-			while (true)
-			{				
+			do
+			{
 				try
 				{
 					result = LinearEquations.SimplifiedGaussJordanElimination(ComputeA(), ComputeZ());
@@ -760,13 +795,24 @@ namespace ECAT.Simulation
 					break;
 				}
 
-				if(!CheckOpAmpOperation(result))
+			} while (CheckOpAmpOperation(result));
+
+			_TestedCombinations = new BitArray(_SaturatedOpAmps.Count, true);
+			do
+			{
+				CheckOpAmpOperationFalsePositives(result);
+
+				try
+				{
+					result = LinearEquations.SimplifiedGaussJordanElimination(ComputeA(), ComputeZ());
+				}
+				catch (Exception e)
 				{
 					break;
 				}
-			}
 
-			//while(true)
+			} while (CheckOpAmpOperation(result));
+		
 
 			// Assign the node potentials (entries from 0 to the number of nodes - 1)
 			for (int i = 0; i < _BigDimension; ++i)
