@@ -35,13 +35,7 @@ namespace ECAT.Simulation
 			// Start it for admittance matrix creation
 			watch.Start();
 
-			// Construct a DC admittance matrix
-			//var admittanceMatrix = DCAdmittanceMatrix.Construct(nodes,
-			//	new List<IVoltageSource>(schematic.Components.Where(
-			//	(component) => component is IVoltageSource).Select((component) => component as IVoltageSource)),
-			//	new List<IOpAmp>(schematic.Components.Where(
-			//	(component) => component is IOpAmp).Select((component) => component as IOpAmp)));
-
+			// Create an admittance matrix
 			var admittanceMatrix = AdmittanceMatrix.Construct(schematic);
 
 			// Log the success and duration
@@ -52,7 +46,7 @@ namespace ECAT.Simulation
 			try
 			{
 				// Solve it (for now try-catch for debugging)
-				admittanceMatrix.Solve();
+				admittanceMatrix.DCBias();
 
 				IoC.Log($"Calcualted the result in {watch.ElapsedMilliseconds}ms", InfoLoggerMessageDuration.Short);
 			}

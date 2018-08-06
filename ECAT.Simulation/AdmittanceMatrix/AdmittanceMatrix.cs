@@ -724,7 +724,7 @@ namespace ECAT.Simulation
 		/// Solves the matrix for the parameter values present at the moment of calling,
 		/// updates the values of nodes and sources currents
 		/// </summary>
-		public void Solve()
+		public void DCBias()
 		{
 			Complex[] result = null;
 			while (true)
