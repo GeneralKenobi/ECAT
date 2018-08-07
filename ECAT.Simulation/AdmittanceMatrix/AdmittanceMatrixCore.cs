@@ -899,6 +899,10 @@ namespace ECAT.Simulation
 			return result;
 		}
 
+		#endregion
+
+		#region Result assigning
+
 		/// <summary>
 		/// Assigns the results - potentials to nodes and currents to voltage sources
 		/// </summary>
@@ -908,13 +912,13 @@ namespace ECAT.Simulation
 			// Assign the node potentials (entries from 0 to the number of nodes - 1)
 			for (int i = 0; i < _BigDimension; ++i)
 			{
-				_Nodes[i].Potential.Value = result[i].Real;
+				_Nodes[i].Potential.Value = result[i];
 			}
 
 			// Assign the currents through voltage sources (the remaining entries of the results)
 			for (int i = 0; i < _DCVoltageSources.Count; ++i)
 			{
-				_DCVoltageSources[i].ProducedCurrent.Value = result[i + _BigDimension].Real;
+				_DCVoltageSources[i].ProducedCurrent.Value = result[i + _BigDimension];
 			}
 		}
 

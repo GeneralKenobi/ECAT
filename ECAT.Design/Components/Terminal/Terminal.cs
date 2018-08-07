@@ -2,6 +2,7 @@
 using ECAT.Core;
 using System;
 using System.ComponentModel;
+using System.Numerics;
 
 namespace ECAT.Design
 {
@@ -49,7 +50,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Backing store for <see cref="Potential"/>
 		/// </summary>
-		private RefWrapperPropertyChanged<double> mPotential;
+		private RefWrapperPropertyChanged<Complex> mPotential;
 
 		#endregion
 
@@ -63,7 +64,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Reference to potential at <see cref="INode"/> that is associated with this <see cref="ITerminal"/>
 		/// </summary>
-		public RefWrapperPropertyChanged<double> Potential
+		public RefWrapperPropertyChanged<Complex> Potential
 		{
 			get => mPotential;
 			set

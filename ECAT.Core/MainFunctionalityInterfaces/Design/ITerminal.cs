@@ -1,6 +1,7 @@
 ﻿using CSharpEnhanced.CoreClasses;
 using System;
 using System.ComponentModel;
+using System.Numerics;
 
 namespace ECAT.Core
 {
@@ -21,7 +22,7 @@ namespace ECAT.Core
 		/// <summary>
 		/// Reference to potential at <see cref="INode"/> that is associated with this <see cref="ITerminal"/>
 		/// </summary>
-		RefWrapperPropertyChanged<double> Potential { get; set; }
+		RefWrapperPropertyChanged<Complex> Potential { get; set; }
 
 		#endregion
 

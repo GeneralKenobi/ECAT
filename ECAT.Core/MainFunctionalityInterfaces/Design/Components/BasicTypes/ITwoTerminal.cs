@@ -22,12 +22,12 @@ namespace ECAT.Core
 		/// <summary>
 		/// Voltage drop between <see cref="TerminalB"/> and <see cref="TerminalA"/> (VB - VA)
 		/// </summary>
-		double VoltageBA { get; }
+		Complex VoltageBA { get; }
 
 		/// <summary>
 		/// Current flowing from <see cref="TerminalA"/> to <see cref="TerminalB"/>
 		/// </summary>
-		double CurrentBA { get; }
+		Complex CurrentBA { get; }
 
 		#endregion
 

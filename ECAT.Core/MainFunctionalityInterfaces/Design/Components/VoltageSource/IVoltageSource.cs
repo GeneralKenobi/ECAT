@@ -1,4 +1,5 @@
 ﻿using CSharpEnhanced.CoreClasses;
+using System.Numerics;
 
 namespace ECAT.Core
 {
@@ -18,7 +19,7 @@ namespace ECAT.Core
 		/// <summary>
 		/// Current through the source, flowing from terminal A to terminal B
 		/// </summary>
-		RefWrapperPropertyChanged<double> ProducedCurrent { get; set; }
+		RefWrapperPropertyChanged<Complex> ProducedCurrent { get; set; }
 
 		#endregion
 	}

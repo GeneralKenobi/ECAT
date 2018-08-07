@@ -1,5 +1,6 @@
 ﻿using CSharpEnhanced.CoreClasses;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace ECAT.Core
 {
@@ -36,7 +37,7 @@ namespace ECAT.Core
 		/// <summary>
 		/// Potential present at the node with respect to ground
 		/// </summary>
-		public RefWrapperPropertyChanged<double> Potential { get; } = new RefWrapperPropertyChanged<double>();
+		public RefWrapperPropertyChanged<Complex> Potential { get; } = new RefWrapperPropertyChanged<Complex>();
 
 		/// <summary>
 		/// List with all components that are connected to the <see cref="INode"/>

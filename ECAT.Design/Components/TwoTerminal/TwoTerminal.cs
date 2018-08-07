@@ -62,14 +62,14 @@ namespace ECAT.Design
 		/// <summary>
 		/// Voltage drop between <see cref="TerminalB"/> and <see cref="TerminalA"/> (VB - VA)
 		/// </summary>
-		public double VoltageBA => TerminalB.Potential == null || TerminalA.Potential == null ? 
+		public Complex VoltageBA => TerminalB.Potential == null || TerminalA.Potential == null ? 
 			0 : TerminalB.Potential.Value - TerminalA.Potential.Value;
 
 		/// <summary>
 		/// Current flowing from <see cref="TerminalA"/> to <see cref="TerminalB"/>, may be overriden if a specific component'
 		/// current can't be determined from its voltage and admittance (eg. voltage source)
 		/// </summary>
-		public virtual double CurrentBA => -VoltageBA * GetAdmittance(0).Real;
+		public virtual Complex CurrentBA => -VoltageBA * GetAdmittance(0);
 
 		#endregion
 
