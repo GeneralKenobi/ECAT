@@ -42,6 +42,11 @@ namespace ECAT.Simulation
 		public double DefaultCapacitorCapacitance { get; } = 1e-5;
 
 		/// <summary>
+		/// Default frequency of an <see cref="IACVoltageSource"/>
+		/// </summary>
+		public double DefaultACVoltageSourceFrequency { get; } = 1e3;
+
+		/// <summary>
 		/// Default value for <see cref="ICurrentSource"/>'s produced current
 		/// </summary>
 		public double DefaultCurrentSourceProducedCurrent { get; } = 1e-3;

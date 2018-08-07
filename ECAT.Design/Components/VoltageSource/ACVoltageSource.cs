@@ -12,7 +12,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Frequency of the AC voltage produced by this <see cref="ACVoltageSource"/>
 		/// </summary>
-		public double Frequency { get; set; }
+		public double Frequency { get; set; } = IoC.Resolve<IDefaultValues>().DefaultACVoltageSourceFrequency;
 
 		/// <summary>
 		/// The positive peak value of the produced voltage sine wave

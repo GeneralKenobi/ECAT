@@ -40,6 +40,11 @@ namespace ECAT.Core
 		double DefaultCapacitorCapacitance { get; }
 
 		/// <summary>
+		/// Default frequency of an <see cref="IACVoltageSource"/>
+		/// </summary>
+		double DefaultACVoltageSourceFrequency { get; }
+
+		/// <summary>
 		/// Default value for <see cref="ICurrentSource"/>'s produced current
 		/// </summary>
 		double DefaultCurrentSourceProducedCurrent { get; }
