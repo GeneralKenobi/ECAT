@@ -45,8 +45,10 @@ namespace ECAT.Simulation
 
 			try
 			{
+				admittanceMatrix.ActivateCurrentSources();
+				admittanceMatrix.ActivateDCVoltageSources();
 				// Solve it (for now try-catch for debugging)
-				admittanceMatrix.DCBias();
+				admittanceMatrix.Solve();
 
 				IoC.Log($"Calcualted the result in {watch.ElapsedMilliseconds}ms", InfoLoggerMessageDuration.Short);
 			}
