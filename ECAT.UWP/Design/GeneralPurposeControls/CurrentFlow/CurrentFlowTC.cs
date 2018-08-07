@@ -1,4 +1,5 @@
-﻿using Windows.UI.Xaml;
+﻿using System.Numerics;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace ECAT.UWP
@@ -25,9 +26,9 @@ namespace ECAT.UWP
 		/// <summary>
 		/// The value of the current, flowing from left to right
 		/// </summary>
-		public double Current
+		public Complex Current
 		{
-			get => (double)GetValue(CurrentProperty);
+			get => (Complex)GetValue(CurrentProperty);
 			set => SetValue(CurrentProperty, value);
 		}
 
@@ -35,8 +36,8 @@ namespace ECAT.UWP
 		/// Backing store for <see cref="Current"/>
 		/// </summary>
 		public static readonly DependencyProperty CurrentProperty =
-			DependencyProperty.Register(nameof(Current), typeof(double),
-			typeof(CurrentFlowTC), new PropertyMetadata(default(double)));
+			DependencyProperty.Register(nameof(Current), typeof(Complex),
+			typeof(CurrentFlowTC), new PropertyMetadata(default(Complex)));
 
 		#endregion
 	}

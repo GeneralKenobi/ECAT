@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Numerics;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -75,9 +76,9 @@ namespace ECAT.UWP
 		/// <summary>
 		/// The voltage presented by this voltage drop arrow
 		/// </summary>
-		public double Voltage
+		public Complex Voltage
 		{
-			get => (double)GetValue(VoltageProperty);
+			get => (Complex)GetValue(VoltageProperty);
 			set => SetValue(VoltageProperty, value);
 		}
 
@@ -85,8 +86,8 @@ namespace ECAT.UWP
 		/// Backing store for <see cref="Voltage"/>
 		/// </summary>
 		public static readonly DependencyProperty VoltageProperty =
-			DependencyProperty.Register(nameof(Voltage), typeof(double),
-			typeof(VoltageDropTC), new PropertyMetadata(default(double)));
+			DependencyProperty.Register(nameof(Voltage), typeof(Complex),
+			typeof(VoltageDropTC), new PropertyMetadata(default(Complex)));
 
 		#endregion
 
