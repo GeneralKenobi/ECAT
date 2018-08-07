@@ -14,7 +14,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Capacitance of this <see cref="Capacitor"/>
 		/// </summary>
-		public double Capacitance { get; set; }
+		public double Capacitance { get; set; } = IoC.Resolve<IDefaultValues>().DefaultCapacitorCapacitance;
 
 		#endregion
 
