@@ -137,6 +137,7 @@
     <Compile Include="Design\GeneralPurposeControls\CurrentFlow\CurrentFlowTC.cs" />
     <Compile Include="Design\GeneralPurposeControls\TwoTerminalComponentPackage\TwoTerminalComponentPackageTC.cs" />
     <Compile Include="Design\GeneralPurposeControls\VoltageDrop\VoltageDropTC.cs" />
+    <Compile Include="GeneralValueConverters\ComplexToSIStringConverter.cs" />
     <Compile Include="GeneralValueConverters\ComponentEditViewModelToComponentEditControlConverter.cs" />
     <Compile Include="GeneralValueConverters\DoubleToChosenParameterConverter.cs" />
     <Compile Include="GeneralValueConverters\DoubleToVisibilityConverter.cs" />
