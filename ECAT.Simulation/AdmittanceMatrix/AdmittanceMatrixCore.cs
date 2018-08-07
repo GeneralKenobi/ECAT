@@ -27,6 +27,8 @@ namespace ECAT.Simulation
 
 		#region Private properties
 
+		#region Schematic and nodes
+
 		/// <summary>
 		/// Schematic on which the matrix is based
 		/// </summary>
@@ -37,6 +39,10 @@ namespace ECAT.Simulation
 		/// the index of the node which directly affects the admittance matrix
 		/// </summary>
 		private List<INode> _Nodes { get; set; }
+
+		#endregion
+
+		#region Collections of components/corresponding nodes
 
 		/// <summary>
 		/// List with all voltage sources in the <see cref="_Schematic"/>, order is important - position in the list indicates the
@@ -81,11 +87,6 @@ namespace ECAT.Simulation
 			new Dictionary<ICurrentSource, Tuple<int, int>>();
 
 		/// <summary>
-		/// Array with state of each <see cref="ICurrentSource"/>: true signals that the source is active, false that it is inactive
-		/// </summary>
-		private BitArray _CurrentSourceStates { get; set; }
-
-		/// <summary>
 		/// List with all op-amps in the <see cref="_Schematic"/>, order is important - position in the list indicates the
 		/// index of the op-amp which directly affects the admittance matrix
 		/// </summary>
@@ -96,11 +97,20 @@ namespace ECAT.Simulation
 		/// then it is given by -1
 		/// </summary>
 		private Dictionary<IOpAmp, Tuple<int, int, int>> _OpAmpNodes { get; set; } = new Dictionary<IOpAmp, Tuple<int, int, int>>();
-		
+
+		/// <summary>
+		/// Array with state of each <see cref="ICurrentSource"/>: true signals that the source is active, false that it is inactive
+		/// </summary>
+		private BitArray _CurrentSourceStates { get; set; }
+
+		#endregion
+
+		#region Submatrices
+
 		/// <summary>
 		/// Part of admittance matrix located in the top left corner, built based on nodes and admittances connected to them
 		/// </summary>
-		private Complex[,] _G { get; set; }
+		private Complex[,] _A { get; set; }
 
 		/// <summary>
 		/// Part of admittance matrix located in the top right corner - based on independent voltage sources (including op-amp outputs)
@@ -130,6 +140,8 @@ namespace ECAT.Simulation
 
 		#endregion
 
+		#endregion
+
 		#region Protected properties
 
 		/// <summary>
@@ -139,7 +151,7 @@ namespace ECAT.Simulation
 		protected List<Tuple<int, double, double>> _OpAmpOutputs { get; private set; } = new List<Tuple<int, double, double>>();
 
 		/// <summary>
-		/// Size of G part of the admittance matrix (dependent on nodes)
+		/// Size of A part of the admittance matrix (dependent on nodes)
 		/// </summary>
 		protected int _BigDimension => _Nodes.Count;
 
@@ -348,12 +360,12 @@ namespace ECAT.Simulation
 		#region Control
 
 		/// <summary>
-		/// Creates and initializes sub matrices (<see cref="_G"/>, <see cref="_B"/>, <see cref="_C"/>, <see cref="_D"/>
+		/// Creates and initializes sub matrices (<see cref="_A"/>, <see cref="_B"/>, <see cref="_C"/>, <see cref="_D"/>
 		/// <see cref="_E"/>, <see cref="_I"/>) with default values (zeros)
 		/// </summary>
 		private void InitializeSubMatrices()
 		{
-			_G = ArrayHelpers.CreateAndInitialize(Complex.Zero, _BigDimension, _BigDimension);
+			_A = ArrayHelpers.CreateAndInitialize(Complex.Zero, _BigDimension, _BigDimension);
 			_B = ArrayHelpers.CreateAndInitialize(0, _BigDimension, _SmallDimension);
 			_C = ArrayHelpers.CreateAndInitialize(Complex.Zero, _SmallDimension, _BigDimension);
 			_D = ArrayHelpers.CreateAndInitialize(Complex.Zero, _SmallDimension, _SmallDimension);
@@ -367,7 +379,7 @@ namespace ECAT.Simulation
 		/// </summary>
 		private void ConstructInitialAdmittanceMatrix()
 		{
-			FillPassiveGMatrix();
+			FillPassiveAMatrix();
 
 			FillPassiveBMatrix();
 
@@ -382,23 +394,23 @@ namespace ECAT.Simulation
 
 		#endregion
 
-		#region G Matrix
+		#region A Matrix
 
 		/// <summary>
-		/// Fills the G Matrix
+		/// Fills the <see cref="_A"/> Matrix
 		/// </summary>
-		private void FillPassiveGMatrix()
+		private void FillPassiveAMatrix()
 		{
-			FillPassiveGMatrixDiagonal();
+			FillPassiveAMatrixDiagonal();
 
-			FillPassiveGMatrixNonDiagonal();
+			FillPassiveAMatrixNonDiagonal();
 		}
 
 		/// <summary>
 		/// Fills the diagonal of a DC admittance matrix - for i-th node adds all admittances connected to it to the admittance
 		/// denoted by indexes i,i
 		/// </summary>
-		private void FillPassiveGMatrixDiagonal()
+		private void FillPassiveAMatrixDiagonal()
 		{
 			// For each node
 			for (int i = 0; i < _Nodes.Count; ++i)
@@ -410,7 +422,7 @@ namespace ECAT.Simulation
 					if (component is ITwoTerminal twoTerminal && twoTerminal.GetAdmittance(0).Imaginary == 0)
 					{
 						// Add its admittance to the matrix
-						_G[i, i] += twoTerminal.GetAdmittance(0);
+						_A[i, i] += twoTerminal.GetAdmittance(0);
 					}
 				});
 			}
@@ -420,12 +432,12 @@ namespace ECAT.Simulation
 		/// Fills the non-diagonal entries of a DC admittance matrix - for i,j admittance subtracts from it all admittances located
 		/// between node i and node j
 		/// </summary>
-		private void FillPassiveGMatrixNonDiagonal()
+		private void FillPassiveAMatrixNonDiagonal()
 		{
 			// For each node
 			for (int i = 0; i < _Nodes.Count; ++i)
 			{
-				// For each node it's pair with (because of that matrix G is symmetrical so it's only necessary to fill the
+				// For each node it's pair with (because of that matrix A is symmetrical so it's only necessary to fill the
 				// part below main diagonal and copy the operation to the corresponding entry above the main diagonal
 				for (int j = 0; j < i; ++j)
 				{
@@ -440,11 +452,11 @@ namespace ECAT.Simulation
 						if (component is ITwoTerminal twoTerminal && twoTerminal.GetAdmittance(0).Imaginary == 0)
 						{
 							// Subtract its admittance to the matrix
-							_G[i, j] -= twoTerminal.GetAdmittance(0);
+							_A[i, j] -= twoTerminal.GetAdmittance(0);
 
 							// And do the same to the entry j,i - admittances between node i,j are identical to admittances
 							// between nodes j,i
-							_G[j, i] -= twoTerminal.GetAdmittance(0);
+							_A[j, i] -= twoTerminal.GetAdmittance(0);
 						}
 					});
 				}
@@ -819,18 +831,18 @@ namespace ECAT.Simulation
 		#region Generation of final matrix
 
 		/// <summary>
-		/// Combines matrices <see cref="_G"/>, <see cref="_B"/>, <see cref="_C"/>, <see cref="_D"/> to create admittance matrix
+		/// Combines matrices <see cref="_A"/>, <see cref="_B"/>, <see cref="_C"/>, <see cref="_D"/> to create admittance matrix
 		/// </summary>
-		protected Complex[,] ComputeA()
+		protected Complex[,] ComputeCoefficientMatrix()
 		{
 			var result = new Complex[_Size, _Size];
 
-			// _G
+			// _A
 			for (int rowIndex = 0; rowIndex < _BigDimension; ++rowIndex)
 			{
 				for (int columnIndex = 0; columnIndex < _BigDimension; ++columnIndex)
 				{
-					result[rowIndex, columnIndex] = _G[rowIndex, columnIndex];
+					result[rowIndex, columnIndex] = _A[rowIndex, columnIndex];
 				}
 			}
 
@@ -868,7 +880,7 @@ namespace ECAT.Simulation
 		/// Combines matrices <see cref="_I"/> and <see cref="_E"/> to create a vector of free terms for the admittance matrix
 		/// </summary>
 		/// <returns></returns>
-		protected Complex[] ComputeZ()
+		protected Complex[] ComputeFreeTermsMatrix()
 		{
 			var result = new Complex[_BigDimension + _SmallDimension];
 
@@ -908,6 +920,8 @@ namespace ECAT.Simulation
 
 		#endregion
 
+		#region Building and node structure analysis
+
 		/// <summary>
 		/// Builds the matrix - it's essential to call this method right after constructor
 		/// </summary>
@@ -927,6 +941,8 @@ namespace ECAT.Simulation
 
 			ConstructInitialAdmittanceMatrix();
 		}
+
+		#endregion
 
 		#endregion
 	}

@@ -107,7 +107,7 @@ namespace ECAT.Simulation
 			{
 				try
 				{
-					result = LinearEquations.SimplifiedGaussJordanElimination(ComputeA(), ComputeZ());
+					result = LinearEquations.SimplifiedGaussJordanElimination(ComputeCoefficientMatrix(), ComputeFreeTermsMatrix());
 				}
 				catch (Exception)
 				{
@@ -125,7 +125,7 @@ namespace ECAT.Simulation
 
 				try
 				{
-					result = LinearEquations.SimplifiedGaussJordanElimination(ComputeA(), ComputeZ());
+					result = LinearEquations.SimplifiedGaussJordanElimination(ComputeCoefficientMatrix(), ComputeFreeTermsMatrix());
 				}
 				catch (Exception)
 				{
