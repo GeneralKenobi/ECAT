@@ -42,37 +42,38 @@
 							Grid.Row="1"/>
 
 						<!-- Arrow on the left, visible if Voltage is negative -->
-						<local:ArrowheadTC Visibility="{Binding Voltage, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ArrowheadVisibilityConverter}, ConverterParameter=x}"
+						<local:ArrowheadTC Visibility="Collapsed"
 							RotationAngle="{Binding ArrowRotationAngle, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource OppositeConverter}}"
 							Foreground="{TemplateBinding Foreground}"
 							VerticalAlignment="Bottom"
 							Margin="0 0 0 -10"
 							Grid.Row="1"/>
-
+						<!--Visibility="{Binding Voltage, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ArrowheadVisibilityConverter}, ConverterParameter=x}"-->
 						<!-- Arrow on the right, visible of Voltage is nonnegative -->
-						<local:ArrowheadTC Visibility="{Binding Voltage, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ArrowheadVisibilityConverter}}"
+						<local:ArrowheadTC 
 							RotationAngle="{Binding ArrowRotationAngle, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource SumConverter}, ConverterParameter=180}"
 							Foreground="{TemplateBinding Foreground}"
 							VerticalAlignment="Bottom"
 							HorizontalAlignment="Right"
 							Margin="0 0 -20 -10"
 							Grid.Row="1"/>
-
+						<!--Visibility="{Binding Voltage, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ArrowheadVisibilityConverter}}"-->
 						<!-- The voltage -->
-						<controls:ValueUnitDisplay Value="{Binding Voltage, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource AbsoluteValueConverter}}"
+						<controls:ComplexValueUnitDisplay Value="{Binding Voltage, RelativeSource={RelativeSource Mode=TemplatedParent}}"
 							HorizontalAlignment="Center"
 							VerticalAlignment="Top"
 							FontSize="{StaticResource FontSizeBig}"
 							Foreground="{TemplateBinding Foreground}"
 							Unit="V"
+							UseJAsImaginaryUnit="True"
 							RenderTransformOrigin="0.5 0.5"
 							RoundToDigit="4">
 
-							<controls:ValueUnitDisplay.RenderTransform>
+							<controls:ComplexValueUnitDisplay.RenderTransform>
 								<RotateTransform Angle="{Binding Component.Center.RotationAngle, Converter={StaticResource TextPositionFixConverter}}"/>
-							</controls:ValueUnitDisplay.RenderTransform>
+							</controls:ComplexValueUnitDisplay.RenderTransform>
 							
-						</controls:ValueUnitDisplay>
+						</controls:ComplexValueUnitDisplay>
 
 					</Grid>
 
