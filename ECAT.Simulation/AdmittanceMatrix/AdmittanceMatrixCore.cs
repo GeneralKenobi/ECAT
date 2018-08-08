@@ -618,7 +618,7 @@ namespace ECAT.Simulation
 				{
 					// Fill the entry in the row corresponding to the source (plus starting row)
 					// and column corresponding to the node with 1 (positive terminal)
-					_C[i, nodes.Item2 + _DCVoltageSources.Count] = 1;
+					_C[i + _DCVoltageSources.Count, nodes.Item2] = 1;
 				}
 
 				// If the negative terminal is not grounded
@@ -626,7 +626,7 @@ namespace ECAT.Simulation
 				{
 					// Fill the entry in the row corresponding to the source (plus starting row)
 					// and column corresponding to the node with -1 (negative terminal)
-					_C[i, nodes.Item1 + _DCVoltageSources.Count] = -1;
+					_C[i + _DCVoltageSources.Count, nodes.Item1] = -1;
 				}
 			}
 		}
