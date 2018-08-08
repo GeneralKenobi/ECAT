@@ -781,7 +781,7 @@ namespace ECAT.Simulation
 		/// </summary>
 		/// <param name="sourceIndex"></param>
 		protected void ActivateACVoltageSource(int sourceIndex) => _E[sourceIndex + _DCVoltageSources.Count] =
-			_DCVoltageSources[sourceIndex].ProducedDCVoltage;
+			_ACVoltageSources[sourceIndex].PeakProducedVoltage;
 
 		/// <summary>
 		/// Dezactivates the AC voltage source given by the index
