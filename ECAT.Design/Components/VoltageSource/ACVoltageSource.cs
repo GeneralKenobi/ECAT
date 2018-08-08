@@ -7,6 +7,18 @@ namespace ECAT.Design
 	/// </summary>
 	public class ACVoltageSource : VoltageSource, IACVoltageSource
 	{
+		#region Constructor
+
+		/// <summary>
+		/// Default Constructor
+		/// </summary>
+		public ACVoltageSource()
+		{
+			ProducedDCVoltage = IoC.Resolve<IDefaultValues>().DefaultACVoltageSourceDCOffset;
+		}
+
+		#endregion
+
 		#region Public properties
 
 		/// <summary>
@@ -17,7 +29,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// The positive peak value of the produced voltage sine wave
 		/// </summary>
-		public double PeakProducedVoltage { get; set; }
+		public double PeakProducedVoltage { get; set; } = IoC.Resolve<IDefaultValues>().DefaultACVoltageSourceProducedACVoltage;
 
 		#endregion
 	}
