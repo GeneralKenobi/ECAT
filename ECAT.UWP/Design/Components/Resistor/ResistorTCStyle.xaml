@@ -20,10 +20,7 @@
 							VerticalAlignment="Center"/>
 
 						<!-- Presents voltage drop across the component -->
-						<local:VoltageDropTC ArrowRotationAngle="27.5"
-							Margin="30 -26 30 0"
-							VerticalAlignment="Top"								
-							Voltage="{Binding Component.VoltageBA}"/>
+						<local:VoltageDropTC VerticalAlignment="Top"/>
 
 						<!-- Presents a parameter associated with the component -->
 						<controls:ValueUnitDisplay Foreground="{StaticResource BlackBrush}"

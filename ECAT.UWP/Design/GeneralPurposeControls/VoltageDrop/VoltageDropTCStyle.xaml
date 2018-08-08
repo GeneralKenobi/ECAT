@@ -7,73 +7,39 @@
 
 	<Style TargetType="local:VoltageDropTC">
 		<Setter Property="Foreground" Value="{StaticResource BlackBrush}"/>
-		<Setter Property="ArrowRotationAngle" Value="27.5"/>
-		<Setter Property="Height" Value="50"/>
+		<Setter Property="Margin" Value="15 5 15 0"/>
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="local:VoltageDropTC">
 
-					<!-- Root container, margin = -1 to prevent the arrow's rounded corners from being clipped -->
-					<Grid HorizontalAlignment="Center"
-						VerticalAlignment="Center"
-						Margin="-1">
+					<!-- Root container -->
+					<Grid Margin="{TemplateBinding Margin}">
 
-						<Grid.Resources>
-							<converters:DoubleToGridLength x:Key="GridLengthConverter"/>
-							<local:DoubleToVisibilityConverter x:Key="ArrowheadVisibilityConverter"/>
-							<converters:SumConverter x:Key="SumConverter"/>
-							<converters:OppositeDoubleConverter x:Key="OppositeConverter"/>
-							<converters:AbsoluteValueConverter x:Key="AbsoluteValueConverter"/>
-							<local:TextPositionFixRotationConverter x:Key="TextPositionFixConverter"/>
-						</Grid.Resources>
+						<Grid.ColumnDefinitions>
+							<!-- Column for the minus sign -->
+							<ColumnDefinition Width="15"/>
+							<!-- Empty space -->
+							<ColumnDefinition Width="*"/>
+							<!-- Column for the plus sign -->
+							<ColumnDefinition Width="15"/>
+						</Grid.ColumnDefinitions>
 
-						<Grid.RowDefinitions>
-							<RowDefinition Height="{Binding ValueRowHeight, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource GridLengthConverter}}"/>
-							<RowDefinition Height="*"/>
-						</Grid.RowDefinitions>					
+						<!-- Minus sign -->
+						<Rectangle Height="3"
+							Fill="{TemplateBinding Foreground}"/>
 
-						<!-- The body of the arrow -->
-						<Path Stroke="{TemplateBinding Foreground}"
-							VerticalAlignment="Bottom"
-							StrokeThickness="4"							
-							Data="{Binding PathGeometry, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-							StrokeEndLineCap="Round"
-							StrokeStartLineCap="Round"
-							Grid.Row="1"/>
+						<!-- Plus sign -->
+						<Grid Grid.Column="2">
 
-						<!-- Arrow on the left, visible if Voltage is negative -->
-						<local:ArrowheadTC Visibility="Collapsed"
-							RotationAngle="{Binding ArrowRotationAngle, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource OppositeConverter}}"
-							Foreground="{TemplateBinding Foreground}"
-							VerticalAlignment="Bottom"
-							Margin="0 0 0 -10"
-							Grid.Row="1"/>
-						<!--Visibility="{Binding Voltage, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ArrowheadVisibilityConverter}, ConverterParameter=x}"-->
-						<!-- Arrow on the right, visible of Voltage is nonnegative -->
-						<local:ArrowheadTC 
-							RotationAngle="{Binding ArrowRotationAngle, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource SumConverter}, ConverterParameter=180}"
-							Foreground="{TemplateBinding Foreground}"
-							VerticalAlignment="Bottom"
-							HorizontalAlignment="Right"
-							Margin="0 0 -20 -10"
-							Grid.Row="1"/>
-						<!--Visibility="{Binding Voltage, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ArrowheadVisibilityConverter}}"-->
-						<!-- The voltage -->
-						<controls:ComplexValueUnitDisplay Value="{Binding Voltage, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-							HorizontalAlignment="Center"
-							VerticalAlignment="Top"
-							FontSize="{StaticResource FontSizeBig}"
-							Foreground="{TemplateBinding Foreground}"
-							Unit="V"
-							UseJAsImaginaryUnit="True"
-							RenderTransformOrigin="0.5 0.5"
-							RoundToDigit="4">
+							<!-- Horizontal element-->
+							<Rectangle Height="3"
+								Fill="{TemplateBinding Foreground}"/>
 
-							<controls:ComplexValueUnitDisplay.RenderTransform>
-								<RotateTransform Angle="{Binding Component.Center.RotationAngle, Converter={StaticResource TextPositionFixConverter}}"/>
-							</controls:ComplexValueUnitDisplay.RenderTransform>
-							
-						</controls:ComplexValueUnitDisplay>
+							<!-- Vertical element -->
+							<Rectangle Width="3"
+								Height="15"
+								Fill="{TemplateBinding Foreground}"/>
+						</Grid>
 
 					</Grid>
 

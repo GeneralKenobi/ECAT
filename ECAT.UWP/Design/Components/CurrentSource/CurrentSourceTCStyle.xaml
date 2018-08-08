@@ -16,11 +16,7 @@
 					<Grid>
 
 						<!-- Presents voltage drop across the component -->
-						<local:VoltageDropTC ArrowRotationAngle="40"
-								Margin="30 -30 30 0"
-								VerticalAlignment="Top"
-								Height="60"
-								Voltage="{Binding Component.VoltageBA}"/>
+						<local:VoltageDropTC VerticalAlignment="Top"/>
 
 						<!-- Presents a parameter associated with the component -->
 						<controls:ValueUnitDisplay Foreground="{StaticResource BlackBrush}"
