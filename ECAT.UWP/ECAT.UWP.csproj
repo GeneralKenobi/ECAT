@@ -95,8 +95,11 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Design\ComponentAddingMenu\ComponentAddingMenu.xaml.cs">
-      <DependentUpon>ComponentAddingMenu.xaml</DependentUpon>
+    <Compile Include="Design\ComponentAddingMenu\ComponentAddingMenuUC.xaml.cs">
+      <DependentUpon>ComponentAddingMenuUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Design\ComponentInfo\ComponentInfoUC.xaml.cs">
+      <DependentUpon>ComponentInfoUC.xaml</DependentUpon>
     </Compile>
     <Compile Include="Design\Components\ACVoltageSource\ACVoltageSourceTC.cs" />
     <Compile Include="Design\Components\Capacitor\CapacitorTC.cs" />
@@ -178,7 +181,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Design\ComponentAddingMenu\ComponentAddingMenu.xaml">
+    <Page Include="Design\ComponentAddingMenu\ComponentAddingMenuUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Design\ComponentInfo\ComponentInfoUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -15,7 +15,7 @@
 	<Page.Resources>
 		<local:IBaseComponentToComponentViewModelConverter x:Key="ComponentConverter"/>
 		<local:IWireToWireViewModelConverter x:Key="WireConverter"/>
-		<converters:NegateImaginaryComplexConverter x:Key="PositionConverter"/>		
+		<converters:NegateImaginaryComplexConverter x:Key="PositionConverter"/>
 	</Page.Resources>
 
 
@@ -35,8 +35,8 @@
 						Converter="{StaticResource PositionConverter}"/>
 				</xaml:VisualAttachments.AttachedVisuals>
 
-				
-				
+
+
 				<Grid x:Name="BackgroundGrid"
 					Background="Transparent"
 					UseLayoutRounding="False"
@@ -83,28 +83,33 @@
 					</ItemsControl.ItemTemplate>
 				</ItemsControl>
 
-			
+
 
 			</Grid>
 		</ScrollViewer>
 
-		<!-- The dark blue border at the bottom of the screen which contains the currently logged message -->
-		<Border Background="{StaticResource DarkBlue5Brush}"
+		<!-- Elements at the bottom of the screen: The dark blue border, the currently logged message, the component info -->
+		<StackPanel 
 			HorizontalAlignment="Stretch"
-			VerticalAlignment="Bottom"
-			Height="30"
-			Padding="50 0 0 0">
+			VerticalAlignment="Bottom">
 
-			<!-- The currently logged message -->
-			<TextBlock Text="{Binding DesignVM.InfoLogger.Message}"
+			<local:ComponentInfoUC HorizontalAlignment="Right"/>
+
+			<!-- The dark blue border at the bottom of the screen with the currently logged message -->
+			<Border Background="{StaticResource DarkBlue5Brush}"
+				Padding="50 0 0 0"
+				Height="30">
+
+				<!-- The currently logged message -->
+				<TextBlock Text="{Binding DesignVM.InfoLogger.Message}"
 				FontSize="{StaticResource FontSizeSmall}"
 				Foreground="{StaticResource LightGrayBrush}"
 				VerticalAlignment="Center">
 
 				<!-- Translate transform which adjusts the position of the message depending on if menu is open/closed -->
-				<TextBlock.RenderTransform>
-					<TranslateTransform x:Name="LogMessageTranslateTransform"/>
-				</TextBlock.RenderTransform>
+					<TextBlock.RenderTransform>
+						<TranslateTransform x:Name="LogMessageTranslateTransform"/>
+					</TextBlock.RenderTransform>
 
 				<xaml:VisualManager.VisualSetups>
 					<xaml:VisualSetupGroup>
@@ -164,9 +169,12 @@
 
 					</xaml:VisualSetupGroup>
 				</xaml:VisualManager.VisualSetups>
-			
-			</TextBlock>
-		</Border>
+
+				</TextBlock>
+
+			</Border>
+
+		</StackPanel>
 
 		<controls:Menu x:Name="SideMenu"
 			Position="Left"
@@ -185,7 +193,7 @@
 			<controls:Menu.Content>
 
 				<!--Menu allowing the user to add parts-->
-				<local:ComponentAddingMenu controls:Menu.Glyph="&#xE710;"/>
+				<local:ComponentAddingMenuUC controls:Menu.Glyph="&#xE710;"/>
 
 				<!--Edit menu control-->
 				<local:ComponentEditMenuUC controls:Menu.Glyph="&#xE104;"
