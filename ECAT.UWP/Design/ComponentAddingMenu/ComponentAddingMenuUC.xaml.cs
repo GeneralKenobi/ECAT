@@ -7,14 +7,14 @@ namespace ECAT.UWP
 	/// <summary>
 	/// Control for component adding menu
 	/// </summary>
-	public sealed partial class ComponentAddingMenu : UserControl, INotifyPropertyChanged
+	public sealed partial class ComponentAddingMenuUC : UserControl, INotifyPropertyChanged
 	{
 		#region Constructors
 
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public ComponentAddingMenu()
+		public ComponentAddingMenuUC()
 		{
 			this.InitializeComponent();
 		}
