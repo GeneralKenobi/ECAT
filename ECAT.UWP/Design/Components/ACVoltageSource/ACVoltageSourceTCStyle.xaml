@@ -15,8 +15,7 @@
 					<Grid>
 
 						<!-- Presents current flow through the component -->
-						<local:CurrentFlowTC Current="{Binding Component.CurrentBA}"
-								VerticalAlignment="Center"/>
+						<local:CurrentFlowTC VerticalAlignment="Center"/>
 
 						<!-- Presents a parameter associated with the component -->
 						<controls:ValueUnitDisplay Foreground="{StaticResource BlackBrush}"

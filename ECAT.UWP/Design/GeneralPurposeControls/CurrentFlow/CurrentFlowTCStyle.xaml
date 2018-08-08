@@ -10,75 +10,16 @@
 	<Style TargetType="local:CurrentFlowTC">
 		<Setter Property="Template">
 			<Setter.Value>
-				<ControlTemplate TargetType="local:CurrentFlowTC">
+				<ControlTemplate TargetType="local:CurrentFlowTC">					
 
-					<!-- Root container -->
-					<Grid Margin="6 0 6 -10">
-
-						<Grid.Resources>
-							<local:DoubleToVisibilityConverter x:Key="ArrowheadVisibilityConverter"/>
-							<converters:AbsoluteValueConverter x:Key="AbsoluteValueConverter"/>
-							<local:DoubleToChosenParameterConverter x:Key="ValueColumnConverter"/>
-							<local:TextPositionFixRotationConverter x:Key="TextPositionFixConverter"/>
-						</Grid.Resources>
-
-						<Grid.RowDefinitions>
-							<!-- Arrows -->
-							<RowDefinition Height="Auto"/>
-							<!-- Value -->
-							<RowDefinition Height="Auto"/>
-						</Grid.RowDefinitions>
-
-						<Grid.ColumnDefinitions>
-							<!-- For negative current -->
-							<ColumnDefinition Width="Auto"/>
-							<!-- Unused space -->
-							<ColumnDefinition Width="*"/>
-							<!-- For positive current -->
-							<ColumnDefinition Width="Auto"/>
-						</Grid.ColumnDefinitions>
-
-						<!-- Triangle acting as an arrowhead for negative currents (flowing to the left) -->
-						<Polygon Grid.Column="0"
-							Points="20,0 20,28 0,14"
-							HorizontalAlignment="Left"
-							Stroke="{StaticResource BlackBrush}"
-							Fill="{StaticResource BlackBrush}"
-							StrokeLineJoin="Round"
-							Visibility="Collapsed"
-							Margin="10 0 0 0"/>
-							<!--Visibility="{Binding Current, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ArrowheadVisibilityConverter}, ConverterParameter=x}"-->
-
-						<!-- Triangle acting as an arrowhead for positive currents (flowing to the right) -->
-						<Polygon Grid.Column="2"
-							Points="0,0 0,28 20,14"
-							HorizontalAlignment="Right"
-							Stroke="{StaticResource BlackBrush}"							
-							Fill="{StaticResource BlackBrush}"
-							StrokeLineJoin="Round"							
-							Margin="0 0 10 0"/>
-							<!--Visibility="{Binding Current, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ArrowheadVisibilityConverter}}"-->
-
-						<!-- Displayed value -->
-						<controls:ComplexValueUnitDisplay Grid.Column="2"
-							HorizontalAlignment="Center"
-							Grid.Row="1"
-							Foreground="{StaticResource BlackBrush}"
-							FontSize="{StaticResource FontSizeSmaller}"							
-							Value="{Binding Current, RelativeSource={RelativeSource Mode=TemplatedParent}, ConverterParameter=x}"
-							RoundToDigit="4"
-							Height="14"
-							Unit="A"
-							UseJAsImaginaryUnit="True"
-							RenderTransformOrigin="0.5 0.5"
-							Margin="0 -4 0 0">
-							<!--Grid.Column="{Binding Current, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ValueColumnConverter}, ConverterParameter=2/0}"-->
-							<controls:ComplexValueUnitDisplay.RenderTransform>
-								<RotateTransform Angle="{Binding Component.Center.RotationAngle, Converter={StaticResource TextPositionFixConverter}}"/>
-							</controls:ComplexValueUnitDisplay.RenderTransform>
-
-						</controls:ComplexValueUnitDisplay>
-					</Grid>
+				<!-- Triangle acting as an arrowhead for negative currents (flowing to the left) -->
+				<Polygon Grid.Column="0"
+					Points="20,0 20,28 0,14"
+					HorizontalAlignment="Left"
+					Stroke="{StaticResource BlackBrush}"
+					Fill="{StaticResource BlackBrush}"
+					StrokeLineJoin="Round"
+					Margin="10 0 0 0"/>
 
 				</ControlTemplate>
 			</Setter.Value>

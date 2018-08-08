@@ -12,8 +12,7 @@
 					<Grid>
 
 						<!-- Presents current flow through the component -->
-						<local:CurrentFlowTC Current="{Binding Component.CurrentBA}"
-								VerticalAlignment="Center"/>
+						<local:CurrentFlowTC VerticalAlignment="Center"/>
 
 						<!-- Presents voltage drop across the component -->
 						<local:VoltageDropTC VerticalAlignment="Top"/>
