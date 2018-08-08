@@ -111,7 +111,7 @@ namespace ECAT.Simulation
 				}
 				catch (Exception)
 				{
-					break;
+					return;
 				}
 
 			} while (CheckOpAmpOperation(result));
@@ -129,7 +129,7 @@ namespace ECAT.Simulation
 				}
 				catch (Exception)
 				{
-					break;
+					return;
 				}
 
 			} while (CheckOpAmpOperation(result));
@@ -213,13 +213,22 @@ namespace ECAT.Simulation
 		/// </summary>
 		/// <param name="schematic"></param>
 		/// <returns></returns>
-		public static AdmittanceMatrix Construct(ISchematic schematic)
+		public static bool Construct(ISchematic schematic, out AdmittanceMatrix matrix, out string errorMessage)
 		{
-			var matrix = new AdmittanceMatrix(schematic);
+			matrix = new AdmittanceMatrix(schematic);
 
-			matrix.Build();
+			try
+			{
+				matrix.Build();
+			} catch(Exception e)
+			{
+				matrix = null;
+				errorMessage = e.Message;
+				return false;
+			}
 
-			return matrix;
+			errorMessage = string.Empty;
+			return true;
 		}
 
 		#endregion

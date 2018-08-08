@@ -494,7 +494,7 @@ namespace ECAT.Simulation
 				// Get the voltage source's nodes
 				var nodes = _DCVoltageSourcesNodes[_DCVoltageSources[i]];
 
-				// If the positive terminal is not grounded (TODO: When initial checks for schematics are implemented this isn't necessary
+				// If the positive terminal is not grounded
 				if (nodes.Item2 != -1)
 				{
 					// Fill the entry in the row corresponding to the node and column corresponding to the source (plus start column)
@@ -524,7 +524,7 @@ namespace ECAT.Simulation
 				// Get the voltage source's nodes
 				var nodes = _ACVoltageSourcesNodes[_ACVoltageSources[i]];
 
-				// If the positive terminal is not grounded (TODO: When initial checks for schematics are implemented this isn't necessary
+				// If the positive terminal is not grounded
 				if (nodes.Item2 != -1)
 				{
 					// Fill the entry in the row corresponding to the node and column corresponding to the source (plus start column)
@@ -583,7 +583,7 @@ namespace ECAT.Simulation
 				// Get the voltage source's nodes
 				var nodes = _DCVoltageSourcesNodes[_DCVoltageSources[i]];
 
-				// If the positive terminal is not grounded (TODO: When initial checks for schematics are implemented this isn't necessary
+				// If the positive terminal is not grounded
 				if (nodes.Item2 != -1)
 				{
 					// Fill the entry in the row corresponding to the source (plus starting row)
@@ -613,7 +613,7 @@ namespace ECAT.Simulation
 				// Get the voltage source's nodes
 				var nodes = _ACVoltageSourcesNodes[_ACVoltageSources[i]];
 
-				// If the positive terminal is not grounded (TODO: When initial checks for schematics are implemented this isn't necessary
+				// If the positive terminal is not grounded
 				if (nodes.Item2 != -1)
 				{
 					// Fill the entry in the row corresponding to the source (plus starting row)
@@ -635,8 +635,27 @@ namespace ECAT.Simulation
 
 		#endregion
 
+		#region Correctness checks
+
+		/// <summary>
+		/// Checks if all <see cref="IOpAmp"/> have their outputs not grounded. If such thing occurs an exception is thrown
+		/// </summary>
+		private void CheckOpAmpOutputs()
+		{
+			foreach (var item in _OpAmpNodes)
+			{
+				if (item.Value.Item3 == -1)
+				{
+					throw new Exception("Output of a(n) " + IoC.Resolve<IComponentFactory>().GetDeclaration<IOpAmp>().DisplayName +
+						" cannot be grounded");
+				}
+			}
+		}
+
 		#endregion
-		
+
+		#endregion
+
 		#region Protected methods
 
 		#region Op-amp operation mode switching
@@ -685,13 +704,9 @@ namespace ECAT.Simulation
 				// and column corresponding to the node (positive terminal) with OpenLoopGain
 				_C[_DCVoltageSources.Count + opAmpIndex, nodes.Item2] = opAmp.OpenLoopGain;
 			}
-
-			// If there exists a node to which TerminalB (inverting input) is connected
-			// (it's possible it may not exist due to removed ground node)
-			// TODO: When initial check of matrix is added the second condition is not necessary (outputs of voltage sources can't
-			// be grounded)
+			
 			// If the output is not shorted with the inverting input
-			if (nodes.Item3 != nodes.Item2 && nodes.Item3 != -1)
+			if (nodes.Item3 != nodes.Item2)
 			{
 				_C[_DCVoltageSources.Count + opAmpIndex, nodes.Item3] = 1;
 			}
@@ -938,6 +953,8 @@ namespace ECAT.Simulation
 			GenerateCurrentSourcesStates();
 
 			FindImportantNodes();
+
+			CheckOpAmpOutputs();
 
 			GenerateOpAmpOutputInformation();
 

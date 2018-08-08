@@ -36,8 +36,14 @@ namespace ECAT.Simulation
 			watch.Start();
 
 			// Create an admittance matrix
-			var admittanceMatrix = AdmittanceMatrix.Construct(schematic);
 
+			if(!AdmittanceMatrix.Construct(schematic, out var admittanceMatrix, out var error))
+			{
+				IoC.Log(error, InfoLoggerMessageDuration.Short);
+				return;
+			}
+			
+			
 			// Log the success and duration
 			IoC.Log($"Constructed DC Admittance Matrix in {watch.ElapsedMilliseconds}ms", InfoLoggerMessageDuration.Short);
 						
