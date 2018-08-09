@@ -1,5 +1,6 @@
 ﻿using CSharpEnhanced.ICommands;
 using ECAT.Core;
+using PropertyChanged;
 using System;
 using System.Collections.Generic;
 using System.Windows.Input;
@@ -52,8 +53,8 @@ namespace ECAT.ViewModel
 
 		/// <summary>
 		/// Accessor to the <see cref="Component"/>'s info
-		/// </summary>
-		public IEnumerable<string> ComponentInfo => Component.GetComponentInfo();
+		/// </summary>		
+		public IEnumerable<string> ComponentInfo => Component?.GetComponentInfo();
 
 		#endregion
 
