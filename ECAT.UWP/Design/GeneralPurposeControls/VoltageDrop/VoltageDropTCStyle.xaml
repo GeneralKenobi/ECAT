@@ -5,6 +5,8 @@
 	xmlns:controls="using:UWPEnhanced.Controls"
 	xmlns:converters="using:UWPEnhanced.ValueConverters">
 
+	<converters:BoolToVisibilityConverter x:Key="VisibilityConverter"/>
+
 	<Style TargetType="local:VoltageDropTC">
 		<Setter Property="Foreground" Value="{StaticResource BlackBrush}"/>
 		<Setter Property="Margin" Value="15 5 15 0"/>
@@ -13,7 +15,8 @@
 				<ControlTemplate TargetType="local:VoltageDropTC">
 
 					<!-- Root container -->
-					<Grid Margin="{TemplateBinding Margin}">
+					<Grid Margin="{TemplateBinding Margin}"
+						Visibility="{Binding IsFocused, Converter={StaticResource VisibilityConverter}}">
 
 						<Grid.ColumnDefinitions>
 							<!-- Column for the minus sign -->
