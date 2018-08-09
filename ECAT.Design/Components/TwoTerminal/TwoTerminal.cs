@@ -65,14 +65,17 @@ namespace ECAT.Design
 		/// True if the standard voltage drop direciton (Vb - Va) was inverted
 		/// </summary>
 		public virtual bool InvertedVoltageCurrentDirections => TerminalB.Potential != null && TerminalA.Potential != null &&
+			// If real part of Vb is smaller than real part of Va then directions are inverted
 			TerminalA.Potential.Value.Real > TerminalB.Potential.Value.Real;
 
 		/// <summary>
 		/// Voltage drop across the part. The direction is determined by <see cref="InvertedVoltageCurrentDirections"/>
 		/// </summary>
 		public virtual Complex VoltageDrop => TerminalB.Potential == null || TerminalA.Potential == null ? 0 :
-			(TerminalB.Potential.Value.Real >= TerminalA.Potential.Value.Real ?
-			TerminalB.Potential.Value - TerminalA.Potential.Value : TerminalA.Potential.Value - TerminalB.Potential.Value);
+			// Check if direction is inverted
+			(InvertedVoltageCurrentDirections ?
+			// If it is calculate Va - Vb, otherwise Vb - Va
+			TerminalA.Potential.Value - TerminalB.Potential.Value : TerminalB.Potential.Value - TerminalA.Potential.Value);
 
 		/// <summary>
 		/// Current through the component, by convention (although not always as, for example, voltage sources will align current and
@@ -81,7 +84,7 @@ namespace ECAT.Design
 		/// drop (so for <see cref="InvertedVoltageCurrentDirections"/> equal to false the current is given from <see cref="TerminalB"/> to
 		/// <see cref="TerminalA"/>)
 		public virtual Complex Current => -VoltageDrop * GetAdmittance(0);
-
+		// Current is simply calculated in the opposite direction to voltage
 
 		#endregion
 
