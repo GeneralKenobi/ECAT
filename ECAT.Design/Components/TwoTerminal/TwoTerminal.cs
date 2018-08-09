@@ -124,7 +124,7 @@ namespace ECAT.Design
 		public override IEnumerable<string> GetComponentInfo()
 		{
 			yield return "Voltage drop: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(VoltageBA, "V", imaginaryAsJ:true);
-			yield return "Current: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(-CurrentBA, "V", imaginaryAsJ:true);
+			yield return "Current: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(-CurrentBA, "A", imaginaryAsJ:true);
 		}
 
 		/// <summary>
