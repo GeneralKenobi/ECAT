@@ -1,9 +1,7 @@
 ﻿using ECAT.Core;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 
 namespace ECAT.Simulation
 {
@@ -19,7 +17,12 @@ namespace ECAT.Simulation
 		/// </summary>
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		#endregion		
+		/// <summary>
+		/// Event fired whenever simulation completes
+		/// </summary>
+		public EventHandler<SimulationCompletedEventArgs> SimulationCompleted { get; set; }
+
+		#endregion
 
 		#region Public methods
 
@@ -64,6 +67,8 @@ namespace ECAT.Simulation
 			}
 
 			watch.Reset();
+
+			SimulationCompleted?.Invoke(this, new SimulationCompletedEventArgs(SimulationType.DC));
 		}
 
 		/// <summary>
@@ -107,6 +112,7 @@ namespace ECAT.Simulation
 			}
 
 			watch.Reset();
+			SimulationCompleted?.Invoke(this, new SimulationCompletedEventArgs(SimulationType.AC));
 		}
 
 		#endregion

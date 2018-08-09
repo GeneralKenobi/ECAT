@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 
 namespace ECAT.Core
 {
@@ -7,6 +8,15 @@ namespace ECAT.Core
 	/// </summary>
 	public interface ISimulationManager : INotifyPropertyChanged
     {
+		#region Events
+
+		/// <summary>
+		/// Event fired whenever simulation completes
+		/// </summary>
+		EventHandler<SimulationCompletedEventArgs> SimulationCompleted { get; set; }
+
+		#endregion
+
 		#region Methods
 
 		/// <summary>
