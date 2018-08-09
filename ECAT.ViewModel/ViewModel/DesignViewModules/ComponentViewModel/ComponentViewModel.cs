@@ -1,6 +1,7 @@
 ﻿using CSharpEnhanced.ICommands;
 using ECAT.Core;
 using System;
+using System.Collections.Generic;
 using System.Windows.Input;
 
 namespace ECAT.ViewModel
@@ -49,9 +50,24 @@ namespace ECAT.ViewModel
 		/// </summary>
 		public double VerticalRotationCenter => Component == null ? 0 : Component.Height / 2;
 
+		/// <summary>
+		/// Accessor to the <see cref="Component"/>'s info
+		/// </summary>
+		public IEnumerable<string> ComponentInfo => Component.GetComponentInfo();
+
 		#endregion
 
 		#region Commands
+
+		/// <summary>
+		/// Shows this component's info in the component info section on screen
+		/// </summary>
+		public ICommand ShowComponentInfoCommand { get; } = AppViewModel.Singleton.DesignVM.ShowComponentInfoCommand;
+
+		/// <summary>
+		/// Hides the component's info
+		/// </summary>
+		public ICommand HideComponentInfoCommand { get; } = AppViewModel.Singleton.DesignVM.HideComponentInfoCommand;
 
 		/// <summary>
 		/// Command which puts the component into the edit menu thus starting to edit the component

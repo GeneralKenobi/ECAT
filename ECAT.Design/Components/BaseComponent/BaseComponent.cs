@@ -139,6 +139,18 @@ namespace ECAT.Design
 		}
 
 		/// <summary>
+		/// Returns the info that is to be presented, for example, on pointer over. It should include voltage drop(s) across the element,
+		/// current(s) through the element, etc.
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<string> GetComponentInfo()
+		{
+			yield return "Testing";
+			yield return "Voltage: test";
+			yield return "Current: test";
+		}
+
+		/// <summary>
 		/// Disposes of the component
 		/// </summary>
 		public virtual void Dispose() { }

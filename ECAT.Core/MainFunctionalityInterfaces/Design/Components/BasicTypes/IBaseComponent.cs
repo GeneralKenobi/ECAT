@@ -53,6 +53,13 @@ namespace ECAT.Core
 		/// <returns></returns>
 		List<ITerminal> GetTerminals();
 
+		/// <summary>
+		/// Returns the info that is to be presented, for example, on pointer over. It should include voltage drop(s) across the element,
+		/// current(s) through the element, etc.
+		/// </summary>
+		/// <returns></returns>
+		IEnumerable<string> GetComponentInfo();
+
 		#endregion
 	}
 }

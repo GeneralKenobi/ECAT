@@ -2,6 +2,7 @@
 using CSharpEnhanced.ICommands;
 using ECAT.Core;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
 using System.Windows.Input;
@@ -35,6 +36,8 @@ namespace ECAT.ViewModel
 			DesignAreaClickedCommand = new RelayParametrizedCommand(DesignAreaClicked);
 			PrepareToPlaceLooseWireCommand = new RelayCommand(PrepareToPlaceLooseWire);
 			EditComponentCommand = new RelayParametrizedCommand(EditComponent);
+			ShowComponentInfoCommand = new RelayParametrizedCommand(ShowComponentInfo);
+			HideComponentInfoCommand = new RelayCommand(HideComponentInfo);
 		}
 
 		#endregion
@@ -63,6 +66,11 @@ namespace ECAT.ViewModel
 		#endregion
 
 		#region Public properties
+
+		/// <summary>
+		/// Component info to currently present
+		/// </summary>
+		public IEnumerable<string> CurrentComponentInfo { get; private set; }
 
 		/// <summary>
 		/// InfoLogger for this app
@@ -116,6 +124,16 @@ namespace ECAT.ViewModel
 		#region Commands
 
 		/// <summary>
+		/// Shows the component info (<see cref="IEnumerable{T)}"/> of type string, passed in as command parameter)
+		/// </summary>
+		public ICommand ShowComponentInfoCommand { get; }
+
+		/// <summary>
+		/// Hides the currently presented component info (if it was shown)
+		/// </summary>
+		public ICommand HideComponentInfoCommand { get; }
+
+		/// <summary>
 		/// Stops the current action
 		/// </summary>
 		public ICommand StopActionCommand { get; }
@@ -139,6 +157,23 @@ namespace ECAT.ViewModel
 		#endregion
 
 		#region Private methods
+
+		/// <summary>
+		/// Method for <see cref="HideComponentInfoCommand"/>
+		/// </summary>
+		private void HideComponentInfo() => CurrentComponentInfo = null;
+
+		/// <summary>
+		/// Method for <see cref="ShowComponentInfoCommand"/>
+		/// </summary>
+		/// <param name="parameter"></param>
+		private void ShowComponentInfo(object parameter)
+		{
+			if(parameter is IEnumerable<string> casted)
+			{
+				CurrentComponentInfo = casted;
+			}
+		}
 
 		/// <summary>
 		/// Method for <see cref="EditComponentCommand"/>
