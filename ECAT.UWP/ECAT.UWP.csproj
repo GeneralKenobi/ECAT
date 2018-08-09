@@ -126,6 +126,7 @@
       <DependentUpon>VoltageSourceEditUC.xaml</DependentUpon>
     </Compile>
     <Compile Include="Design\GeneralPurposeControls\BorderWithFlyoutMenuBaseTC\BorderWithFlyoutMenuBaseTC.cs" />
+    <Compile Include="Design\GeneralPurposeControls\ComponentWrapper\BoolToHighlighBorderBrushConverter.cs" />
     <Compile Include="Design\GeneralPurposeControls\ComponentWrapper\ComponentWrapperTC.cs" />
     <Compile Include="Design\Components\CurrentSource\CurrentSourceTC.cs" />
     <Compile Include="Design\Components\Ground\GroundTC.cs" />
