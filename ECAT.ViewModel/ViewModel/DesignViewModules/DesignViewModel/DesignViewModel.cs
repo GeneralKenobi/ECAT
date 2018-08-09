@@ -68,6 +68,11 @@ namespace ECAT.ViewModel
 		#region Public properties
 
 		/// <summary>
+		/// Indicates whether component info should be visible on the screen
+		/// </summary>
+		public bool ComponentInfoVisible => CurrentComponentInfo != null;
+
+		/// <summary>
 		/// Component info to currently present
 		/// </summary>
 		public IEnumerable<string> CurrentComponentInfo { get; private set; }
