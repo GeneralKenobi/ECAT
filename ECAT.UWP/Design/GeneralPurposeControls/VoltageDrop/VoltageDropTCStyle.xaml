@@ -27,9 +27,19 @@
 							<ColumnDefinition Width="15"/>
 						</Grid.ColumnDefinitions>
 
+
 						<!-- Minus sign -->
-						<Rectangle Height="3"
-							Fill="{TemplateBinding Foreground}"/>
+						<Grid>
+
+							<!-- Horizontal element -->
+							<Rectangle Height="3"
+								Fill="{TemplateBinding Foreground}"/>
+							<!-- Vertical element -->
+							<Rectangle Width="3"
+									Height="15"
+									Fill="{TemplateBinding Foreground}"
+									Visibility="{Binding Component.InvertedVoltageCurrentDirections, Converter={StaticResource VisibilityConverter}}"/>
+						</Grid>
 
 						<!-- Plus sign -->
 						<Grid Grid.Column="2">
@@ -41,7 +51,8 @@
 							<!-- Vertical element -->
 							<Rectangle Width="3"
 								Height="15"
-								Fill="{TemplateBinding Foreground}"/>
+								Fill="{TemplateBinding Foreground}"
+								Visibility="{Binding Component.InvertedVoltageCurrentDirections, Converter={StaticResource VisibilityConverter}, ConverterParameter=x}"/>
 						</Grid>
 
 					</Grid>
