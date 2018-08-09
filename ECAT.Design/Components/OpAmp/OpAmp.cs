@@ -1,4 +1,6 @@
-﻿using System.Numerics;
+﻿using System.Collections.Generic;
+using System.Numerics;
+using CSharpEnhanced.Helpers;
 using ECAT.Core;
 
 namespace ECAT.Design
@@ -55,6 +57,21 @@ namespace ECAT.Design
 		/// Height of the <see cref="OpAmp"/> in horizontal position
 		/// </summary>
 		public override double Height { get; } = 200;
+
+		#endregion
+
+		#region Public methods
+
+		/// <summary>
+		/// Returns the info that is to be presented, for example, on pointer over. It should include voltage drop(s) across the element,
+		/// current(s) through the element, etc.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<string> GetComponentInfo()
+		{
+			yield return "Output voltage: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
+				(TerminalC.Potential != null ? TerminalC.Potential.Value : 0), "V", imaginaryAsJ: true);
+		}
 
 		#endregion
 	}

@@ -120,7 +120,14 @@ namespace ECAT.Design
 		#endregion
 
 		#region Public methods
-
+		
+		/// <summary>
+		/// Returns the info that is to be presented, for example, on pointer over. It should include voltage drop(s) across the element,
+		/// current(s) through the element, etc.
+		/// </summary>
+		/// <returns></returns>
+		public abstract IEnumerable<string> GetComponentInfo();
+		
 		/// <summary>
 		/// Returns a list with all terminals in this component
 		/// </summary>
@@ -136,18 +143,6 @@ namespace ECAT.Design
 			Center.RotationAngle += degrees;
 
 			RotateTerminals(degrees);
-		}
-
-		/// <summary>
-		/// Returns the info that is to be presented, for example, on pointer over. It should include voltage drop(s) across the element,
-		/// current(s) through the element, etc.
-		/// </summary>
-		/// <returns></returns>
-		public IEnumerable<string> GetComponentInfo()
-		{
-			yield return "Testing";
-			yield return "Voltage: test";
-			yield return "Current: test";
 		}
 
 		/// <summary>

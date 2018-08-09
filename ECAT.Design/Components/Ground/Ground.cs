@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Collections.Generic;
+using System.Numerics;
 using ECAT.Core;
 
 namespace ECAT.Design
@@ -28,6 +29,17 @@ namespace ECAT.Design
 		/// Height of the control in circuit design in the default, horizontal position
 		/// </summary>
 		public override double Height { get; } = 100;
+
+		#endregion
+
+		#region Public methods
+
+		/// <summary>
+		/// Returns the info that is to be presented, for example, on pointer over. It should include voltage drop(s) across the element,
+		/// current(s) through the element, etc.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<string> GetComponentInfo() => null;		
 
 		#endregion
 	}

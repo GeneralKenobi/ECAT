@@ -1,4 +1,5 @@
-﻿using ECAT.Core;
+﻿using CSharpEnhanced.Helpers;
+using ECAT.Core;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
@@ -109,11 +110,22 @@ namespace ECAT.Design
 		/// <summary>
 		/// Returns admittance between <see cref="TerminalA"/> and <see cref="TerminalB"/>, called by <see cref="GetAdmittance(double)"/>
 		/// </summary>
-		protected abstract Complex CalculateAdmittance(double frequency);		
+		protected abstract Complex CalculateAdmittance(double frequency);
 
 		#endregion
 
 		#region Public methods
+				
+		/// <summary>
+		/// Returns the info that is to be presented, for example, on pointer over. It should include voltage drop(s) across the element,
+		/// current(s) through the element, etc.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<string> GetComponentInfo()
+		{
+			yield return "Voltage drop: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(VoltageBA, "V", imaginaryAsJ:true);
+			yield return "Current: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(-CurrentBA, "V", imaginaryAsJ:true);
+		}
 
 		/// <summary>
 		/// Returns a list with all terminals in this component
