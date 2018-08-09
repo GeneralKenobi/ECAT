@@ -5,6 +5,7 @@
 	xmlns:xaml="using:UWPEnhanced.Xaml"
 	xmlns:UWPEnhancedConverters="using:UWPEnhanced.ValueConverters">
 
+
 	<Style TargetType="local:ComponentWrapperTC">
 		<Setter Property="Template">
 			<Setter.Value>
@@ -14,6 +15,7 @@
 							<local:ReverseRotationAngleValueConverter x:Key="RotationAngleConverter"/>
 							<local:ComponentToComponentControlConverter x:Key="ComponentControlConverter"/>
 							<UWPEnhancedConverters:OppositeDoubleConverter x:Key="OppositeDoubleConverter"/>
+							<local:BoolToHighlighBorderBrushConverter x:Key="BorderBrushConverter"/>
 						</Grid.Resources>
 
 						<Grid.RenderTransform>
@@ -24,25 +26,22 @@
 								TranslateX="{Binding Component.Handle.Real}"
 								TranslateY="{Binding Component.Handle.Imaginary, Converter={StaticResource OppositeDoubleConverter}}"/>
 
-							<!--<RotateTransform Angle="{Binding RotationAngleClockWise, Mode=OneWay}"
-								CenterX="{Binding HorizontalRotationCenter}"
-								CenterY="{Binding VerticalRotationCenter}"/>-->
 						</Grid.RenderTransform>
 
 						<!-- Pointer-related commands -->
 						<xaml:VisualAttachments.AttachedVisuals>
 
 							<!-- Shows the component's info on pointer entered -->
-							<xaml:PointerTriggerCommand Command="{Binding ShowComponentInfoCommand}"
-								CommandParameter="{Binding ComponentInfo}"
-								PointerEvent="PointerEntered"/>
+							<xaml:PointerTriggerCommand Command="{Binding EngageFocusCommand}"
+								PointerEvent="PointerEntered"
+								SetHandled="True"/>
 
 							<!-- Hides the component's info -->
-							<xaml:PointerTriggerCommand Command="{Binding HideComponentInfoCommand}"
-								PointerEvent="PointerExited, PointerCaptureLost, PointerCanceled"/>
+							<xaml:PointerTriggerCommand Command="{Binding DisengageFocusCommand}"
+								PointerEvent="PointerExited, PointerCaptureLost, PointerCanceled"
+								SetHandled="True"/>
 
 						</xaml:VisualAttachments.AttachedVisuals>
-
 
 						<Grid.ContextFlyout>
 							<MenuFlyout	MenuFlyoutPresenterStyle="{StaticResource MenuFlyoutPresenterStyle}">
@@ -78,7 +77,7 @@
 						<!-- Border around the 'focused' element -->
 						<Border Margin="-2"
 							BorderThickness="2"
-							BorderBrush="{Binding MenuPresentBorderBrush, RelativeSource={RelativeSource Mode=TemplatedParent}}">
+							BorderBrush="{Binding IsFocused, Converter={StaticResource BorderBrushConverter}}">
 
 							<ContentPresenter Content="{Binding Component, Mode=OneWay, Converter={StaticResource ComponentControlConverter}}"
 								Width="{Binding Component.Width}"

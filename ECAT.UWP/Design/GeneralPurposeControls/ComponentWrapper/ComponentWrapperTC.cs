@@ -1,18 +1,19 @@
 ﻿using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 namespace ECAT.UWP
 {
 	/// <summary>
 	/// Control wrapping controls specific to components with a common utility
 	/// </summary>
-	public sealed class ComponentWrapperTC : BorderWithFlyoutMenuBaseTC
+	public sealed class ComponentWrapperTC : Control
 	{
 		#region Constructors
 		
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public ComponentWrapperTC() : base("RootGrid")
+		public ComponentWrapperTC()
 		{
 			this.DefaultStyleKey = typeof(ComponentWrapperTC);
 		}
