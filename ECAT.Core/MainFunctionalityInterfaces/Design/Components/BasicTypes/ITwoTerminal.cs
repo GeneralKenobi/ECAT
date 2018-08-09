@@ -17,17 +17,25 @@ namespace ECAT.Core
 		/// <summary>
 		/// One of the terminals in this two-terminal
 		/// </summary>
-		ITerminal TerminalB { get; }		
+		ITerminal TerminalB { get; }
 
 		/// <summary>
-		/// Voltage drop between <see cref="TerminalB"/> and <see cref="TerminalA"/> (VB - VA)
+		/// True if the standard voltage drop direciton (Vb - Va) was inverted
 		/// </summary>
-		Complex VoltageBA { get; }
+		bool InvertedVoltageCurrentDirections { get; }
 
 		/// <summary>
-		/// Current flowing from <see cref="TerminalA"/> to <see cref="TerminalB"/>
+		/// Voltage drop across the part. The direction is determined by <see cref="InvertedVoltageCurrentDirections"/>
 		/// </summary>
-		Complex CurrentBA { get; }
+		Complex VoltageDrop { get; }
+
+		/// <summary>
+		/// Current through the component, by convention (although not always as, for example, voltage sources will align current and
+		/// voltage drop in the same direction. All things considered <see cref="VoltageDrop"/> and
+		/// <see cref="InvertedVoltageCurrentDirections"/> are guaranteed to be mutually correct) it flows in direction opposite to voltage
+		/// drop (so for <see cref="InvertedVoltageCurrentDirections"/> equal to false the current is given from <see cref="TerminalB"/> to
+		/// <see cref="TerminalA"/>)
+		Complex Current { get; }
 
 		#endregion
 

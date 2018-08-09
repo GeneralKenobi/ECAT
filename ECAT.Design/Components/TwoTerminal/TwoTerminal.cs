@@ -20,6 +20,7 @@ namespace ECAT.Design
 		{
 			TerminalA = new Terminal(new PlanePosition(Complex.Zero, _TerminalAShift), TerminalPotentialChangedCallback);
 			TerminalB = new Terminal(new PlanePosition(Complex.Zero, _TerminalBShift), TerminalPotentialChangedCallback);
+			IoC.Resolve<ISimulationManager>().SimulationCompleted += (s, e) => InvokePropertyChanged(nameof(InvertedVoltageCurrentDirections));
 		}
 
 		#endregion
@@ -61,16 +62,26 @@ namespace ECAT.Design
 		public ITerminal TerminalB { get; }
 
 		/// <summary>
-		/// Voltage drop between <see cref="TerminalB"/> and <see cref="TerminalA"/> (VB - VA)
+		/// True if the standard voltage drop direciton (Vb - Va) was inverted
 		/// </summary>
-		public Complex VoltageBA => TerminalB.Potential == null || TerminalA.Potential == null ? 
-			0 : TerminalB.Potential.Value - TerminalA.Potential.Value;
+		public virtual bool InvertedVoltageCurrentDirections => TerminalB.Potential != null && TerminalA.Potential != null &&
+			TerminalA.Potential.Value.Real > TerminalB.Potential.Value.Real;
 
 		/// <summary>
-		/// Current flowing from <see cref="TerminalA"/> to <see cref="TerminalB"/>, may be overriden if a specific component'
-		/// current can't be determined from its voltage and admittance (eg. voltage source)
+		/// Voltage drop across the part. The direction is determined by <see cref="InvertedVoltageCurrentDirections"/>
 		/// </summary>
-		public virtual Complex CurrentBA => -VoltageBA * GetAdmittance(0);
+		public virtual Complex VoltageDrop => TerminalB.Potential == null || TerminalA.Potential == null ? 0 :
+			(TerminalB.Potential.Value.Real >= TerminalA.Potential.Value.Real ?
+			TerminalB.Potential.Value - TerminalA.Potential.Value : TerminalA.Potential.Value - TerminalB.Potential.Value);
+
+		/// <summary>
+		/// Current through the component, by convention (although not always as, for example, voltage sources will align current and
+		/// voltage drop in the same direction. All things considered <see cref="VoltageDrop"/> and
+		/// <see cref="InvertedVoltageCurrentDirections"/> are guaranteed to be mutually correct) it flows in direction opposite to voltage
+		/// drop (so for <see cref="InvertedVoltageCurrentDirections"/> equal to false the current is given from <see cref="TerminalB"/> to
+		/// <see cref="TerminalA"/>)
+		public virtual Complex Current => -VoltageDrop * GetAdmittance(0);
+
 
 		#endregion
 
@@ -82,7 +93,7 @@ namespace ECAT.Design
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void TerminalPotentialChangedCallback(object sender, EventArgs e) =>
-			InvokePropertyChanged(nameof(VoltageBA), nameof(CurrentBA));
+			InvokePropertyChanged(nameof(VoltageDrop), nameof(Current));
 
 		#endregion
 
@@ -123,8 +134,8 @@ namespace ECAT.Design
 		/// <returns></returns>
 		public override IEnumerable<string> GetComponentInfo()
 		{
-			yield return "Voltage drop: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(VoltageBA, "V", imaginaryAsJ:true);
-			yield return "Current: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(-CurrentBA, "A", imaginaryAsJ:true);
+			yield return "Voltage drop: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(VoltageDrop, "V", imaginaryAsJ:true);
+			yield return "Current: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(Current, "A", imaginaryAsJ:true);
 		}
 
 		/// <summary>
