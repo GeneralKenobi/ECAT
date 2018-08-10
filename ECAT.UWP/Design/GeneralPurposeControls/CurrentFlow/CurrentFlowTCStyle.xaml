@@ -10,18 +10,29 @@
 	<Style TargetType="local:CurrentFlowTC">
 		<Setter Property="Template">
 			<Setter.Value>
-				<ControlTemplate TargetType="local:CurrentFlowTC">					
+				<ControlTemplate TargetType="local:CurrentFlowTC">
 
-				<!-- Triangle acting as an arrowhead for negative currents (flowing to the left) -->
-				<Polygon Grid.Column="0"
-					Visibility="{Binding IsFocused, Converter={StaticResource VisibilityConverter}}"
-					Points="20,0 20,28 0,14"
-					HorizontalAlignment="Left"
-					Stroke="{StaticResource BlackBrush}"
-					Fill="{StaticResource BlackBrush}"
-					StrokeLineJoin="Round"
-					Margin="10 0 0 0"/>
+					<Grid Visibility="{Binding IsFocused, Converter={StaticResource VisibilityConverter}}"
+						Padding="10 0">
 
+						<!-- Triangle acting as an arrowhead forcurrents flowing to the left -->
+						<Polygon Grid.Column="0"
+							Visibility="{Binding Component.InvertedVoltageCurrentDirections, Converter={StaticResource VisibilityConverter}, ConverterParameter=x}"
+							Points="20,0 20,28 0,14"
+							HorizontalAlignment="Left"
+							Stroke="{StaticResource BlackBrush}"
+							Fill="{StaticResource BlackBrush}"
+							StrokeLineJoin="Round"/>
+
+						<!-- Triangle acting as an arrowhead forcurrents flowing to the right -->
+						<Polygon Points="0,0 0,28 20,14"
+							Visibility="{Binding Component.InvertedVoltageCurrentDirections, Converter={StaticResource VisibilityConverter}}"
+							HorizontalAlignment="Right"
+							Stroke="{StaticResource BlackBrush}"
+							Fill="{StaticResource BlackBrush}"
+							StrokeLineJoin="Round"/>
+
+					</Grid>
 				</ControlTemplate>
 			</Setter.Value>
 		</Setter>

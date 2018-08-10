@@ -83,7 +83,7 @@ namespace ECAT.Design
 		/// <see cref="InvertedVoltageCurrentDirections"/> are guaranteed to be mutually correct) it flows in direction opposite to voltage
 		/// drop (so for <see cref="InvertedVoltageCurrentDirections"/> equal to false the current is given from <see cref="TerminalB"/> to
 		/// <see cref="TerminalA"/>)
-		public virtual Complex Current => -VoltageDrop * GetAdmittance(0);
+		public virtual Complex Current => VoltageDrop * GetAdmittance(0);
 		// Current is simply calculated in the opposite direction to voltage
 
 		#endregion
