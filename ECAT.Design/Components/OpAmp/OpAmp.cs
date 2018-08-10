@@ -71,6 +71,13 @@ namespace ECAT.Design
 		{
 			yield return "Output voltage: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
 				(TerminalC.Potential != null ? TerminalC.Potential.Value : 0), "V", imaginaryAsJ: true);
+			yield return "Non-inverting input potential: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
+				(TerminalA.Potential != null ? TerminalA.Potential.Value : 0), "V", imaginaryAsJ: true);
+			yield return "Inverting input potential: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
+				(TerminalB.Potential != null ? TerminalB.Potential.Value : 0), "V", imaginaryAsJ: true);
+			yield return "Differential voltage: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
+				(TerminalA.Potential != null && TerminalB.Potential != null ? TerminalA.Potential.Value - TerminalB.Potential.Value : 0),
+				"V", imaginaryAsJ: true);
 		}
 
 		#endregion
