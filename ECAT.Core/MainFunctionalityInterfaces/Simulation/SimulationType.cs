@@ -1,8 +1,11 @@
-﻿namespace ECAT.Core
+﻿using System;
+
+namespace ECAT.Core
 {
 	/// <summary>
 	/// Enumerates types of simulations
-	/// </summary>	
+	/// </summary>
+	[Flags]
 	public enum SimulationType
     {
 		/// <summary>
