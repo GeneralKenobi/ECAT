@@ -1,4 +1,5 @@
 ﻿using CSharpEnhanced.Helpers;
+using CSharpEnhanced.Maths;
 using ECAT.Core;
 using System;
 using System.Collections.Generic;
@@ -137,8 +138,9 @@ namespace ECAT.Design
 		/// <returns></returns>
 		public override IEnumerable<string> GetComponentInfo()
 		{
-			yield return "Voltage drop: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(VoltageDrop, "V", imaginaryAsJ:true);
-			yield return "Current: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(Current, "A", imaginaryAsJ:true);
+			yield return "Voltage drop: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
+				VoltageDrop.RoundToDigit(4), "V", imaginaryAsJ:true);
+			yield return "Current: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(Current.RoundToDigit(4), "A", imaginaryAsJ:true);
 		}
 
 		/// <summary>
