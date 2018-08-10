@@ -25,57 +25,12 @@ namespace ECAT.Simulation
 		#endregion
 
 		#region Public methods
-
-		/// <summary>
-		/// Performs a single DC sweep for the given schematic
-		/// </summary>
-		/// <param name="schematic"></param>
-		public void DCBias(ISchematic schematic)
-		{
-			// Create a stopwatch to measure the duration of procedures 
-			Stopwatch watch = new Stopwatch();
-
-			// Start it for admittance matrix creation
-			watch.Start();
-
-			// Create an admittance matrix
-
-			if(!AdmittanceMatrix.Construct(schematic, out var admittanceMatrix, out var error))
-			{
-				IoC.Log(error, InfoLoggerMessageDuration.Short);
-				return;
-			}
-			
-			
-			// Log the success and duration
-			IoC.Log($"Constructed DC Admittance Matrix in {watch.ElapsedMilliseconds}ms", InfoLoggerMessageDuration.Short);
-						
-			watch.Restart();
-
-			try
-			{
-				admittanceMatrix.ActivateCurrentSources();
-				admittanceMatrix.ActivateDCVoltageSources();
-				// Solve it (for now try-catch for debugging)
-				admittanceMatrix.Solve();
-
-				IoC.Log($"Calcualted the result in {watch.ElapsedMilliseconds}ms", InfoLoggerMessageDuration.Short);
-			}
-			catch (Exception e)
-			{
-				Debug.WriteLine(e.Message);
-			}
-
-			watch.Reset();
-
-			SimulationCompleted?.Invoke(this, new SimulationCompletedEventArgs(SimulationType.DC));
-		}
-
+		
 		/// <summary>
 		/// Performs a single AC sweep for the given schematic
 		/// </summary>
 		/// <param name="schematic"></param>
-		public void ACBias(ISchematic schematic)
+		public void Bias(ISchematic schematic, SimulationType simulationType)
 		{
 			// Create a stopwatch to measure the duration of procedures 
 			Stopwatch watch = new Stopwatch();
@@ -84,27 +39,19 @@ namespace ECAT.Simulation
 			watch.Start();
 
 			// Create an admittance matrix
-
 			if (!AdmittanceMatrix.Construct(schematic, out var admittanceMatrix, out var error))
 			{
 				IoC.Log(error, InfoLoggerMessageDuration.Short);
 				return;
 			}
 
-
-			// Log the success and duration
-			IoC.Log($"Constructed AC Admittance Matrix in {watch.ElapsedMilliseconds}ms", InfoLoggerMessageDuration.Short);
-
-			watch.Restart();
-
 			try
 			{
-				admittanceMatrix.ActivateACVoltageSources();
-				
 				// Solve it (for now try-catch for debugging)
-				admittanceMatrix.Solve();
+				admittanceMatrix.Bias(simulationType);
 
-				IoC.Log($"Calcualted the result in {watch.ElapsedMilliseconds}ms", InfoLoggerMessageDuration.Short);
+				IoC.Log($"Calcualted {simulationType.ToString()} simulation in {watch.ElapsedMilliseconds}ms",
+					InfoLoggerMessageDuration.Short);
 			}
 			catch (Exception e)
 			{
@@ -112,7 +59,7 @@ namespace ECAT.Simulation
 			}
 
 			watch.Reset();
-			SimulationCompleted?.Invoke(this, new SimulationCompletedEventArgs(SimulationType.AC));
+			SimulationCompleted?.Invoke(this, new SimulationCompletedEventArgs(simulationType));
 		}
 
 		#endregion
