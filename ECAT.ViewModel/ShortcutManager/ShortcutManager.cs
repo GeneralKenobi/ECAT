@@ -102,11 +102,14 @@ namespace ECAT.ViewModel
 				"Place Capacitor", new ShortcutKey("C", KeyModifiers.Shift), () => PlacePartHelper(ComponentIDEnumeration.Capacitor)));
 
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
-				"Run DC Bias", new ShortcutKey("T"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.DCBias(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic)));
+				"Run DC Bias", new ShortcutKey("T"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.Bias(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic, SimulationType.DC)));
 
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
-				"Run AC Bias", new ShortcutKey("Y"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.ACBias(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic)));
+				"Run AC Bias", new ShortcutKey("Y"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.Bias(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic, SimulationType.AC)));
 
+			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
+				"Run ACDC Bias", new ShortcutKey("U"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.Bias(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic, SimulationType.ACDC)));
+			
 			// TODO: Change the ShortcutKeys to ShortcutKey.Empty and load the saved combinations from a local file
 		}
 
