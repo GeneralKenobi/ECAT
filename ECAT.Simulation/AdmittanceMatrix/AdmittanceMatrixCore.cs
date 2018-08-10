@@ -519,7 +519,7 @@ namespace ECAT.Simulation
 			for(int i=0; i<_OpAmps.Count; ++i)
 			{
 				// Set the entry in _B corresponding to the output node to 1
-				_B[_OpAmpNodes[_OpAmps[i]].Item3, _DCVoltageSources.Count + i] = 1;
+				_B[_OpAmpNodes[_OpAmps[i]].Item3, _TotalVoltageSourcesCount + i] = 1;
 			}
 		}
 
@@ -619,7 +619,7 @@ namespace ECAT.Simulation
 			{
 				// Fill the entry in the row corresponding to the op-amp (plus starting row)
 				// and column corresponding to the node (positive terminal) with -OpenLoopGain
-				_C[_DCVoltageSources.Count + opAmpIndex, nodes.Item1] = -opAmp.OpenLoopGain;
+				_C[_TotalVoltageSourcesCount + opAmpIndex, nodes.Item1] = -opAmp.OpenLoopGain;
 			}
 
 			// If there exists a node to which TerminalB (inverting input) is connected
@@ -628,18 +628,18 @@ namespace ECAT.Simulation
 			{
 				// Fill the entry in the row corresponding to the op-amp (plus starting row)
 				// and column corresponding to the node (positive terminal) with OpenLoopGain
-				_C[_DCVoltageSources.Count + opAmpIndex, nodes.Item2] = opAmp.OpenLoopGain;
+				_C[_TotalVoltageSourcesCount + opAmpIndex, nodes.Item2] = opAmp.OpenLoopGain;
 			}
 			
 			// If the output is not shorted with the inverting input
 			if (nodes.Item3 != nodes.Item2)
 			{
-				_C[_DCVoltageSources.Count + opAmpIndex, nodes.Item3] = 1;
+				_C[_TotalVoltageSourcesCount + opAmpIndex, nodes.Item3] = 1;
 			}
 
 			// Fill the entry in the row corresponding to the op-amp (plus starting row)
 			// and column corresponding to the node (positive terminal) with 1 
-			_E[_DCVoltageSources.Count + opAmpIndex] = 0;
+			_E[_TotalVoltageSourcesCount + opAmpIndex] = 0;
 		}
 
 		/// <summary>
@@ -661,13 +661,13 @@ namespace ECAT.Simulation
 			// If the non-inverting input is not grounded, reset its entry in the _C matrix
 			if (nodes.Item1 != -1)
 			{
-				_C[_DCVoltageSources.Count + opAmpIndex, nodes.Item1] = 0;
+				_C[_TotalVoltageSourcesCount + opAmpIndex, nodes.Item1] = 0;
 			}
 
 			// If the inverting input is not grounded, reset its entry in the _C matrix
 			if (nodes.Item2 != -1)
 			{
-				_C[_DCVoltageSources.Count + opAmpIndex, nodes.Item2] = 0;
+				_C[_TotalVoltageSourcesCount + opAmpIndex, nodes.Item2] = 0;
 			}
 
 			// And the entry in _C corresponding to the output node to 1
@@ -675,11 +675,11 @@ namespace ECAT.Simulation
 			// corresponding to that node is 1 (and not 0 like the if above would set it). Because this assigning is done after
 			// the one for non-inverting input no special conditions are necessary however it's very important to remeber about
 			// it if (when) this method is modified
-			_C[_DCVoltageSources.Count + opAmpIndex, nodes.Item3] = 1;
+			_C[_TotalVoltageSourcesCount + opAmpIndex, nodes.Item3] = 1;
 
 			// Finally, depending on which supply was exceeded, set the value of the source to either positive or negative
 			// supply voltage
-			_E[_DCVoltageSources.Count + opAmpIndex] = positiveSaturation ? opAmp.PositiveSupplyVoltage : opAmp.NegativeSupplyVoltage;
+			_E[_TotalVoltageSourcesCount + opAmpIndex] = positiveSaturation ? opAmp.PositiveSupplyVoltage : opAmp.NegativeSupplyVoltage;
 		}
 
 		#endregion
