@@ -1,4 +1,5 @@
-﻿using CSharpEnhanced.Maths;
+﻿using CSharpEnhanced.Helpers;
+using CSharpEnhanced.Maths;
 using ECAT.Core;
 using System;
 using System.Collections;
@@ -36,6 +37,47 @@ namespace ECAT.Simulation
 		#endregion
 
 		#region Private methods
+
+		/// <summary>
+		/// Solve the system for the current configuration
+		/// </summary>
+		private Complex[] Solve()
+		{
+			Complex[] result = null;
+
+			// Keep calculating results and adjusting op-amps into saturation until all op-amps are within their supply voltages
+			do
+			{
+				try
+				{
+					result = LinearEquations.SimplifiedGaussJordanElimination(ComputeCoefficientMatrix(), ComputeFreeTermsMatrix(), true);
+				}
+				catch (Exception)
+				{
+					return ArrayHelpers.CreateAndInitialize<Complex>(0, _Size);
+				}
+
+			} while (CheckOpAmpOperation(result));
+
+			_TestedCombinations = new BitArray(_SaturatedOpAmps.Count, true);
+			
+			do
+			{
+				CheckOpAmpOperationFalsePositives(result);
+
+				try
+				{
+					result = LinearEquations.SimplifiedGaussJordanElimination(ComputeCoefficientMatrix(), ComputeFreeTermsMatrix(), true);
+				}
+				catch (Exception)
+				{
+					return ArrayHelpers.CreateAndInitialize<Complex>(0, _Size);
+				}
+
+			} while (CheckOpAmpOperation(result));
+
+			return result;
+		}
 
 		/// <summary>
 		/// Checks if <see cref="IOpAmp"/>s operate in the proper region (if they didn't exceed their supply voltages.) If they don't,
@@ -77,6 +119,7 @@ namespace ECAT.Simulation
 		/// <returns></returns>
 		private void CheckOpAmpOperationFalsePositives(Complex[] result)
 		{
+			// TODO: Start checking by disabling all op-amps and selectively enabling them
 			for (int i = 0; i < _TestedCombinations.Count; i++)
 			{
 				bool previous = _TestedCombinations[i];
@@ -94,118 +137,55 @@ namespace ECAT.Simulation
 		#endregion
 
 		#region Public methods
-
+		
 		/// <summary>
-		/// Solve the system for the current configuration
+		/// Performs a bias simulation of the schematic - calculates symbolical, time-independent voltages and currents produced by
+		/// voltage sources.
 		/// </summary>
-		public void Solve()
+		/// <param name="simulationType"></param>
+		public void Bias(SimulationType simulationType)
 		{
-			Complex[] result = null;
+			Complex[] combinedResult = null;
 
-			// Keep calculating results and adjusting op-amps into saturation until all op-amps are within their supply voltages
-			do
+			// If DC bias is specified
+			if (simulationType.HasFlag(SimulationType.DC))
 			{
-				try
+				// Configure for DC and assign result to combinedResult
+				ConfigureForFrequency(0);
+				combinedResult = Solve();
+			}
+			else
+			{
+				// Otherwise initialize combinedResult with zeros
+				combinedResult = ArrayHelpers.CreateAndInitialize(Complex.Zero, _Size);
+			}
+
+			// If AC is specified
+			if (simulationType.HasFlag(SimulationType.AC))
+			{
+				// For each frequency in the circuit
+				for (int i = 0; i < _FrequenciesInCircuit.Count; ++i)
 				{
-					result = LinearEquations.SimplifiedGaussJordanElimination(ComputeCoefficientMatrix(), ComputeFreeTermsMatrix());
+					// Configure the matrix for that frequency
+					ConfigureForFrequency(_FrequenciesInCircuit[i]);
+
+					// Get a subresult
+					var subResult = Solve();
+
+					// And add it to the total result (possible due to superposition theorem)
+					for (int j = 0; j < _Size; ++j)
+					{
+						combinedResult[j] += subResult[j];
+					}
 				}
-				catch (Exception)
-				{
-					return;
-				}
-
-			} while (CheckOpAmpOperation(result));
-
-			_TestedCombinations = new BitArray(_SaturatedOpAmps.Count, true);
-
-			
-			do
-			{
-				CheckOpAmpOperationFalsePositives(result);
-
-				try
-				{
-					result = LinearEquations.SimplifiedGaussJordanElimination(ComputeCoefficientMatrix(), ComputeFreeTermsMatrix());
-				}
-				catch (Exception)
-				{
-					return;
-				}
-
-			} while (CheckOpAmpOperation(result));
-
-			AssignResults(result);
-		}
-
-		/// <summary>
-		/// Activates all DC voltage sources
-		/// </summary>
-		public void ActivateDCVoltageSources()
-		{
-			for (int i = 0; i < DCVoltageSourcesCount; ++i)
-			{
-				ActivateDCVoltageSource(i);
 			}
-		}
 
-		/// <summary>
-		/// Dezactivates all DC voltage sources
-		/// </summary>
-		public void DezactivateDCVoltageSources()
-		{
-			for (int i = 0; i < DCVoltageSourcesCount; ++i)
-			{
-				DezactivateDCVoltageSource(i);
-			}
-		}
-
-		/// <summary>
-		/// Activates all DC voltage sources
-		/// </summary>
-		public void ActivateCurrentSources()
-		{
-			for (int i = 0; i < CurrentSourcesCount; ++i)
-			{
-				ActivateCurrentSource(i);
-			}
-		}
-
-		/// <summary>
-		/// Dezactivates all DC voltage sources
-		/// </summary>
-		public void DezactivateCurrentSources()
-		{
-			for (int i = 0; i < CurrentSourcesCount; ++i)
-			{
-				DezactivateCurrentSource(i);
-			}
-		}
-
-		/// <summary>
-		/// Activates all AC voltage sources
-		/// </summary>
-		public void ActivateACVoltageSources()
-		{
-			for (int i = 0; i < ACVoltageSourcesCount; ++i)
-			{
-				ActivateACVoltageSource(i);
-			}
-		}
-
-		/// <summary>
-		/// Dezactivates all AC voltage sources
-		/// </summary>
-		public void DezactivateACVoltageSources()
-		{
-			for (int i = 0; i < ACVoltageSourcesCount; ++i)
-			{
-				DezactivateACVoltageSource(i);
-			}
-		}
+			// Finally assign the results
+			AssignResults(combinedResult);
+		}		
 
 		#endregion
-
-
+		
 		#region Public static methods
 
 		/// <summary>
