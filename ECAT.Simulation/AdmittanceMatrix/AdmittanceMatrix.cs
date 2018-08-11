@@ -41,7 +41,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Solve the system for the current configuration
 		/// </summary>
-		private Complex[] Solve()
+		private Complex[] Solve(bool adjustOpAmps)
 		{
 			Complex[] result = null;
 
@@ -51,6 +51,10 @@ namespace ECAT.Simulation
 				try
 				{
 					result = LinearEquations.SimplifiedGaussJordanElimination(ComputeCoefficientMatrix(), ComputeFreeTermsMatrix(), true);
+					if(!adjustOpAmps)
+					{
+						return result;
+					}
 				}
 				catch (Exception)
 				{
@@ -152,7 +156,7 @@ namespace ECAT.Simulation
 			{
 				// Configure for DC and assign result to combinedResult
 				ConfigureForFrequency(0);
-				combinedResult = Solve();
+				combinedResult = Solve(!simulationType.HasFlag(SimulationType.AC));
 			}
 			else
 			{
@@ -170,7 +174,7 @@ namespace ECAT.Simulation
 					ConfigureForFrequency(_FrequenciesInCircuit[i]);
 
 					// Get a subresult
-					var subResult = Solve();
+					var subResult = Solve(false);
 
 					// And add it to the total result (possible due to superposition theorem)
 					for (int j = 0; j < _Size; ++j)
