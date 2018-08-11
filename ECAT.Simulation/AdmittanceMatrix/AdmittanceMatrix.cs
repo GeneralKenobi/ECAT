@@ -149,19 +149,12 @@ namespace ECAT.Simulation
 		/// <param name="simulationType"></param>
 		public void Bias(SimulationType simulationType)
 		{
-			Complex[] combinedResult = null;
-
 			// If DC bias is specified
 			if (simulationType.HasFlag(SimulationType.DC))
 			{
 				// Configure for DC and assign result to combinedResult
 				ConfigureForFrequency(0);
-				combinedResult = Solve(!simulationType.HasFlag(SimulationType.AC));
-			}
-			else
-			{
-				// Otherwise initialize combinedResult with zeros
-				combinedResult = ArrayHelpers.CreateAndInitialize(Complex.Zero, _Size);
+				AssignResults(Solve(!simulationType.HasFlag(SimulationType.AC)), 0);
 			}
 
 			// If AC is specified
@@ -174,19 +167,10 @@ namespace ECAT.Simulation
 					ConfigureForFrequency(_FrequenciesInCircuit[i]);
 
 					// Get a subresult
-					var subResult = Solve(false);
-
-					// And add it to the total result (possible due to superposition theorem)
-					for (int j = 0; j < _Size; ++j)
-					{
-						combinedResult[j] += subResult[j];
-					}
+					AssignResults(Solve(false), _FrequenciesInCircuit[i]);
 				}
 			}
-
-			// Finally assign the results
-			AssignResults(combinedResult);
-		}		
+		}
 
 		#endregion
 		

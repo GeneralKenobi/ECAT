@@ -226,8 +226,18 @@ namespace ECAT.Simulation
 			// Generate nodes using helper class
 			_Nodes = NodeGenerator.Generate(_Schematic);
 
-			// Assign the potentials from the nodes to the associated terminals
-			_Nodes.ForEach((node) => node.ConnectedTerminals.ForEach((terminal) => terminal.Potential = node.Potential));
+			_Nodes.ForEach((node) =>
+			{
+				// Clear the potentials collection
+				node.ACPotentials.Clear();
+
+				// Assign the potentials from the nodes to the associated terminals
+				node.ConnectedTerminals.ForEach((terminal) =>
+				{
+					terminal.DCPotential = node.DCPotential;
+					terminal.ACPotentials = node.ACPotentials;
+				});
+			});
 
 			// Find, assign and remove the reference (ground) nodes
 			ProcessReferenceNodes();
@@ -245,8 +255,8 @@ namespace ECAT.Simulation
 			// Find all reference nodes
 			var referenceNodes = FindReferenceNodes();
 
-			// Set their potential to 0
-			referenceNodes.ForEach((node) => node.Potential.Value = 0);
+			// Set their potential to 0 (when builing the matrix the collections are cleared so they're guaranteed to be empty)
+			referenceNodes.ForEach((node) => node.ACPotentials.Add(new Tuple<double, Complex>(0, 0)));			
 
 			// Remove them from the nodes list
 			_Nodes.RemoveAll((node) => referenceNodes.Contains(node));
@@ -541,6 +551,48 @@ namespace ECAT.Simulation
 					throw new Exception("Output of a(n) " + IoC.Resolve<IComponentFactory>().GetDeclaration<IOpAmp>().DisplayName +
 						" cannot be grounded");
 				}
+			}
+		}
+
+		#endregion
+
+		#region Result assigning
+
+		/// <summary>
+		/// Assigns the results - potentials to nodes and currents to voltage sources for AC simulation
+		/// </summary>
+		/// <param name="result"></param>
+		private void AssignACResults(Complex[] result, double frequency)
+		{
+			// Assign the node potentials (entries from 0 to the number of nodes - 1)
+			for (int i = 0; i < _BigDimension; ++i)
+			{
+				_Nodes[i].ACPotentials.Add(new Tuple<double, Complex>(frequency, result[i]));
+			}
+
+			// Assign the currents through voltage sources (the remaining entries of the results)
+			for (int i = 0; i < _DCVoltageSources.Count; ++i)
+			{
+				_DCVoltageSources[i].ProducedCurrent.Value = result[i + _BigDimension];
+			}
+		}
+
+		/// <summary>
+		/// Assigns the results - potentials to nodes and currents to voltage sources for DC simulation
+		/// </summary>
+		/// <param name="result"></param>
+		private void AssignDCResults(Complex[] result)
+		{
+			// Assign the node potentials (entries from 0 to the number of nodes - 1)
+			for (int i = 0; i < _BigDimension; ++i)
+			{
+				_Nodes[i].DCPotential.Value = result[i];
+			}
+
+			// Assign the currents through voltage sources (the remaining entries of the results)
+			for (int i = 0; i < _DCVoltageSources.Count; ++i)
+			{
+				_DCVoltageSources[i].ProducedCurrent.Value = result[i + _BigDimension];
 			}
 		}
 
@@ -917,18 +969,15 @@ namespace ECAT.Simulation
 		/// Assigns the results - potentials to nodes and currents to voltage sources
 		/// </summary>
 		/// <param name="result"></param>
-		protected void AssignResults(Complex[] result)
+		protected void AssignResults(Complex[] result, double frequency)
 		{
-			// Assign the node potentials (entries from 0 to the number of nodes - 1)
-			for (int i = 0; i < _BigDimension; ++i)
+			if(frequency == 0)
 			{
-				_Nodes[i].Potential.Value = result[i];
+				AssignDCResults(result);
 			}
-
-			// Assign the currents through voltage sources (the remaining entries of the results)
-			for (int i = 0; i < _DCVoltageSources.Count; ++i)
+			else
 			{
-				_DCVoltageSources[i].ProducedCurrent.Value = result[i + _BigDimension];
+				AssignACResults(result, frequency);
 			}
 		}
 
