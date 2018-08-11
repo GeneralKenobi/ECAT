@@ -69,15 +69,16 @@ namespace ECAT.Design
 		/// <returns></returns>
 		public override IEnumerable<string> GetComponentInfo()
 		{
-			yield return "Output voltage: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
-				(TerminalC.Potential != null ? TerminalC.Potential.Value : 0), "V", imaginaryAsJ: true);
-			yield return "Non-inverting input potential: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
-				(TerminalA.Potential != null ? TerminalA.Potential.Value : 0), "V", imaginaryAsJ: true);
-			yield return "Inverting input potential: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
-				(TerminalB.Potential != null ? TerminalB.Potential.Value : 0), "V", imaginaryAsJ: true);
-			yield return "Differential voltage: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
-				(TerminalA.Potential != null && TerminalB.Potential != null ? TerminalA.Potential.Value - TerminalB.Potential.Value : 0),
-				"V", imaginaryAsJ: true);
+			yield return string.Empty;
+			//yield return "Output voltage: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
+			//	(TerminalC.Potentials != null ? TerminalC.Potentials.Value : 0), "V", imaginaryAsJ: true);
+			//yield return "Non-inverting input potential: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
+			//	(TerminalA.Potentials != null ? TerminalA.Potentials.Value : 0), "V", imaginaryAsJ: true);
+			//yield return "Inverting input potential: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
+			//	(TerminalB.Potentials != null ? TerminalB.Potentials.Value : 0), "V", imaginaryAsJ: true);
+			//yield return "Differential voltage: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
+			//	(TerminalA.Potentials != null && TerminalB.Potentials != null ? TerminalA.Potentials.Value - TerminalB.Potentials.Value : 0),
+			//	"V", imaginaryAsJ: true);
 		}
 
 		#endregion
