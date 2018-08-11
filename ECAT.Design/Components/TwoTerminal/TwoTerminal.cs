@@ -38,6 +38,12 @@ namespace ECAT.Design
 		/// </summary>
 		protected virtual Complex _TerminalBShift => new Complex(Width / 2, 0);
 
+		/// <summary>
+		/// The DC voltage drop across the component
+		/// </summary>
+		protected virtual Complex DCVoltageDrop => InvertedVoltageCurrentDirections ?
+			TerminalA.DCPotential.Value - TerminalB.DCPotential.Value : TerminalB.DCPotential.Value - TerminalA.DCPotential.Value;
+
 		#endregion
 
 		#region Public properties		
@@ -166,6 +172,28 @@ namespace ECAT.Design
 				MinimumVoltageDrop.RoundToDigit(4), "V", imaginaryAsJ: true);
 			yield return "RMS voltage: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
 				RMSVoltageDrop.RoundToDigit(4), "V", imaginaryAsJ: true);
+
+			if (MaximumVoltageDrop != 0)
+			{
+				yield return "Composing voltage phasors:";
+			}
+
+			if(DCVoltageDrop != 0)
+			{
+				yield return SIHelpers.ToAltSIStringExcludingSmallPrefixes(DCVoltageDrop.RoundToDigit(4), "V DC");
+			}
+
+			var bTerminalEnumerator = TerminalB.ACPotentials.GetEnumerator();
+			var aTerminalEnumerator = TerminalA.ACPotentials.GetEnumerator();
+			
+			while(bTerminalEnumerator.MoveNext() && aTerminalEnumerator.MoveNext())
+			{
+				yield return SIHelpers.ToAltSIStringExcludingSmallPrefixes(
+					(bTerminalEnumerator.Current.Item2 - aTerminalEnumerator.Current.Item2).RoundToDigit(4), "V") + " at " +
+					SIHelpers.ToAltSIStringExcludingSmallPrefixes(
+					(bTerminalEnumerator.Current.Item1).RoundToDigit(4), "Hz");
+			}
+
 			yield return "Current: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(Current.RoundToDigit(4), "A", imaginaryAsJ:true);
 		}
 
