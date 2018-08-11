@@ -17,7 +17,7 @@ namespace ECAT.Design
 		/// </summary>
 		public VoltageSource()
 		{
-			ProducedCurrent.PropertyChanged += (s, e) => InvokePropertyChanged(nameof(CurrentBA));
+			ProducedCurrent.PropertyChanged += (s, e) => InvokePropertyChanged(nameof(Current));
 		}
 
 		#endregion
@@ -28,6 +28,17 @@ namespace ECAT.Design
 		/// The admittance of a voltage source (constant value)
 		/// </summary>
 		private Complex _Admittance { get; } = IoC.Resolve<IDefaultValues>().VoltageSourceAdmittance;
+
+		#endregion
+
+		#region Protected properties
+		
+		/// <summary>
+		/// Current flowing from <see cref="TerminalA"/> to <see cref="TerminalB"/> - the opposite of the produced current which
+		/// is marked from the positive terminal (<see cref="TerminalB"/>) to the negative terminal (<see cref="TerminalA)"/>
+		/// </summary>
+		protected override Complex Current => ProducedCurrent.Value;
+
 
 		#endregion
 
@@ -42,12 +53,6 @@ namespace ECAT.Design
 		/// Current through the source, flowing from terminal A to terminal B
 		/// </summary>
 		public RefWrapperPropertyChanged<Complex> ProducedCurrent { get; set; } = new RefWrapperPropertyChanged<Complex>();
-
-		/// <summary>
-		/// Current flowing from <see cref="TerminalA"/> to <see cref="TerminalB"/> - the opposite of the produced current which
-		/// is marked from the positive terminal (<see cref="TerminalB"/>) to the negative terminal (<see cref="TerminalA)"/>
-		/// </summary>
-		public override Complex CurrentBA => -ProducedCurrent.Value;
 
 		#endregion
 

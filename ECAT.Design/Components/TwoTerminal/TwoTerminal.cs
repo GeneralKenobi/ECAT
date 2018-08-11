@@ -44,6 +44,44 @@ namespace ECAT.Design
 		protected virtual Complex DCVoltageDrop => InvertedVoltageCurrentDirections ?
 			TerminalA.DCPotential.Value - TerminalB.DCPotential.Value : TerminalB.DCPotential.Value - TerminalA.DCPotential.Value;
 
+		/// <summary>
+		/// Voltage drop across the part. The direction is determined by <see cref="InvertedVoltageCurrentDirections"/>
+		/// </summary>
+		protected virtual Complex VoltageDrop => TerminalB.ACPotentials == null || TerminalA.ACPotentials == null ? 0 : TerminalB.MaximumPeakPotential() - TerminalA.MaximumPeakPotential();
+		// Check if direction is inverted
+		//(InvertedVoltageCurrentDirections ?
+		// If it is calculate Va - Vb, otherwise Vb - Va
+		//TerminalA.Potentials.Value - TerminalB.Potentials.Value : TerminalB.Potentials.Value - TerminalA.Potentials.Value);
+
+		/// <summary>
+		/// Current through the component, by convention (although not always as, for example, voltage sources will align current and
+		/// voltage drop in the same direction. All things considered <see cref="VoltageDrop"/> and
+		/// <see cref="InvertedVoltageCurrentDirections"/> are guaranteed to be mutually correct) it flows in direction opposite to voltage
+		/// drop (so for <see cref="InvertedVoltageCurrentDirections"/> equal to false the current is given from <see cref="TerminalB"/> to
+		/// <see cref="TerminalA"/>)
+		protected virtual Complex Current => VoltageDrop * GetAdmittance(0);
+		// Current is simply calculated in the opposite direction to voltage
+
+		/// <summary>
+		/// The maximum voltage drop that may be observed across the component
+		/// </summary>
+		protected Complex MaximumVoltageDrop => TerminalB == null || TerminalA == null ? 0 : (InvertedVoltageCurrentDirections ?
+			TerminalA.MaximumPeakPotential() - TerminalB.MaximumPeakPotential() :
+			TerminalB.MinimumPeakPotential() - TerminalA.MinimumPeakPotential());
+
+		/// <summary>
+		/// The minimum voltage drop that may be observed across the component
+		/// </summary>
+		protected Complex MinimumVoltageDrop => TerminalB == null || TerminalA == null ? 0 : (InvertedVoltageCurrentDirections ?
+			TerminalA.MinimumPeakPotential() - TerminalB.MinimumPeakPotential() :
+			TerminalB.MaximumPeakPotential() - TerminalA.MaximumPeakPotential());
+
+		/// <summary>
+		/// The RMS value of voltage across the component
+		/// </summary>
+		protected Complex RMSVoltageDrop => TerminalB == null || TerminalA == null ? 0 :
+			Complex.Abs(TerminalB.RMSPotential() - TerminalA.RMSPotential());
+
 		#endregion
 
 		#region Public properties		
@@ -67,53 +105,13 @@ namespace ECAT.Design
 		/// One of the terminals in this two-terminal
 		/// </summary>
 		public ITerminal TerminalB { get; }
-
-		/// <summary>
-		/// The maximum voltage drop that may be observed across the component
-		/// </summary>
-		public Complex MaximumVoltageDrop => TerminalB == null || TerminalA == null ? 0 : (InvertedVoltageCurrentDirections ?
-			TerminalA.MaximumPeakPotential() - TerminalB.MaximumPeakPotential() :
-			TerminalB.MinimumPeakPotential() - TerminalA.MinimumPeakPotential());
-
-		/// <summary>
-		/// The minimum voltage drop that may be observed across the component
-		/// </summary>
-		public Complex MinimumVoltageDrop => TerminalB == null || TerminalA == null ? 0 : (InvertedVoltageCurrentDirections ?
-			TerminalA.MinimumPeakPotential() - TerminalB.MinimumPeakPotential() :
-			TerminalB.MaximumPeakPotential() - TerminalA.MaximumPeakPotential());
-
-		/// <summary>
-		/// The RMS value of voltage across the component
-		/// </summary>
-		public Complex RMSVoltageDrop => TerminalB == null || TerminalA == null ? 0 : 
-			Complex.Abs(TerminalB.RMSPotential() - TerminalA.RMSPotential());
-
+		
 		/// <summary>
 		/// True if the standard voltage drop direciton (Vb - Va) was inverted
 		/// </summary>
 		public virtual bool InvertedVoltageCurrentDirections =>
 			// Invert only if the maximum peak voltage would be negative
-			TerminalA.MaximumPeakPotential().Real > TerminalB.MaximumPeakPotential().Real;
-			
-
-		/// <summary>
-		/// Voltage drop across the part. The direction is determined by <see cref="InvertedVoltageCurrentDirections"/>
-		/// </summary>
-		public virtual Complex VoltageDrop => TerminalB.ACPotentials == null || TerminalA.ACPotentials == null ? 0 : TerminalB.MaximumPeakPotential() - TerminalA.MaximumPeakPotential();
-			// Check if direction is inverted
-			//(InvertedVoltageCurrentDirections ?
-			// If it is calculate Va - Vb, otherwise Vb - Va
-			//TerminalA.Potentials.Value - TerminalB.Potentials.Value : TerminalB.Potentials.Value - TerminalA.Potentials.Value);
-
-
-		/// <summary>
-		/// Current through the component, by convention (although not always as, for example, voltage sources will align current and
-		/// voltage drop in the same direction. All things considered <see cref="VoltageDrop"/> and
-		/// <see cref="InvertedVoltageCurrentDirections"/> are guaranteed to be mutually correct) it flows in direction opposite to voltage
-		/// drop (so for <see cref="InvertedVoltageCurrentDirections"/> equal to false the current is given from <see cref="TerminalB"/> to
-		/// <see cref="TerminalA"/>)
-		public virtual Complex Current => VoltageDrop * GetAdmittance(0);
-		// Current is simply calculated in the opposite direction to voltage
+			TerminalA.MaximumPeakPotential().Real > TerminalB.MaximumPeakPotential().Real;		
 
 		#endregion
 
