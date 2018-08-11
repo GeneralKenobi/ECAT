@@ -65,21 +65,21 @@ namespace ECAT.Design
 		/// <summary>
 		/// The maximum voltage drop that may be observed across the component
 		/// </summary>
-		protected Complex MaximumVoltageDrop => TerminalB == null || TerminalA == null ? 0 : (InvertedVoltageCurrentDirections ?
+		protected virtual Complex MaximumVoltageDrop => TerminalB == null || TerminalA == null ? 0 : (InvertedVoltageCurrentDirections ?
 			TerminalA.MaximumPeakPotential() - TerminalB.MaximumPeakPotential() :
 			TerminalB.MinimumPeakPotential() - TerminalA.MinimumPeakPotential());
 
 		/// <summary>
 		/// The minimum voltage drop that may be observed across the component
 		/// </summary>
-		protected Complex MinimumVoltageDrop => TerminalB == null || TerminalA == null ? 0 : (InvertedVoltageCurrentDirections ?
+		protected virtual Complex MinimumVoltageDrop => TerminalB == null || TerminalA == null ? 0 : (InvertedVoltageCurrentDirections ?
 			TerminalA.MinimumPeakPotential() - TerminalB.MinimumPeakPotential() :
 			TerminalB.MaximumPeakPotential() - TerminalA.MaximumPeakPotential());
 
 		/// <summary>
 		/// The RMS value of voltage across the component
 		/// </summary>
-		protected Complex RMSVoltageDrop => TerminalB == null || TerminalA == null ? 0 :
+		protected virtual Complex RMSVoltageDrop => TerminalB == null || TerminalA == null ? 0 :
 			Complex.Abs(TerminalB.RMSPotential() - TerminalA.RMSPotential());
 
 		#endregion
