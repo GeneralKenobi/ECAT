@@ -30,6 +30,21 @@ namespace ECAT.Core
 		Complex VoltageDrop { get; }
 
 		/// <summary>
+		/// The maximum voltage drop that may be observed across the component
+		/// </summary>
+		Complex MaximumVoltageDrop { get; }
+
+		/// <summary>
+		/// The minimum voltage drop that may be observed across the component
+		/// </summary>
+		Complex MinimumVoltageDrop { get; }
+
+		/// <summary>
+		/// The RMS value of voltage across the component
+		/// </summary>
+		Complex RMSVoltageDrop { get; }
+
+		/// <summary>
 		/// Current through the component, by convention (although not always as, for example, voltage sources will align current and
 		/// voltage drop in the same direction. All things considered <see cref="VoltageDrop"/> and
 		/// <see cref="InvertedVoltageCurrentDirections"/> are guaranteed to be mutually correct) it flows in direction opposite to voltage

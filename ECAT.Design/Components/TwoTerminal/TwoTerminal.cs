@@ -63,20 +63,42 @@ namespace ECAT.Design
 		public ITerminal TerminalB { get; }
 
 		/// <summary>
+		/// The maximum voltage drop that may be observed across the component
+		/// </summary>
+		public Complex MaximumVoltageDrop => TerminalB == null || TerminalA == null ? 0 : (InvertedVoltageCurrentDirections ?
+			TerminalA.MaximumPeakPotential() - TerminalB.MaximumPeakPotential() :
+			TerminalB.MinimumPeakPotential() - TerminalA.MinimumPeakPotential());
+
+		/// <summary>
+		/// The minimum voltage drop that may be observed across the component
+		/// </summary>
+		public Complex MinimumVoltageDrop => TerminalB == null || TerminalA == null ? 0 : (InvertedVoltageCurrentDirections ?
+			TerminalA.MinimumPeakPotential() - TerminalB.MinimumPeakPotential() :
+			TerminalB.MaximumPeakPotential() - TerminalA.MaximumPeakPotential());
+
+		/// <summary>
+		/// The RMS value of voltage across the component
+		/// </summary>
+		public Complex RMSVoltageDrop => TerminalB == null || TerminalA == null ? 0 : 
+			Complex.Abs(TerminalB.RMSPotential() - TerminalA.RMSPotential());
+
+		/// <summary>
 		/// True if the standard voltage drop direciton (Vb - Va) was inverted
 		/// </summary>
-		public virtual bool InvertedVoltageCurrentDirections => TerminalB.Potential != null && TerminalA.Potential != null &&
-			// If real part of Vb is smaller than real part of Va then directions are inverted
-			TerminalA.Potential.Value.Real > TerminalB.Potential.Value.Real;
+		public virtual bool InvertedVoltageCurrentDirections =>
+			// Invert only if the maximum peak voltage would be negative
+			TerminalA.MaximumPeakPotential().Real > TerminalB.MaximumPeakPotential().Real;
+			
 
 		/// <summary>
 		/// Voltage drop across the part. The direction is determined by <see cref="InvertedVoltageCurrentDirections"/>
 		/// </summary>
-		public virtual Complex VoltageDrop => TerminalB.Potential == null || TerminalA.Potential == null ? 0 :
+		public virtual Complex VoltageDrop => TerminalB.ACPotentials == null || TerminalA.ACPotentials == null ? 0 : TerminalB.MaximumPeakPotential() - TerminalA.MaximumPeakPotential();
 			// Check if direction is inverted
-			(InvertedVoltageCurrentDirections ?
+			//(InvertedVoltageCurrentDirections ?
 			// If it is calculate Va - Vb, otherwise Vb - Va
-			TerminalA.Potential.Value - TerminalB.Potential.Value : TerminalB.Potential.Value - TerminalA.Potential.Value);
+			//TerminalA.Potentials.Value - TerminalB.Potentials.Value : TerminalB.Potentials.Value - TerminalA.Potentials.Value);
+
 
 		/// <summary>
 		/// Current through the component, by convention (although not always as, for example, voltage sources will align current and
@@ -138,8 +160,12 @@ namespace ECAT.Design
 		/// <returns></returns>
 		public override IEnumerable<string> GetComponentInfo()
 		{
-			yield return "Voltage drop: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
-				VoltageDrop.RoundToDigit(4), "V", imaginaryAsJ:true);
+			yield return "Maximum instantenous voltage: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
+				MaximumVoltageDrop.RoundToDigit(4), "V", imaginaryAsJ:true);
+			yield return "Minimum instantenous voltage: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
+				MinimumVoltageDrop.RoundToDigit(4), "V", imaginaryAsJ: true);
+			yield return "RMS voltage: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
+				RMSVoltageDrop.RoundToDigit(4), "V", imaginaryAsJ: true);
 			yield return "Current: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(Current.RoundToDigit(4), "A", imaginaryAsJ:true);
 		}
 
