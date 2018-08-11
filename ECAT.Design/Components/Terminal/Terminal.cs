@@ -1,6 +1,7 @@
 ﻿using CSharpEnhanced.CoreClasses;
 using ECAT.Core;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
 
@@ -45,15 +46,6 @@ namespace ECAT.Design
 
 		#endregion
 
-		#region Private members
-
-		/// <summary>
-		/// Backing store for <see cref="Potential"/>
-		/// </summary>
-		private RefWrapperPropertyChanged<Complex> mPotential;
-
-		#endregion
-
 		#region Public properties
 
 		/// <summary>
@@ -62,38 +54,15 @@ namespace ECAT.Design
 		public IPlanePosition Position { get; }
 
 		/// <summary>
-		/// Reference to potential at <see cref="INode"/> that is associated with this <see cref="ITerminal"/>
+		/// Reference to potential at <see cref="INode"/> that is associated with this <see cref="ITerminal"/>. Item1 (double) refers
+		/// to the frequency of the source generating the potential and Item2 (Complex) to the value of the potential.
 		/// </summary>
-		public RefWrapperPropertyChanged<Complex> Potential
-		{
-			get => mPotential;
-			set
-			{
-				// If the new value is different
-				if (mPotential != value)
-				{
-					// If the old value wasn't null
-					if (mPotential != null)
-					{
-						// Unsubsribe from its property changed event
-						mPotential.PropertyChanged -= PropagatePotenialValueChanged;
-					}
+		public IEnumerable<Tuple<double, Complex>> ACPotentials { get; set; } = new List<Tuple<double, Complex>>();
 
-					// Assgin the new value
-					mPotential = value;
-
-					// If it's not null
-					if(mPotential != null)
-					{
-						// Subscribe to its property changed event
-						mPotential.PropertyChanged += PropagatePotenialValueChanged;
-					}
-
-					// Notify about possible change in value
-					InvokePotentialValueChanged();
-				}
-			}
-		}
+		/// <summary>
+		/// The DC potential of the terminal with respect to ground
+		/// </summary>
+		public RefWrapper<Complex> DCPotential { get; set; } = new RefWrapper<Complex>();
 
 		#endregion
 
@@ -105,12 +74,67 @@ namespace ECAT.Design
 		private void InvokePotentialValueChanged() => PotentialValueChanged?.Invoke(this, EventArgs.Empty);
 
 		/// <summary>
-		/// Propagates the property changed event of <see cref="Potential"/> through <see cref="PotentialValueChanged"/>.
+		/// Propagates the property changed event of <see cref="ACPotentials"/> through <see cref="PotentialValueChanged"/>.
 		/// There's only one property on <see cref="RefWrapperPropertyChanged{T}"/> so does not check for the name of the property
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void PropagatePotenialValueChanged(object sender, PropertyChangedEventArgs e) => InvokePotentialValueChanged();		
+		private void PropagatePotenialValueChanged(object sender, PropertyChangedEventArgs e) => InvokePotentialValueChanged();
+
+		#endregion
+
+		#region Public methods
+
+		/// <summary>
+		/// Maximum peak potential observable at the terminal
+		/// </summary>
+		/// <returns></returns>
+		public Complex MaximumPeakPotential()
+		{			
+			// Simply add all peak AC voltages to the DC potential
+			var result = DCPotential.Value;
+
+			foreach(var item in ACPotentials)
+			{
+				result += item.Item2;
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Minimum peak potential observable at the terminal
+		/// </summary>
+		/// <returns></returns>
+		public Complex MinimumPeakPotential()
+		{
+			// Simply subtract all peak AC voltages from the DC potential
+			var result = DCPotential.Value;
+
+			foreach (var item in ACPotentials)
+			{
+				result -= item.Item2;
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// RMS value of voltage at the terminal
+		/// </summary>
+		/// <returns></returns>
+		public Complex RMSPotential()
+		{
+			// Total RMS is a square root of a sum of squares of RMS values of voltages present at the terminal
+			var result = Complex.Pow(DCPotential.Value, 2);
+
+			foreach (var item in ACPotentials)
+			{
+				result += Complex.Pow(item.Item2, 2);
+			}
+
+			return Complex.Sqrt(result);
+		}
 
 		#endregion
 	}

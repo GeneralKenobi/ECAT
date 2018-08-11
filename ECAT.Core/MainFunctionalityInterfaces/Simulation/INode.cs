@@ -1,4 +1,5 @@
 ﻿using CSharpEnhanced.CoreClasses;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 
@@ -18,9 +19,15 @@ namespace ECAT.Core
 		IPlanePosition Position { get; }
 
 		/// <summary>
-		/// Potential present at the node with respect to ground
-		/// </summary>		
-		RefWrapperPropertyChanged<Complex> Potential { get; }
+		/// AC potentials present at the node with respect to ground. Item1 (double) refers
+		/// to the frequency of the source generating the potential and Item2 (Complex) to the value of the potential.
+		/// </summary>
+		ICollection<Tuple<double, Complex>> ACPotentials { get; }
+
+		/// <summary>
+		/// The DC potential of the node with respect to ground
+		/// </summary>
+		RefWrapper<Complex> DCPotential { get; }
 
 		/// <summary>
 		/// List with all components that are connected to the <see cref="INode"/>
