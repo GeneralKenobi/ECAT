@@ -44,7 +44,7 @@ namespace ECAT.Core
 		/// <summary>
 		/// The DC potential of the node with respect to ground
 		/// </summary>
-		public RefWrapper<Complex> DCPotential { get; } = new RefWrapper<Complex>();
+		public RefWrapper<double> DCPotential { get; } = new RefWrapper<double>();
 
 		/// <summary>
 		/// List with all components that are connected to the <see cref="INode"/>

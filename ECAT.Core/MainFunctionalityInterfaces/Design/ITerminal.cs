@@ -38,7 +38,7 @@ namespace ECAT.Core
 		/// <summary>
 		/// The DC potential of the terminal with respect to ground
 		/// </summary>
-		RefWrapper<Complex> DCPotential { get; set; }
+		RefWrapper<double> DCPotential { get; set; }
 
 		#endregion
 
@@ -48,19 +48,19 @@ namespace ECAT.Core
 		/// Maximum peak potential observable at the terminal
 		/// </summary>
 		/// <returns></returns>
-		Complex MaximumPeakPotential();
+		double MaximumPeakPotential();
 
 		/// <summary>
 		/// Minimum peak potential observable at the terminal
 		/// </summary>
 		/// <returns></returns>
-		Complex MinimumPeakPotential();
+		double MinimumPeakPotential();
 
 		/// <summary>
 		/// RMS value of voltage at the terminal
 		/// </summary>
 		/// <returns></returns>
-		Complex RMSPotential();
+		double RMSPotential();
 
 		#endregion
 

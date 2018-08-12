@@ -586,7 +586,7 @@ namespace ECAT.Simulation
 			// Assign the node potentials (entries from 0 to the number of nodes - 1)
 			for (int i = 0; i < _BigDimension; ++i)
 			{
-				_Nodes[i].DCPotential.Value = result[i];
+				_Nodes[i].DCPotential.Value = result[i].Real;
 			}
 
 			// Assign the currents through voltage sources (the remaining entries of the results)

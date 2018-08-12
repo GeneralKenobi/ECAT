@@ -111,7 +111,7 @@ namespace ECAT.Design
 		/// </summary>
 		public virtual bool InvertedVoltageCurrentDirections =>
 			// Invert only if the maximum peak voltage would be negative
-			TerminalA.MaximumPeakPotential().Real > TerminalB.MaximumPeakPotential().Real;		
+			TerminalA.MaximumPeakPotential() > TerminalB.MaximumPeakPotential();		
 
 		#endregion
 

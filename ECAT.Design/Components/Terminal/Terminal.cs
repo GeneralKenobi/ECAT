@@ -62,7 +62,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// The DC potential of the terminal with respect to ground
 		/// </summary>
-		public RefWrapper<Complex> DCPotential { get; set; } = new RefWrapper<Complex>();
+		public RefWrapper<double> DCPotential { get; set; } = new RefWrapper<double>();
 
 		#endregion
 
@@ -89,14 +89,14 @@ namespace ECAT.Design
 		/// Maximum peak potential observable at the terminal
 		/// </summary>
 		/// <returns></returns>
-		public Complex MaximumPeakPotential()
+		public double MaximumPeakPotential()
 		{			
 			// Simply add all peak AC voltages to the DC potential
 			var result = DCPotential.Value;
 
 			foreach(var item in ACPotentials)
 			{
-				result += item.Item2;
+				result += item.Item2.Magnitude;
 			}
 
 			return result;
@@ -106,14 +106,14 @@ namespace ECAT.Design
 		/// Minimum peak potential observable at the terminal
 		/// </summary>
 		/// <returns></returns>
-		public Complex MinimumPeakPotential()
+		public double MinimumPeakPotential()
 		{
 			// Simply subtract all peak AC voltages from the DC potential
 			var result = DCPotential.Value;
 
 			foreach (var item in ACPotentials)
 			{
-				result -= item.Item2;
+				result -= item.Item2.Magnitude;
 			}
 
 			return result;
@@ -123,17 +123,17 @@ namespace ECAT.Design
 		/// RMS value of voltage at the terminal
 		/// </summary>
 		/// <returns></returns>
-		public Complex RMSPotential()
+		public double RMSPotential()
 		{
 			// Total RMS is a square root of a sum of squares of RMS values of voltages present at the terminal
-			var result = Complex.Pow(DCPotential.Value, 2);
+			var result = Math.Pow(DCPotential.Value, 2);
 
 			foreach (var item in ACPotentials)
 			{
-				result += Complex.Pow(item.Item2, 2);
+				result += Math.Pow(item.Item2.Magnitude, 2);
 			}
 
-			return Complex.Sqrt(result);
+			return Math.Sqrt(result);
 		}
 
 		#endregion
