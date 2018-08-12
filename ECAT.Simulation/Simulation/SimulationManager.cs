@@ -8,7 +8,7 @@ namespace ECAT.Simulation
 	/// <summary>
 	/// Implementation of the simulation module
 	/// </summary>
-	public class SimulationManager : ISimulationManager
+	public partial class SimulationManager : ISimulationManager
 	{
 		#region Events
 
@@ -24,8 +24,17 @@ namespace ECAT.Simulation
 
 		#endregion
 
+		#region Private properties
+
+		/// <summary>
+		/// The result manager for the app's whole lifetime
+		/// </summary>
+		private ISimulationResultManager _ResultManager { get; } = IoC.Resolve<ISimulationResultManager>();
+
+		#endregion
+
 		#region Public methods
-		
+
 		/// <summary>
 		/// Performs a single AC sweep for the given schematic
 		/// </summary>
@@ -58,7 +67,8 @@ namespace ECAT.Simulation
 				Debug.WriteLine(e.Message);
 			}
 
-			watch.Reset();
+			watch.Reset();			
+
 			SimulationCompleted?.Invoke(this, new SimulationCompletedEventArgs(simulationType));
 		}
 
