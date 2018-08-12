@@ -214,6 +214,15 @@ namespace ECAT.Simulation
 
 		#endregion
 
+		#region Public methods
+
+		/// <summary>
+		/// Returns an enumeration of nodes created for this admittance matrix
+		/// </summary>
+		public IEnumerable<INode> Nodes => _Nodes;
+
+		#endregion
+
 		#region Private methods
 
 		#region Node generation
