@@ -38,8 +38,8 @@ namespace ECAT.Core
 		/// <summary>
 		/// AC potentials present at the node with respect to ground. Item1 (double) refers
 		/// to the frequency of the source generating the potential and Item2 (Complex) to the value of the potential.
-		/// </summary>
-		public ICollection<Tuple<double, Complex>> ACPotentials { get; } = new List<Tuple<double, Complex>>();
+		/// </summary>		
+		public IDictionary<double, Complex> ACPotentials { get; } = new Dictionary<double, Complex>();
 
 		/// <summary>
 		/// The DC potential of the node with respect to ground

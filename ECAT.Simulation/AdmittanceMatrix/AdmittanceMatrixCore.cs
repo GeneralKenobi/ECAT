@@ -235,7 +235,7 @@ namespace ECAT.Simulation
 				node.ConnectedTerminals.ForEach((terminal) =>
 				{
 					terminal.DCPotential = node.DCPotential;
-					terminal.ACPotentials = node.ACPotentials;
+					//terminal.ACPotentials = node.ACPotentials;
 				});
 			});
 
@@ -256,7 +256,7 @@ namespace ECAT.Simulation
 			var referenceNodes = FindReferenceNodes();
 
 			// Set their potential to 0 (when builing the matrix the collections are cleared so they're guaranteed to be empty)
-			referenceNodes.ForEach((node) => node.ACPotentials.Add(new Tuple<double, Complex>(0, 0)));			
+			//referenceNodes.ForEach((node) => node.ACPotentials.Add(new Tuple<double, Complex>(0, 0)));			
 
 			// Remove them from the nodes list
 			_Nodes.RemoveAll((node) => referenceNodes.Contains(node));
@@ -567,7 +567,7 @@ namespace ECAT.Simulation
 			// Assign the node potentials (entries from 0 to the number of nodes - 1)
 			for (int i = 0; i < _BigDimension; ++i)
 			{
-				_Nodes[i].ACPotentials.Add(new Tuple<double, Complex>(frequency, result[i]));
+				_Nodes[i].ACPotentials.Add(frequency, result[i]);
 			}
 
 			// Assign the currents through voltage sources (the remaining entries of the results)
