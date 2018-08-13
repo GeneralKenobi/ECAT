@@ -1,8 +1,4 @@
-﻿using CSharpEnhanced.CoreClasses;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Numerics;
+﻿using System.ComponentModel;
 
 namespace ECAT.Core
 {
@@ -13,15 +9,6 @@ namespace ECAT.Core
 	/// </summary>
 	public interface ITerminal : INotifyPropertyChanged
 	{
-		#region Events
-
-		/// <summary>
-		/// Event fired whenever the value of the potential changes
-		/// </summary>
-		EventHandler PotentialValueChanged { get; set; }
-
-		#endregion
-
 		#region Properties
 
 		/// <summary>
@@ -32,42 +19,8 @@ namespace ECAT.Core
 		/// <summary>
 		/// Position of the terminal on the design area used to connect the terminals
 		/// </summary>
-		IPlanePosition Position { get; }
-
-		/// <summary>
-		/// Reference to potentials at <see cref="INode"/> that are associated with this <see cref="ITerminal"/>. Item1 (double) refers
-		/// to the frequency of the source generating the potential and Item2 (Complex) to the value of the potential.
-		/// </summary>
-		IEnumerable<Tuple<double, Complex>> ACPotentials { get; set; }
-
-		/// <summary>
-		/// The DC potential of the terminal with respect to ground
-		/// </summary>
-		RefWrapper<double> DCPotential { get; set; }
+		IPlanePosition Position { get; }		
 
 		#endregion
-
-		#region Methods
-
-		/// <summary>
-		/// Maximum peak potential observable at the terminal
-		/// </summary>
-		/// <returns></returns>
-		double MaximumPeakPotential();
-
-		/// <summary>
-		/// Minimum peak potential observable at the terminal
-		/// </summary>
-		/// <returns></returns>
-		double MinimumPeakPotential();
-
-		/// <summary>
-		/// RMS value of voltage at the terminal
-		/// </summary>
-		/// <returns></returns>
-		double RMSPotential();
-
-		#endregion
-
 	}
 }
