@@ -95,5 +95,14 @@ namespace ECAT.Simulation
 		public IEnumerable<Tuple<Type, Type>> GetTypesToRegister() => Enumerable.Empty<Tuple<Type, Type>>();
 
 		#endregion
+
+		#region Public static properties
+
+		/// <summary>
+		/// The index assumed for ground nodes
+		/// </summary>
+		public static int GroundNodeIndex { get; } = -1;
+
+		#endregion
 	}
 }
