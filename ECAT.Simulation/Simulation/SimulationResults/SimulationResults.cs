@@ -12,7 +12,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Standard implementation of <see cref="ISimulationManager"/>, manages results for <see cref="SimulationManager"/>
 		/// </summary>
-		private class SimulationResultManager : ISimulationResultManager
+		private class SimulationResults : ISimulationResults
 		{
 			#region Private properties
 

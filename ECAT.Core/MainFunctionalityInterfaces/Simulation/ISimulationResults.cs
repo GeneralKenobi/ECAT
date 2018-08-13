@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Interface for a class that manages and analyses results computed by <see cref="ISimulationManager"/>
 	/// </summary>
-	public interface ISimulationResultManager
+	public interface ISimulationResults
     {
 		#region Methods
 
