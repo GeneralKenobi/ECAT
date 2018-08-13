@@ -11,22 +11,22 @@ namespace ECAT.Design
 	/// Base class for all two-terminal components
 	/// </summary>
 	public abstract class TwoTerminal : BaseComponent, ITwoTerminal
-    {
+	{
 		#region Constructors
 
 		/// <summary>
 		/// Default Constructor
 		/// </summary>
-		public TwoTerminal()
-		{
-			TerminalA = new Terminal(new PlanePosition(Complex.Zero, _TerminalAShift), TerminalPotentialChangedCallback);
-			TerminalB = new Terminal(new PlanePosition(Complex.Zero, _TerminalBShift), TerminalPotentialChangedCallback);
+		protected TwoTerminal()
+		{			
+			TerminalA = new Terminal(new PlanePosition(Complex.Zero, _TerminalAShift));
+			TerminalB = new Terminal(new PlanePosition(Complex.Zero, _TerminalBShift));
 			IoC.Resolve<ISimulationManager>().SimulationCompleted += (s, e) => InvokePropertyChanged(nameof(InvertedVoltageCurrentDirections));
 		}
 
 		#endregion
 
-		#region Protected properties		
+		#region Protected properties
 
 		/// <summary>
 		/// The shift assigned to <see cref="TerminalA"/>, override to provide custom value
@@ -38,49 +38,8 @@ namespace ECAT.Design
 		/// </summary>
 		protected virtual Complex _TerminalBShift => new Complex(Width / 2, 0);
 
-		/// <summary>
-		/// The DC voltage drop across the component
-		/// </summary>
-		protected virtual Complex DCVoltageDrop => InvertedVoltageCurrentDirections ?
-			TerminalA.DCPotential.Value - TerminalB.DCPotential.Value : TerminalB.DCPotential.Value - TerminalA.DCPotential.Value;
-
-		/// <summary>
-		/// Voltage drop across the part. The direction is determined by <see cref="InvertedVoltageCurrentDirections"/>
-		/// </summary>
-		protected virtual Complex VoltageDrop => TerminalB.ACPotentials == null || TerminalA.ACPotentials == null ? 0 : TerminalB.MaximumPeakPotential() - TerminalA.MaximumPeakPotential();
-		// Check if direction is inverted
-		//(InvertedVoltageCurrentDirections ?
-		// If it is calculate Va - Vb, otherwise Vb - Va
-		//TerminalA.Potentials.Value - TerminalB.Potentials.Value : TerminalB.Potentials.Value - TerminalA.Potentials.Value);
-
-		/// <summary>
-		/// Current through the component, by convention (although not always as, for example, voltage sources will align current and
-		/// voltage drop in the same direction. All things considered <see cref="VoltageDrop"/> and
-		/// <see cref="InvertedVoltageCurrentDirections"/> are guaranteed to be mutually correct) it flows in direction opposite to voltage
-		/// drop (so for <see cref="InvertedVoltageCurrentDirections"/> equal to false the current is given from <see cref="TerminalB"/> to
-		/// <see cref="TerminalA"/>)
-		protected virtual Complex Current => VoltageDrop * GetAdmittance(0);
-		// Current is simply calculated in the opposite direction to voltage
-
-		/// <summary>
-		/// The maximum voltage drop that may be observed across the component
-		/// </summary>
-		protected virtual Complex MaximumVoltageDrop => TerminalB == null || TerminalA == null ? 0 : (InvertedVoltageCurrentDirections ?
-			TerminalA.MaximumPeakPotential() - TerminalB.MaximumPeakPotential() :
-			TerminalB.MinimumPeakPotential() - TerminalA.MinimumPeakPotential());
-
-		/// <summary>
-		/// The minimum voltage drop that may be observed across the component
-		/// </summary>
-		protected virtual Complex MinimumVoltageDrop => TerminalB == null || TerminalA == null ? 0 : (InvertedVoltageCurrentDirections ?
-			TerminalA.MinimumPeakPotential() - TerminalB.MinimumPeakPotential() :
-			TerminalB.MaximumPeakPotential() - TerminalA.MaximumPeakPotential());
-
-		/// <summary>
-		/// The RMS value of voltage across the component
-		/// </summary>
-		protected virtual Complex RMSVoltageDrop => TerminalB == null || TerminalA == null ? 0 :
-			Complex.Abs(TerminalB.RMSPotential() - TerminalA.RMSPotential());
+		protected IVoltageDropInformation _VoltageDrop =>
+			IoC.Resolve<ISimulationResults>().GetVoltageDropOrZero(TerminalA.NodeIndex, TerminalB.NodeIndex);
 
 		#endregion
 
@@ -105,25 +64,12 @@ namespace ECAT.Design
 		/// One of the terminals in this two-terminal
 		/// </summary>
 		public ITerminal TerminalB { get; }
-		
+
 		/// <summary>
 		/// True if the standard voltage drop direciton (Vb - Va) was inverted
 		/// </summary>
-		public virtual bool InvertedVoltageCurrentDirections =>
-			// Invert only if the maximum peak voltage would be negative
-			TerminalA.MaximumPeakPotential() > TerminalB.MaximumPeakPotential();		
-
-		#endregion
-
-		#region Private methods
-
-		/// <summary>
-		/// Callback for when value of any <see cref="ITerminal"/> in this <see cref="TwoTerminal"/> changes
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void TerminalPotentialChangedCallback(object sender, EventArgs e) =>
-			InvokePropertyChanged(nameof(VoltageDrop), nameof(Current));
+		public virtual bool InvertedVoltageCurrentDirections => _VoltageDrop.InvertedDirection;
+			
 
 		#endregion
 
@@ -165,34 +111,11 @@ namespace ECAT.Design
 		public override IEnumerable<string> GetComponentInfo()
 		{
 			yield return "Maximum instantenous voltage: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
-				MaximumVoltageDrop.RoundToDigit(4), "V", imaginaryAsJ:true);
+				_VoltageDrop.Maximum.RoundToDigit(4), "V", imaginaryAsJ:true);
 			yield return "Minimum instantenous voltage: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
-				MinimumVoltageDrop.RoundToDigit(4), "V", imaginaryAsJ: true);
+				_VoltageDrop.Minimum.RoundToDigit(4), "V", imaginaryAsJ: true);
 			yield return "RMS voltage: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
-				RMSVoltageDrop.RoundToDigit(4), "V", imaginaryAsJ: true);
-
-			if (MaximumVoltageDrop != 0)
-			{
-				yield return "Composing voltage phasors:";
-			}
-
-			if(DCVoltageDrop != 0)
-			{
-				yield return SIHelpers.ToAltSIStringExcludingSmallPrefixes(DCVoltageDrop.RoundToDigit(4), "V DC");
-			}
-
-			var bTerminalEnumerator = TerminalB.ACPotentials.GetEnumerator();
-			var aTerminalEnumerator = TerminalA.ACPotentials.GetEnumerator();
-			
-			while(bTerminalEnumerator.MoveNext() && aTerminalEnumerator.MoveNext())
-			{
-				yield return SIHelpers.ToAltSIStringExcludingSmallPrefixes(
-					(bTerminalEnumerator.Current.Item2 - aTerminalEnumerator.Current.Item2).RoundToDigit(4), "V") + " at " +
-					SIHelpers.ToAltSIStringExcludingSmallPrefixes(
-					(bTerminalEnumerator.Current.Item1).RoundToDigit(4), "Hz");
-			}
-
-			yield return "Current: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(Current.RoundToDigit(4), "A", imaginaryAsJ:true);
+				_VoltageDrop.RMS.RoundToDigit(4), "V", imaginaryAsJ: true);
 		}
 
 		/// <summary>

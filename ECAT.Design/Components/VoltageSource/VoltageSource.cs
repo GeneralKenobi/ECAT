@@ -10,18 +10,6 @@ namespace ECAT.Design
 	/// </summary>
 	public class VoltageSource : TwoTerminal, IVoltageSource
 	{
-		#region Constructors
-
-		/// <summary>
-		/// Default Constructor
-		/// </summary>
-		public VoltageSource()
-		{
-			ProducedCurrent.PropertyChanged += (s, e) => InvokePropertyChanged(nameof(Current));
-		}
-
-		#endregion
-
 		#region Private properties
 
 		/// <summary>
@@ -30,18 +18,7 @@ namespace ECAT.Design
 		private Complex _Admittance { get; } = IoC.Resolve<IDefaultValues>().VoltageSourceAdmittance;
 
 		#endregion
-
-		#region Protected properties
 		
-		/// <summary>
-		/// Current flowing from <see cref="TerminalA"/> to <see cref="TerminalB"/> - the opposite of the produced current which
-		/// is marked from the positive terminal (<see cref="TerminalB"/>) to the negative terminal (<see cref="TerminalA)"/>
-		/// </summary>
-		protected override Complex Current => ProducedCurrent.Value;
-
-
-		#endregion
-
 		#region Public properties		
 
 		/// <summary>

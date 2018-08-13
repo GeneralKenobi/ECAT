@@ -1,8 +1,6 @@
 ﻿using ECAT.Core;
-using System;
 using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
 
 namespace ECAT.Design
 {
@@ -15,14 +13,14 @@ namespace ECAT.Design
 		/// </summary>
 		public ThreeTerminal()
 		{
-			TerminalA = new Terminal(new PlanePosition(Complex.Zero, _TerminalAShift), TerminalPotentialChangedCallback);
-			TerminalB = new Terminal(new PlanePosition(Complex.Zero, _TerminalBShift), TerminalPotentialChangedCallback);
-			TerminalC = new Terminal(new PlanePosition(Complex.Zero, _TerminalCShift), TerminalPotentialChangedCallback);
+			TerminalA = new Terminal(new PlanePosition(Complex.Zero, _TerminalAShift));
+			TerminalB = new Terminal(new PlanePosition(Complex.Zero, _TerminalBShift));
+			TerminalC = new Terminal(new PlanePosition(Complex.Zero, _TerminalCShift));
 		}
 
 		#endregion
 
-		#region ProtectedProperties
+		#region Protected Properties
 
 		/// <summary>
 		/// The shift assigned to <see cref="TerminalA"/>, override to provide custom value
@@ -90,18 +88,6 @@ namespace ECAT.Design
 
 		#endregion
 
-		#region Private methods
-
-		/// <summary>
-		/// Callback for when value of any <see cref="ITerminal"/> in this <see cref="TwoTerminal"/> changes
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void TerminalPotentialChangedCallback(object sender, EventArgs e) =>
-			InvokePropertyChanged(nameof(VoltageBA));
-
-		#endregion
-
 		#region Protected methods
 
 		/// <summary>
@@ -135,9 +121,9 @@ namespace ECAT.Design
 		/// <returns></returns>
 		public override List<ITerminal> GetTerminals() => new List<ITerminal>()
 		{
-				TerminalA,
-				TerminalB,
-				TerminalC,
+			TerminalA,
+			TerminalB,
+			TerminalC,
 		};
 
 		#endregion
