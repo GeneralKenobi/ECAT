@@ -38,6 +38,9 @@ namespace ECAT.Design
 		/// </summary>
 		protected virtual Complex _TerminalBShift => new Complex(Width / 2, 0);
 
+		/// <summary>
+		/// Gets the voltage drop between nodes B and A (with A being the reference node)
+		/// </summary>
 		protected IVoltageDropInformation _VoltageDrop =>
 			IoC.Resolve<ISimulationResults>().GetVoltageDropOrZero(TerminalA.NodeIndex, TerminalB.NodeIndex);
 
@@ -68,8 +71,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// True if the standard voltage drop direciton (Vb - Va) was inverted
 		/// </summary>
-		public virtual bool InvertedVoltageCurrentDirections => _VoltageDrop.InvertedDirection;
-			
+		public virtual bool InvertedVoltageCurrentDirections => _VoltageDrop.InvertedDirection;			
 
 		#endregion
 
@@ -110,23 +112,29 @@ namespace ECAT.Design
 		/// <returns></returns>
 		public override IEnumerable<string> GetComponentInfo()
 		{
+			// Characteristic voltage drop information
 			yield return "Maximum instantenous voltage: " +
 				SIHelpers.ToSIStringExcludingSmallPrefixes(_VoltageDrop.Maximum.RoundToDigit(4), "V");
 			yield return "Minimum instantenous voltage: " +
 				SIHelpers.ToSIStringExcludingSmallPrefixes(_VoltageDrop.Minimum.RoundToDigit(4), "V");
 			yield return "RMS voltage: " + SIHelpers.ToSIStringExcludingSmallPrefixes(_VoltageDrop.RMS.RoundToDigit(4), "V");
 
+			// DC voltage drop information
 			if(_VoltageDrop.Type.HasFlag(VoltageDropType.DC))
 			{
 				yield return "DC voltage: " + SIHelpers.ToSIStringExcludingSmallPrefixes(_VoltageDrop.DC.RoundToDigit(4), "V");
 			}
 
+			// AC voltage drop information
 			if (_VoltageDrop.Type.HasFlag(VoltageDropType.AC))
 			{
+				// If it's a multi-ac voltage waveform add a header
 				if (_VoltageDrop.Type.HasFlag(VoltageDropType.MultipleAC))
 				{
 					yield return "Composing AC waveforms:";
 				}
+
+				// Print each waveform
 				foreach(var acWaveform in _VoltageDrop.ComposingACWaveforms)
 				{
 					yield return "AC voltage: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(acWaveform.Value.RoundToDigit(4), "V") +
