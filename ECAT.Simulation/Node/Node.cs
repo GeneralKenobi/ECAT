@@ -28,6 +28,15 @@ namespace ECAT.Core
 
 		#endregion
 
+		#region Private members
+
+		/// <summary>
+		/// Backing store for <see cref="Index"/>
+		/// </summary>
+		private int mIndex;
+
+		#endregion
+
 		#region Public properties
 
 		/// <summary>
@@ -38,7 +47,18 @@ namespace ECAT.Core
 		/// <summary>
 		/// Index assigned to this node
 		/// </summary>
-		public int Index { get; set; }
+		public int Index
+		{
+			get => mIndex;
+			set
+			{
+				// Set the value internally
+				mIndex = value;
+
+				// And set it to all terminals
+				ConnectedTerminals.ForEach((terminal) => terminal.NodeIndex = mIndex);
+			}
+		}
 
 		/// <summary>
 		/// AC potentials present at the node with respect to ground. Item1 (double) refers
