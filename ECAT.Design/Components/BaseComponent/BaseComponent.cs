@@ -132,7 +132,7 @@ namespace ECAT.Design
 		/// Returns a list with all terminals in this component
 		/// </summary>
 		/// <returns></returns>
-		public abstract List<ITerminal> GetTerminals();
+		public abstract IEnumerable<ITerminal> GetTerminals();
 
 		/// <summary>
 		/// Rotates the component by <paramref name="degrees"/>

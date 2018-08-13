@@ -147,11 +147,11 @@ namespace ECAT.Design
 		/// Returns a list with all terminals in this component
 		/// </summary>
 		/// <returns></returns>
-		public override List<ITerminal> GetTerminals() => new List<ITerminal>()
+		public override IEnumerable<ITerminal> GetTerminals()	
 		{
-			TerminalA,
-			TerminalB,
-		};
+			yield return TerminalA;
+			yield return TerminalB;
+		}
 
 		/// <summary>
 		/// Returns admittance between <see cref="TerminalA"/> and <see cref="TerminalB"/>

@@ -65,7 +65,10 @@ namespace ECAT.Design
 		/// Returns a list with all terminals in this component
 		/// </summary>
 		/// <returns></returns>
-		public override List<ITerminal> GetTerminals() => new List<ITerminal>() { Terminal };
+		public override IEnumerable<ITerminal> GetTerminals()
+		{
+			yield return Terminal;
+		}
 
 		#endregion
 	}

@@ -51,7 +51,7 @@ namespace ECAT.Core
 		/// Returns a list with all terminals in this component
 		/// </summary>
 		/// <returns></returns>
-		List<ITerminal> GetTerminals();
+		IEnumerable<ITerminal> GetTerminals();
 
 		/// <summary>
 		/// Returns the info that is to be presented, for example, on pointer over. It should include voltage drop(s) across the element,

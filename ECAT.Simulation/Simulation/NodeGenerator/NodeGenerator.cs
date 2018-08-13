@@ -64,10 +64,14 @@ namespace ECAT.Simulation
 			// Create a list for the generated nodes
 			var nodes = new List<INode>();
 
-			// Create a dictionary with Terminals as entries and BaseComponents as values
+			// Create a dictionary with Terminals as entries and BaseComponents as values			
 			components.ForEach((component) =>
-				component.GetTerminals().ForEach((terminal) =>
-				terminalsWithComponents.Add(terminal, component)));
+			{
+				foreach (var terminal in component.GetTerminals())
+				{
+					terminalsWithComponents.Add(terminal, component);
+				}
+			});
 
 			// Go through all entries, create new Nodes by grouping all components that have a terminal on the same position
 			// in one node
