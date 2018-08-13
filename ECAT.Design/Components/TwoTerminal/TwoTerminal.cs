@@ -110,12 +110,29 @@ namespace ECAT.Design
 		/// <returns></returns>
 		public override IEnumerable<string> GetComponentInfo()
 		{
-			yield return "Maximum instantenous voltage: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
-				_VoltageDrop.Maximum.RoundToDigit(4), "V", imaginaryAsJ:true);
-			yield return "Minimum instantenous voltage: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
-				_VoltageDrop.Minimum.RoundToDigit(4), "V", imaginaryAsJ: true);
-			yield return "RMS voltage: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
-				_VoltageDrop.RMS.RoundToDigit(4), "V", imaginaryAsJ: true);
+			yield return "Maximum instantenous voltage: " +
+				SIHelpers.ToSIStringExcludingSmallPrefixes(_VoltageDrop.Maximum.RoundToDigit(4), "V");
+			yield return "Minimum instantenous voltage: " +
+				SIHelpers.ToSIStringExcludingSmallPrefixes(_VoltageDrop.Minimum.RoundToDigit(4), "V");
+			yield return "RMS voltage: " + SIHelpers.ToSIStringExcludingSmallPrefixes(_VoltageDrop.RMS.RoundToDigit(4), "V");
+
+			if(_VoltageDrop.Type.HasFlag(VoltageDropType.DC))
+			{
+				yield return "DC voltage: " + SIHelpers.ToSIStringExcludingSmallPrefixes(_VoltageDrop.DC.RoundToDigit(4), "V");
+			}
+
+			if (_VoltageDrop.Type.HasFlag(VoltageDropType.AC))
+			{
+				if (_VoltageDrop.Type.HasFlag(VoltageDropType.MultipleAC))
+				{
+					yield return "Composing AC waveforms:";
+				}
+				foreach(var acWaveform in _VoltageDrop.ComposingACWaveforms)
+				{
+					yield return "AC voltage: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(acWaveform.Value.RoundToDigit(4), "V") +
+						" at " + SIHelpers.ToSIStringExcludingSmallPrefixes(acWaveform.Key.RoundToDigit(4), "Hz");
+				}
+			}
 		}
 
 		/// <summary>
