@@ -265,6 +265,10 @@ namespace ECAT.Simulation
 
 				// Create a new list with nodes
 				_Nodes = new List<INode>(nodes);
+
+				// Add an empty node as the ground node (which is normally not included in simulation due to optimization)
+				// and effectively increment every node index by 1
+				_Nodes.Insert(0, new Node() { Index = GroundNodeIndex });
 			}
 
 			#endregion
