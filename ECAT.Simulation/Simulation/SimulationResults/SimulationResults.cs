@@ -133,7 +133,7 @@ namespace ECAT.Simulation
 			/// <param name="info"></param>
 			private void CheckIfMaximumIsPositive(VoltageDropInformation info)
 			{
-				if (info.Maximum < 0)
+				if (info.DC < 0)
 				{
 					NegateVoltageDrop(info);
 				}
