@@ -36,6 +36,11 @@ namespace ECAT.Core
 		public IPlanePosition Position { get; }
 
 		/// <summary>
+		/// Index assigned to this node
+		/// </summary>
+		public int Index { get; set; }
+
+		/// <summary>
 		/// AC potentials present at the node with respect to ground. Item1 (double) refers
 		/// to the frequency of the source generating the potential and Item2 (Complex) to the value of the potential.
 		/// </summary>		
