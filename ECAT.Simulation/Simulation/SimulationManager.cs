@@ -31,7 +31,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// The result manager for the app's whole lifetime
 		/// </summary>
-		private ISimulationResultManager _ResultManager { get; }
+		private SimulationResultManager _ResultManager { get; } = new SimulationResultManager();
 
 		#endregion
 
@@ -82,6 +82,7 @@ namespace ECAT.Simulation
 		public IEnumerable<Tuple<Type, object>> GetInstancesToRegister()
 		{
 			yield return new Tuple<Type, object>(typeof(IDefaultValues), new DefaultValues());
+			yield return new Tuple<Type, object>(typeof(ISimulationResultManager), _ResultManager);
 		}
 
 		/// <summary>
