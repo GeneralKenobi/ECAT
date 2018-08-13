@@ -65,7 +65,7 @@ namespace ECAT.Simulation
 				foreach (var key in nodeAACPotentials.Keys.Except(intersectingKeys))
 				{
 					// Subtract its value from the waveforms
-					yield return new KeyValuePair<double, Complex>(key, -nodeBACPotentials[key]);
+					yield return new KeyValuePair<double, Complex>(key, -nodeAACPotentials[key]);
 				}
 			}
 
@@ -229,10 +229,18 @@ namespace ECAT.Simulation
 			/// <returns></returns>
 			public bool TryGetVoltageDrop(int nodeAIndex, int nodeBIndex, out IVoltageDropInformation voltageDrop)
 			{
+				// If one of the node indexes exceeds the number of nodes
 				if(nodeAIndex >= _Nodes.Count || nodeBIndex >= _Nodes.Count)
 				{
 					voltageDrop = null;
 					return false;
+				}
+
+				// If the node indexes are equal (the same nodes) return default voltage drop (equivalent to no drop)
+				if(nodeAIndex == nodeBIndex)
+				{
+					voltageDrop = new VoltageDropInformation();
+					return true;
 				}
 
 				// If that particular voltage drop was determined already return it
@@ -252,6 +260,32 @@ namespace ECAT.Simulation
 
 				// And return success
 				return true;
+			}
+
+			/// <summary>
+			/// Gets a voltage drop of a node with respect to ground or returns a drop equal to zero if unsuccessful
+			/// </summary>
+			/// <param name="nodeIndex"></param>
+			/// <returns></returns>
+			public IVoltageDropInformation GetVoltageDropOrZero(int nodeIndex) => GetVoltageDropOrZero(GroundNodeIndex, nodeIndex);				
+
+			/// <summary>
+			/// Gets information on voltage drop between two nodes (with node A being treated as the reference node) or returns a drop
+			/// equal to zero if unsuccessful
+			/// </summary>
+			/// <param name="nodeAIndex"></param>
+			/// <param name="nodeBIndex"></param>
+			/// <returns></returns>
+			public IVoltageDropInformation GetVoltageDropOrZero(int nodeAIndex, int nodeBIndex)
+			{
+				if(TryGetVoltageDrop(nodeAIndex, nodeBIndex, out var info))
+				{
+					return info;
+				}
+				else
+				{
+					return new VoltageDropInformation();
+				}
 			}
 
 			/// <summary>
