@@ -54,6 +54,11 @@ namespace ECAT.Design
 		public IPlanePosition Position { get; }
 
 		/// <summary>
+		/// The index of the corresponding node
+		/// </summary>
+		public int NodeIndex { get; set; }
+
+		/// <summary>
 		/// Reference to potential at <see cref="INode"/> that is associated with this <see cref="ITerminal"/>. Item1 (double) refers
 		/// to the frequency of the source generating the potential and Item2 (Complex) to the value of the potential.
 		/// </summary>

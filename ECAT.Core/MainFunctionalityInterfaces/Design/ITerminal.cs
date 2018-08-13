@@ -25,6 +25,11 @@ namespace ECAT.Core
 		#region Properties
 
 		/// <summary>
+		/// The index of the corresponding node
+		/// </summary>
+		int NodeIndex { get; set; }
+
+		/// <summary>
 		/// Position of the terminal on the design area used to connect the terminals
 		/// </summary>
 		IPlanePosition Position { get; }
