@@ -228,7 +228,8 @@ namespace ECAT.Simulation
 		#region Node generation
 
 		/// <summary>
-		/// Helper of <see cref="Build"/>, constructs nodes, sets all potentials to 0, finds and removes reference nodes
+		/// Helper of <see cref="Build"/>, constructs nodes, sets all potentials to 0, finds and removes reference nodes, assigns
+		/// indexes
 		/// </summary>
 		private void ConstructNodes()
 		{
@@ -243,13 +244,18 @@ namespace ECAT.Simulation
 				// Assign the potentials from the nodes to the associated terminals
 				node.ConnectedTerminals.ForEach((terminal) =>
 				{
-					terminal.DCPotential = node.DCPotential;
-					//terminal.ACPotentials = node.ACPotentials;
+					terminal.DCPotential = node.DCPotential;					
 				});
 			});
 
 			// Find, assign and remove the reference (ground) nodes
 			ProcessReferenceNodes();
+
+			// Assign indexes to nodes
+			for(int i=0; i<_Nodes.Count; ++i)
+			{
+				_Nodes[i].Index = i;
+			}
 		}
 
 		/// <summary>
@@ -264,8 +270,8 @@ namespace ECAT.Simulation
 			// Find all reference nodes
 			var referenceNodes = FindReferenceNodes();
 
-			// Set their potential to 0 (when builing the matrix the collections are cleared so they're guaranteed to be empty)
-			//referenceNodes.ForEach((node) => node.ACPotentials.Add(new Tuple<double, Complex>(0, 0)));			
+			// Assign the ground index to the node
+			referenceNodes.ForEach((node) => node.Index = SimulationManager.GroundNodeIndex);
 
 			// Remove them from the nodes list
 			_Nodes.RemoveAll((node) => referenceNodes.Contains(node));
