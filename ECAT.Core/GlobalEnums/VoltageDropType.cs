@@ -9,6 +9,11 @@ namespace ECAT.Core
 	public enum VoltageDropType
     {
 		/// <summary>
+		/// No voltage drop occurs - two potentials are equal
+		/// </summary>
+		NoDrop = 0,
+
+		/// <summary>
 		/// The voltage drop contains DC component
 		/// </summary>
 		DC = 1,
