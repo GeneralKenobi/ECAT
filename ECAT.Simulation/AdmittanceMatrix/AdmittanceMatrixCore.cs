@@ -240,12 +240,6 @@ namespace ECAT.Simulation
 			{
 				// Clear the potentials collection
 				node.ACPotentials.Clear();
-
-				// Assign the potentials from the nodes to the associated terminals
-				node.ConnectedTerminals.ForEach((terminal) =>
-				{
-					terminal.DCPotential = node.DCPotential;					
-				});
 			});
 
 			// Find, assign and remove the reference (ground) nodes
