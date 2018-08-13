@@ -254,7 +254,8 @@ namespace ECAT.Simulation
 			// Assign indexes to nodes
 			for(int i=0; i<_Nodes.Count; ++i)
 			{
-				_Nodes[i].Index = i;
+				// Node indexing starts at ground node index + 1
+				_Nodes[i].Index = SimulationManager.GroundNodeIndex + 1 + i;
 			}
 		}
 
