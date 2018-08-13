@@ -1,7 +1,9 @@
 ﻿using ECAT.Core;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 
 namespace ECAT.Design
 {
@@ -385,6 +387,25 @@ namespace ECAT.Design
 				ConnectWithPlacedWire(wire, clickPosition);
 			}			
 		}
+
+		/// <summary>
+		/// Returns an enumeration of types to register in IoC. Item1 is the interface to register as, Item2 is the object to register
+		/// as an instance.
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<Tuple<Type, object>> GetInstancesToRegister()
+		{
+			yield return new Tuple<Type, object>(typeof(IComponentFactory), new ComponentFactory());
+			yield return new Tuple<Type, object>(typeof(IPlanePositionFactory), new PlanePositionFactory());
+			yield return new Tuple<Type, object>(typeof(IInfoLogger), new InfoLogger());
+		}
+
+		/// <summary>
+		/// Returns an enumeration of types to register in IoC. Item1 is the interface to register as, Item2 is the type to register
+		/// as implementation of the interface
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<Tuple<Type, Type>> GetTypesToRegister() => Enumerable.Empty<Tuple<Type, Type>>();
 
 		#endregion
 	}

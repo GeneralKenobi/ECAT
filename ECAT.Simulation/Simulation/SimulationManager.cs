@@ -1,7 +1,9 @@
 ﻿using ECAT.Core;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 
 namespace ECAT.Simulation
 {
@@ -29,7 +31,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// The result manager for the app's whole lifetime
 		/// </summary>
-		private ISimulationResultManager _ResultManager { get; } = IoC.Resolve<ISimulationResultManager>();
+		private ISimulationResultManager _ResultManager { get; }
 
 		#endregion
 
@@ -71,6 +73,23 @@ namespace ECAT.Simulation
 
 			SimulationCompleted?.Invoke(this, new SimulationCompletedEventArgs(simulationType));
 		}
+
+		/// <summary>
+		/// Returns an enumeration of types to register in IoC. Item1 is the interface to register as, Item2 is the object to register
+		/// as an instance.
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<Tuple<Type, object>> GetInstancesToRegister()
+		{
+			yield return new Tuple<Type, object>(typeof(IDefaultValues), new DefaultValues());
+		}
+
+		/// <summary>
+		/// Returns an enumeration of types to register in IoC. Item1 is the interface to register as, Item2 is the type to register
+		/// as implementation of the interface
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<Tuple<Type, Type>> GetTypesToRegister() => Enumerable.Empty<Tuple<Type, Type>>();
 
 		#endregion
 	}
