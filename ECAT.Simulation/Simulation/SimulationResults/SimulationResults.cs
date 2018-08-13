@@ -218,7 +218,7 @@ namespace ECAT.Simulation
 			/// <param name="nodeIndex"></param>
 			/// <returns></returns>
 			public bool TryGetVoltageDrop(int nodeIndex, out IVoltageDropInformation voltageDrop) =>
-				TryGetVoltageDrop(_GroundNodeIndex, nodeIndex, out voltageDrop);
+				TryGetVoltageDrop(SimulationManager.GroundNodeIndex, nodeIndex, out voltageDrop);
 
 			/// <summary>
 			/// Gets information on voltage drop between two nodes (with node A being treated as the reference node). If the node
@@ -266,15 +266,6 @@ namespace ECAT.Simulation
 				// Create a new list with nodes
 				_Nodes = new List<INode>(nodes);
 			}
-
-			#endregion
-
-			#region Private static properties
-
-			/// <summary>
-			/// Index of the ground node, by convention -1
-			/// </summary>
-			private static int _GroundNodeIndex { get; } = -1;
 
 			#endregion
 		}
