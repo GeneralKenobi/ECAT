@@ -101,7 +101,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// The index assumed for ground nodes
 		/// </summary>
-		public static int GroundNodeIndex { get; } = -1;
+		public static int GroundNodeIndex { get; } = 0;
 
 		#endregion
 	}
