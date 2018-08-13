@@ -44,7 +44,7 @@ namespace ECAT.Simulation
 		#region Collections of components/corresponding nodes
 
 		/// <summary>
-		/// List with all voltage sources in the <see cref="_Schematic"/>, order is important - position in the list indicates the
+		/// List with all DC voltage sources in the <see cref="_Schematic"/>, order is important - position in the list indicates the
 		/// index of the source which directly affects the admittance matrix. Does not include op amp outputs
 		/// </summary>
 		private List<IVoltageSource> _DCVoltageSources { get; set; }
@@ -59,10 +59,16 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// List with all AC voltage sources in the <see cref="_Schematic"/>, order is important - position in the list indicates the
 		/// index of the source which directly affects the admittance matrix. All sources are also found in the
-		/// <see cref="_DCVoltageSources"/> (because an AC voltage source is also alwayks a DC voltage source due to possible DC offset
+		/// <see cref="_DCVoltageSources"/> (because an AC voltage source is also always a DC voltage source due to possible DC offset
 		/// present in the produced sine)
 		/// </summary>
 		private List<IACVoltageSource> _ACVoltageSources { get; set; }
+
+		/// <summary>
+		/// List with indexes of all DC voltage sources in the <see cref="_Schematic"/> that are not <see cref="IACVoltageSource"/>s,
+		/// Does not include op amp outputs.
+		/// </summary>
+		private List<int> _DCOnlyVoltageSources { get; set; }
 
 		/// <summary>
 		/// Dictionary with AC voltage sources and indexes of their nodes (in order: negative, positive). If a node is grounded
@@ -172,7 +178,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// The total number of <see cref="IACVoltageSource"/>s in the <see cref="ISchematic"/>
 		/// </summary>
-		protected int _ACVoltageSourcesCount => _DCVoltageSources.Count;
+		protected int _ACVoltageSourcesCount => _ACVoltageSources.Count;
 
 		/// <summary>
 		/// The total number of voltage sources in the <see cref="ISchematic"/>
@@ -337,6 +343,10 @@ namespace ECAT.Simulation
 			// Get the AC voltage sources
 			_ACVoltageSources = new List<IACVoltageSource>(_DCVoltageSources.Where((source) => source is IACVoltageSource).
 				Cast<IACVoltageSource>());
+
+			// Get indexes DC only voltage sources
+			_DCOnlyVoltageSources = new List<int>(_DCVoltageSources.Except(_ACVoltageSources).Select((source =>
+				_DCVoltageSources.IndexOf(source))));
 
 			// Get the current sources
 			_CurrentSources = new List<ICurrentSource>(_Schematic.Components.Where((component) => component is ICurrentSource).
@@ -633,11 +643,10 @@ namespace ECAT.Simulation
 				// AC Operation - activate every source that has the same frequency as the argument
 				for(int i=0; i<_ACVoltageSourcesCount; ++i)
 				{
-					if(_ACVoltageSources[i].Frequency == frequency)
-					{
-						ActivateACVoltageSource(i);
-					}
+					ActivateACVoltageSource(i, _ACVoltageSources[i].Frequency == frequency);
 				}
+
+				SetToInactivePureDCVoltageSources();
 			}
 
 			// Finally create A matrix
@@ -755,15 +764,25 @@ namespace ECAT.Simulation
 		{
 			for (int i = 0; i < DCVoltageSourcesCount; ++i)
 			{
-				ActivateDCVoltageSource(i);
+				ActivateDCVoltageSource(i, true);
 			}
 		}
+
+		/// <summary>
+		/// Sets all DC only voltage sources to inactive state - they are considered as short circuits. This is necessary for simulation of
+		/// AC and has to be done only on voltage sources that are pure DC - because <see cref="IACVoltageSource"/>s are superimposed
+		/// on <see cref="IVoltageSource"/> then setting inactive for DC part of <see cref="IACVoltageSource"/> is not necessary and in
+		/// fact forbidden
+		/// </summary>
+		private void SetToInactivePureDCVoltageSources() =>
+			_DCOnlyVoltageSources.ForEach((sourceIndex) => ActivateDCVoltageSource(sourceIndex, false));
 
 		/// <summary>
 		/// Activates the DC voltage sources given by the index
 		/// </summary>
 		/// <param name="sourceIndex"></param>
-		protected void ActivateDCVoltageSource(int sourceIndex)
+		/// <param name="state">True if the source is active, false if not (it is considered as short-circuit)</param>
+		protected void ActivateDCVoltageSource(int sourceIndex, bool state)
 		{
 			// Get the voltage source's nodes
 			var nodes = _DCVoltageSourcesNodes[_DCVoltageSources[sourceIndex]];
@@ -792,7 +811,10 @@ namespace ECAT.Simulation
 				_C[sourceIndex, nodes.Item1] = -1;
 			}
 
-			_E[sourceIndex] = _DCVoltageSources[sourceIndex].ProducedDCVoltage;
+			if (state)
+			{
+				_E[sourceIndex] = _DCVoltageSources[sourceIndex].ProducedDCVoltage;
+			}
 		}
 
 		#endregion
@@ -803,7 +825,8 @@ namespace ECAT.Simulation
 		/// Activates the AC voltage source given by the index
 		/// </summary>
 		/// <param name="sourceIndex"></param>
-		protected void ActivateACVoltageSource(int sourceIndex)
+		/// <param name="state">True if the source is active, false if not (it is considered as short-circuit)</param>
+		protected void ActivateACVoltageSource(int sourceIndex, bool state)
 		{
 			// Get the voltage source's nodes
 			var nodes = _ACVoltageSourcesNodes[_ACVoltageSources[sourceIndex]];
@@ -832,7 +855,10 @@ namespace ECAT.Simulation
 				_C[sourceIndex + _DCVoltageSources.Count, nodes.Item1] = -1;
 			}
 
-			_E[sourceIndex + _DCVoltageSources.Count] = _ACVoltageSources[sourceIndex].PeakProducedVoltage;
+			if (state)
+			{
+				_E[sourceIndex + _DCVoltageSources.Count] = _ACVoltageSources[sourceIndex].PeakProducedVoltage;
+			}
 		}
 
 		#endregion
