@@ -32,6 +32,11 @@ namespace ECAT.Design
 		#region Public properties
 
 		/// <summary>
+		/// If true, voltage drop is calculated from B to A (B is the reference node) instead of from A to B (A is the reference node)
+		/// </summary>
+		public bool ReverseVoltageDrops { get; set; }
+
+		/// <summary>
 		/// Radius of sockets on the component
 		/// </summary>
 		public double SocketRadius => 12;

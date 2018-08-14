@@ -11,7 +11,12 @@ namespace ECAT.Core
 	public interface IBaseComponent : INotifyPropertyChanged, IDisposable
     {
 		#region Properties
-		
+
+		/// <summary>
+		/// If true, voltage drop is calculated in reverse
+		/// </summary>
+		bool ReverseVoltageDrops { get; set; }
+
 		/// <summary>
 		/// The center of the component
 		/// </summary>
