@@ -1,6 +1,7 @@
 ﻿using CSharpEnhanced.Helpers;
 using CSharpEnhanced.Maths;
 using ECAT.Core;
+using PropertyChanged;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
@@ -41,7 +42,8 @@ namespace ECAT.Design
 		/// <summary>
 		/// Gets the voltage drop between nodes B and A (with A being the reference node)
 		/// </summary>
-		protected IVoltageDropInformation _VoltageDrop =>
+		protected IVoltageDropInformation _VoltageDrop => ReverseVoltageDrops ?
+			IoC.Resolve<ISimulationResults>().GetVoltageDropOrZero(TerminalB.NodeIndex, TerminalA.NodeIndex) :
 			IoC.Resolve<ISimulationResults>().GetVoltageDropOrZero(TerminalA.NodeIndex, TerminalB.NodeIndex);
 
 		#endregion
@@ -71,7 +73,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// True if the standard voltage drop direciton (Vb - Va) was inverted
 		/// </summary>
-		public virtual bool InvertedVoltageCurrentDirections => _VoltageDrop.InvertedDirection;			
+		public virtual bool InvertedVoltageCurrentDirections => _VoltageDrop.InvertedDirection;
 
 		#endregion
 
@@ -118,6 +120,9 @@ namespace ECAT.Design
 			yield return "Minimum instantenous voltage: " +
 				SIHelpers.ToSIStringExcludingSmallPrefixes(_VoltageDrop.Minimum.RoundToDigit(4), "V");
 			yield return "RMS voltage: " + SIHelpers.ToSIStringExcludingSmallPrefixes(_VoltageDrop.RMS.RoundToDigit(4), "V");
+
+			// Notify the voltage drop direction may have changed
+			InvokePropertyChanged(nameof(InvertedVoltageCurrentDirections));
 
 			// DC voltage drop information
 			if(_VoltageDrop.Type.HasFlag(VoltageDropType.DC))
