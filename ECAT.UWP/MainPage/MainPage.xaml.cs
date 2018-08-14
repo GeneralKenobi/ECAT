@@ -1,6 +1,7 @@
 ﻿using ECAT.Core;
 using ECAT.Design;
 using ECAT.ViewModel;
+using System.Diagnostics;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.System;
 using Windows.UI.Core;
@@ -186,13 +187,12 @@ namespace ECAT.UWP
 			{
 				return;
 			}
-			// TODO: This method of getting key modifiers is not working reliably - find a solution
-			var shift = CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down ? KeyModifiers.Shift : KeyModifiers.None;
-			var ctrl = CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Control) == CoreVirtualKeyStates.Down ? KeyModifiers.Ctrl : KeyModifiers.None;
-			var alt = CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Menu) == CoreVirtualKeyStates.Down ? KeyModifiers.Alt : KeyModifiers.None;
+			
+			var shift = CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down) ? KeyModifiers.Shift : KeyModifiers.None;
+			var ctrl = CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down) ? KeyModifiers.Ctrl : KeyModifiers.None;
+			var alt = CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Menu).HasFlag(CoreVirtualKeyStates.Down) ? KeyModifiers.Alt : KeyModifiers.None;
 			AppViewModel.Singleton.ShortcutManager.ProcessKeyCombination(new ShortcutKey(e.Key.ToString(),
 				shift | ctrl | alt));
-			
 		}
 
 		#endregion
