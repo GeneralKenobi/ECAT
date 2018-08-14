@@ -31,6 +31,7 @@ namespace ECAT.ViewModel
 			SocketClickedCommand = new RelayParametrizedCommand(SocketClicked);
 			EngageFocusCommand = new RelayCommand(EngageFocus);
 			DisengageFocusCommand = new RelayCommand(DisengageFocus);
+			ReverseVoltageDropsCommand = new RelayCommand(ReverseVoltageDrops);
 		}
 
 		#endregion
@@ -110,9 +111,23 @@ namespace ECAT.ViewModel
 		/// </summary>
 		public ICommand SocketClickedCommand { get; }
 
+		/// <summary>
+		/// Reverses the voltage drop directions on the component
+		/// </summary>
+		public ICommand ReverseVoltageDropsCommand { get; }
+
 		#endregion
 
 		#region Private methods
+
+		/// <summary>
+		/// Method for <see cref="ReverseVoltageDropsCommand"/>
+		/// </summary>
+		private void ReverseVoltageDrops()
+		{
+			Component.ReverseVoltageDrops = !Component.ReverseVoltageDrops;
+			PassInfoToDesignVM();
+		}
 
 		/// <summary>
 		/// Callback invoked when simulation completes, if the element is focused passes new info the the design view model
