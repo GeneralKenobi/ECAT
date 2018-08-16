@@ -1,4 +1,5 @@
-﻿using ECAT.Core;
+﻿using CSharpEnhanced.CoreClasses;
+using ECAT.Core;
 using ECAT.Design;
 using ECAT.ViewModel;
 using System.Diagnostics;
@@ -191,7 +192,7 @@ namespace ECAT.UWP
 			var shift = CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down) ? KeyModifiers.Shift : KeyModifiers.None;
 			var ctrl = CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down) ? KeyModifiers.Ctrl : KeyModifiers.None;
 			var alt = CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Menu).HasFlag(CoreVirtualKeyStates.Down) ? KeyModifiers.Alt : KeyModifiers.None;
-			AppViewModel.Singleton.ShortcutManager.ProcessKeyCombination(new ShortcutKey(e.Key.ToString(),
+			AppViewModel.Singleton.ShortcutManager.ProcessKeyCombination(new KeyArgument(e.Key.ToString(),
 				shift | ctrl | alt));
 		}
 

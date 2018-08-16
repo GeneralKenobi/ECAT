@@ -1,4 +1,5 @@
-﻿using ECAT.Core;
+﻿using CSharpEnhanced.CoreClasses;
+using ECAT.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,8 +39,8 @@ namespace ECAT.ViewModel
 		/// Collection of all registered shortcuts. The <see cref="string"/> element is simulataneously the display name and a unique
 		/// ID of the <see cref="ShortcutActionDefinition"/> and <see cref="ShortcutKey"/> is the assigned shortcut
 		/// </summary>
-		public List<Tuple<string, ShortcutKey>> RegisteredShortcuts => new List<Tuple<string, ShortcutKey>>(
-			_RegisteredShortcuts.Select((x) => new Tuple<string, ShortcutKey>(x.Name, x.DefinedKey)));
+		public List<Tuple<string, KeyArgument>> RegisteredShortcuts => new List<Tuple<string, KeyArgument>>(
+			_RegisteredShortcuts.Select((x) => new Tuple<string, KeyArgument>(x.Name, x.DefinedKey)));
 
 		#endregion
 
@@ -49,7 +50,7 @@ namespace ECAT.ViewModel
 		/// Updates the shortcuts without checking if they're correct
 		/// </summary>
 		/// <param name="newBindings"></param>
-		private void UpdateKeyShortcutsList(List<Tuple<string, ShortcutKey>> newBindings)
+		private void UpdateKeyShortcutsList(List<Tuple<string, KeyArgument>> newBindings)
 		{
 			// For each new binding
 			newBindings.ForEach((newBinding) =>
@@ -75,40 +76,40 @@ namespace ECAT.ViewModel
 			_RegisteredShortcuts.Clear();
 
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
-				"Place Resistor", new ShortcutKey("R"), () => PlacePartHelper(ComponentIDEnumeration.Resistor)));
+				"Place Resistor", new KeyArgument("R"), () => PlacePartHelper(ComponentIDEnumeration.Resistor)));
 
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
-				"Place Voltage Source", new ShortcutKey("V"), () => PlacePartHelper(ComponentIDEnumeration.VoltageSource)));
+				"Place Voltage Source", new KeyArgument("V"), () => PlacePartHelper(ComponentIDEnumeration.VoltageSource)));
 
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
-				"Place Current Source", new ShortcutKey("C"), () => PlacePartHelper(ComponentIDEnumeration.CurrentSource)));
+				"Place Current Source", new KeyArgument("C"), () => PlacePartHelper(ComponentIDEnumeration.CurrentSource)));
 
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
-				"Stop Current Action", new ShortcutKey("Escape"), () => AppViewModel.Singleton.DesignVM.StopActionCommand?.Execute(null)));
+				"Stop Current Action", new KeyArgument("Escape"), () => AppViewModel.Singleton.DesignVM.StopActionCommand?.Execute(null)));
 
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
-				"Place Loose Wire", new ShortcutKey("W"), () => AppViewModel.Singleton.DesignVM.PrepareToPlaceLooseWireCommand.Execute(null)));
+				"Place Loose Wire", new KeyArgument("W"), () => AppViewModel.Singleton.DesignVM.PrepareToPlaceLooseWireCommand.Execute(null)));
 
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
-				"Place Ground", new ShortcutKey("G"), () => PlacePartHelper(ComponentIDEnumeration.Ground)));
+				"Place Ground", new KeyArgument("G"), () => PlacePartHelper(ComponentIDEnumeration.Ground)));
 
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
-				"Place Ground", new ShortcutKey("O"), () => PlacePartHelper(ComponentIDEnumeration.OpAmp)));
+				"Place Ground", new KeyArgument("O"), () => PlacePartHelper(ComponentIDEnumeration.OpAmp)));
 
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
-				"Place AC Voltage Source", new ShortcutKey("V", KeyModifiers.Shift), () => PlacePartHelper(ComponentIDEnumeration.ACVoltageSource)));
+				"Place AC Voltage Source", new KeyArgument("V", KeyModifiers.Shift), () => PlacePartHelper(ComponentIDEnumeration.ACVoltageSource)));
 
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
-				"Place Capacitor", new ShortcutKey("C", KeyModifiers.Shift), () => PlacePartHelper(ComponentIDEnumeration.Capacitor)));
+				"Place Capacitor", new KeyArgument("C", KeyModifiers.Shift), () => PlacePartHelper(ComponentIDEnumeration.Capacitor)));
 
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
-				"Run DC Bias", new ShortcutKey("T"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.Bias(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic, SimulationType.DC)));
+				"Run DC Bias", new KeyArgument("T"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.Bias(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic, SimulationType.DC)));
 
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
-				"Run AC Bias", new ShortcutKey("Y"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.Bias(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic, SimulationType.AC)));
+				"Run AC Bias", new KeyArgument("Y"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.Bias(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic, SimulationType.AC)));
 
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
-				"Run ACDC Bias", new ShortcutKey("U"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.Bias(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic, SimulationType.ACDC)));
+				"Run ACDC Bias", new KeyArgument("U"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.Bias(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic, SimulationType.ACDC)));
 			
 			// TODO: Change the ShortcutKeys to ShortcutKey.Empty and load the saved combinations from a local file
 		}
@@ -131,7 +132,7 @@ namespace ECAT.ViewModel
 		/// saves the new key mapping to a file.
 		/// </summary>
 		/// <param name="newBindings"></param>
-		public void UpdateKeyShortcuts(List<Tuple<string, ShortcutKey>> newBindings)
+		public void UpdateKeyShortcuts(List<Tuple<string, KeyArgument>> newBindings)
 		{
 			// Get a backup collection
 			var backup = RegisteredShortcuts;
@@ -140,7 +141,7 @@ namespace ECAT.ViewModel
 			UpdateKeyShortcutsList(newBindings);
 
 			// Get hashes of all ShortcutKeys except the empty ones
-			var hashes = new List<int>(_RegisteredShortcuts.Where((x) => !x.Equals(ShortcutKey.Empty)).Select((x) =>
+			var hashes = new List<int>(_RegisteredShortcuts.Where((x) => !x.Equals(KeyArgument.Empty)).Select((x) =>
 				x.DefinedKey.GetHashCode()));
 
 			// Get a distinct collection of the hashes and check if it's count is equal to the count of all hashes
@@ -157,7 +158,7 @@ namespace ECAT.ViewModel
 
 				throw new ArgumentException("After modifying the shortcut collection with new key bindings the " +
 					"bindings are no longer unique (there is at least one key combination that is associated with two " +
-					"or more actions (excluding " + nameof(ShortcutKey.Empty) + ")");
+					"or more actions (excluding " + nameof(KeyArgument.Empty) + ")");
 			}
 		}		
 
@@ -166,7 +167,7 @@ namespace ECAT.ViewModel
 		/// </summary>
 		/// <param name="key"></param>
 		/// <param name="activeModifiers"></param>
-		public void ProcessKeyCombination(ShortcutKey pressedKey) =>
+		public void ProcessKeyCombination(KeyArgument pressedKey) =>
 			_RegisteredShortcuts.Find((x) => x.DefinedKey.Equals(pressedKey))?.Action.Invoke();
 
 		/// <summary>

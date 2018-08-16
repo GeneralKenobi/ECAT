@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CSharpEnhanced.CoreClasses;
+using System;
 
 namespace ECAT.ViewModel
 {
@@ -12,7 +13,7 @@ namespace ECAT.ViewModel
 		/// <summary>
 		/// Default Constructor
 		/// </summary>
-		public ShortcutActionDefinition(string name, ShortcutKey shortcut, Action action)
+		public ShortcutActionDefinition(string name, KeyArgument shortcut, Action action)
 		{
 			Name = name;
 			DefinedKey = shortcut;
@@ -31,7 +32,7 @@ namespace ECAT.ViewModel
 		/// <summary>
 		/// The shortcut assigned to this definition
 		/// </summary>
-		public ShortcutKey DefinedKey { get; set; }
+		public KeyArgument DefinedKey { get; set; }
 
 		/// <summary>
 		/// Action performed when <see cref="DefinedKey"/> criterions are met
