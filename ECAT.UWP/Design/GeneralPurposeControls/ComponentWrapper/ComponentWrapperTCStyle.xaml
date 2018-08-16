@@ -3,14 +3,17 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:ECAT.UWP"
 	xmlns:xaml="using:UWPEnhanced.Xaml"
-	xmlns:UWPEnhancedConverters="using:UWPEnhanced.ValueConverters">
+	xmlns:UWPEnhancedConverters="using:UWPEnhanced.ValueConverters"
+	xmlns:system="using:Windows.System">
 
 
 	<Style TargetType="local:ComponentWrapperTC">
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="local:ComponentWrapperTC">
-					<Grid Name="RootGrid" Background="Transparent">
+					<Grid Name="RootGrid" Background="Transparent"
+						IsHitTestVisible="True"
+						AllowFocusOnInteraction="True">
 						<Grid.Resources>
 							<local:ReverseRotationAngleValueConverter x:Key="RotationAngleConverter"/>
 							<local:ComponentToComponentControlConverter x:Key="ComponentControlConverter"/>
@@ -43,11 +46,9 @@
 									SetHandled="True"/>
 							</xaml:PointerPositionVisualCommand>
 
-							<xaml:PointerPositionVisualCommand Command="{Binding ReverseVoltageDropsCommand}">
-								<xaml:VisualPointerTrigger PointerEvent="PointerReleased"
-									 SetHandled="True">
-								</xaml:VisualPointerTrigger>
-							</xaml:PointerPositionVisualCommand>
+							<xaml:ParametrizedVisualCommand Command="{Binding ReverseVoltageDropsCommand}">
+								<xaml:VisualSpecificKeyTrigger Key="Tab" SetHandled="True"/>
+							</xaml:ParametrizedVisualCommand>
 
 						</xaml:VisualAttachments.AttachedVisuals>
 
