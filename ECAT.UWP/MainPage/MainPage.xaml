@@ -9,8 +9,7 @@
 	xmlns:xaml="using:UWPEnhanced.Xaml"
 	xmlns:converters="using:UWPEnhanced.ValueConverters"
     mc:Ignorable="d"
-    Background="{StaticResource WhiteBrush}"
-	KeyDown="KeyPressed">
+    Background="{StaticResource WhiteBrush}">
 
 	<Page.Resources>
 		<local:IBaseComponentToComponentViewModelConverter x:Key="ComponentConverter"/>
@@ -19,6 +18,12 @@
 		<converters:BoolToVisibilityConverter x:Key="VisibilityConverter"/>
 	</Page.Resources>
 
+
+	<xaml:VisualAttachments.AttachedVisuals>
+		<xaml:KeyVisualCommand Command="{Binding ProcessKeyPressCommand}">
+			<xaml:VisualKeyTrigger BlacklistModifierKeys="True"/>
+		</xaml:KeyVisualCommand>
+	</xaml:VisualAttachments.AttachedVisuals>
 
 	<Grid>
 

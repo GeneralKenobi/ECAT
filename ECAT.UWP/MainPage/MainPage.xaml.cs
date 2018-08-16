@@ -1,11 +1,6 @@
-﻿using CSharpEnhanced.CoreClasses;
-using ECAT.Core;
-using ECAT.Design;
+﻿using ECAT.Design;
 using ECAT.ViewModel;
-using System.Diagnostics;
 using Windows.ApplicationModel.DataTransfer;
-using Windows.System;
-using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -171,29 +166,6 @@ namespace ECAT.UWP
 					}
 					break;
 			}
-		}
-
-		#endregion
-
-		#region Key pressed
-
-		/// <summary>
-		/// Handles key presses
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void KeyPressed(object sender, KeyRoutedEventArgs e)
-		{
-			if(e.Key == VirtualKey.Shift || e.Key == VirtualKey.Control || e.Key == VirtualKey.Menu)
-			{
-				return;
-			}
-			
-			var shift = CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down) ? KeyModifiers.Shift : KeyModifiers.None;
-			var ctrl = CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down) ? KeyModifiers.Ctrl : KeyModifiers.None;
-			var alt = CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Menu).HasFlag(CoreVirtualKeyStates.Down) ? KeyModifiers.Alt : KeyModifiers.None;
-			AppViewModel.Singleton.ShortcutManager.ProcessKeyCombination(new KeyArgument(e.Key.ToString(),
-				shift | ctrl | alt));
 		}
 
 		#endregion
