@@ -59,9 +59,10 @@
 
 							<!-- Wire clicked command -->
 							<xaml:VisualAttachments.AttachedVisuals>
-								<xaml:TappedTriggerCommandPointerPosition Command="{Binding WireClickedCommand}"
-									SetHandled="True"
-									Converter="{StaticResource PositionConverter}"/>
+								<xaml:TappedPointerPositionVisualCommand Command="{Binding WireClickedCommand}"
+									Converter="{StaticResource PositionConverter}">
+									<xaml:VisualTappedTrigger/>
+								</xaml:TappedPointerPositionVisualCommand>
 							</xaml:VisualAttachments.AttachedVisuals>
 							
 						</Polyline>

@@ -50,9 +50,10 @@
 
 							<!-- Socket clicked command -->
 							<xaml:VisualAttachments.AttachedVisuals>
-								<xaml:TappedTriggerCommand Command="{Binding SocketClickedCommand}"			
-									CommandParameter="{Binding Terminal.Position, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-									SetHandled="True"/>
+								<xaml:ParametrizedVisualCommand Command="{Binding SocketClickedCommand}"
+									CommandParameter="{Binding Terminal.Position, RelativeSource={RelativeSource Mode=TemplatedParent}}">
+									<xaml:VisualTappedTrigger SetHandled="True"/>
+								</xaml:ParametrizedVisualCommand>
 							</xaml:VisualAttachments.AttachedVisuals>
 
 						</Ellipse>

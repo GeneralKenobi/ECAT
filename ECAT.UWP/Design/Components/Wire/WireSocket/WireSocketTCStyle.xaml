@@ -52,9 +52,10 @@
 
 								<!-- Wire socket clicked command -->
 								<xaml:VisualAttachments.AttachedVisuals>
-									<xaml:TappedTriggerCommand Command="{Binding WireSocketClickedCommand}"			
-										CommandParameter="{Binding PositionOnWire, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-										SetHandled="True"/>
+									<xaml:ParametrizedVisualCommand Command="{Binding WireSocketClickedCommand}"			
+										CommandParameter="{Binding PositionOnWire, RelativeSource={RelativeSource Mode=TemplatedParent}}">
+										<xaml:VisualTappedTrigger SetHandled="True"/>
+									</xaml:ParametrizedVisualCommand>
 								</xaml:VisualAttachments.AttachedVisuals>
 
 							</Ellipse>

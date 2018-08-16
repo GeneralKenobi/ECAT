@@ -32,14 +32,22 @@
 						<xaml:VisualAttachments.AttachedVisuals>
 
 							<!-- Shows the component's info on pointer entered -->
-							<xaml:PointerTriggerCommand Command="{Binding EngageFocusCommand}"
-								PointerEvent="PointerEntered"
-								SetHandled="True"/>
+							<xaml:PointerPositionVisualCommand Command="{Binding EngageFocusCommand}">
+								<xaml:VisualPointerTrigger PointerEvent="PointerEntered"
+									SetHandled="True"/>
+							</xaml:PointerPositionVisualCommand>
 
 							<!-- Hides the component's info -->
-							<xaml:PointerTriggerCommand Command="{Binding DisengageFocusCommand}"
-								PointerEvent="PointerExited, PointerCaptureLost, PointerCanceled"
-								SetHandled="True"/>
+							<xaml:PointerPositionVisualCommand Command="{Binding DisengageFocusCommand}">
+								<xaml:VisualPointerTrigger PointerEvent="PointerExited, PointerCaptureLost, PointerCanceled"
+									SetHandled="True"/>
+							</xaml:PointerPositionVisualCommand>
+
+							<xaml:PointerPositionVisualCommand Command="{Binding ReverseVoltageDropsCommand}">
+								<xaml:VisualPointerTrigger PointerEvent="PointerReleased"
+									 SetHandled="True">
+								</xaml:VisualPointerTrigger>
+							</xaml:PointerPositionVisualCommand>
 
 						</xaml:VisualAttachments.AttachedVisuals>
 

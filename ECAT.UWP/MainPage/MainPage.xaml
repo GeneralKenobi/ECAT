@@ -32,11 +32,11 @@
 			<Grid>
 
 				<xaml:VisualAttachments.AttachedVisuals>
-					<xaml:TappedTriggerCommandPointerPosition Command="{Binding DesignVM.DesignAreaClickedCommand}"
-						Converter="{StaticResource PositionConverter}"/>
+					<xaml:TappedPointerPositionVisualCommand Command="{Binding DesignVM.DesignAreaClickedCommand}"
+						Converter="{StaticResource PositionConverter}">
+						<xaml:VisualTappedTrigger/>
+					</xaml:TappedPointerPositionVisualCommand>
 				</xaml:VisualAttachments.AttachedVisuals>
-
-
 
 				<Grid x:Name="BackgroundGrid"
 					Background="Transparent"
