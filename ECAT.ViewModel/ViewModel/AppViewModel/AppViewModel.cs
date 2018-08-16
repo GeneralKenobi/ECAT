@@ -1,4 +1,7 @@
-﻿using ECAT.Core;
+﻿using CSharpEnhanced.CoreClasses;
+using CSharpEnhanced.ICommands;
+using ECAT.Core;
+using System.Windows.Input;
 
 namespace ECAT.ViewModel
 {
@@ -7,6 +10,18 @@ namespace ECAT.ViewModel
 	/// </summary>
 	public class AppViewModel : BaseViewModel
     {
+		#region Constructor
+
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		public AppViewModel()
+		{
+			ProcessKeyPressCommand = new RelayParametrizedCommand(ProcessKeyPress);
+		}
+
+		#endregion
+
 		#region Public properties
 
 		/// <summary>
@@ -51,7 +66,32 @@ namespace ECAT.ViewModel
 		}
 
 		#endregion
-		
+
+		#region Commands
+
+		/// <summary>
+		/// Processes key presses - if the parameter is a <see cref="KeyArgument"/> determines whether it corresponds to a shortcut
+		/// </summary>
+		public ICommand ProcessKeyPressCommand { get; }
+
+		#endregion
+
+		#region Private methods
+
+		/// <summary>
+		/// Method for <see cref="ProcessKeyPressCommand"/>
+		/// </summary>
+		/// <param name="parameter"></param>
+		private void ProcessKeyPress(object parameter)
+		{
+			if(parameter is KeyArgument key)
+			{
+				ShortcutManager.ProcessKeyCombination(key);
+			}
+		}
+
+		#endregion
+
 		#region Singleton
 
 		/// <summary>
