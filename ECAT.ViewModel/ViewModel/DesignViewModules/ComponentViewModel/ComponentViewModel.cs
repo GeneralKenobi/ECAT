@@ -1,8 +1,6 @@
 ﻿using CSharpEnhanced.ICommands;
 using ECAT.Core;
-using PropertyChanged;
 using System;
-using System.Collections.Generic;
 using System.Windows.Input;
 
 namespace ECAT.ViewModel
@@ -31,6 +29,7 @@ namespace ECAT.ViewModel
 			EngageFocusCommand = new RelayCommand(EngageFocus);
 			DisengageFocusCommand = new RelayCommand(DisengageFocus);
 			ReverseVoltageDropsCommand = new RelayCommand(ReverseVoltageDrops);
+			ProceedToAnotherInfoSectionCommand = new RelayCommand(ProceedToAnotherInfoSection);
 		}
 
 		#endregion
@@ -61,11 +60,6 @@ namespace ECAT.ViewModel
 		/// True if the component is focused (eg. pointer is over the element)
 		/// </summary>
 		public bool IsFocused { get; set; }
-
-		/// <summary>
-		/// Accessor to the <see cref="Component"/>'s info
-		/// </summary>		
-		public IEnumerable<string> ComponentInfo => Component?.GetComponentInfo();
 
 		#endregion
 
@@ -115,9 +109,25 @@ namespace ECAT.ViewModel
 		/// </summary>
 		public ICommand ReverseVoltageDropsCommand { get; }
 
+		/// <summary>
+		/// Increments the currently presented info section index (moves to the next info section)
+		/// </summary>
+		public ICommand ProceedToAnotherInfoSectionCommand { get; }
+
 		#endregion
 
 		#region Private methods
+
+		/// <summary>
+		/// Method for <see cref="ProceedToAnotherInfoSectionCommand"/>
+		/// </summary>
+		private void ProceedToAnotherInfoSection()
+		{
+			if (IsFocused)
+			{
+				++Component.ComponentInfo.CurrentSectionIndex;
+			}
+		}
 
 		/// <summary>
 		/// Method for <see cref="ReverseVoltageDropsCommand"/>
@@ -127,7 +137,8 @@ namespace ECAT.ViewModel
 			if (IsFocused)
 			{
 				Component.ReverseVoltageDrops = !Component.ReverseVoltageDrops;
-				PassInfoToDesignVM();
+
+				Component.UpdateInfo();
 			}
 		}
 
@@ -140,14 +151,14 @@ namespace ECAT.ViewModel
 		{
 			if(IsFocused)
 			{
-				PassInfoToDesignVM();
+				Component.UpdateInfo();
 			}
 		}
 
 		/// <summary>
 		/// Passes this component's info to the current DesignViewModel
 		/// </summary>
-		private void PassInfoToDesignVM() => AppViewModel.Singleton.DesignVM.ShowComponentInfo(Component.GetComponentInfo());
+		private void PassInfoToDesignVM() => AppViewModel.Singleton.DesignVM.ShowComponentInfo(Component.ComponentInfo);
 
 		/// <summary>
 		/// Method for <see cref="EngageFocusCommand"/>
@@ -155,6 +166,8 @@ namespace ECAT.ViewModel
 		private void EngageFocus()
 		{
 			IsFocused = true;
+
+			Component.UpdateInfo();
 
 			PassInfoToDesignVM();
 		}
