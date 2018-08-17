@@ -41,6 +41,11 @@ namespace ECAT.Core
 		/// Radius of sockets on the component
 		/// </summary>
 		double SocketRadius { get; }
+		
+		/// <summary>
+		/// Info about this component (voltage drops, currents etc.) organized into subsections
+		/// </summary>
+		IComponentInfo ComponentInfo { get; }
 
 		#endregion
 
@@ -59,12 +64,9 @@ namespace ECAT.Core
 		IEnumerable<ITerminal> GetTerminals();
 
 		/// <summary>
-		/// Returns the info that is to be presented, for example, on pointer over. It should include voltage drop(s) across the element,
-		/// current(s) through the element, etc.
+		/// Updates <see cref="ComponentInfo"/>
 		/// </summary>
-		/// <returns></returns>
-		IEnumerable<string> GetComponentInfo();
-
+		void UpdateInfo();
 		#endregion
 	}
 }
