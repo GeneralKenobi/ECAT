@@ -9,7 +9,8 @@
 	xmlns:xaml="using:UWPEnhanced.Xaml"
 	xmlns:converters="using:UWPEnhanced.ValueConverters"
     mc:Ignorable="d"
-    Background="{StaticResource WhiteBrush}">
+    Background="{StaticResource WhiteBrush}"
+	Name="RootPage">
 
 	<Page.Resources>
 		<local:IBaseComponentToComponentViewModelConverter x:Key="ComponentConverter"/>
@@ -100,7 +101,8 @@
 			VerticalAlignment="Bottom">
 
 			<local:ComponentInfoUC HorizontalAlignment="Right"
-				Visibility="{Binding DesignVM.ComponentInfoVisible, Converter={StaticResource VisibilityConverter}}"/>
+				DataContext="{Binding DesignVM.CurrentComponentInfo}"
+				Visibility="{Binding ElementName=RootPage, Path=DataContext.DesignVM.ComponentInfoVisible, Converter={StaticResource VisibilityConverter}}"/>
 
 			<!-- The dark blue border at the bottom of the screen with the currently logged message -->
 			<Border Background="{StaticResource DarkBlue5Brush}"
