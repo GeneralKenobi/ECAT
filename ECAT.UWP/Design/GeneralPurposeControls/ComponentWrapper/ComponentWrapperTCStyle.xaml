@@ -13,7 +13,8 @@
 				<ControlTemplate TargetType="local:ComponentWrapperTC">
 					<Grid Name="RootGrid" Background="Transparent"
 						IsHitTestVisible="True"
-						AllowFocusOnInteraction="True">
+						AllowFocusOnInteraction="True"
+						>
 						<Grid.Resources>
 							<local:ReverseRotationAngleValueConverter x:Key="RotationAngleConverter"/>
 							<local:ComponentToComponentControlConverter x:Key="ComponentControlConverter"/>
@@ -34,10 +35,10 @@
 						<!-- Pointer-related commands -->
 						<xaml:VisualAttachments.AttachedVisuals>
 
-							<!-- Shows the component's info on pointer entered -->
+							<!-- Shows the component's info on pointer entered (don't set handled to allow the control to gain 
+								focus in code behind via this event -->
 							<xaml:PointerPositionVisualCommand Command="{Binding EngageFocusCommand}">
-								<xaml:VisualPointerTrigger PointerEvent="PointerEntered"
-									SetHandled="True"/>
+								<xaml:VisualPointerTrigger PointerEvent="PointerEntered"/>
 							</xaml:PointerPositionVisualCommand>
 
 							<!-- Hides the component's info -->
@@ -46,8 +47,11 @@
 									SetHandled="True"/>
 							</xaml:PointerPositionVisualCommand>
 
+							<!-- Changes the voltage drop direction -->
 							<xaml:ParametrizedVisualCommand Command="{Binding ReverseVoltageDropsCommand}">
-								<xaml:VisualSpecificKeyTrigger Key="Tab" SetHandled="True"/>
+								<xaml:VisualSpecificKeyTrigger Key="Control"
+									SetHandled="True"
+									Target="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
 							</xaml:ParametrizedVisualCommand>
 
 						</xaml:VisualAttachments.AttachedVisuals>

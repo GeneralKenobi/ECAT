@@ -1,5 +1,7 @@
-﻿using Windows.UI.Xaml;
+﻿using System.Diagnostics;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 
 namespace ECAT.UWP
 {
@@ -16,11 +18,17 @@ namespace ECAT.UWP
 		public ComponentWrapperTC()
 		{
 			this.DefaultStyleKey = typeof(ComponentWrapperTC);
+			this.PointerEntered += PointerEnteredCallback;
 		}
 
 		#endregion
 
 		#region Private Methods
+
+		/// <summary>
+		/// Attempts to set focus to the control to recieve keyboard events
+		/// </summary>
+		private void PointerEnteredCallback(object sender, PointerRoutedEventArgs e) => Focus(FocusState.Programmatic);
 
 		/// <summary>
 		/// Adds the center coord
