@@ -49,8 +49,13 @@
 
 							<!-- Changes the voltage drop direction -->
 							<xaml:ParametrizedVisualCommand Command="{Binding ReverseVoltageDropsCommand}">
-								<xaml:VisualSpecificKeyTrigger Key="Control"
-									SetHandled="True"
+								<xaml:VisualSpecificKeyTrigger Key="Control"									
+									Target="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
+							</xaml:ParametrizedVisualCommand>
+
+							<!-- Proceeds to another info section -->
+							<xaml:ParametrizedVisualCommand Command="{Binding ProceedToAnotherInfoSectionCommand}">
+								<xaml:VisualSpecificKeyTrigger Key="Menu"									
 									Target="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
 							</xaml:ParametrizedVisualCommand>
 
