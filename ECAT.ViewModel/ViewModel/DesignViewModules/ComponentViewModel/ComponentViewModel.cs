@@ -24,7 +24,6 @@ namespace ECAT.ViewModel
 			// Subscribe to simualtion completed event
 			IoC.Resolve<ISimulationManager>().SimulationCompleted += SimulationCompletedCallback;
 			
-
 			RotateLeftCommand = new RelayCommand(RotateLeft);
 			RotateRightCommand = new RelayCommand(RotateRight);
 			RemoveComponentCommand = new RelayCommand(RemoveComponent);
@@ -125,8 +124,11 @@ namespace ECAT.ViewModel
 		/// </summary>
 		private void ReverseVoltageDrops()
 		{
-			Component.ReverseVoltageDrops = !Component.ReverseVoltageDrops;
-			PassInfoToDesignVM();
+			if (IsFocused)
+			{
+				Component.ReverseVoltageDrops = !Component.ReverseVoltageDrops;
+				PassInfoToDesignVM();
+			}
 		}
 
 		/// <summary>
