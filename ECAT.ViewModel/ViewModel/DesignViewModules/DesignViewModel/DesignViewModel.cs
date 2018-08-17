@@ -73,7 +73,7 @@ namespace ECAT.ViewModel
 		/// <summary>
 		/// Component info to currently present
 		/// </summary>
-		public IEnumerable<string> CurrentComponentInfo { get; private set; }
+		public IComponentInfo CurrentComponentInfo { get; private set; }
 
 		/// <summary>
 		/// InfoLogger for this app
@@ -259,7 +259,7 @@ namespace ECAT.ViewModel
 		/// Method for <see cref="ShowComponentInfoCommand"/>
 		/// </summary>
 		/// <param name="parameter"></param>
-		public void ShowComponentInfo(IEnumerable<string> info) => CurrentComponentInfo = info;
+		public void ShowComponentInfo(IComponentInfo info) => CurrentComponentInfo = info;
 
 		/// <summary>
 		/// Adds a component on the given position
