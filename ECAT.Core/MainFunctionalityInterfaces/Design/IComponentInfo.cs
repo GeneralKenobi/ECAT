@@ -23,7 +23,12 @@ namespace ECAT.Core
 		/// <summary>
 		/// Headers of all info sections
 		/// </summary>
-		IEnumerable<string> SectionHeaders { get; }
+		IEnumerable<IComponentInfoSectionHeader> SectionHeaders { get; }
+
+		/// <summary>
+		/// Number of all sections in this info
+		/// </summary>
+		int SectionsCount { get; }
 
 		#endregion
 	}
