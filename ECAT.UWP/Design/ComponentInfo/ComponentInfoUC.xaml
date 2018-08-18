@@ -20,15 +20,19 @@
 		<DataTemplate x:Key="HeaderItemTemplate">
 
 			<!-- Root container -->
-			<Grid VerticalAlignment="Center"
-			>
+			<Grid VerticalAlignment="Center">
+
+				<Polygon Fill="{Binding IsSelected, Converter={StaticResource SelectedBackgroundConverter}}"
+					StrokeThickness="0"
+					Points="11,0 12,0 12,31 3,31"
+					Margin="-12 0 0 0"/>
 
 				<!-- Header name and diagonal border -->
 				<controls:ItemsContainer FlowDirection="LeftToRight"
 					HorizontalAlignment="Stretch"
 					
 					ItemSpacing="0"					
-					Margin="0 -2 0 0">
+					Margin="0 -3 0 0">
 
 					<!-- Border with header name -->
 					<Border Padding="10 0"
@@ -51,10 +55,6 @@
 						<Polygon Fill="{Binding IsSelected, Converter={StaticResource SelectedBackgroundConverter}}"
 							StrokeThickness="0"
 							Points="0,0 0,31 7,0"/>
-
-						<Polygon Fill="{Binding IsSelected, Converter={StaticResource SelectedBackgroundConverter}}"
-							StrokeThickness="0"
-							Points="11,0 12,0 12,31 3,31"/>
 
 						<!-- Diagonal border (invisible when last header is selected) -->
 						<Polygon Stroke="{StaticResource DarkBlue5Brush}"
