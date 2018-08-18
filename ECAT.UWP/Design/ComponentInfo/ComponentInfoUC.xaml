@@ -4,43 +4,180 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:ECAT.UWP"
 	xmlns:controls="using:UWPEnhanced.Controls"
+	xmlns:converters="using:UWPEnhanced.ValueConverters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
+	xmlns:xaml="using:UWPEnhanced.Xaml"
+	mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-	<!-- Container with outermost blue border and a slightly see-through blue background -->
+	<UserControl.Resources>
+		<converters:BoolToVisibilityConverter x:Key="VisibilityConverter"/>
+		<local:IsSelectedToBackgroundBrushConverter x:Key="SelectedBackgroundConverter"/>
+
+		<!-- Template for one header item -->
+		<DataTemplate x:Key="HeaderItemTemplate">
+
+			<!-- Root container -->
+			<Grid VerticalAlignment="Center"
+			>
+
+				<!-- Header name and diagonal border -->
+				<controls:ItemsContainer FlowDirection="LeftToRight"
+					HorizontalAlignment="Stretch"
+					
+					ItemSpacing="0"					
+					Margin="0 -2 0 0">
+
+					<!-- Border with header name -->
+					<Border Padding="10 0"
+						Background="{Binding IsSelected, Converter={StaticResource SelectedBackgroundConverter}}"
+						VerticalAlignment="Bottom"
+						HorizontalAlignment="Stretch"
+						Height="30">
+
+						<!-- Header name display -->
+						<TextBlock VerticalAlignment="Center"
+							Margin="0 0 0 5"
+							Text="{Binding Text}"
+							Foreground="{StaticResource BlackBrush}"
+							FontSize="{StaticResource FontSizeRegular}"/>
+
+					</Border>
+
+					<Grid>
+
+						<Polygon Fill="{Binding IsSelected, Converter={StaticResource SelectedBackgroundConverter}}"
+							StrokeThickness="0"
+							Points="0,0 0,31 7,0"/>
+
+						<Polygon Fill="{Binding IsSelected, Converter={StaticResource SelectedBackgroundConverter}}"
+							StrokeThickness="0"
+							Points="11,0 12,0 12,31 3,31"/>
+
+						<!-- Diagonal border (invisible when last header is selected) -->
+						<Polygon Stroke="{StaticResource DarkBlue5Brush}"
+							Visibility="{Binding ElementName=DiagonalVisibility, Path=CombinedValue}"
+							StrokeThickness="1"
+							StrokeMiterLimit="0"
+							StrokeStartLineCap="Flat"
+							StrokeEndLineCap="Flat"
+							Fill="{StaticResource Blue2Brush}"
+							Points="0,31 3,31 11,-2 8,-2">
+
+							<Polygon.Resources>
+								<local:DiagonalVisibilityConverter x:Key="DiagonalVisibilityConverter"/>
+							</Polygon.Resources>
+
+							<xaml:VisualAttachments.AttachedVisuals>
+								<xaml:MultiBinding x:Name="DiagonalVisibility"
+									Converter="{StaticResource DiagonalVisibilityConverter}"
+									Value1="{Binding IsSelected}"
+									Value2="{Binding Index}"
+									Value3="{Binding ElementName=RootPage, Path=DataContext.SectionsCount}"/>
+							</xaml:VisualAttachments.AttachedVisuals>
+
+						</Polygon>
+
+
+					</Grid>
+				</controls:ItemsContainer>
+
+				<!-- Grid with the bottom border (invisible when header is selected -->
+				<Grid VerticalAlignment="Bottom"
+					HorizontalAlignment="Stretch"
+					Height="4"
+					Margin="-11 0 7.5 0.5"
+					ColumnSpacing="-1"
+					Visibility="{Binding IsSelected, Converter={StaticResource VisibilityConverter}, ConverterParameter=x}">
+
+					<Grid.ColumnDefinitions>
+						<!-- Triangular-y ending on the left -->
+						<ColumnDefinition Width="Auto"/>
+						<!-- Body -->
+						<ColumnDefinition Width="*"/>
+						<!-- Triangular-y ending on the right -->
+						<ColumnDefinition Width="Auto"/>
+					</Grid.ColumnDefinitions>
+
+
+					<!-- Triangular-y ending on the left -->
+					<Polyline Stroke="{StaticResource DarkBlue5Brush}"
+						StrokeThickness="1"
+						Fill="{StaticResource Blue2Brush}"
+						Points="2,0 0,4 2,4"/>
+
+					<!-- Body -->
+					<Border Grid.Column="1"
+						Background="{StaticResource Blue2Brush}"
+						BorderThickness="0 1"									
+						HorizontalAlignment="Stretch"
+						VerticalAlignment="Stretch"
+						BorderBrush="{StaticResource DarkBlue5Brush}"/>
+
+					<!-- Triangular-y ending on the right -->
+					<Polyline Grid.Column="2"
+						Stroke="{StaticResource DarkBlue5Brush}"
+						StrokeThickness="1"
+						Fill="{StaticResource Blue2Brush}"
+						Points="0,4 0,0 2,0"/>
+
+				</Grid>
+			</Grid>
+		</DataTemplate>
+
+	</UserControl.Resources>
+
+	<!-- Root container -->
 	<Border Background="{StaticResource DarkBlueBrush80}"
 		BorderBrush="{StaticResource DarkBlue5Brush}"
 		BorderThickness="2 2 0 0"
 		CornerRadius="5 0 0 0">
 
-		<!-- Inner dark blue border and white background -->
-		<Border BorderBrush="{StaticResource DarkBlueBrush}"
+		 <!--Inner dark blue border and white background--> 
+		<Grid x:Name="RootPage"
+			BorderBrush="{StaticResource DarkBlueBrush}"
 			BorderThickness="2 2 0 0"
 			CornerRadius="5 0 0 0"
 			Margin="5 5 0 0"
 			Background="{StaticResource WhiteBrush}"
-			Padding="10">
+			Padding="0 0 10 10">
 
-			<!-- Presents the items -->
+			<Grid.RowDefinitions>
+				<!-- Headers -->
+				<RowDefinition Height="34"/>
+				<!-- Info -->
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+
+			<!-- Presenter for headers -->
+			<controls:ItemsContainer ItemsSource="{Binding SectionHeaders}"
+				FlowDirection="LeftToRight"
+				HorizontalAlignment="Left"
+				VerticalAlignment="Top"
+				ItemSpacing="0"
+				ItemTemplate="{StaticResource HeaderItemTemplate}"/>
+
+			<!-- Presenter for info --> 
 			<controls:ItemsContainer FlowDirection="TopToBottom"
-				ItemsSource="{Binding DesignVM.CurrentComponentInfo}">
+				ItemsSource="{Binding CurrentSection}"
+				Grid.Row="1"
+				Margin="10 5 0 0"
+				HorizontalAlignment="Left">
 
 				<controls:ItemsContainer.ItemTemplate>
 					<DataTemplate>
+						<!-- Each item is simply a line of text shown by a TextBlock -->
 						<TextBlock Text="{Binding }"
 							Foreground="{StaticResource BlackBrush}"
 							FontSize="{StaticResource FontSizeRegular}"
 							HorizontalTextAlignment="Left"/>
 					</DataTemplate>
-				</controls:ItemsContainer.ItemTemplate>				
+				</controls:ItemsContainer.ItemTemplate>
 
 			</controls:ItemsContainer>
 
-		</Border>
-
+		</Grid>
 	</Border>
-
 </UserControl>
