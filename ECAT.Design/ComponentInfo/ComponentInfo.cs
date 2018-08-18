@@ -18,13 +18,21 @@ namespace ECAT.Design
 		/// </summary>
 		public ComponentInfo(IEnumerable<string> headers)
 		{
-			_SectionHeaders = new List<string>(headers);
-			_Info = new List<IEnumerable<string>>();
+			// Variable used to index the headers when creating _SectionHeaders list
+			int headerIndex = 0;
 
-			// Fill info with initially empty enumerations
-			for(int i=0; i<_SectionHeaders.Count; ++i)
+			// Copy the header text and complement it with index
+			_SectionHeaders = new List<ComponentInfoSectionHeader>(headers.Select((headerText) =>
+				// Use the headerIndex as index (and increment it for next headerText)
+				new ComponentInfoSectionHeader(headerIndex++, headerText)));
+
+			// Fill info with initially empty enumerations (the same number as number of headers)
+			_Info = new List<IEnumerable<string>>(headers.Select((header) => Enumerable.Empty<string>()));
+
+			// If there are some headers defined, mark the selected one
+			if(_SectionHeaders.Count > 0)
 			{
-				_Info.Add(Enumerable.Empty<string>());
+				_SectionHeaders[CurrentSectionIndex].IsSelected = true;
 			}
 		}
 
@@ -54,7 +62,7 @@ namespace ECAT.Design
 		/// Backing store for <see cref="InfoSectionHeaders"/>. List with headers for info section. The number of headers determines
 		/// the maximum possible <see cref="CurrentSectionIndex"/>
 		/// </summary>
-		private List<string> _SectionHeaders { get; }
+		private List<ComponentInfoSectionHeader> _SectionHeaders { get; }
 
 		/// <summary>
 		/// Contains information to present in each section
@@ -73,7 +81,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Info to present from the currently section
 		/// </summary>
-		public IEnumerable<string> CurrentSection => _Info[CurrentSectionIndex];
+		public IEnumerable<string> CurrentSection => _Info.Count == 0 ? Enumerable.Empty<string>() : _Info[CurrentSectionIndex];
 
 		/// <summary>
 		/// The 0-based index of currently presented info section
@@ -83,13 +91,27 @@ namespace ECAT.Design
 			get => mCurrentSectionIndex;
 			// If there are no headers defined just set 0, otherwise set the remainder from division by the number of headers
 			// (to make sure that index doesn't exceed the last info section)
-			set => mCurrentSectionIndex = _SectionHeaders.Count == 0 ? 0 : value % _SectionHeaders.Count;
+			set
+			{
+				// If there are header defined (otherwise value doesn't change and is a constant 0)
+				if (_SectionHeaders.Count > 0)
+				{
+					// Annul selection of the previous header
+					_SectionHeaders[mCurrentSectionIndex].IsSelected = false;
+
+					// Assign new index
+					mCurrentSectionIndex = value % _SectionHeaders.Count;
+
+					// Set selection on newly selected index
+					_SectionHeaders[mCurrentSectionIndex].IsSelected = true;
+				}
+			}
 		}
 
 		/// <summary>
 		/// Headers of all info sections
 		/// </summary>
-		public IEnumerable<string> SectionHeaders => _SectionHeaders;
+		public IEnumerable<IComponentInfoSectionHeader> SectionHeaders => _SectionHeaders;
 
 		#endregion
 
