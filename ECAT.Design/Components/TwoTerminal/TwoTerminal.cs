@@ -200,7 +200,7 @@ namespace ECAT.Design
 			var dcPower = _VoltageDrop.Type.HasFlag(VoltageDropType.DC) ? Math.Pow(_VoltageDrop.DC, 2) * GetAdmittance(0) : 0;
 
 			// Get ac and dc currents 
-			var acCurrents = _VoltageDrop.Type.HasFlag(VoltageDropType.DC) ? GetAcCurrents() : new List<Tuple<double, Complex>>();
+			var acCurrents = _VoltageDrop.Type.HasFlag(VoltageDropType.AC) ? GetAcCurrents() : new List<Tuple<double, Complex>>();
 			var dcCurrent = _VoltageDrop.Type.HasFlag(VoltageDropType.DC) ? GetDcCurrent() : 0;
 
 			// Calculate the characteristic values
