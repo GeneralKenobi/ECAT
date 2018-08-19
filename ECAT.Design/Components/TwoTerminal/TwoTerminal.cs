@@ -83,8 +83,8 @@ namespace ECAT.Design
 		/// Returns AC currents for the current <see cref="_VoltageDrop"/>
 		/// </summary>
 		private List<Tuple<double, Complex>> GetAcCurrents() => new List<Tuple<double, Complex>>(
-				_VoltageDrop.ComposingACWaveforms.Select((drop) =>
-				new Tuple<double, Complex>(drop.Key, drop.Value * GetAdmittance(drop.Key))));
+			_VoltageDrop.ComposingACWaveforms.Select((drop) =>
+			new Tuple<double, Complex>(drop.Key, drop.Value * GetAdmittance(drop.Key))));
 
 		/// <summary>		
 		/// Returns DC current for the current <see cref="_VoltageDrop"/>
@@ -96,8 +96,7 @@ namespace ECAT.Design
 		#region Protected methods
 
 		/// <summary>
-		/// /// Returns the info that is to be presented in the currently chosen (<see cref="CurrentInfoSectionIndex"/>) info section,
-		/// for example, on pointer over.
+		/// Returns info related to voltage
 		/// </summary>
 		/// <returns></returns>
 		protected virtual IEnumerable<string> GetVoltageInfo()
@@ -138,8 +137,7 @@ namespace ECAT.Design
 		}
 
 		/// <summary>
-		/// /// Returns the info that is to be presented in the currently chosen (<see cref="CurrentInfoSectionIndex"/>) info section,
-		/// for example, on pointer over.
+		/// Returns info related to current
 		/// </summary>
 		/// <returns></returns>
 		protected virtual IEnumerable<string> GetCurrentInfo()
@@ -189,8 +187,7 @@ namespace ECAT.Design
 		}
 
 		/// <summary>
-		/// /// Returns the info that is to be presented in the currently chosen (<see cref="CurrentInfoSectionIndex"/>) info section,
-		/// for example, on pointer over.
+		/// Returns info related to power
 		/// </summary>
 		/// <returns></returns>
 		protected virtual IEnumerable<string> GetPowerInfo()
