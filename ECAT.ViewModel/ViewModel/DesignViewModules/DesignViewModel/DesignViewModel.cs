@@ -2,7 +2,6 @@
 using CSharpEnhanced.ICommands;
 using ECAT.Core;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
 using System.Windows.Input;
@@ -68,7 +67,7 @@ namespace ECAT.ViewModel
 		/// <summary>
 		/// Indicates whether component info should be visible on the screen
 		/// </summary>
-		public bool ComponentInfoVisible => CurrentComponentInfo != null;
+		public bool ComponentInfoVisible => CurrentComponentInfo != null && CurrentComponentInfo.SectionsCount > 0;
 
 		/// <summary>
 		/// Component info to currently present
