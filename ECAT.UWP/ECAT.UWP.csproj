@@ -101,6 +101,7 @@
     <Compile Include="Design\ComponentInfo\ComponentInfoUC.xaml.cs">
       <DependentUpon>ComponentInfoUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Design\ComponentInfo\ValueConverters\DiagonalVisibilityConverter.cs" />
     <Compile Include="Design\Components\ACVoltageSource\ACVoltageSourceTC.cs" />
     <Compile Include="Design\Components\Capacitor\CapacitorTC.cs" />
     <Compile Include="Design\Components\OpAmp\OpAmpTC.cs" />
