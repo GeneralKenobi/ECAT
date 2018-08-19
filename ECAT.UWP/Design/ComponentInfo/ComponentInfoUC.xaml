@@ -7,14 +7,13 @@
 	xmlns:converters="using:UWPEnhanced.ValueConverters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:xaml="using:UWPEnhanced.Xaml"
+	xmlns:xaml="using:UWPEnhanced.Xaml"	
 	mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
 
 	<UserControl.Resources>
-		<converters:BoolToVisibilityConverter x:Key="VisibilityConverter"/>
-		<local:IsSelectedToBackgroundBrushConverter x:Key="SelectedBackgroundConverter"/>
+		<converters:BoolToVisibilityConverter x:Key="VisibilityConverter"/>		
 
 		<!-- Template for one header item -->
 		<DataTemplate x:Key="HeaderItemTemplate">
@@ -23,7 +22,7 @@
 			<Grid VerticalAlignment="Center">
 
 				<!-- Polygon that fills background near the left diagonal -->
-				<Polygon Fill="{Binding IsSelected, Converter={StaticResource SelectedBackgroundConverter}}"
+				<Polygon Fill="{Binding IsSelected, Converter={converters:BoolToParameterMEC ValueWhenTrue={StaticResource WhiteBrush}, ValueWhenFalse={StaticResource DarkBlueBrush30}}}"
 					StrokeThickness="0"
 					Points="11,0 12,0 12,31 3,31"
 					Margin="-12 0 0 0"/>
@@ -37,7 +36,7 @@
 
 					<!-- Border with header name -->
 					<Border Padding="10 0"
-						Background="{Binding IsSelected, Converter={StaticResource SelectedBackgroundConverter}}"
+						Background="{Binding IsSelected, Converter={converters:BoolToParameterMEC ValueWhenTrue={StaticResource WhiteBrush}, ValueWhenFalse={StaticResource DarkBlueBrush30}}}"
 						VerticalAlignment="Bottom"
 						HorizontalAlignment="Stretch"
 						Height="30">
@@ -54,7 +53,7 @@
 					<Grid>
 
 						<!-- Polygon that fills background near the right diagonal -->
-						<Polygon Fill="{Binding IsSelected, Converter={StaticResource SelectedBackgroundConverter}}"
+						<Polygon Fill="{Binding IsSelected, Converter={converters:BoolToParameterMEC ValueWhenTrue={StaticResource WhiteBrush}, ValueWhenFalse={StaticResource DarkBlueBrush30}}}"
 							StrokeThickness="0"
 							Points="0,0 0,31 7,0"/>
 
