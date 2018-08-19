@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Numerics;
-using CSharpEnhanced.Helpers;
+﻿using System.Numerics;
 using ECAT.Core;
 
 namespace ECAT.Design
@@ -57,29 +55,6 @@ namespace ECAT.Design
 		/// Height of the <see cref="OpAmp"/> in horizontal position
 		/// </summary>
 		public override double Height { get; } = 200;
-
-		#endregion
-
-		#region Public methods
-
-		/// <summary>
-		/// Returns the info that is to be presented, for example, on pointer over. It should include voltage drop(s) across the element,
-		/// current(s) through the element, etc.
-		/// </summary>
-		/// <returns></returns>
-		public override IEnumerable<string> GetComponentInfo()
-		{
-			yield return string.Empty;
-			//yield return "Output voltage: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
-			//	(TerminalC.Potentials != null ? TerminalC.Potentials.Value : 0), "V", imaginaryAsJ: true);
-			//yield return "Non-inverting input potential: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
-			//	(TerminalA.Potentials != null ? TerminalA.Potentials.Value : 0), "V", imaginaryAsJ: true);
-			//yield return "Inverting input potential: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
-			//	(TerminalB.Potentials != null ? TerminalB.Potentials.Value : 0), "V", imaginaryAsJ: true);
-			//yield return "Differential voltage: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
-			//	(TerminalA.Potentials != null && TerminalB.Potentials != null ? TerminalA.Potentials.Value - TerminalB.Potentials.Value : 0),
-			//	"V", imaginaryAsJ: true);
-		}
 
 		#endregion
 	}
