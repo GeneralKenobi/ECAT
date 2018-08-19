@@ -1,5 +1,6 @@
 ﻿using ECAT.Core;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 
 namespace ECAT.Design
@@ -14,7 +15,12 @@ namespace ECAT.Design
 		/// <summary>
 		/// Default Constructor
 		/// </summary>
-		public OneTerminal()
+		protected OneTerminal() : this(Enumerable.Empty<string>()) { }
+
+		/// <summary>
+		/// Default Constructor
+		/// </summary>
+		protected OneTerminal(IEnumerable<string> headers) : base(headers)
 		{
 			Terminal = new Terminal(new PlanePosition(Complex.Zero, _TerminalShift));
 		}
