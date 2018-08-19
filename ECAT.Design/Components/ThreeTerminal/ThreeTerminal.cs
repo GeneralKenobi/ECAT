@@ -4,6 +4,9 @@ using System.Numerics;
 
 namespace ECAT.Design
 {
+	/// <summary>
+	/// Standard implementation of <see cref="IThreeTerminal"/>
+	/// </summary>
 	public abstract class ThreeTerminal : BaseComponent, IThreeTerminal
 	{
 		#region Constructor
