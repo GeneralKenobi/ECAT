@@ -16,7 +16,6 @@
 		<local:IBaseComponentToComponentViewModelConverter x:Key="ComponentConverter"/>
 		<local:IWireToWireViewModelConverter x:Key="WireConverter"/>
 		<converters:NegateImaginaryComplexConverter x:Key="PositionConverter"/>
-		<converters:BoolToVisibilityConverter x:Key="VisibilityConverter"/>
 	</Page.Resources>
 
 
@@ -102,7 +101,7 @@
 
 			<local:ComponentInfoUC HorizontalAlignment="Right"
 				DataContext="{Binding DesignVM.CurrentComponentInfo}"
-				Visibility="{Binding ElementName=RootPage, Path=DataContext.DesignVM.ComponentInfoVisible, Converter={StaticResource VisibilityConverter}}"/>
+				Visibility="{Binding ElementName=RootPage, Path=DataContext.DesignVM.ComponentInfoVisible, Converter={converters:BoolToVisibilityMEC}}"/>
 
 			<!-- The dark blue border at the bottom of the screen with the currently logged message -->
 			<Border Background="{StaticResource DarkBlue5Brush}"
