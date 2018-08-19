@@ -1,9 +1,9 @@
 ﻿using CSharpEnhanced.Helpers;
 using CSharpEnhanced.Maths;
 using ECAT.Core;
-using PropertyChanged;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 
 namespace ECAT.Design
@@ -18,7 +18,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Default Constructor
 		/// </summary>
-		protected TwoTerminal()
+		protected TwoTerminal() : base(new string[] { "Voltage", "Current", "Power" })
 		{			
 			TerminalA = new Terminal(new PlanePosition(Complex.Zero, _TerminalAShift));
 			TerminalB = new Terminal(new PlanePosition(Complex.Zero, _TerminalBShift));
@@ -77,7 +77,145 @@ namespace ECAT.Design
 
 		#endregion
 
+		#region Private methods
+
+		/// <summary>
+		/// Returns AC currents for the current <see cref="_VoltageDrop"/>
+		/// </summary>
+		private List<Tuple<double, Complex>> GetAcCurrents() => new List<Tuple<double, Complex>>(
+				_VoltageDrop.ComposingACWaveforms.Select((drop) =>
+				new Tuple<double, Complex>(drop.Key, drop.Value * GetAdmittance(drop.Key))));
+
+		/// <summary>		
+		/// Returns DC current for the current <see cref="_VoltageDrop"/>
+		/// </summary>
+		private double GetDcCurrent() => _VoltageDrop.DC * GetAdmittance(0).Real;
+
+		#endregion
+
 		#region Protected methods
+
+		/// <summary>
+		/// /// Returns the info that is to be presented in the currently chosen (<see cref="CurrentInfoSectionIndex"/>) info section,
+		/// for example, on pointer over.
+		/// </summary>
+		/// <returns></returns>
+		protected virtual IEnumerable<string> GetVoltageInfo()
+		{
+			// Characteristic voltage drop information
+			yield return "Maximum instantenous voltage: " +
+				SIHelpers.ToSIStringExcludingSmallPrefixes(_VoltageDrop.Maximum.RoundToDigit(4), "V");
+			yield return "Minimum instantenous voltage: " +
+				SIHelpers.ToSIStringExcludingSmallPrefixes(_VoltageDrop.Minimum.RoundToDigit(4), "V");
+			yield return "RMS voltage: " + SIHelpers.ToSIStringExcludingSmallPrefixes(_VoltageDrop.RMS.RoundToDigit(4), "V");
+
+			// Notify the voltage drop direction may have changed
+			InvokePropertyChanged(nameof(InvertedVoltageCurrentDirections));
+
+			// DC voltage drop information
+			if (_VoltageDrop.Type.HasFlag(VoltageDropType.DC))
+			{
+				yield return "DC voltage: " + SIHelpers.ToSIStringExcludingSmallPrefixes(_VoltageDrop.DC.RoundToDigit(4), "V");
+			}
+
+			// AC voltage drop information
+			if (_VoltageDrop.Type.HasFlag(VoltageDropType.AC))
+			{
+				// If it's a multi-ac voltage waveform add a header
+				if (_VoltageDrop.Type.HasFlag(VoltageDropType.MultipleAC))
+				{
+					yield return "Composing AC waveforms:";
+				}
+
+				// Print each waveform
+				foreach (var acWaveform in _VoltageDrop.ComposingACWaveforms)
+				{
+					yield return "AC voltage: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(acWaveform.Value.RoundToDigit(4), "V") +
+						" at " + SIHelpers.ToSIStringExcludingSmallPrefixes(acWaveform.Key.RoundToDigit(4), "Hz");
+				}
+			}
+
+		}
+
+		/// <summary>
+		/// /// Returns the info that is to be presented in the currently chosen (<see cref="CurrentInfoSectionIndex"/>) info section,
+		/// for example, on pointer over.
+		/// </summary>
+		/// <returns></returns>
+		protected virtual IEnumerable<string> GetCurrentInfo()
+		{
+			// Get ac and dc currents 
+			var acCurrents = _VoltageDrop.Type.HasFlag(VoltageDropType.DC) ? GetAcCurrents() : new List<Tuple<double, Complex>>();
+			var dcCurrent = _VoltageDrop.Type.HasFlag(VoltageDropType.DC) ? GetDcCurrent() : 0;
+
+			// Calculate the characteristic values
+			var maxCurrent = acCurrents.Sum((current) => current.Item2.Magnitude) + dcCurrent;
+			var minCurrent = acCurrents.Sum((current) => -current.Item2.Magnitude) + dcCurrent;
+
+			// RMS is a root square of a sum of squares of individual rms values (Magnitude divided by square root of 2 for AC)
+			var rmsCurrent = Math.Sqrt(acCurrents.Sum((current) => Math.Pow(current.Item2.Magnitude, 2) / 2) + dcCurrent);
+
+			// And return them
+			yield return "Maximum instantenous current: " +
+				SIHelpers.ToSIStringExcludingSmallPrefixes(maxCurrent.RoundToDigit(4), "A");
+			yield return "Minimum instantenous current: " +
+				SIHelpers.ToSIStringExcludingSmallPrefixes(minCurrent.RoundToDigit(4), "A");
+			yield return "RMS current: " + SIHelpers.ToSIStringExcludingSmallPrefixes(rmsCurrent.RoundToDigit(4), "A");
+
+			// Return DC current (if it's present)
+			if (_VoltageDrop.Type.HasFlag(VoltageDropType.DC))
+			{
+				yield return "DC current: " + SIHelpers.ToSIStringExcludingSmallPrefixes(
+					dcCurrent.RoundToDigit(4), "A");
+			}
+
+			// Return AC current (if it's present)
+			if (_VoltageDrop.Type.HasFlag(VoltageDropType.AC))
+			{
+				// If it's a multi-ac voltage waveform add a header
+				if (_VoltageDrop.Type.HasFlag(VoltageDropType.MultipleAC))
+				{
+					yield return "Composing AC currents:";
+				}
+
+				// Print each waveform
+				foreach (var current in acCurrents)
+				{
+					yield return "AC current: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
+						current.Item2.RoundToDigit(4), "A") +
+						" at " + SIHelpers.ToSIStringExcludingSmallPrefixes(current.Item1.RoundToDigit(4), "Hz");
+				}
+			}
+		}
+
+		/// <summary>
+		/// /// Returns the info that is to be presented in the currently chosen (<see cref="CurrentInfoSectionIndex"/>) info section,
+		/// for example, on pointer over.
+		/// </summary>
+		/// <returns></returns>
+		protected virtual IEnumerable<string> GetPowerInfo()
+		{
+			var dcPower = _VoltageDrop.Type.HasFlag(VoltageDropType.DC) ? Math.Pow(_VoltageDrop.DC, 2) * GetAdmittance(0) : 0;
+
+			// Get ac and dc currents 
+			var acCurrents = _VoltageDrop.Type.HasFlag(VoltageDropType.DC) ? GetAcCurrents() : new List<Tuple<double, Complex>>();
+			var dcCurrent = _VoltageDrop.Type.HasFlag(VoltageDropType.DC) ? GetDcCurrent() : 0;
+
+			// Calculate the characteristic values
+			var maxCurrent = acCurrents.Sum((current) => current.Item2.Magnitude) + dcCurrent;
+
+			var maxPower = maxCurrent * _VoltageDrop.Maximum;
+
+			var rmsPower = _VoltageDrop.ComposingACWaveforms.Sum((voltage) =>
+				(Math.Pow(voltage.Value.Magnitude, 2) * GetAdmittance(voltage.Key)).Magnitude) / 2 + dcPower;
+				
+
+			// Return characteristic power information
+			yield return "Maximum instantenous power: " +
+				SIHelpers.ToSIStringExcludingSmallPrefixes(maxPower.RoundToDigit(4), "W");
+			
+			yield return "Average power: " + SIHelpers.ToSIStringExcludingSmallPrefixes(rmsPower.RoundToDigit(4), "W");
+		}
 
 		/// <summary>
 		/// Assigns positions to all <see cref="ITerminal"/>s
@@ -106,47 +244,6 @@ namespace ECAT.Design
 		#endregion
 
 		#region Public methods
-				
-		/// <summary>
-		/// Returns the info that is to be presented, for example, on pointer over. It should include voltage drop(s) across the element,
-		/// current(s) through the element, etc.
-		/// </summary>
-		/// <returns></returns>
-		public override IEnumerable<string> GetComponentInfo()
-		{
-			// Characteristic voltage drop information
-			yield return "Maximum instantenous voltage: " +
-				SIHelpers.ToSIStringExcludingSmallPrefixes(_VoltageDrop.Maximum.RoundToDigit(4), "V");
-			yield return "Minimum instantenous voltage: " +
-				SIHelpers.ToSIStringExcludingSmallPrefixes(_VoltageDrop.Minimum.RoundToDigit(4), "V");
-			yield return "RMS voltage: " + SIHelpers.ToSIStringExcludingSmallPrefixes(_VoltageDrop.RMS.RoundToDigit(4), "V");
-
-			// Notify the voltage drop direction may have changed
-			InvokePropertyChanged(nameof(InvertedVoltageCurrentDirections));
-
-			// DC voltage drop information
-			if(_VoltageDrop.Type.HasFlag(VoltageDropType.DC))
-			{
-				yield return "DC voltage: " + SIHelpers.ToSIStringExcludingSmallPrefixes(_VoltageDrop.DC.RoundToDigit(4), "V");
-			}
-
-			// AC voltage drop information
-			if (_VoltageDrop.Type.HasFlag(VoltageDropType.AC))
-			{
-				// If it's a multi-ac voltage waveform add a header
-				if (_VoltageDrop.Type.HasFlag(VoltageDropType.MultipleAC))
-				{
-					yield return "Composing AC waveforms:";
-				}
-
-				// Print each waveform
-				foreach(var acWaveform in _VoltageDrop.ComposingACWaveforms)
-				{
-					yield return "AC voltage: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(acWaveform.Value.RoundToDigit(4), "V") +
-						" at " + SIHelpers.ToSIStringExcludingSmallPrefixes(acWaveform.Key.RoundToDigit(4), "Hz");
-				}
-			}
-		}
 
 		/// <summary>
 		/// Returns a list with all terminals in this component
@@ -171,6 +268,16 @@ namespace ECAT.Design
 
 			// Call the helper method
 			return CalculateAdmittance(frequency);
+		}
+
+		/// <summary>
+		/// Updates <see cref="ComponentInfo"/>
+		/// </summary>
+		public override void UpdateInfo()
+		{
+			_ComponentInfo.SetInfo(new List<IEnumerable<string>>()
+			{
+				GetVoltageInfo(), GetCurrentInfo(), GetPowerInfo() });
 		}
 
 		#endregion
