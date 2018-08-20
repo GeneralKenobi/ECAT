@@ -12,7 +12,7 @@
 		/// </summary>
 		/// <param name="nodeIndex"></param>
 		/// <returns></returns>
-		bool TryGetVoltageDrop(int nodeIndex, out IVoltageDropInformation voltageDrop);
+		bool TryGetVoltageDrop(int nodeIndex, out ISignalInformation voltageDrop);
 
 		/// <summary>
 		/// Gets information on voltage drop between two nodes (with node A being treated as the reference node). If the node
@@ -21,14 +21,14 @@
 		/// <param name="nodeAIndex"></param>
 		/// <param name="nodeBIndex"></param>
 		/// <returns></returns>
-		bool TryGetVoltageDrop(int nodeAIndex, int nodeBIndex, out IVoltageDropInformation voltageDrop);
+		bool TryGetVoltageDrop(int nodeAIndex, int nodeBIndex, out ISignalInformation voltageDrop);
 
 		/// <summary>
 		/// Gets a voltage drop of a node with respect to ground or returns a drop equal to zero if unsuccessful
 		/// </summary>
 		/// <param name="nodeIndex"></param>
 		/// <returns></returns>
-		IVoltageDropInformation GetVoltageDropOrZero(int nodeIndex);
+		ISignalInformation GetVoltageDropOrZero(int nodeIndex);
 
 		/// <summary>
 		/// Gets information on voltage drop between two nodes (with node A being treated as the reference node) or returns a drop
@@ -37,7 +37,7 @@
 		/// <param name="nodeAIndex"></param>
 		/// <param name="nodeBIndex"></param>
 		/// <returns></returns>
-		IVoltageDropInformation GetVoltageDropOrZero(int nodeAIndex, int nodeBIndex);		
+		ISignalInformation GetVoltageDropOrZero(int nodeAIndex, int nodeBIndex);		
 
 		#endregion
 	}

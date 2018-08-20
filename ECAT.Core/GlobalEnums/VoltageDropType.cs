@@ -3,33 +3,33 @@
 namespace ECAT.Core
 {
 	/// <summary>
-	/// Denotes types of a voltage drop according to frequencies composing it
+	/// Denotes types of a signal according to frequencies composing it
 	/// </summary>
 	[Flags]
-	public enum VoltageDropType
+	public enum SignalType
     {
 		/// <summary>
-		/// No voltage drop occurs - two potentials are equal
+		/// No signal is present
 		/// </summary>
-		NoDrop = 0,
+		Empty = 0,
 
 		/// <summary>
-		/// The voltage drop contains DC component
+		/// The signal contains a DC component
 		/// </summary>
 		DC = 1,
 
 		/// <summary>
-		/// The voltage drop contains at least one AC component
+		/// The signal contains at least one AC component
 		/// </summary>
 		AC = 2,
 
 		/// <summary>
-		/// The voltage drop contains a single AC component
+		/// The signal contains a single AC component
 		/// </summary>
 		SingleAC = 6,
 
 		/// <summary>
-		/// The voltage drop contains more than one AC component
+		/// The signal contains more than one AC component
 		/// </summary>
 		MultipleAC = 10,
     }
