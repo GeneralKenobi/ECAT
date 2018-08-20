@@ -18,7 +18,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Default Constructor
 		/// </summary>
-		protected TwoTerminal() : this(new string[] { "Voltage", "Current", "Power" }) { }
+		protected TwoTerminal() : this(new string[] { "Voltage", "Current" }) { }
 
 		/// <summary>
 		/// Default Constructor
@@ -148,7 +148,7 @@ namespace ECAT.Design
 		protected virtual IEnumerable<string> GetCurrentInfo()
 		{
 			// Get ac and dc currents 
-			var acCurrents = _VoltageDrop.Type.HasFlag(VoltageDropType.DC) ? GetAcCurrents() : new List<Tuple<double, Complex>>();
+			var acCurrents = _VoltageDrop.Type.HasFlag(VoltageDropType.AC) ? GetAcCurrents() : new List<Tuple<double, Complex>>();
 			var dcCurrent = _VoltageDrop.Type.HasFlag(VoltageDropType.DC) ? GetDcCurrent() : 0;
 
 			// Calculate the characteristic values
@@ -192,34 +192,6 @@ namespace ECAT.Design
 		}
 
 		/// <summary>
-		/// Returns info related to power
-		/// </summary>
-		/// <returns></returns>
-		protected virtual IEnumerable<string> GetPowerInfo()
-		{
-			var dcPower = _VoltageDrop.Type.HasFlag(VoltageDropType.DC) ? Math.Pow(_VoltageDrop.DC, 2) * GetAdmittance(0) : 0;
-
-			// Get ac and dc currents 
-			var acCurrents = _VoltageDrop.Type.HasFlag(VoltageDropType.AC) ? GetAcCurrents() : new List<Tuple<double, Complex>>();
-			var dcCurrent = _VoltageDrop.Type.HasFlag(VoltageDropType.DC) ? GetDcCurrent() : 0;
-
-			// Calculate the characteristic values
-			var maxCurrent = acCurrents.Sum((current) => current.Item2.Magnitude) + dcCurrent;
-
-			var maxPower = maxCurrent * _VoltageDrop.Maximum;
-
-			var rmsPower = _VoltageDrop.ComposingACWaveforms.Sum((voltage) =>
-				(Math.Pow(voltage.Value.Magnitude, 2) * GetAdmittance(voltage.Key)).Magnitude) / 2 + dcPower;
-				
-
-			// Return characteristic power information
-			yield return "Maximum instantenous power: " +
-				SIHelpers.ToSIStringExcludingSmallPrefixes(maxPower.RoundToDigit(4), "W");
-			
-			yield return "Average power: " + SIHelpers.ToSIStringExcludingSmallPrefixes(rmsPower.RoundToDigit(4), "W");
-		}
-
-		/// <summary>
 		/// Assigns positions to all <see cref="ITerminal"/>s
 		/// </summary>
 		protected override void UpdateAbsoluteTerminalPositions()
@@ -242,6 +214,16 @@ namespace ECAT.Design
 		/// Returns admittance between <see cref="TerminalA"/> and <see cref="TerminalB"/>, called by <see cref="GetAdmittance(double)"/>
 		/// </summary>
 		protected abstract Complex CalculateAdmittance(double frequency);
+
+		/// <summary>
+		/// Returns complete info for the component
+		/// </summary>
+		/// <returns></returns>
+		protected override IEnumerable<IEnumerable<string>> GetComponentInfo()
+		{
+			yield return GetVoltageInfo();
+			yield return GetCurrentInfo();
+		}
 
 		#endregion
 
@@ -270,16 +252,6 @@ namespace ECAT.Design
 
 			// Call the helper method
 			return CalculateAdmittance(frequency);
-		}
-
-		/// <summary>
-		/// Updates <see cref="ComponentInfo"/>
-		/// </summary>
-		public override void UpdateInfo()
-		{
-			_ComponentInfo.SetInfo(new List<IEnumerable<string>>()
-			{
-				GetVoltageInfo(), GetCurrentInfo(), GetPowerInfo() });
 		}
 
 		#endregion
