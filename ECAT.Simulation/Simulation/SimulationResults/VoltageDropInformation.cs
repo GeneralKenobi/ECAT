@@ -7,9 +7,9 @@ namespace ECAT.Simulation
 	public partial class SimulationManager
 	{
 		/// <summary>
-		/// Standard implementation of <see cref="IVoltageDropInformation"/>, presents information about a voltage drop between two nodes
+		/// Standard implementation of <see cref="ISignalInformation"/>, presents information about a voltage drop between two nodes
 		/// </summary>
-		private class VoltageDropInformation : IVoltageDropInformation
+		private class VoltageDropInformation : ISignalInformation
 		{
 			#region Public properties
 
@@ -46,7 +46,7 @@ namespace ECAT.Simulation
 			/// <summary>
 			/// The type of the voltage drop
 			/// </summary>
-			public VoltageDropType Type { get; set; }
+			public SignalType Type { get; set; }
 
 			#endregion
 

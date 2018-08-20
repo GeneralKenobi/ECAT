@@ -47,7 +47,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Gets the voltage drop between nodes B and A (with A being the reference node)
 		/// </summary>
-		protected IVoltageDropInformation _VoltageDrop => ReverseVoltageDrops ?
+		protected ISignalInformation _VoltageDrop => ReverseVoltageDrops ?
 			IoC.Resolve<ISimulationResults>().GetVoltageDropOrZero(TerminalB.NodeIndex, TerminalA.NodeIndex) :
 			IoC.Resolve<ISimulationResults>().GetVoltageDropOrZero(TerminalA.NodeIndex, TerminalB.NodeIndex);
 
@@ -117,16 +117,16 @@ namespace ECAT.Design
 			InvokePropertyChanged(nameof(InvertedVoltageCurrentDirections));
 
 			// DC voltage drop information
-			if (_VoltageDrop.Type.HasFlag(VoltageDropType.DC))
+			if (_VoltageDrop.Type.HasFlag(SignalType.DC))
 			{
 				yield return "DC voltage: " + SIHelpers.ToSIStringExcludingSmallPrefixes(_VoltageDrop.DC.RoundToDigit(4), "V");
 			}
 
 			// AC voltage drop information
-			if (_VoltageDrop.Type.HasFlag(VoltageDropType.AC))
+			if (_VoltageDrop.Type.HasFlag(SignalType.AC))
 			{
 				// If it's a multi-ac voltage waveform add a header
-				if (_VoltageDrop.Type.HasFlag(VoltageDropType.MultipleAC))
+				if (_VoltageDrop.Type.HasFlag(SignalType.MultipleAC))
 				{
 					yield return "Composing AC waveforms:";
 				}
@@ -148,8 +148,8 @@ namespace ECAT.Design
 		protected virtual IEnumerable<string> GetCurrentInfo()
 		{
 			// Get ac and dc currents 
-			var acCurrents = _VoltageDrop.Type.HasFlag(VoltageDropType.AC) ? GetAcCurrents() : new List<Tuple<double, Complex>>();
-			var dcCurrent = _VoltageDrop.Type.HasFlag(VoltageDropType.DC) ? GetDcCurrent() : 0;
+			var acCurrents = _VoltageDrop.Type.HasFlag(SignalType.AC) ? GetAcCurrents() : new List<Tuple<double, Complex>>();
+			var dcCurrent = _VoltageDrop.Type.HasFlag(SignalType.DC) ? GetDcCurrent() : 0;
 
 			// Calculate the characteristic values
 			var maxCurrent = acCurrents.Sum((current) => current.Item2.Magnitude) + dcCurrent;
@@ -166,17 +166,17 @@ namespace ECAT.Design
 			yield return "RMS current: " + SIHelpers.ToSIStringExcludingSmallPrefixes(rmsCurrent.RoundToDigit(4), "A");
 
 			// Return DC current (if it's present)
-			if (_VoltageDrop.Type.HasFlag(VoltageDropType.DC))
+			if (_VoltageDrop.Type.HasFlag(SignalType.DC))
 			{
 				yield return "DC current: " + SIHelpers.ToSIStringExcludingSmallPrefixes(
 					dcCurrent.RoundToDigit(4), "A");
 			}
 
 			// Return AC current (if it's present)
-			if (_VoltageDrop.Type.HasFlag(VoltageDropType.AC))
+			if (_VoltageDrop.Type.HasFlag(SignalType.AC))
 			{
 				// If it's a multi-ac voltage waveform add a header
-				if (_VoltageDrop.Type.HasFlag(VoltageDropType.MultipleAC))
+				if (_VoltageDrop.Type.HasFlag(SignalType.MultipleAC))
 				{
 					yield return "Composing AC currents:";
 				}

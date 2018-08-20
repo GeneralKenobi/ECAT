@@ -66,7 +66,7 @@ namespace ECAT.Design
 		protected IEnumerable<string> GetPowerInfo()
 		{
 			// Calculate dc power
-			var dcPower = _VoltageDrop.Type.HasFlag(VoltageDropType.DC) ? Math.Pow(_VoltageDrop.DC, 2) * GetAdmittance(0) : 0;
+			var dcPower = _VoltageDrop.Type.HasFlag(SignalType.DC) ? Math.Pow(_VoltageDrop.DC, 2) * GetAdmittance(0) : 0;
 
 			// Calculate max power as maximum voltage drop squared times admittance
 			var maxPower = Math.Pow(_VoltageDrop.Maximum, 2) * GetAdmittance(0);

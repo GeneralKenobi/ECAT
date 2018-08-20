@@ -78,7 +78,7 @@ namespace ECAT.Simulation
 				// If DC drop is not 0, set its flag
 				if (info.DC != 0)
 				{
-					info.Type |= VoltageDropType.DC;
+					info.Type |= SignalType.DC;
 				}
 
 				// Get the number of ac waveforms
@@ -90,12 +90,12 @@ namespace ECAT.Simulation
 					// And greater than 1 set multiple flag
 					if (acWaveformsCount > 1)
 					{
-						info.Type |= VoltageDropType.MultipleAC;
+						info.Type |= SignalType.MultipleAC;
 					}
 					// If it's not (which means there's only 1) set the single flag
 					else
 					{
-						info.Type |= VoltageDropType.SingleAC;
+						info.Type |= SignalType.SingleAC;
 					}
 				}
 			}
@@ -127,8 +127,8 @@ namespace ECAT.Simulation
 			}
 
 			/// <summary>
-			/// Checks if <see cref="IVoltageDropInformation.Maximum"/> is a positive value, if not inverts the direction of voltage
-			/// drops and sets the <see cref="IVoltageDropInformation.InvertedDirection"/> flag to true
+			/// Checks if <see cref="ISignalInformation.Maximum"/> is a positive value, if not inverts the direction of voltage
+			/// drops and sets the <see cref="ISignalInformation.InvertedDirection"/> flag to true
 			/// </summary>
 			/// <param name="info"></param>
 			private void CheckIfMaximumIsPositive(VoltageDropInformation info)
@@ -217,7 +217,7 @@ namespace ECAT.Simulation
 			/// </summary>
 			/// <param name="nodeIndex"></param>
 			/// <returns></returns>
-			public bool TryGetVoltageDrop(int nodeIndex, out IVoltageDropInformation voltageDrop) =>
+			public bool TryGetVoltageDrop(int nodeIndex, out ISignalInformation voltageDrop) =>
 				TryGetVoltageDrop(SimulationManager.GroundNodeIndex, nodeIndex, out voltageDrop);
 
 			/// <summary>
@@ -227,7 +227,7 @@ namespace ECAT.Simulation
 			/// <param name="nodeAIndex"></param>
 			/// <param name="nodeBIndex"></param>
 			/// <returns></returns>
-			public bool TryGetVoltageDrop(int nodeAIndex, int nodeBIndex, out IVoltageDropInformation voltageDrop)
+			public bool TryGetVoltageDrop(int nodeAIndex, int nodeBIndex, out ISignalInformation voltageDrop)
 			{
 				// If one of the node indexes exceeds the number of nodes
 				if(nodeAIndex >= _Nodes.Count || nodeBIndex >= _Nodes.Count)
@@ -267,7 +267,7 @@ namespace ECAT.Simulation
 			/// </summary>
 			/// <param name="nodeIndex"></param>
 			/// <returns></returns>
-			public IVoltageDropInformation GetVoltageDropOrZero(int nodeIndex) => GetVoltageDropOrZero(GroundNodeIndex, nodeIndex);				
+			public ISignalInformation GetVoltageDropOrZero(int nodeIndex) => GetVoltageDropOrZero(GroundNodeIndex, nodeIndex);				
 
 			/// <summary>
 			/// Gets information on voltage drop between two nodes (with node A being treated as the reference node) or returns a drop
@@ -276,7 +276,7 @@ namespace ECAT.Simulation
 			/// <param name="nodeAIndex"></param>
 			/// <param name="nodeBIndex"></param>
 			/// <returns></returns>
-			public IVoltageDropInformation GetVoltageDropOrZero(int nodeAIndex, int nodeBIndex)
+			public ISignalInformation GetVoltageDropOrZero(int nodeAIndex, int nodeBIndex)
 			{
 				if(TryGetVoltageDrop(nodeAIndex, nodeBIndex, out var info))
 				{
