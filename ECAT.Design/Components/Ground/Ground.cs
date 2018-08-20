@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using ECAT.Core;
 
@@ -29,6 +30,16 @@ namespace ECAT.Design
 		/// Height of the control in circuit design in the default, horizontal position
 		/// </summary>
 		public override double Height { get; } = 100;
+
+		#endregion
+
+		#region Protected methods
+
+		/// <summary>
+		/// Returns info for grounds, be default it's
+		/// </summary>
+		/// <returns></returns>
+		protected override IEnumerable<IEnumerable<string>> GetComponentInfo() => Enumerable.Empty<IEnumerable<string>>();
 
 		#endregion
 	}
