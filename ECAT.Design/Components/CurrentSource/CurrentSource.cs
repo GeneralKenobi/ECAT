@@ -19,7 +19,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public CurrentSource() : base(new string[] { "Voltage", "Current", "Delivered power"}) { }
+		public CurrentSource() : base(new string[] { "Voltage", "Delivered power"}) { }
 
 		#endregion
 
@@ -62,11 +62,11 @@ namespace ECAT.Design
 		}
 
 		/// <summary>
-		/// Returns info related to this current source which is the standard two-terminal info plus power info
+		/// Returns info related to this current source which is voltage info plus power info
 		/// </summary>
 		/// <returns></returns>
 		protected override IEnumerable<IEnumerable<string>> GetComponentInfo() =>
-			base.GetComponentInfo().Concat((new IEnumerable<string>[] { GetPowerInfo() }));
+			new IEnumerable<string>[] { GetVoltageInfo(), GetPowerInfo() };
 
 		#endregion
 
