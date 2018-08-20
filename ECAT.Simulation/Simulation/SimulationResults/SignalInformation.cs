@@ -9,7 +9,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Standard implementation of <see cref="ISignalInformation"/>, presents information about a voltage drop between two nodes
 		/// </summary>
-		private class VoltageDropInformation : ISignalInformation
+		private class SignalInformation : ISignalInformation
 		{
 			#region Public properties
 
@@ -56,10 +56,10 @@ namespace ECAT.Simulation
 			/// Returns a copy of this instance
 			/// </summary>
 			/// <returns></returns>
-			public VoltageDropInformation Copy()
+			public SignalInformation Copy()
 			{
 				// Create a new instance and copy over all properties
-				var copy = new VoltageDropInformation();
+				var copy = new SignalInformation();
 
 				copy.DC = DC;
 

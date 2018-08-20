@@ -25,8 +25,8 @@ namespace ECAT.Simulation
 			/// Dictionary holding already computed voltage drops for the last performed simulation. Ints in key tuple are indexes of
 			/// nodes (Item1 for the first node (reference node) and Item2 for the second node (target node))
 			/// </summary>
-			private Dictionary<Tuple<int, int>, VoltageDropInformation> _AlreadyComputed { get; } =
-				new Dictionary<Tuple<int, int>, VoltageDropInformation>(new CustomEqualityComparer<Tuple<int, int>>(
+			private Dictionary<Tuple<int, int>, SignalInformation> _AlreadyComputed { get; } =
+				new Dictionary<Tuple<int, int>, SignalInformation>(new CustomEqualityComparer<Tuple<int, int>>(
 					// Compare the elements of the Tuples, now tuples themselves
 					(x, y) => x.Item1 == y.Item1 && x.Item2 == y.Item2));
 
@@ -73,7 +73,7 @@ namespace ECAT.Simulation
 			/// Sets the types of waveforms that compose the voltage drop
 			/// </summary>
 			/// <param name="info"></param>
-			private void SetFlags(VoltageDropInformation info)
+			private void SetFlags(SignalInformation info)
 			{
 				// If DC drop is not 0, set its flag
 				if (info.DC != 0)
@@ -104,7 +104,7 @@ namespace ECAT.Simulation
 			/// Calculates and assigns characteristic voltages - maximum, minimum, RMS
 			/// </summary>
 			/// <param name="info"></param>
-			private void CalculateCharacteristicVoltages(VoltageDropInformation info)
+			private void CalculateCharacteristicVoltages(SignalInformation info)
 			{
 				// Add the DC component to each characteristic
 				info.Maximum += info.DC;
@@ -131,7 +131,7 @@ namespace ECAT.Simulation
 			/// drops and sets the <see cref="ISignalInformation.InvertedDirection"/> flag to true
 			/// </summary>
 			/// <param name="info"></param>
-			private void CheckIfMaximumIsPositive(VoltageDropInformation info)
+			private void CheckIfMaximumIsPositive(SignalInformation info)
 			{
 				if (info.DC < 0)
 				{
@@ -140,11 +140,11 @@ namespace ECAT.Simulation
 			}
 
 			/// <summary>
-			/// Negates the voltage drop (Negates all composing waveforms, rearrenges <see cref="VoltageDropInformation.Maximum"/> and
-			/// <see cref="VoltageDropInformation.Minimum"/>, flips <see cref="VoltageDropInformation.InvertedDirection"/> flag.
+			/// Negates the voltage drop (Negates all composing waveforms, rearrenges <see cref="SignalInformation.Maximum"/> and
+			/// <see cref="SignalInformation.Minimum"/>, flips <see cref="SignalInformation.InvertedDirection"/> flag.
 			/// </summary>
 			/// <param name="info"></param>
-			private void NegateVoltageDrop(VoltageDropInformation info)
+			private void NegateVoltageDrop(SignalInformation info)
 			{
 				// Negate all composing waveforms
 				info.ComposingACWaveforms = info.ComposingACWaveforms.Select((waveform) => new KeyValuePair<double, Complex>(
@@ -167,10 +167,10 @@ namespace ECAT.Simulation
 			/// <param name="nodeA"></param>
 			/// <param name="nodeB"></param>
 			/// <returns></returns>
-			private VoltageDropInformation Construct(INode nodeA, INode nodeB)
+			private SignalInformation Construct(INode nodeA, INode nodeB)
 			{
 				// Create a new instance
-				var info = new VoltageDropInformation();
+				var info = new SignalInformation();
 
 				// Calculate DC drop
 				info.DC = nodeB.DCPotential.Value - nodeA.DCPotential.Value;
@@ -193,7 +193,7 @@ namespace ECAT.Simulation
 			/// <param name="info"></param>
 			/// <param name="nodeAIndex"></param>
 			/// <param name="nodeBIndex"></param>
-			private void Cache(VoltageDropInformation info, int nodeAIndex, int nodeBIndex)
+			private void Cache(SignalInformation info, int nodeAIndex, int nodeBIndex)
 			{
 				// Get a copy for opposite node mapping
 				var copy = info.Copy();
@@ -239,7 +239,7 @@ namespace ECAT.Simulation
 				// If the node indexes are equal (the same nodes) return default voltage drop (equivalent to no drop)
 				if(nodeAIndex == nodeBIndex)
 				{
-					voltageDrop = new VoltageDropInformation();
+					voltageDrop = new SignalInformation();
 					return true;
 				}
 
@@ -284,7 +284,7 @@ namespace ECAT.Simulation
 				}
 				else
 				{
-					return new VoltageDropInformation();
+					return new SignalInformation();
 				}
 			}
 
