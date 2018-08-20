@@ -16,8 +16,4 @@
     </Reference>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="MainFunctionalityInterfaces\Simulation\ResultsAnalyzer\" />
-  </ItemGroup>
-
 </Project>
