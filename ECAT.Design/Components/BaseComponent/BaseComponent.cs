@@ -138,6 +138,12 @@ namespace ECAT.Design
 		#endregion
 
 		#region Protected methods
+		
+		/// <summary>
+		/// Returns complete info for the component
+		/// </summary>
+		/// <returns></returns>
+		protected abstract IEnumerable<IEnumerable<string>> GetComponentInfo();
 
 		/// <summary>
 		/// Assigns positions to all <see cref="PartialNode"/>s, invoked by <see cref="BaseComponent"/>'s constructor
@@ -169,7 +175,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Updates <see cref="ComponentInfo"/>. Should be overriden if derived class provides info
 		/// </summary>
-		public virtual void UpdateInfo() { }
+		public void UpdateInfo() => _ComponentInfo.SetInfo(GetComponentInfo());
 		
 		/// <summary>
 		/// Returns a list with all terminals in this component
