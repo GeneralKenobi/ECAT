@@ -254,6 +254,14 @@ namespace ECAT.Design
 			return CalculateAdmittance(frequency);
 		}
 
+		/// <summary>
+		/// Returns conductance between <see cref="TerminalA"/> and <see cref="TerminalB"/> for DC signals. Conductance is the real part
+		/// of admittance. For DC all elements have admittance with only real component being non-zero so this method returns the same
+		/// as <see cref="GetAdmittance(double)"/> for 0 frequency.
+		/// </summary>
+		/// <returns></returns>
+		public double GetConductance() => GetAdmittance(0).Real;
+
 		#endregion
 	}
 }
