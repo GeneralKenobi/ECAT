@@ -7,44 +7,45 @@ namespace ECAT.Simulation
 	public partial class SimulationManager
 	{
 		/// <summary>
-		/// Standard implementation of <see cref="ISignalInformation"/>, presents information about a voltage drop between two nodes
+		/// Standard implementation of <see cref="ISignalInformation"/>, presents information about a signal - voltage drop or current flow		
 		/// </summary>
 		private class SignalInformation : ISignalInformation
 		{
 			#region Public properties
 
 			/// <summary>
-			/// True if the direction of voltage drops was inverted to present <see cref="Maximum"/> as a positive number
+			/// True if the direction of signal was inverted (with respect to assumed directions) to present <see cref="Maximum"/> as a
+			/// positive number
 			/// </summary>
 			public bool InvertedDirection { get; set; }
 
 			/// <summary>
-			/// DC voltage drop
+			/// DC component
 			/// </summary>
 			public double DC { get; set; }
 
 			/// <summary>
-			/// The maximum voltage drop that may occur
+			/// The maximum signal value that may occur
 			/// </summary>
 			public double Maximum { get; set; }
 
 			/// <summary>
-			/// The minimum voltage drop that may occur
+			/// The minimum signal that may occur
 			/// </summary>
 			public double Minimum { get; set; }
 
 			/// <summary>
-			/// RMS value of this voltage drop
+			/// RMS value of this signal
 			/// </summary>
 			public double RMS { get; set; }
 
 			/// <summary>
-			/// List with all AC waveforms (voltage drops) adding to the total voltage drop
+			/// List with all phasors adding to the total voltage drop
 			/// </summary>
-			public IEnumerable<KeyValuePair<double, Complex>> ComposingACWaveforms { get; set; }
+			public IEnumerable<KeyValuePair<double, Complex>> ComposingPhasors { get; set; }
 
 			/// <summary>
-			/// The type of the voltage drop
+			/// The type of the signal
 			/// </summary>
 			public SignalType Type { get; set; }
 
@@ -63,7 +64,7 @@ namespace ECAT.Simulation
 
 				copy.DC = DC;
 
-				copy.ComposingACWaveforms = ComposingACWaveforms;
+				copy.ComposingPhasors = ComposingPhasors;
 
 				copy.Maximum = Maximum;
 

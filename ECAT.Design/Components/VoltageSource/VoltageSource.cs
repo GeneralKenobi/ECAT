@@ -66,7 +66,7 @@ namespace ECAT.Design
 
 			var maxPower = Math.Pow(_VoltageDrop.Maximum, 2) * GetAdmittance(0);
 
-			var rmsPower = _VoltageDrop.ComposingACWaveforms.Sum((voltage) =>
+			var rmsPower = _VoltageDrop.ComposingPhasors.Sum((voltage) =>
 				(Math.Pow(voltage.Value.Magnitude, 2) * GetAdmittance(voltage.Key)).Magnitude) / 2 + dcPower;
 
 			// Return characteristic power information

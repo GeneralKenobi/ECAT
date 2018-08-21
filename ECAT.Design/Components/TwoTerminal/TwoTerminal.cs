@@ -88,7 +88,7 @@ namespace ECAT.Design
 		/// Returns AC currents for the current <see cref="_VoltageDrop"/>
 		/// </summary>
 		private List<Tuple<double, Complex>> GetAcCurrents() => new List<Tuple<double, Complex>>(
-			_VoltageDrop.ComposingACWaveforms.Select((drop) =>
+			_VoltageDrop.ComposingPhasors.Select((drop) =>
 			new Tuple<double, Complex>(drop.Key, drop.Value * GetAdmittance(drop.Key))));
 
 		/// <summary>		
@@ -132,7 +132,7 @@ namespace ECAT.Design
 				}
 
 				// Print each waveform
-				foreach (var acWaveform in _VoltageDrop.ComposingACWaveforms)
+				foreach (var acWaveform in _VoltageDrop.ComposingPhasors)
 				{
 					yield return "AC voltage: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(acWaveform.Value.RoundToDigit(4), "V") +
 						" at " + SIHelpers.ToSIStringExcludingSmallPrefixes(acWaveform.Key.RoundToDigit(4), "Hz");

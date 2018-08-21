@@ -11,7 +11,8 @@ namespace ECAT.Core
 		#region Properties
 
 		/// <summary>
-		/// True if the direction of signal was inverted to present <see cref="Maximum"/> as a positive number
+		/// True if the direction of signal was inverted (with respect to assumed directions) to present <see cref="Maximum"/> as a
+		/// positive number
 		/// </summary>
 		bool InvertedDirection { get; }
 
@@ -36,9 +37,9 @@ namespace ECAT.Core
 		double RMS { get; }
 
 		/// <summary>
-		/// List with all AC waveforms adding to the signal
+		/// List with phasors adding to the signal
 		/// </summary>
-		IEnumerable<KeyValuePair<double, Complex>> ComposingACWaveforms { get; }
+		IEnumerable<KeyValuePair<double, Complex>> ComposingPhasors { get; }
 
 		/// <summary>
 		/// The type of the signal
