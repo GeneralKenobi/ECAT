@@ -13,7 +13,7 @@
 		double Average { get; }
 
 		/// <summary>
-		/// Maximum instantenous power lost
+		/// Maximum instantenous power loss
 		/// </summary>
 		double MaximumLost { get; }
 		
