@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Numerics;
 using CSharpEnhanced.Helpers;
 using CSharpEnhanced.Maths;
@@ -63,30 +61,25 @@ namespace ECAT.Design
 		/// Returns info related to power
 		/// </summary>
 		/// <returns></returns>
-		protected IEnumerable<string> GetPowerInfo()
+		protected IEnumerable<string> GetPowerInfo(IPowerInformation powerInformation)
 		{
-			// Calculate dc power
-			var dcPower = _VoltageDrop.Type.HasFlag(SignalType.DC) ? Math.Pow(_VoltageDrop.DC, 2) * GetAdmittance(0) : 0;
-
-			// Calculate max power as maximum voltage drop squared times admittance
-			var maxPower = Math.Pow(_VoltageDrop.Maximum, 2) * GetAdmittance(0);
-
-			var rmsPower = _VoltageDrop.ComposingPhasors.Sum((voltage) =>
-				(Math.Pow(voltage.Value.Magnitude, 2) * GetAdmittance(voltage.Key)).Magnitude) / 2 + dcPower;
-
 			// Return characteristic power information
 			yield return "Maximum instantenous power: " +
-				SIHelpers.ToSIStringExcludingSmallPrefixes(maxPower.RoundToDigit(4), "W");
+				SIHelpers.ToSIStringExcludingSmallPrefixes(powerInformation.MaximumLost.RoundToDigit(4), "W");
 
-			yield return "Average power: " + SIHelpers.ToSIStringExcludingSmallPrefixes(rmsPower.RoundToDigit(4), "W");
+			yield return "Average power: " + SIHelpers.ToSIStringExcludingSmallPrefixes(powerInformation.Average.RoundToDigit(4), "W");
 		}
 
 		/// <summary>
 		/// Returns complete info for the component (basic two terminal plus power)
 		/// </summary>
 		/// <returns></returns>
-		protected override IEnumerable<IEnumerable<string>> GetComponentInfo() =>
-			base.GetComponentInfo().Concat(new IEnumerable<string>[] { GetPowerInfo() });
+		protected override IEnumerable<IEnumerable<string>> GetComponentInfo()
+		{
+			yield return GetVoltageInfo(_VoltageDrop);
+			yield return GetCurrentInfo(IoC.Resolve<ISimulationResults>().GetCurrent(_VoltageDrop, this));
+			yield return GetPowerInfo(IoC.Resolve<ISimulationResults>().GetPower(_VoltageDrop, this));
+		}
 
 		#endregion
 	}
