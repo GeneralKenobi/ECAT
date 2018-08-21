@@ -1,5 +1,4 @@
 ﻿using CSharpEnhanced.Helpers;
-using CSharpEnhanced.Maths;
 using ECAT.Core;
 using System;
 using System.Collections.Generic;
@@ -92,10 +91,10 @@ namespace ECAT.Design
 		{
 			// Characteristic voltage drop information
 			yield return "Maximum instantenous voltage: " +
-				SIHelpers.ToSIStringExcludingSmallPrefixes(voltageDrop.Maximum.RoundToDigit(4), "V");
+				SIHelpers.ToSIStringExcludingSmallPrefixes(voltageDrop.Maximum, "V", _RoundInfoToDigit);
 			yield return "Minimum instantenous voltage: " +
-				SIHelpers.ToSIStringExcludingSmallPrefixes(voltageDrop.Minimum.RoundToDigit(4), "V");
-			yield return "RMS voltage: " + SIHelpers.ToSIStringExcludingSmallPrefixes(voltageDrop.RMS.RoundToDigit(4), "V");
+				SIHelpers.ToSIStringExcludingSmallPrefixes(voltageDrop.Minimum, "V", _RoundInfoToDigit);
+			yield return "RMS voltage: " + SIHelpers.ToSIStringExcludingSmallPrefixes(voltageDrop.RMS, "V", _RoundInfoToDigit);
 
 			// Notify the voltage drop direction may have changed
 			InvokePropertyChanged(nameof(InvertedVoltageCurrentDirections));
@@ -103,7 +102,7 @@ namespace ECAT.Design
 			// DC voltage drop information
 			if (voltageDrop.Type.HasFlag(SignalType.DC))
 			{
-				yield return "DC voltage: " + SIHelpers.ToSIStringExcludingSmallPrefixes(voltageDrop.DC.RoundToDigit(4), "V");
+				yield return "DC voltage: " + SIHelpers.ToSIStringExcludingSmallPrefixes(voltageDrop.DC, "V", _RoundInfoToDigit);
 			}
 
 			// AC voltage drop information
@@ -118,8 +117,8 @@ namespace ECAT.Design
 				// Print each waveform
 				foreach (var acWaveform in voltageDrop.ComposingPhasors)
 				{
-					yield return "AC voltage: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(acWaveform.Value.RoundToDigit(4), "V") +
-						" at " + SIHelpers.ToSIStringExcludingSmallPrefixes(acWaveform.Key.RoundToDigit(4), "Hz");
+					yield return "AC voltage: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(acWaveform.Value, "V",
+						_RoundInfoToDigit) + " at " +SIHelpers.ToSIStringExcludingSmallPrefixes(acWaveform.Key, "Hz", _RoundInfoToDigit);
 				}
 			}
 
@@ -133,16 +132,16 @@ namespace ECAT.Design
 		{
 			// And return them
 			yield return "Maximum instantenous current: " +
-				SIHelpers.ToSIStringExcludingSmallPrefixes(currentInfo.Maximum.RoundToDigit(4), "A");
+				SIHelpers.ToSIStringExcludingSmallPrefixes(currentInfo.Maximum, "A", _RoundInfoToDigit);
 			yield return "Minimum instantenous current: " +
-				SIHelpers.ToSIStringExcludingSmallPrefixes(currentInfo.Minimum.RoundToDigit(4), "A");
-			yield return "RMS current: " + SIHelpers.ToSIStringExcludingSmallPrefixes(currentInfo.RMS.RoundToDigit(4), "A");
+				SIHelpers.ToSIStringExcludingSmallPrefixes(currentInfo.Minimum, "A", _RoundInfoToDigit);
+			yield return "RMS current: " + SIHelpers.ToSIStringExcludingSmallPrefixes(currentInfo.RMS, "A", _RoundInfoToDigit);
 
 			// Return DC current (if it's present)
 			if (currentInfo.Type.HasFlag(SignalType.DC))
 			{
 				yield return "DC current: " + SIHelpers.ToSIStringExcludingSmallPrefixes(
-					currentInfo.DC.RoundToDigit(4), "A");
+					currentInfo.DC, "A", _RoundInfoToDigit);
 			}
 
 			// Return AC current (if it's present)
@@ -158,8 +157,8 @@ namespace ECAT.Design
 				foreach (var current in currentInfo.ComposingPhasors)
 				{
 					yield return "AC current: " + SIHelpers.ToAltSIStringExcludingSmallPrefixes(
-						current.Value.RoundToDigit(4), "A") +
-						" at " + SIHelpers.ToSIStringExcludingSmallPrefixes(current.Key.RoundToDigit(4), "Hz");
+						current.Value, "A", _RoundInfoToDigit) +
+						" at " + SIHelpers.ToSIStringExcludingSmallPrefixes(current.Key, "Hz", _RoundInfoToDigit);
 				}
 			}
 		}

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
 using CSharpEnhanced.Helpers;
-using CSharpEnhanced.Maths;
 using ECAT.Core;
 
 namespace ECAT.Design
@@ -65,9 +64,9 @@ namespace ECAT.Design
 		{
 			// Return characteristic power information
 			yield return "Maximum instantenous power: " +
-				SIHelpers.ToSIStringExcludingSmallPrefixes(powerInformation.MaximumLost.RoundToDigit(4), "W");
+				SIHelpers.ToSIStringExcludingSmallPrefixes(powerInformation.MaximumLost, "W", _RoundInfoToDigit);
 
-			yield return "Average power: " + SIHelpers.ToSIStringExcludingSmallPrefixes(powerInformation.Average.RoundToDigit(4), "W");
+			yield return "Average power: " + SIHelpers.ToSIStringExcludingSmallPrefixes(powerInformation.Average, "W", _RoundInfoToDigit);
 		}
 
 		/// <summary>
