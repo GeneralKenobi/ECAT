@@ -139,17 +139,17 @@ namespace ECAT.Design
 			yield return "RMS current: " + SIHelpers.ToSIStringExcludingSmallPrefixes(currentInfo.RMS.RoundToDigit(4), "A");
 
 			// Return DC current (if it's present)
-			if (_VoltageDrop.Type.HasFlag(SignalType.DC))
+			if (currentInfo.Type.HasFlag(SignalType.DC))
 			{
 				yield return "DC current: " + SIHelpers.ToSIStringExcludingSmallPrefixes(
 					currentInfo.DC.RoundToDigit(4), "A");
 			}
 
 			// Return AC current (if it's present)
-			if (_VoltageDrop.Type.HasFlag(SignalType.AC))
+			if (currentInfo.Type.HasFlag(SignalType.AC))
 			{
 				// If it's a multi-ac voltage waveform add a header
-				if (_VoltageDrop.Type.HasFlag(SignalType.MultipleAC))
+				if (currentInfo.Type.HasFlag(SignalType.MultipleAC))
 				{
 					yield return "Composing AC currents:";
 				}
