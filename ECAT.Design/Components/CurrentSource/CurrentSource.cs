@@ -1,8 +1,6 @@
 ﻿using CSharpEnhanced.Helpers;
-using CSharpEnhanced.Maths;
 using ECAT.Core;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 
 namespace ECAT.Design
@@ -47,26 +45,29 @@ namespace ECAT.Design
 		/// Returns info related to power
 		/// </summary>
 		/// <returns></returns>
-		protected IEnumerable<string> GetPowerInfo()
+		protected IEnumerable<string> GetPowerInfo(IPowerInformation info)
 		{
-			var dcPower = _VoltageDrop.DC * ProducedCurrent;
-			
-			var maxPower = _VoltageDrop.Maximum * ProducedCurrent;		
-
 			// Return characteristic power information
 			yield return "Maximum instantenous power: " +
-				SIHelpers.ToSIStringExcludingSmallPrefixes(maxPower.RoundToDigit(4), "W");
+				SIHelpers.ToSIStringExcludingSmallPrefixes(info.Minimum, "W", _RoundInfoToDigit);
+
+			// Return characteristic power information
+			yield return "Minimum instantenous power: " +
+				SIHelpers.ToSIStringExcludingSmallPrefixes(info.Maximum, "W", _RoundInfoToDigit);
 
 			// Average power is just the DC power - AC power averages to 0
-			yield return "Average power: " + SIHelpers.ToSIStringExcludingSmallPrefixes(dcPower.RoundToDigit(4), "W");
+			yield return "Average power: " + SIHelpers.ToSIStringExcludingSmallPrefixes(info.Average, "W", _RoundInfoToDigit);
 		}
 
 		/// <summary>
 		/// Returns info related to this current source which is voltage info plus power info
 		/// </summary>
 		/// <returns></returns>
-		protected override IEnumerable<IEnumerable<string>> GetComponentInfo() =>
-			new IEnumerable<string>[] { GetVoltageInfo(), GetPowerInfo() };
+		protected override IEnumerable<IEnumerable<string>> GetComponentInfo()
+		{
+			yield return GetVoltageInfo(_VoltageDrop);
+			yield return GetPowerInfo(IoC.Resolve<ISimulationResults>().GetPower(_VoltageDrop, this));
+		}
 
 		#endregion
 
