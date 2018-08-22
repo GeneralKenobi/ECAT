@@ -6,13 +6,18 @@
 	public enum PowerType
     {
 		/// <summary>
+		/// Power is equal to 0 - it is neither dissipated nor supplied
+		/// </summary>
+		None = 0,
+
+		/// <summary>
 		/// Power is dissipated - lost on the element
 		/// </summary>
-		Dissipated = 0,
+		Dissipated = 1,
 
 		/// <summary>
 		/// Power is supplied by the element
 		/// </summary>
-		Supplied = 1,
+		Supplied = 2,
     }
 }
