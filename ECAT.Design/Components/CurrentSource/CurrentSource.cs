@@ -48,11 +48,11 @@ namespace ECAT.Design
 		protected IEnumerable<string> GetPowerInfo(IPowerInformation info)
 		{
 			// Return characteristic power information
-			yield return "Maximum instantenous power: " +
+			yield return "Minimum instantenous power: " +
 				SIHelpers.ToSIStringExcludingSmallPrefixes(info.Minimum, "W", _RoundInfoToDigit);
 
 			// Return characteristic power information
-			yield return "Minimum instantenous power: " +
+			yield return "Maximum instantenous power: " +
 				SIHelpers.ToSIStringExcludingSmallPrefixes(info.Maximum, "W", _RoundInfoToDigit);
 
 			// Average power is just the DC power - AC power averages to 0
