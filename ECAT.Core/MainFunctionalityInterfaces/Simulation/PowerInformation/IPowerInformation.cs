@@ -13,6 +13,11 @@
 		double Average { get; }
 
 		/// <summary>
+		/// Determines whether power is dissipated/supplied by the element
+		/// </summary>
+		PowerType AveragePowerType { get; }
+
+		/// <summary>
 		/// Maximum instantenous power loss
 		/// </summary>
 		double MaximumLost { get; }
