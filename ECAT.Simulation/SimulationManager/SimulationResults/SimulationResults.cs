@@ -25,14 +25,89 @@ namespace ECAT.Simulation
 			/// Dictionary holding already computed voltage drops for the last performed simulation. Ints in key tuple are indexes of
 			/// nodes (Item1 for the first node (reference node) and Item2 for the second node (target node))
 			/// </summary>
-			private Dictionary<Tuple<int, int>, SignalInformation> _AlreadyComputed { get; } =
+			private Dictionary<Tuple<int, int>, SignalInformation> _VoltageDropCache { get; } =
 				new Dictionary<Tuple<int, int>, SignalInformation>(new CustomEqualityComparer<Tuple<int, int>>(
+					// Compare the elements of the Tuples, now tuples themselves
+					(x, y) => x.Item1 == y.Item1 && x.Item2 == y.Item2));
+
+			/// <summary>
+			/// Cache for currents, first item in key tuple is component for which the current is considered and second item is
+			/// the voltage drop for which the current flow is considered.
+			/// </summary>
+			private Dictionary<Tuple<IBaseComponent, ISignalInformation>, SignalInformation> _CurrentCache { get; } =
+				new Dictionary<Tuple<IBaseComponent, ISignalInformation>, SignalInformation>(
+					new CustomEqualityComparer<Tuple<IBaseComponent, ISignalInformation>>(
+					// Compare the elements of the Tuples, now tuples themselves
+					(x, y) => x.Item1 == y.Item1 && x.Item2 == y.Item2));
+
+			/// <summary>
+			/// Cache for power, first item in key tuple is component for which the power is considered and second item is
+			/// the voltage drop for which the power is considered.
+			/// </summary>
+			private Dictionary<Tuple<IBaseComponent, ISignalInformation>, PowerInformation> _PowerCache { get; } =
+				new Dictionary<Tuple<IBaseComponent, ISignalInformation>, PowerInformation>(
+					new CustomEqualityComparer<Tuple<IBaseComponent, ISignalInformation>>(
 					// Compare the elements of the Tuples, now tuples themselves
 					(x, y) => x.Item1 == y.Item1 && x.Item2 == y.Item2));
 
 			#endregion
 
 			#region Private methods
+
+			#region Caching
+
+			/// <summary>
+			/// Caches the <paramref name="info"/> as well as its copy with inverted indexes into <see cref="_VoltageDropCache"/>
+			/// </summary>
+			/// <param name="info"></param>
+			/// <param name="nodeAIndex"></param>
+			/// <param name="nodeBIndex"></param>
+			private void CacheVoltageDrop(SignalInformation info, int nodeAIndex, int nodeBIndex)
+			{
+				// Get a copy for opposite node mapping
+				var copy = info.Copy();
+
+				// Negate it
+				NegateSignal(copy);
+
+				// Cache the original
+				_VoltageDropCache.Add(new Tuple<int, int>(nodeAIndex, nodeBIndex), info);
+
+				// And cache the copy
+				_VoltageDropCache.Add(new Tuple<int, int>(nodeBIndex, nodeAIndex), copy);
+			}
+
+			/// <summary>
+			/// Caches the <paramref name="current"/> in <see cref="_CurrentCache"/>
+			/// </summary>
+			/// <param name="component">Component for which the current flow is considered</param>
+			/// <param name="voltageDrop">Voltage drop on the component for which the current is considered</param>
+			/// <param name="current"></param>
+			private void CacheCurrent(IBaseComponent component, ISignalInformation voltageDrop, SignalInformation current) =>				
+				_CurrentCache.Add(new Tuple<IBaseComponent, ISignalInformation>(component, voltageDrop), current);
+
+			/// <summary>
+			/// Caches the <paramref name="power"/> in <see cref="_PowerCache"/>			
+			/// </summary>
+			/// <param name="component">Component for which the current flow is considered</param>
+			/// <param name="voltageDrop">Voltage drop on the component for which the current is considered</param>
+			/// <param name="power"></param>
+			private void CachePower(IBaseComponent component, ISignalInformation voltageDrop, PowerInformation power) =>
+				_PowerCache.Add(new Tuple<IBaseComponent, ISignalInformation>(component, voltageDrop), power);
+
+			/// <summary>
+			/// Clears all caches of old values
+			/// </summary>
+			private void ClearCaches()
+			{
+				_VoltageDropCache.Clear();
+				_CurrentCache.Clear();
+				_PowerCache.Clear();
+			}
+
+			#endregion
+
+			#region Voltage drop related
 
 			/// <summary>
 			/// Finds all AC voltage waveforms between the two node potentials collections
@@ -82,7 +157,7 @@ namespace ECAT.Simulation
 				}
 
 				// Get the number of ac waveforms
-				var acWaveformsCount = info.ComposingACWaveforms.Count();
+				var acWaveformsCount = info.ComposingPhasors.Count();
 
 				// If it's greater than 0 set some AC flag
 				if (acWaveformsCount > 0)
@@ -113,7 +188,7 @@ namespace ECAT.Simulation
 				info.RMS = Math.Pow(info.DC, 2);
 
 				// For each AC component
-				foreach (var voltage in info.ComposingACWaveforms)
+				foreach (var voltage in info.ComposingPhasors)
 				{
 					// Add it to each characteristic
 					info.Maximum += voltage.Value.Magnitude;
@@ -135,7 +210,7 @@ namespace ECAT.Simulation
 			{
 				if (info.DC < 0)
 				{
-					NegateVoltageDrop(info);
+					NegateSignal(info);
 				}
 			}
 
@@ -144,10 +219,10 @@ namespace ECAT.Simulation
 			/// <see cref="SignalInformation.Minimum"/>, flips <see cref="SignalInformation.InvertedDirection"/> flag.
 			/// </summary>
 			/// <param name="info"></param>
-			private void NegateVoltageDrop(SignalInformation info)
+			private void NegateSignal(SignalInformation info)
 			{
 				// Negate all composing waveforms
-				info.ComposingACWaveforms = info.ComposingACWaveforms.Select((waveform) => new KeyValuePair<double, Complex>(
+				info.ComposingPhasors = info.ComposingPhasors.Select((waveform) => new KeyValuePair<double, Complex>(
 					waveform.Key, -waveform.Value));
 
 				info.DC = -info.DC;
@@ -160,6 +235,23 @@ namespace ECAT.Simulation
 				// Finally set the flag
 				info.InvertedDirection = !info.InvertedDirection;
 			}
+
+			/// <summary>
+			/// Returns an uninverted signal. If the <paramref name="info"/> is already not inverted then simply returns it. Otherwise
+			/// creates a non-inverted copy and returns it.
+			/// </summary>
+			/// <param name="info"></param>
+			/// <returns></returns>
+			private ISignalInformation GetUninvertedSignal(ISignalInformation info) =>
+				!info.InvertedDirection ? info : new SignalInformation()
+			{
+				DC = -info.DC,
+				ComposingPhasors = info.ComposingPhasors.Select((phasor) =>
+					new KeyValuePair<double, Complex>(phasor.Key, -phasor.Value)),
+				RMS = info.RMS,
+				Maximum = -info.Minimum,
+				Minimum = -info.Maximum,
+			};
 
 			/// <summary>
 			/// Constructs a new VoltageDropInformation based on two nodes (with <paramref name="nodeA"/> being the reference node)
@@ -176,7 +268,7 @@ namespace ECAT.Simulation
 				info.DC = nodeB.DCPotential.Value - nodeA.DCPotential.Value;
 
 				// Determine AC drops
-				info.ComposingACWaveforms = GetACWaveforms(nodeA.ACPotentials, nodeB.ACPotentials);
+				info.ComposingPhasors = GetACWaveforms(nodeA.ACPotentials, nodeB.ACPotentials);
 				
 				SetFlags(info);
 
@@ -187,30 +279,88 @@ namespace ECAT.Simulation
 				return info;
 			}
 
+			#endregion
+
+			#region Current Related
+
 			/// <summary>
-			/// Caches the <paramref name="info"/> as well as its copy with inverted indexes into <see cref="_AlreadyComputed"/>
+			/// Returns a DC current flowing through a two terminal
 			/// </summary>
-			/// <param name="info"></param>
-			/// <param name="nodeAIndex"></param>
-			/// <param name="nodeBIndex"></param>
-			private void Cache(SignalInformation info, int nodeAIndex, int nodeBIndex)
+			/// <param name="voltageDrop"></param>
+			/// <param name="twoTerminal"></param>
+			/// <returns></returns>
+			private double GetPassiveTwoTerminalDCCurrent(ISignalInformation voltageDrop, ITwoTerminal twoTerminal) =>
+				voltageDrop.DC * twoTerminal.GetConductance();
+
+			/// <summary>
+			/// Returns AC current phasors for a two terminal
+			/// </summary>
+			/// <param name="voltageDrop"></param>
+			/// <param name="twoTerminal"></param>
+			/// <returns></returns>
+			private IEnumerable<KeyValuePair<double, Complex>> GetPassiveTwoTerminalACCurrentPhasors(
+				ISignalInformation voltageDrop, ITwoTerminal twoTerminal) =>
+				voltageDrop.ComposingPhasors.Select((phasor) =>
+				new KeyValuePair<double, Complex>(phasor.Key, phasor.Value * twoTerminal.GetAdmittance(phasor.Key)));
+
+			/// <summary>
+			/// Returns current information about a standard two terminal element. Designed for: <see cref="IResistor"/>,
+			/// <see cref="ICapacitor"/>
+			/// </summary>
+			/// <returns></returns>
+			private ISignalInformation GetStandardPassiveTwoTerminalCurrent(ISignalInformation voltageDrop, ITwoTerminal element)
 			{
-				// Get a copy for opposite node mapping
-				var copy = info.Copy();
+				// If there was a cache entry already return it
+				if(_CurrentCache.TryGetValue(new Tuple<IBaseComponent, ISignalInformation>(element, voltageDrop), out var current))
+				{
+					return current;
+				}
 
-				// Negate it
-				NegateVoltageDrop(copy);
+				// Otherwise create a new current information
+				var result = new SignalInformation()
+				{
+					InvertedDirection = voltageDrop.InvertedDirection,
+					DC = GetPassiveTwoTerminalDCCurrent(voltageDrop, element),
+					ComposingPhasors = GetPassiveTwoTerminalACCurrentPhasors(voltageDrop, element),
+				};
 
-				// Cache the original
-				_AlreadyComputed.Add(new Tuple<int, int>(nodeAIndex, nodeBIndex), info);
+				CalculateCharacteristicVoltages(result);
 
-				// And cache the copy
-				_AlreadyComputed.Add(new Tuple<int, int>(nodeBIndex, nodeAIndex), copy);
+				// Cache it
+				CacheCurrent(element, voltageDrop, result);
+
+				return result;
 			}
 
 			#endregion
 
+			#endregion
+
 			#region Public methods
+
+			#region Nodes loading
+
+			/// <summary>
+			/// Loads new nodes based on which results are computed
+			/// </summary>
+			/// <param name="nodes"></param>
+			public void LoadNewNodes(IEnumerable<INode> nodes)
+			{
+				// Clear the old, already computed entries
+				ClearCaches();
+
+				// Create a new list with nodes
+				_Nodes = new List<INode>(nodes);
+
+				// Add an empty node as the ground node (which is normally not included in simulation due to optimization)
+				// and effectively increment every node index by 1
+				_Nodes.Insert(0, new Node() { Index = GroundNodeIndex });
+			}
+
+
+			#endregion
+
+			#region Voltage drop related
 
 			/// <summary>
 			/// Gets a voltage drop of a node with respect to ground
@@ -244,9 +394,9 @@ namespace ECAT.Simulation
 				}
 
 				// If that particular voltage drop was determined already return it
-				if(_AlreadyComputed.ContainsKey(new Tuple<int, int>(nodeAIndex, nodeBIndex)))
+				if(_VoltageDropCache.ContainsKey(new Tuple<int, int>(nodeAIndex, nodeBIndex)))
 				{
-					voltageDrop = _AlreadyComputed[new Tuple<int, int>(nodeAIndex, nodeBIndex)];
+					voltageDrop = _VoltageDropCache[new Tuple<int, int>(nodeAIndex, nodeBIndex)];
 					return true;
 				}
 
@@ -254,7 +404,7 @@ namespace ECAT.Simulation
 				var info = Construct(_Nodes[nodeAIndex], _Nodes[nodeBIndex]);
 
 				// Cache it
-				Cache(info, nodeAIndex, nodeBIndex);
+				CacheVoltageDrop(info, nodeAIndex, nodeBIndex);
 
 				voltageDrop = info;
 
@@ -288,22 +438,106 @@ namespace ECAT.Simulation
 				}
 			}
 
+			#endregion
+
+			#region Current related
+
 			/// <summary>
-			/// Loads new nodes based on which results are computed
+			/// Gets information about current flowing through an <see cref="IResistor"/>
 			/// </summary>
-			/// <param name="nodes"></param>
-			public void LoadNewNodes(IEnumerable<INode> nodes)
+			/// <param name="voltageDrop"></param>
+			/// <param name="resistor"></param>
+			/// <returns></returns>
+			public ISignalInformation GetCurrent(ISignalInformation voltageDrop, IResistor resistor) =>
+				GetStandardPassiveTwoTerminalCurrent(voltageDrop, resistor);
+
+			/// <summary>
+			/// Gets information about current flowing through an <see cref="IResistor"/>
+			/// </summary>
+			/// <param name="voltageDrop"></param>
+			/// <param name="capacitor"></param>
+			/// <returns></returns>
+			public ISignalInformation GetCurrent(ISignalInformation voltageDrop, ICapacitor capacitor) =>
+				GetStandardPassiveTwoTerminalCurrent(voltageDrop, capacitor);
+
+			#endregion
+
+			#region Power related
+
+			/// <summary>
+			/// Gets information about power dissipated on an <see cref="IResistor"/>
+			/// </summary>
+			/// <param name="voltageDrop"></param>
+			/// <returns></returns>
+			public IPowerInformation GetPower(ISignalInformation voltageDrop, IResistor resistor)
 			{
-				// Clear the old, already computed entries
-				_AlreadyComputed.Clear();
+				// Check if there already is a cached entry
+				if(_PowerCache.TryGetValue(new Tuple<IBaseComponent, ISignalInformation>(resistor, voltageDrop), out var power))
+				{
+					return power;
+				}
 
-				// Create a new list with nodes
-				_Nodes = new List<INode>(nodes);
+				// If not create a new power info
+				var result = new PowerInformation()
+				{
+					// Average power on a resistor is a sqaure of DC voltage plus half of squares of AC magnitudes (RMS values) times
+					// the conductance of the resistor
+					Average = (voltageDrop.ComposingPhasors.Sum((phasor) => Math.Pow(phasor.Value.Magnitude, 2)) / 2 +
+					Math.Pow(voltageDrop.DC, 2)) * resistor.GetConductance(),
 
-				// Add an empty node as the ground node (which is normally not included in simulation due to optimization)
-				// and effectively increment every node index by 1
-				_Nodes.Insert(0, new Node() { Index = GroundNodeIndex });
+					// Maximum occurs for maximum voltage drop and is simply a square of voltage times conductance
+					Maximum = Math.Pow(voltageDrop.Maximum, 2) * resistor.GetConductance(),
+				};
+
+				// Cache it
+				CachePower(resistor, voltageDrop, result);
+
+				// And return it
+				return result;
 			}
+
+			/// <summary>
+			/// Gets information about power on an <see cref="ICurrentSource"/>
+			/// </summary>
+			/// <param name="voltageDrop"></param>
+			/// <param name="currentSource"></param>
+			/// <returns></returns>
+			public IPowerInformation GetPower(ISignalInformation voltageDrop, ICurrentSource currentSource)
+			{
+				// Check if there already is a cached entry
+				if (_PowerCache.TryGetValue(new Tuple<IBaseComponent, ISignalInformation>(currentSource, voltageDrop), out var power))
+				{
+					return power;
+				}
+
+				// If not prepare to create a new power info
+				// Get non-inverted voltage drop
+				var nvd = GetUninvertedSignal(voltageDrop);
+
+				// Average is negative voltage drop times produced current (to abide passive sign convention)
+				var result = new PowerInformation()
+				{
+					Average = -nvd.DC * currentSource.ProducedCurrent,
+				};
+
+				// Minimum power (the maximum supplied or the least dissipated, depending on actual values)
+				// It's the minimum voltage drop minus twice DC voltage drop times current. (Minimum already has +VDC in it so in order
+				// to have -VDC in total there's -2VDC. We need to subtract DC due to passive sign convention)
+				result.Minimum = (nvd.Minimum - 2 * nvd.DC) * currentSource.ProducedCurrent;
+
+				// Maximum power (the maximum dissipated or the least supplied, depending on actual values)
+				// It's the maximum voltage drop minus twice DC voltage drop times current. (Maximum already has +VDC in it so in order
+				// to have -VDC in total there's -2VDC. We need to subtract DC due to passive sign convention)
+				result.Maximum = (nvd.Maximum - 2 * nvd.DC) * currentSource.ProducedCurrent;
+
+				// Cache the calculated value
+				CachePower(currentSource, voltageDrop, result);
+
+				// And return it
+				return result;
+			}
+
+			#endregion
 
 			#endregion
 		}
