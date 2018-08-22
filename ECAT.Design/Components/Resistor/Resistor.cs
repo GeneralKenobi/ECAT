@@ -64,7 +64,7 @@ namespace ECAT.Design
 		{
 			// Return characteristic power information
 			yield return "Maximum instantenous power: " +
-				SIHelpers.ToSIStringExcludingSmallPrefixes(powerInformation.MaximumLost, "W", _RoundInfoToDigit);
+				SIHelpers.ToSIStringExcludingSmallPrefixes(powerInformation.Maximum, "W", _RoundInfoToDigit);
 
 			yield return "Average power: " + SIHelpers.ToSIStringExcludingSmallPrefixes(powerInformation.Average, "W", _RoundInfoToDigit);
 		}
