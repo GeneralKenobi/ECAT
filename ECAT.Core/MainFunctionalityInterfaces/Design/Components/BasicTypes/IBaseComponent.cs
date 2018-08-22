@@ -67,6 +67,7 @@ namespace ECAT.Core
 		/// Updates <see cref="ComponentInfo"/>
 		/// </summary>
 		void UpdateInfo();
+
 		#endregion
 	}
 }
