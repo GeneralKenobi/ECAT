@@ -1,4 +1,4 @@
-﻿namespace ECAT.Core.GlobalEnums
+﻿namespace ECAT.Core
 {
 	/// <summary>
 	/// Type of power dissipation
