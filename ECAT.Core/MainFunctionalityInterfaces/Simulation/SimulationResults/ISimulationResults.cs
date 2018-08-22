@@ -45,15 +45,15 @@
 		/// <param name="voltageDrop"></param>
 		/// <param name="resistor"></param>
 		/// <returns></returns>
-		bool TryGetCurrent(ISignalInformation voltageDrop, IResistor resistor, out ISignalInformation current);
+		ISignalInformation GetCurrent(ISignalInformation voltageDrop, IResistor resistor);
 
 		/// <summary>
-		/// Gets information about current flowing through an <see cref="IResistor"/>
+		/// Gets information about current flowing through an <see cref="ICapacitor"/>
 		/// </summary>
 		/// <param name="voltageDrop"></param>
-		/// <param name="resistor"></param>
+		/// <param name="capacitor"></param>
 		/// <returns></returns>
-		bool TryGetCurrent(ISignalInformation voltageDrop, ICapacitor resistor, out ISignalInformation current);
+		ISignalInformation GetCurrent(ISignalInformation voltageDrop, ICapacitor capacitor);
 
 		/// <summary>
 		/// Gets information about power dissipated on an <see cref="IResistor"/>
@@ -61,16 +61,15 @@
 		/// <param name="voltageDrop"></param>
 		/// <param name="resistor"></param>
 		/// <returns></returns>
-		bool TryGetPower(ISignalInformation voltageDrop, IResistor resistor, out IPowerInformation power);
+		IPowerInformation GetPower(ISignalInformation voltageDrop, IResistor resistor);
 
 		/// <summary>
 		/// Gets information about power on an <see cref="ICurrentSource"/>
 		/// </summary>
 		/// <param name="voltageDrop"></param>
 		/// <param name="currentSource"></param>
-		/// <param name="power"></param>
 		/// <returns></returns>
-		bool TryGetPower(ISignalInformation voltageDrop, ICurrentSource currentSource, out IPowerInformation power);
+		IPowerInformation GetPower(ISignalInformation voltageDrop, ICurrentSource currentSource);
 		
 		#endregion
 	}
