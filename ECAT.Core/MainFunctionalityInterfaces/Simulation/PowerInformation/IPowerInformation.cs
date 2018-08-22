@@ -8,24 +8,24 @@
 		#region Properties
 
 		/// <summary>
-		/// Average value
+		/// Average value, negative power is supplied, positive power is dissipated
 		/// </summary>
 		double Average { get; }
 
 		/// <summary>
-		/// Determines whether power is dissipated/supplied by the element
+		/// Determines whether power is dissipated/supplied by the element. Negative power is supplied, positive power is dissipated		
 		/// </summary>
 		PowerType AveragePowerType { get; }
 
 		/// <summary>
-		/// Maximum instantenous power loss
+		/// Maximum instantenous power value
 		/// </summary>
-		double MaximumLost { get; }
-		
+		double Maximum { get; }
+
 		/// <summary>
-		/// Maximum instantenous power supplied
+		/// Minimum instantenous power value 
 		/// </summary>
-		double MaximumSupplied { get; }
+		double Minimum { get; }
 
 		#endregion
 	}

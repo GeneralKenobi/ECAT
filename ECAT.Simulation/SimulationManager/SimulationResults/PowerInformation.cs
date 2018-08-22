@@ -12,24 +12,26 @@ namespace ECAT.Simulation
 			#region Public properties
 
 			/// <summary>
-			/// Average value
+			/// Average value, negative power is supplied, positive power is dissipated
 			/// </summary>
 			public double Average { get; set; }
 
 			/// <summary>
 			/// Determines whether power is dissipated/supplied by the element
 			/// </summary>
-			public PowerType AveragePowerType { get; set; }
+			public PowerType AveragePowerType =>
+				// Average equal to 0 is no power, average greater than 0 is dissipated and average smaller than 0 is supplied
+				Average == 0 ? PowerType.None : Average > 0 ? PowerType.Dissipated : PowerType.Supplied;
 
 			/// <summary>
-			/// Maximum instantenous power loss
+			/// Maximum instantenous power value
 			/// </summary>
-			public double MaximumLost { get; set; }
+			public double Maximum { get; set; }
 
 			/// <summary>
-			/// Maximum instantenous power supplied
+			/// Minimum instantenous power value 
 			/// </summary>
-			public double MaximumSupplied { get; set; }
+			public double Minimum { get; set; }
 
 			#endregion
 		}
