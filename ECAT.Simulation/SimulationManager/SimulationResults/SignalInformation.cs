@@ -1,5 +1,6 @@
 ﻿using ECAT.Core;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 
 namespace ECAT.Simulation
@@ -42,7 +43,8 @@ namespace ECAT.Simulation
 			/// <summary>
 			/// List with all phasors adding to the total voltage drop
 			/// </summary>
-			public IEnumerable<KeyValuePair<double, Complex>> ComposingPhasors { get; set; }
+			public IEnumerable<KeyValuePair<double, Complex>> ComposingPhasors { get; set; } =
+				Enumerable.Empty<KeyValuePair<double, Complex>>();
 
 			/// <summary>
 			/// The type of the signal
