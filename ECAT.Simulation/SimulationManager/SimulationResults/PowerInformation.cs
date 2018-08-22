@@ -16,7 +16,6 @@ namespace ECAT.Simulation
 			/// </summary>
 			public double Average { get; set; }
 
-
 			/// <summary>
 			/// Determines whether power is dissipated/supplied by the element
 			/// </summary>
