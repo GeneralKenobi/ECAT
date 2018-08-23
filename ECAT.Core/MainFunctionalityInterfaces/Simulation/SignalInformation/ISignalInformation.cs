@@ -1,10 +1,12 @@
-﻿namespace ECAT.Core
+﻿using CSharpEnhanced.CoreInterfaces;
+
+namespace ECAT.Core
 {
 	/// <summary>
 	/// Interface for classes containing information about a signal - voltage drop or current flow
 	/// </summary>
-	public interface ISignalInformation : ISignal
-    {
+	public interface ISignalInformation : ISignal, IDeepCopy<ISignalInformation>
+	{
 		#region Properties
 
 		/// <summary>
@@ -32,22 +34,6 @@
 		/// The type of the signal
 		/// </summary>
 		SignalType Type { get; }
-
-		#endregion
-
-		#region Methods
-
-		/// <summary>
-		/// Copies all contents of <paramref name="signalInformation"/> to this object.
-		/// </summary>
-		/// <param name="signalInformation"></param>
-		void CopyFrom(ISignalInformation signalInformation);
-
-		/// <summary>
-		/// Returns a copy of this instance
-		/// </summary>
-		/// <returns></returns>
-		ISignalInformation Copy();
 
 		#endregion
 	}

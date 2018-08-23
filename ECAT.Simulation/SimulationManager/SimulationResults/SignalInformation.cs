@@ -1,4 +1,5 @@
-﻿using ECAT.Core;
+﻿using CSharpEnhanced.CoreInterfaces;
+using ECAT.Core;
 using System;
 
 namespace ECAT.Simulation
@@ -21,18 +22,14 @@ namespace ECAT.Simulation
 			/// Copies properties from the <paramref name="signal"/>
 			/// </summary>
 			/// <param name="signal"></param>
-			public SignalInformation(ISignal signal)
-			{
-				DC = signal.DC;
-				ComposingPhasors = signal.ComposingPhasors;
-			}
+			public SignalInformation(ISignal signal) : base(signal) { }			
 
 			/// <summary>
 			/// Copy constructor
 			/// </summary>
 			public SignalInformation(ISignalInformation signalInformation)
 			{
-				CopyFrom(signalInformation);
+				Copy(signalInformation);
 			}
 
 			#endregion
@@ -73,16 +70,17 @@ namespace ECAT.Simulation
 			/// Copies all contents of <paramref name="signalInformation"/> to this object.
 			/// </summary>
 			/// <param name="signalInformation"></param>
-			public void CopyFrom(ISignalInformation signalInformation)
+			public void Copy(ISignalInformation signalInformation)
 			{
 				if(signalInformation == null)
 				{
 					throw new ArgumentNullException(nameof(signalInformation));
 				}
 
-				DC = signalInformation.DC;
+				// Copy contents from the base class
+				base.Copy(signalInformation);
 
-				ComposingPhasors = signalInformation.ComposingPhasors;
+				// Now copy own properties
 
 				Maximum = signalInformation.Maximum;
 
@@ -99,22 +97,13 @@ namespace ECAT.Simulation
 			/// Returns a copy of this instance
 			/// </summary>
 			/// <returns></returns>
-			ISignalInformation ISignalInformation.Copy() => Copy();
+			ISignalInformation IDeepCopyTo<ISignalInformation>.Copy() => CopySignalInformation();
 
 			/// <summary>
 			/// Returns a copy of this instance
 			/// </summary>
 			/// <returns></returns>
-			public SignalInformation Copy()
-			{
-				// Create a new instance
-				var copy = new SignalInformation();
-
-				// And copy over all properties
-				copy.CopyFrom(this);
-
-				return copy;
-			}
+			public SignalInformation CopySignalInformation() =>	new SignalInformation(this);
 
 			#endregion
 		}
