@@ -640,7 +640,7 @@ namespace ECAT.Simulation
 			{
 				_ActiveComponentsCurrents[_ActiveComponents[i].ActiveComponentIndex].ComposingPhasors =
 					_ActiveComponentsCurrents[_ActiveComponents[i].ActiveComponentIndex].ComposingPhasors.Concat(
-						new KeyValuePair<double, Complex>(frequency, result[i + _BigDimension]));
+						new KeyValuePair<double, Complex>(frequency, result[i + _BigDimension + DCVoltageSourcesCount]));
 			}
 		}
 
