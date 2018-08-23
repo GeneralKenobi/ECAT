@@ -1,5 +1,4 @@
 ﻿using ECAT.Core;
-using CSharpEnhanced.CoreClasses;
 using System.Numerics;
 using System.Collections.Generic;
 using System;
@@ -80,8 +79,11 @@ namespace ECAT.Design
 		/// Returns current info plus power info
 		/// </summary>
 		/// <returns></returns>
-		protected override IEnumerable<IEnumerable<string>> GetComponentInfo() =>
-			new IEnumerable<string>[] { Enumerable.Empty<string>(), GetPowerInfo() };
+		protected override IEnumerable<IEnumerable<string>> GetComponentInfo()
+		{
+			yield return GetCurrentInfo(IoC.Resolve<ISimulationResults>().GetCurrent(ActiveComponentIndex));
+			yield return GetPowerInfo();
+		}
 
 		#endregion
 	}
