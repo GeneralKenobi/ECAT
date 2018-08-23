@@ -34,5 +34,21 @@
 		SignalType Type { get; }
 
 		#endregion
+
+		#region Methods
+
+		/// <summary>
+		/// Copies all contents of <paramref name="signalInformation"/> to this object.
+		/// </summary>
+		/// <param name="signalInformation"></param>
+		void CopyFrom(ISignalInformation signalInformation);
+
+		/// <summary>
+		/// Returns a copy of this instance
+		/// </summary>
+		/// <returns></returns>
+		ISignalInformation Copy();
+
+		#endregion
 	}
 }
