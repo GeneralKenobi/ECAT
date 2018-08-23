@@ -59,20 +59,16 @@ namespace ECAT.Design
 		/// Returns info related to power
 		/// </summary>
 		/// <returns></returns>
-		protected IEnumerable<string> GetPowerInfo()
+		protected IEnumerable<string> GetPowerInfo(IPowerInformation powerInformation)
 		{
-			var dcPower = _VoltageDrop.Type.HasFlag(SignalType.DC) ? Math.Pow(_VoltageDrop.DC, 2) * GetAdmittance(0) : 0;
-
-			var maxPower = Math.Pow(_VoltageDrop.Maximum, 2) * GetAdmittance(0);
-
-			var rmsPower = _VoltageDrop.ComposingPhasors.Sum((voltage) =>
-				(Math.Pow(voltage.Value.Magnitude, 2) * GetAdmittance(voltage.Key)).Magnitude) / 2 + dcPower;
-
 			// Return characteristic power information
-			yield return "Maximum instantenous power: " +
-				SIHelpers.ToSIStringExcludingSmallPrefixes(maxPower.RoundToDigit(4), "W");
+			yield return "Minimum instantenous power: " +
+				SIHelpers.ToSIStringExcludingSmallPrefixes(powerInformation.Minimum, "W", 4);
 
-			yield return "Average power: " + SIHelpers.ToSIStringExcludingSmallPrefixes(rmsPower.RoundToDigit(4), "W");
+			yield return "Maximum instantenous power: " +
+				SIHelpers.ToSIStringExcludingSmallPrefixes(powerInformation.Maximum, "W", 4);
+
+			yield return "Average power: " + SIHelpers.ToSIStringExcludingSmallPrefixes(powerInformation.Average, "W", 4);
 		}
 
 		/// <summary>
@@ -81,9 +77,9 @@ namespace ECAT.Design
 		/// <returns></returns>
 		protected override IEnumerable<IEnumerable<string>> GetComponentInfo()
 		{
-			yield return GetCurrentInfo(IoC.Resolve<ISimulationResults>().GetCurrentOrZero(ActiveComponentIndex,
-				InvertedVoltageCurrentDirections));
-			yield return GetPowerInfo();
+			var current = IoC.Resolve<ISimulationResults>().GetCurrentOrZero(ActiveComponentIndex, InvertedVoltageCurrentDirections);
+			yield return GetCurrentInfo(current);
+			yield return GetPowerInfo(IoC.Resolve<ISimulationResults>().GetPower(current, this));
 		}
 
 		#endregion
