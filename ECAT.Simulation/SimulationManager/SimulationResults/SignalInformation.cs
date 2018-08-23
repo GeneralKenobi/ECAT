@@ -1,7 +1,4 @@
 ﻿using ECAT.Core;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
 
 namespace ECAT.Simulation
 {
@@ -10,7 +7,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Standard implementation of <see cref="ISignalInformation"/>, presents information about a signal - voltage drop or current flow		
 		/// </summary>
-		private class SignalInformation : ISignalInformation
+		private class SignalInformation : Signal, ISignalInformation
 		{
 			#region Public properties
 
@@ -19,11 +16,6 @@ namespace ECAT.Simulation
 			/// positive number
 			/// </summary>
 			public bool InvertedDirection { get; set; }
-
-			/// <summary>
-			/// DC component
-			/// </summary>
-			public double DC { get; set; }
 
 			/// <summary>
 			/// The maximum signal value that may occur
@@ -39,12 +31,6 @@ namespace ECAT.Simulation
 			/// RMS value of this signal
 			/// </summary>
 			public double RMS { get; set; }
-
-			/// <summary>
-			/// List with all phasors adding to the total voltage drop
-			/// </summary>
-			public IEnumerable<KeyValuePair<double, Complex>> ComposingPhasors { get; set; } =
-				Enumerable.Empty<KeyValuePair<double, Complex>>();
 
 			/// <summary>
 			/// The type of the signal
