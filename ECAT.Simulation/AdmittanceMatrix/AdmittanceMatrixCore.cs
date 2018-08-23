@@ -26,7 +26,7 @@ namespace ECAT.Simulation
 		
 		#region Private properties
 
-		#region Schematic and nodes
+		#region Schematic nodes and similar
 
 		/// <summary>
 		/// Schematic on which the matrix is based
@@ -38,6 +38,17 @@ namespace ECAT.Simulation
 		/// the index of the node which directly affects the admittance matrix
 		/// </summary>
 		private List<INode> _Nodes { get; set; }
+
+		/// <summary>
+		/// List with all active components:<see cref="IVoltageSource"/>s, <see cref="IACVoltageSource"/>,
+		/// <see cref="IOpAmp"/>s
+		/// </summary>
+		private List<IActiveComponent> _ActiveComponents { get; set; }
+
+		/// <summary>
+		/// Dictionary with currents produced by active components (<see cref="_ActiveComponents"/>)
+		/// </summary>
+		private Dictionary<int, Signal> _ActiveComponentsCurrents { get; set; }
 
 		#endregion
 
@@ -218,14 +229,25 @@ namespace ECAT.Simulation
 		/// </summary>
 		protected int OpAmpsCount => _OpAmps.Count;
 
+		/// <summary>
+		/// Number of <see cref="IActiveComponent"/>s in the schematic
+		/// </summary>
+		protected int _ActiveComponentsCount => _ActiveComponents.Count;
+
 		#endregion
 
-		#region Public methods
+		#region Public properties
 
 		/// <summary>
 		/// Returns an enumeration of nodes created for this admittance matrix
 		/// </summary>
 		public IEnumerable<INode> Nodes => _Nodes;
+
+		/// <summary>
+		/// Returns an enumeration of currents produced by active components. The key is the index of the active component
+		/// </summary>
+		public IEnumerable<KeyValuePair<int, ISignal>> ActiveComponentsCurrents =>
+			_ActiveComponentsCurrents.ToDictionary((item) => item.Key, (item) => item.Value as ISignal);
 
 		#endregion
 
@@ -331,6 +353,26 @@ namespace ECAT.Simulation
 			_FrequenciesInCircuit = new List<double>(_ACVoltageSources.Select((source) => source.Frequency).Distinct());
 
 		/// <summary>
+		/// Initializes collections related with <see cref="IActiveComponent"/>s
+		/// </summary>
+		private void InitializeActiveComponents()
+		{
+			// Create a list with active components
+			_ActiveComponents = new List<IActiveComponent>(
+				_Schematic.Components.Where((component) => component is IActiveComponent).Cast<IActiveComponent>());
+
+			// Create a dictionary for their currents
+			_ActiveComponentsCurrents = new Dictionary<int, Signal>();
+
+			// Assign index to each active component and add the component to the ActiveComponentsDictionary
+			for (int i = 0; i < _ActiveComponents.Count; ++i)
+			{
+				_ActiveComponents[i].ActiveComponentIndex = i;
+				_ActiveComponentsCurrents.Add(i, new Signal());
+			}
+		}
+
+		/// <summary>
 		/// Extracts all components that require special care (<see cref="IVoltageSource"/>s, <see cref="ICurrentSource"/>s,
 		/// <see cref="IOpAmp"/>s) to their respective containers
 		/// </summary>
@@ -354,6 +396,9 @@ namespace ECAT.Simulation
 
 			// Get the op-amps
 			_OpAmps = new List<IOpAmp>(_Schematic.Components.Where((component) => component is IOpAmp).Cast<IOpAmp>());
+
+			// Prepare the active components
+			InitializeActiveComponents();
 		}
 
 		/// <summary>
@@ -590,10 +635,12 @@ namespace ECAT.Simulation
 				_Nodes[i].ACPotentials.Add(frequency, result[i]);
 			}
 
-			// Assign the currents through voltage sources (the remaining entries of the results)
-			for (int i = 0; i < _DCVoltageSources.Count; ++i)
+			// Assign the currents through each active component (the remaining entries of the results)
+			for (int i = 0; i < _ActiveComponentsCount; ++i)
 			{
-				_DCVoltageSources[i].ProducedCurrent.Value = result[i + _BigDimension];
+				_ActiveComponentsCurrents[_ActiveComponents[i].ActiveComponentIndex].ComposingPhasors =
+					_ActiveComponentsCurrents[_ActiveComponents[i].ActiveComponentIndex].ComposingPhasors.Concat(
+						new KeyValuePair<double, Complex>(frequency, result[i + _BigDimension]));
 			}
 		}
 
@@ -609,10 +656,11 @@ namespace ECAT.Simulation
 				_Nodes[i].DCPotential.Value = result[i].Real;
 			}
 
-			// Assign the currents through voltage sources (the remaining entries of the results)
-			for (int i = 0; i < _DCVoltageSources.Count; ++i)
+			// Assign the currents through each active component (the remaining entries of the results)
+			for (int i = 0; i < _ActiveComponentsCount; ++i)
 			{
-				_DCVoltageSources[i].ProducedCurrent.Value = result[i + _BigDimension];
+				// For DC simulation the produced currents are guaranteed to be DC (real value only)
+				_ActiveComponentsCurrents[_ActiveComponents[i].ActiveComponentIndex].DC = result[i + _BigDimension].Real;
 			}
 		}
 
