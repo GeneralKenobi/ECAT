@@ -7,6 +7,8 @@
     {
 		#region Methods
 
+		#region Voltage related
+
 		/// <summary>
 		/// Gets a voltage drop of a node with respect to ground
 		/// </summary>
@@ -39,6 +41,10 @@
 		/// <returns></returns>
 		ISignalInformation GetVoltageDropOrZero(int nodeAIndex, int nodeBIndex);
 
+		#endregion
+
+		#region Current related
+
 		/// <summary>
 		/// Gets information about current flowing through an <see cref="IResistor"/>
 		/// </summary>
@@ -65,6 +71,10 @@
 		/// <returns></returns>
 		ISignalInformation GetCurrentOrZero(int activeComponentIndex, bool reverseDirection);
 
+		#endregion
+
+		#region Power related
+
 		/// <summary>
 		/// Gets information about power dissipated on an <see cref="IResistor"/>
 		/// </summary>
@@ -88,6 +98,8 @@
 		/// <param name="voltageSource"></param>
 		/// <returns></returns>
 		IPowerInformation GetPower(ISignalInformation current, IVoltageSource voltageSource);
+
+		#endregion
 
 		#endregion
 	}
