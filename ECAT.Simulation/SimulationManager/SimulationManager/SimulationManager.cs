@@ -69,7 +69,7 @@ namespace ECAT.Simulation
 				Debug.WriteLine(e.Message);
 			}
 
-			_Results.LoadNewNodes(admittanceMatrix.Nodes);
+			_Results.LoadNewData(admittanceMatrix.Nodes, admittanceMatrix.ActiveComponentsCurrents);
 
 			watch.Reset();
 
