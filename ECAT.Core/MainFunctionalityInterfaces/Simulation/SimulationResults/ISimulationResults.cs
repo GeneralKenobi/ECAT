@@ -80,7 +80,15 @@
 		/// <param name="currentSource"></param>
 		/// <returns></returns>
 		IPowerInformation GetPower(ISignalInformation voltageDrop, ICurrentSource currentSource);
-		
+
+		/// <summary>
+		/// Gets information about power on an <see cref="IVoltageSource"/>
+		/// </summary>
+		/// <param name="current"></param>
+		/// <param name="voltageSource"></param>
+		/// <returns></returns>
+		IPowerInformation GetPower(ISignalInformation current, IVoltageSource voltageSource);
+
 		#endregion
 	}
 }

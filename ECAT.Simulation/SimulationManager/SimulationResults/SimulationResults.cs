@@ -579,6 +579,44 @@ namespace ECAT.Simulation
 				return result;
 			}
 
+			/// <summary>
+			/// Gets information about power on an <see cref="IVoltageSource"/>
+			/// </summary>
+			/// <param name="current"></param>
+			/// <param name="voltageSource"></param>
+			/// <returns></returns>
+			public IPowerInformation GetPower(ISignalInformation current, IVoltageSource voltageSource)
+			{
+				// Check if there already is a cached entry
+				if (_PowerCache.TryGetValue(new Tuple<IBaseComponent, ISignalInformation>(voltageSource, current), out var power))
+				{
+					return power;
+				}
+
+				// If not prepare to create a new power info
+				// Get non-inverted voltage drop
+				var nvd = GetUninvertedSignal(current);
+
+				// Average is voltage drop times produced current (current is assumed to flow right to left in standard convention,
+				// current produced flows left to right so produced power is negative)
+				var result = new PowerInformation()
+				{
+					Average = nvd.DC * voltageSource.ProducedDCVoltage,
+				};
+
+				// Minimum power (the maximum supplied or the least dissipated, depending on actual values)				
+				result.Minimum = nvd.Minimum * voltageSource.ProducedDCVoltage;
+
+				// Maximum power (the maximum dissipated or the least supplied, depending on actual values)
+				result.Maximum = nvd.Maximum * voltageSource.ProducedDCVoltage;
+
+				// Cache the calculated value
+				CachePower(voltageSource, current, result);
+
+				// And return it
+				return result;
+			}
+
 			#endregion
 
 			#endregion
