@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
-namespace ECAT.Simulation.Signal
+namespace ECAT.Simulation
 {
 	/// <summary>
 	/// Standard implementation of <see cref="ISignal"/>, represents a single signal that may be measured in a circuit
