@@ -22,6 +22,12 @@ namespace ECAT.Simulation
 			private List<INode> _Nodes { get; set; } = new List<INode>();
 
 			/// <summary>
+			/// Cache with currents produced by <see cref="IVoltageSource"/>s, <see cref="IACVoltageSource"/>s and <see cref="IOpAmp"/>s
+			/// </summary>
+			private Dictionary<int, SignalInformation> _ActiveComponentsCurrentCache { get; set; } =
+				new Dictionary<int, SignalInformation>();
+
+			/// <summary>
 			/// Dictionary holding already computed voltage drops for the last performed simulation. Ints in key tuple are indexes of
 			/// nodes (Item1 for the first node (reference node) and Item2 for the second node (target node))
 			/// </summary>
@@ -65,7 +71,7 @@ namespace ECAT.Simulation
 			private void CacheVoltageDrop(SignalInformation info, int nodeAIndex, int nodeBIndex)
 			{
 				// Get a copy for opposite node mapping
-				var copy = info.Copy();
+				var copy = info.CopySignalInformation();
 
 				// Negate it
 				NegateSignal(copy);
@@ -179,7 +185,7 @@ namespace ECAT.Simulation
 			/// Calculates and assigns characteristic voltages - maximum, minimum, RMS
 			/// </summary>
 			/// <param name="info"></param>
-			private void CalculateCharacteristicVoltages(SignalInformation info)
+			private void CalculateCharacteristicValues(SignalInformation info)
 			{
 				// Add the DC component to each characteristic
 				info.Maximum += info.DC;
@@ -272,7 +278,7 @@ namespace ECAT.Simulation
 				
 				SetFlags(info);
 
-				CalculateCharacteristicVoltages(info);
+				CalculateCharacteristicValues(info);
 
 				CheckIfMaximumIsPositive(info);
 
@@ -324,7 +330,7 @@ namespace ECAT.Simulation
 					ComposingPhasors = GetPassiveTwoTerminalACCurrentPhasors(voltageDrop, element),
 				};
 
-				CalculateCharacteristicVoltages(result);
+				CalculateCharacteristicValues(result);
 
 				// Cache it
 				CacheCurrent(element, voltageDrop, result);
@@ -338,13 +344,13 @@ namespace ECAT.Simulation
 
 			#region Public methods
 
-			#region Nodes loading
+			#region Data loading
 
 			/// <summary>
 			/// Loads new nodes based on which results are computed
 			/// </summary>
 			/// <param name="nodes"></param>
-			public void LoadNewNodes(IEnumerable<INode> nodes)
+			public void LoadNewData(IEnumerable<INode> nodes, IEnumerable<KeyValuePair<int, ISignal>> vsCurrents)
 			{
 				// Clear the old, already computed entries
 				ClearCaches();
@@ -352,6 +358,16 @@ namespace ECAT.Simulation
 				// Create a new list with nodes
 				_Nodes = new List<INode>(nodes);
 
+				// Creates a dictionary of active component currents
+				_ActiveComponentsCurrentCache = new Dictionary<int, SignalInformation>(vsCurrents.ToDictionary(
+					(current) => current.Key, (current) => new SignalInformation(current.Value)));
+
+				// Calculate characteristic values for each current
+				foreach(var current in _ActiveComponentsCurrentCache.Values)
+				{
+					CalculateCharacteristicValues(current);
+				}
+						
 				// Add an empty node as the ground node (which is normally not included in simulation due to optimization)
 				// and effectively increment every node index by 1
 				_Nodes.Insert(0, new Node() { Index = GroundNodeIndex });
