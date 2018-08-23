@@ -41,9 +41,9 @@ namespace ECAT.Design
 		public double ProducedDCVoltage { get; set; } = IoC.Resolve<IDefaultValues>().DefaultVoltageSourceProducedVoltage;
 
 		/// <summary>
-		/// Current through the source, flowing from terminal A to terminal B
+		/// Index used to query <see cref="ISimulationResults"/> for produced current
 		/// </summary>
-		public RefWrapperPropertyChanged<Complex> ProducedCurrent { get; set; } = new RefWrapperPropertyChanged<Complex>();
+		public int ActiveComponentIndex { get; set; }
 
 		#endregion
 
@@ -81,7 +81,7 @@ namespace ECAT.Design
 		/// </summary>
 		/// <returns></returns>
 		protected override IEnumerable<IEnumerable<string>> GetComponentInfo() =>
-			new IEnumerable<string>[] { GetCurrentInfo(), GetPowerInfo() };
+			new IEnumerable<string>[] { Enumerable.Empty<string>(), GetPowerInfo() };
 
 		#endregion
 	}
