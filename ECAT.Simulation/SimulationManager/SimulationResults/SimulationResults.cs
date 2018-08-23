@@ -373,7 +373,6 @@ namespace ECAT.Simulation
 				_Nodes.Insert(0, new Node() { Index = GroundNodeIndex });
 			}
 
-
 			#endregion
 
 			#region Voltage drop related
@@ -475,6 +474,15 @@ namespace ECAT.Simulation
 			/// <returns></returns>
 			public ISignalInformation GetCurrent(ISignalInformation voltageDrop, ICapacitor capacitor) =>
 				GetStandardPassiveTwoTerminalCurrent(voltageDrop, capacitor);
+
+			/// <summary>
+			/// Returns current produced by some <see cref="IActiveComponent"/>
+			/// </summary>
+			/// <param name="activeComponentIndex">Index of the <see cref="IActiveComponent"/> whose current to query</param>
+			/// <returns></returns>
+			public ISignalInformation GetCurrent(int activeComponentIndex) =>
+				_ActiveComponentsCurrentCache.ContainsKey(activeComponentIndex) ?
+				_ActiveComponentsCurrentCache[activeComponentIndex] : new SignalInformation();
 
 			#endregion
 

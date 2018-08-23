@@ -56,6 +56,13 @@
 		ISignalInformation GetCurrent(ISignalInformation voltageDrop, ICapacitor capacitor);
 
 		/// <summary>
+		/// Returns current produced by some <see cref="IActiveComponent"/>
+		/// </summary>
+		/// <param name="activeComponentIndex">Index of the <see cref="IActiveComponent"/> whose current to query</param>
+		/// <returns></returns>
+		ISignalInformation GetCurrent(int activeComponentIndex);
+
+		/// <summary>
 		/// Gets information about power dissipated on an <see cref="IResistor"/>
 		/// </summary>
 		/// <param name="voltageDrop"></param>
