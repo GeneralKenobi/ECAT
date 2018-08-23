@@ -81,7 +81,7 @@ namespace ECAT.Design
 		/// <returns></returns>
 		protected override IEnumerable<IEnumerable<string>> GetComponentInfo()
 		{
-			yield return GetCurrentInfo(IoC.Resolve<ISimulationResults>().GetCurrent(ActiveComponentIndex,
+			yield return GetCurrentInfo(IoC.Resolve<ISimulationResults>().GetCurrentOrZero(ActiveComponentIndex,
 				InvertedVoltageCurrentDirections));
 			yield return GetPowerInfo();
 		}

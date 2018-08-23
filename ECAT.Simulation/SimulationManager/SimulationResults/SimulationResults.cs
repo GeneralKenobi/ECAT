@@ -482,7 +482,7 @@ namespace ECAT.Simulation
 			/// <param name="reverseDirection">True if the direction of current should be reversed with respect to the one given
 			/// by convention for the specific element</param>
 			/// <returns></returns>
-			public ISignalInformation GetCurrent(int activeComponentIndex, bool reverseDirection)
+			public ISignalInformation GetCurrentOrZero(int activeComponentIndex, bool reverseDirection)
 			{
 				// If the current can be found
 				if(_ActiveComponentsCurrentCache.TryGetValue(activeComponentIndex, out var signal))
@@ -493,7 +493,7 @@ namespace ECAT.Simulation
 						// Make a copy
 						signal = new SignalInformation(signal);
 						// And negate it
-						NegateSignal(signal);						
+						NegateSignal(signal);
 					}
 
 					return signal;
