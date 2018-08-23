@@ -59,8 +59,10 @@
 		/// Returns current produced by some <see cref="IActiveComponent"/>
 		/// </summary>
 		/// <param name="activeComponentIndex">Index of the <see cref="IActiveComponent"/> whose current to query</param>
+		/// <param name="reverseDirection">True if the direction of current should be reversed with respect to the one given
+		/// by convention for the specific element</param>
 		/// <returns></returns>
-		ISignalInformation GetCurrent(int activeComponentIndex);
+		ISignalInformation GetCurrent(int activeComponentIndex, bool reverseDirection);
 
 		/// <summary>
 		/// Gets information about power dissipated on an <see cref="IResistor"/>

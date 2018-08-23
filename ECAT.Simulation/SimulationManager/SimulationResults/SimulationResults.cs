@@ -479,10 +479,28 @@ namespace ECAT.Simulation
 			/// Returns current produced by some <see cref="IActiveComponent"/>
 			/// </summary>
 			/// <param name="activeComponentIndex">Index of the <see cref="IActiveComponent"/> whose current to query</param>
+			/// <param name="reverseDirection">True if the direction of current should be reversed with respect to the one given
+			/// by convention for the specific element</param>
 			/// <returns></returns>
-			public ISignalInformation GetCurrent(int activeComponentIndex) =>
-				_ActiveComponentsCurrentCache.ContainsKey(activeComponentIndex) ?
-				_ActiveComponentsCurrentCache[activeComponentIndex] : new SignalInformation();
+			public ISignalInformation GetCurrent(int activeComponentIndex, bool reverseDirection)
+			{
+				// If the current can be found
+				if(_ActiveComponentsCurrentCache.TryGetValue(activeComponentIndex, out var signal))
+				{
+					// If reversion was requested
+					if(reverseDirection)
+					{
+						// Make a copy
+						signal = new SignalInformation(signal);
+						// And negate it
+						NegateSignal(signal);						
+					}
+
+					return signal;
+				}
+
+				return new SignalInformation();
+			}
 
 			#endregion
 
