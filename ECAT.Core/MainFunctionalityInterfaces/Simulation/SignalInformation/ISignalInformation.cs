@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Numerics;
-
-namespace ECAT.Core
+﻿namespace ECAT.Core
 {
 	/// <summary>
 	/// Interface for classes containing information about a signal - voltage drop or current flow
