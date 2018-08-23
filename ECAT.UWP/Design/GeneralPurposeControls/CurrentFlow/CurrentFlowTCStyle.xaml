@@ -5,19 +5,17 @@
 	xmlns:converters="using:UWPEnhanced.ValueConverters"
     xmlns:local="using:ECAT.UWP">
 
-	<converters:BoolToVisibilityConverter x:Key="VisibilityConverter"/>
-
 	<Style TargetType="local:CurrentFlowTC">
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="local:CurrentFlowTC">
 
-					<Grid Visibility="{Binding IsFocused, Converter={StaticResource VisibilityConverter}}"
+					<Grid Visibility="{Binding IsFocused, Converter={converters:BoolToVisibilityMEC}}"
 						Padding="10 0">
 
 						<!-- Triangle acting as an arrowhead forcurrents flowing to the left -->
 						<Polygon Grid.Column="0"
-							Visibility="{Binding Component.InvertedVoltageCurrentDirections, Converter={StaticResource VisibilityConverter}, ConverterParameter=x}"
+							Visibility="{Binding Component.InvertedVoltageCurrentDirections, Converter={converters:BoolToVisibilityMEC InvertConvesion=True}}"
 							Points="20,0 20,28 0,14"
 							HorizontalAlignment="Left"
 							Stroke="{StaticResource BlackBrush}"
@@ -26,7 +24,7 @@
 
 						<!-- Triangle acting as an arrowhead forcurrents flowing to the right -->
 						<Polygon Points="0,0 0,28 20,14"
-							Visibility="{Binding Component.InvertedVoltageCurrentDirections, Converter={StaticResource VisibilityConverter}}"
+							Visibility="{Binding Component.InvertedVoltageCurrentDirections, Converter={converters:BoolToVisibilityMEC}}"
 							HorizontalAlignment="Right"
 							Stroke="{StaticResource BlackBrush}"
 							Fill="{StaticResource BlackBrush}"

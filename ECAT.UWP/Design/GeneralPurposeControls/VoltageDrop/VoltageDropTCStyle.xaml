@@ -2,10 +2,8 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:ECAT.UWP"
-	xmlns:controls="using:UWPEnhanced.Controls"
+	xmlns:controls="using:UWPEnhanced.Controls"	
 	xmlns:converters="using:UWPEnhanced.ValueConverters">
-
-	<converters:BoolToVisibilityConverter x:Key="VisibilityConverter"/>
 
 	<Style TargetType="local:VoltageDropTC">
 		<Setter Property="Foreground" Value="{StaticResource BlackBrush}"/>
@@ -16,7 +14,7 @@
 
 					<!-- Root container -->
 					<Grid Margin="{TemplateBinding Margin}"
-						Visibility="{Binding IsFocused, Converter={StaticResource VisibilityConverter}}">
+						Visibility="{Binding IsFocused, Converter={converters:BoolToVisibilityMEC}}">
 
 						<Grid.ColumnDefinitions>
 							<!-- Column for the minus sign -->
@@ -38,7 +36,7 @@
 							<Rectangle Width="3"
 									Height="15"
 									Fill="{TemplateBinding Foreground}"
-									Visibility="{Binding Component.InvertedVoltageCurrentDirections, Converter={StaticResource VisibilityConverter}}"/>
+									Visibility="{Binding Component.InvertedVoltageCurrentDirections, Converter={converters:BoolToVisibilityMEC}}"/>
 						</Grid>
 
 						<!-- Plus sign -->
@@ -52,7 +50,7 @@
 							<Rectangle Width="3"
 								Height="15"
 								Fill="{TemplateBinding Foreground}"
-								Visibility="{Binding Component.InvertedVoltageCurrentDirections, Converter={StaticResource VisibilityConverter}, ConverterParameter=x}"/>
+								Visibility="{Binding Component.InvertedVoltageCurrentDirections, Converter={converters:BoolToVisibilityMEC InvertConvesion=True}}"/>
 						</Grid>
 
 					</Grid>
