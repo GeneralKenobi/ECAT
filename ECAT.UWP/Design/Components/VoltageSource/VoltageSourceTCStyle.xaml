@@ -15,7 +15,8 @@
 					<Grid>
 
 						<!-- Presents current flow through the component -->
-						<local:CurrentFlowTC VerticalAlignment="Center"/>
+						<local:CurrentFlowTC VerticalAlignment="Center"
+							Style="{StaticResource VoltageSourceTCCurrentFlowStyle}"/>
 
 						<!-- Presents a parameter associated with the component -->
 						<controls:ValueUnitDisplay Foreground="{StaticResource BlackBrush}"
