@@ -43,21 +43,19 @@ namespace ECAT.Design
 		/// <returns></returns>
 		protected IEnumerable<string> GetPowerInfoAC(IPowerInformation powerInformation)
 		{
-			// Inform that instantenous max/min power is not calculated for bias
-			yield return "Minimum/maximum instantenous power is not available in bias";
-			yield return "Hint: consider running a full cycle simulation";
+			// Present characteristic info, if a value is a NaN inform it's unavailable
 
-			// If average is not a NaN, display it
-			if (!double.IsNaN(powerInformation.Average))
-			{
-				yield return "Average power: " + SIHelpers.ToSIStringExcludingSmallPrefixes(powerInformation.Average, "W", 4);
-			}
-			// Otherwise inform it couldn't have been calculated
-			else
-			{
-				yield return "Average power cannot be determined in bias method due to multiple AC frequencies";
-				yield return "Hint: consider running a full cycle simulation";
-			}
+			// Minimum instantenous power
+			yield return "Minimum instantenous power: " + (double.IsNaN(powerInformation.Minimum) ? "unavailable" :
+				SIHelpers.ToSIStringExcludingSmallPrefixes(powerInformation.Minimum, "W", 4));
+			
+			// Maximum instantenous power
+			yield return "Maximum instantenous power: " + (double.IsNaN(powerInformation.Maximum) ? "unavailable" :
+				SIHelpers.ToSIStringExcludingSmallPrefixes(powerInformation.Maximum, "W", 4));
+
+			// Average power
+			yield return "Average power: " + (double.IsNaN(powerInformation.Average) ? "unavailable" :
+				SIHelpers.ToSIStringExcludingSmallPrefixes(powerInformation.Average, "W", 4));
 		}
 
 		/// <summary>
