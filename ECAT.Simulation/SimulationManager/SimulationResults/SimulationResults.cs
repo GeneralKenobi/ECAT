@@ -151,37 +151,6 @@ namespace ECAT.Simulation
 			}
 
 			/// <summary>
-			/// Sets the types of waveforms that compose the voltage drop
-			/// </summary>
-			/// <param name="info"></param>
-			private void SetFlags(SignalInformation info)
-			{
-				// If DC drop is not 0, set its flag
-				if (info.DC != 0)
-				{
-					info.Type |= SignalType.DC;
-				}
-
-				// Get the number of ac waveforms
-				var acWaveformsCount = info.ComposingPhasors.Count();
-
-				// If it's greater than 0 set some AC flag
-				if (acWaveformsCount > 0)
-				{
-					// And greater than 1 set multiple flag
-					if (acWaveformsCount > 1)
-					{
-						info.Type |= SignalType.MultipleAC;
-					}
-					// If it's not (which means there's only 1) set the single flag
-					else
-					{
-						info.Type |= SignalType.SingleAC;
-					}
-				}
-			}
-
-			/// <summary>
 			/// Calculates and assigns characteristic voltages - maximum, minimum, RMS
 			/// </summary>
 			/// <param name="info"></param>
@@ -276,8 +245,6 @@ namespace ECAT.Simulation
 				// Determine AC drops
 				info.ComposingPhasors = GetACWaveforms(nodeA.ACPotentials, nodeB.ACPotentials);
 				
-				SetFlags(info);
-
 				CalculateCharacteristicValues(info);
 
 				CheckIfMaximumIsPositive(info);
@@ -594,21 +561,78 @@ namespace ECAT.Simulation
 				}
 
 				// If not prepare to create a new power info
-				// Get non-inverted voltage drop
-				var nvd = GetUninvertedSignal(current);
+				// Get non-inverted current
+				var nc = GetUninvertedSignal(current);
 
 				// Average is voltage drop times produced current (current is assumed to flow right to left in standard convention,
 				// current produced flows left to right so produced power is negative)
 				var result = new PowerInformation()
 				{
-					Average = nvd.DC * voltageSource.ProducedDCVoltage,
+					Average = nc.DC * voltageSource.ProducedDCVoltage,
 				};
 
 				// Minimum power (the maximum supplied or the least dissipated, depending on actual values)				
-				result.Minimum = nvd.Minimum * voltageSource.ProducedDCVoltage;
+				result.Minimum = nc.Minimum * voltageSource.ProducedDCVoltage;
 
 				// Maximum power (the maximum dissipated or the least supplied, depending on actual values)
-				result.Maximum = nvd.Maximum * voltageSource.ProducedDCVoltage;
+				result.Maximum = nc.Maximum * voltageSource.ProducedDCVoltage;
+
+				// Cache the calculated value
+				CachePower(voltageSource, current, result);
+
+				// And return it
+				return result;
+			}
+
+			/// <summary>
+			/// Gets information about power on an <see cref="IACVoltageSource"/>. If the <paramref name="current"/> is composed of
+			/// phasors with different frequency than that of <paramref name="voltageSource"/> the average power will be assigned
+			/// <see cref="Double.NaN"/> (it's impossible to calculate it using only phasors). Doesn't compute maximum/minimum
+			/// instantenous power.
+			/// </summary>
+			/// <param name="current"></param>
+			/// <param name="voltageSource"></param>
+			/// <returns></returns>
+			public IPowerInformation GetPower(ISignalInformation current, IACVoltageSource voltageSource)
+			{
+				// TODO: When time-based simulation is implemented try to calcuate the average iteratively if there is more than one
+				// current phasor - for example as an average of power calculated for n points in one full cycle
+
+				// Check if there already is a cached entry
+				if (_PowerCache.TryGetValue(new Tuple<IBaseComponent, ISignalInformation>(voltageSource, current), out var power))
+				{
+					return power;
+				}
+
+				// If not prepare to create a new power info
+				// Get non-inverted current
+				var nc = GetUninvertedSignal(current);
+
+				// Create a new info
+				var result = new PowerInformation();
+
+				// If it has only ony AC
+				if (current.Type.HasFlag(SignalType.AC))
+				{
+					// If there is more than one phasor or the phasor, for some reason, has a different frequency than the source
+					if (current.Type.HasFlag(SignalType.MultipleAC) || current.ComposingPhasors.First().Key != voltageSource.Frequency)
+					{
+						// Assign NaN as the average value cannot be easily computed
+						result.Average = double.NaN;
+					}
+					else
+					{
+						// Get the only phasor composing the 
+						var singlePhasors = nc.ComposingPhasors.First();
+
+						// Calculate the average as Vrms*Irms*cos(phiV - phiI)
+						// TODO: When IAsyncVoltageSource has phase shift, include it in the formula
+						result.Average = nc.RMS * Math.Sqrt(Math.Pow(voltageSource.ProducedDCVoltage, 2) +
+							Math.Pow(voltageSource.PeakProducedVoltage, 2) / 2) * Math.Cos(singlePhasors.Value.Phase);
+					}
+				}
+
+				// TODO: Try to think of a way to calculate max/min instantenous power of the source
 
 				// Cache the calculated value
 				CachePower(voltageSource, current, result);
