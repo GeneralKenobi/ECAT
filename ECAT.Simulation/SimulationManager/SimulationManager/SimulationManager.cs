@@ -31,7 +31,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// The result manager for the app's whole lifetime
 		/// </summary>
-		private SimulationResults _Results { get; } = new SimulationResults();
+		private SimulationResultsBias _Results { get; } = new SimulationResultsBias();
 
 		#endregion
 
