@@ -20,14 +20,14 @@ namespace ECAT.Design
 
 		/// <summary>
 		/// Returns a string for display in component info section which will be in the form: 
-		/// "{<paramref name="description"/>} : {<paramref name="value"/>}{<paramref name="unit"/>}"
+		/// "{<paramref name="description"/>}: {<paramref name="value"/>}{<paramref name="unit"/>}"
 		/// If <paramref name="value"/> is a <see cref="double.NaN"/> it is instead displayed as "unavailable" and the unit is omitted
 		/// </summary>
 		/// <param name="description"></param>
 		/// <param name="value"></param>
 		/// <param name="unit"></param>
 		/// <returns></returns>
-		public static string LineInfo(string description, double value, string unit) =>	description + " : " + 
+		public static string LineInfo(string description, double value, string unit) =>	description + ": " + 
 			(double.IsNaN(value) ? "unavailable" : SIHelpers.ToSIStringExcludingSmallPrefixes(value, unit, _RoundToDigit));
 
 		#endregion
