@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using CSharpEnhanced.Helpers;
 using ECAT.Core;
 
 namespace ECAT.Design

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
-using CSharpEnhanced.Helpers;
 using ECAT.Core;
 
 namespace ECAT.Design
