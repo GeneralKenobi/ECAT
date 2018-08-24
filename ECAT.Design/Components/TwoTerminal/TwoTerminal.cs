@@ -86,69 +86,15 @@ namespace ECAT.Design
 		/// Returns info related to voltage
 		/// </summary>
 		/// <returns></returns>
-		protected virtual IEnumerable<string> GetVoltageInfo(ISignalInformation voltageDrop)
-		{
-			// Characteristic voltage drop information
-			yield return CIFormat.LineInfo("Minimum instantenous voltage", voltageDrop.Minimum, "V");
-			yield return CIFormat.LineInfo("Maximum instantenous voltage", voltageDrop.Maximum, "V");
-			yield return CIFormat.LineInfo("RMS voltage", voltageDrop.RMS, "V");
-
-			// DC voltage drop information
-			if (voltageDrop.Type.HasFlag(SignalType.DC))
-			{
-				yield return CIFormat.LineInfo("DC voltage", voltageDrop.DC, "V");
-			}
-
-			// AC voltage drop information
-			if (voltageDrop.Type.HasFlag(SignalType.AC))
-			{
-				// If it's a multi-ac voltage waveform add a header
-				if (voltageDrop.Type.HasFlag(SignalType.MultipleAC))
-				{
-					yield return "Composing AC waveforms:";
-				}
-
-				// Print each waveform
-				foreach (var acWaveform in voltageDrop.ComposingPhasors)
-				{
-					yield return CIFormat.LineInfo("AC voltage", acWaveform.Value, "V", acWaveform.Key);
-				}
-			}
-		}
+		protected virtual IEnumerable<string> GetVoltageInfo(ISignalInformation voltageDrop) => 
+			CIFormat.GetSignalInfo(voltageDrop, "voltage", "V");		
 
 		/// <summary>
 		/// Returns info related to current
 		/// </summary>
 		/// <returns></returns>
-		protected virtual IEnumerable<string> GetCurrentInfo(ISignalInformation currentInfo)
-		{
-			// Characteristic current info
-			yield return CIFormat.LineInfo("Minimum instantenous current", currentInfo.Minimum, "A");
-			yield return CIFormat.LineInfo("Maximum instantenous current", currentInfo.Maximum, "A");
-			yield return CIFormat.LineInfo("RMS current", currentInfo.RMS, "A");
-
-			// Return DC current (if it's present)
-			if (currentInfo.Type.HasFlag(SignalType.DC))
-			{
-				yield return CIFormat.LineInfo("DC current", currentInfo.DC, "A");
-			}
-
-			// Return AC current (if it's present)
-			if (currentInfo.Type.HasFlag(SignalType.AC))
-			{
-				// If it's a multi-ac voltage waveform add a header
-				if (currentInfo.Type.HasFlag(SignalType.MultipleAC))
-				{
-					yield return "Composing AC currents:";
-				}
-
-				// Print each waveform
-				foreach (var current in currentInfo.ComposingPhasors)
-				{
-					yield return CIFormat.LineInfo("AC current", current.Value, "A", current.Key);
-				}
-			}
-		}
+		protected virtual IEnumerable<string> GetCurrentInfo(ISignalInformation currentInfo) =>
+			CIFormat.GetSignalInfo(currentInfo, "current", "V");		
 
 		/// <summary>
 		/// Assigns positions to all <see cref="ITerminal"/>s
