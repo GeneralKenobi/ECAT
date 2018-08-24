@@ -1,0 +1,40 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:converters="using:UWPEnhanced.ValueConverters"
+	xmlns:xaml="using:UWPEnhanced.Xaml"
+    xmlns:local="using:ECAT.UWP">
+
+	<!-- Style for VoltageSourceTC, uses ReverseVoltageDrop property for direction rather than InvertedVoltageCurrentDirections -->
+	<Style TargetType="local:CurrentFlowTC" x:Key="VoltageSourceTCCurrentFlowStyle">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="local:CurrentFlowTC">
+
+					<Grid Visibility="{Binding IsFocused, Converter={converters:BoolToVisibilityMEC}}"
+						Padding="10 0">
+
+						<!-- Triangle acting as an arrowhead forcurrents flowing to the left -->
+						<Polygon Grid.Column="0"
+							Visibility="{Binding Component.ReverseVoltageDrops, Converter={converters:BoolToVisibilityMEC InvertConvesion=True}}"
+							Points="20,0 20,28 0,14"
+							HorizontalAlignment="Left"
+							Stroke="{StaticResource BlackBrush}"
+							Fill="{StaticResource BlackBrush}"
+							StrokeLineJoin="Round"/>
+
+						<!-- Triangle acting as an arrowhead forcurrents flowing to the right -->
+						<Polygon Points="0,0 0,28 20,14"
+							Visibility="{Binding Component.ReverseVoltageDrops, Converter={converters:BoolToVisibilityMEC}}"
+							HorizontalAlignment="Right"
+							Stroke="{StaticResource BlackBrush}"
+							Fill="{StaticResource BlackBrush}"
+							StrokeLineJoin="Round"/>
+
+					</Grid>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+    
+</ResourceDictionary>
