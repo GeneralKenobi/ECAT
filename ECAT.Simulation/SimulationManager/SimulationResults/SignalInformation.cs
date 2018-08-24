@@ -1,6 +1,7 @@
 ﻿using CSharpEnhanced.CoreInterfaces;
 using ECAT.Core;
 using System;
+using System.Linq;
 
 namespace ECAT.Simulation
 {
@@ -60,7 +61,40 @@ namespace ECAT.Simulation
 			/// <summary>
 			/// The type of the signal
 			/// </summary>
-			public SignalType Type { get; set; }
+			public SignalType Type
+			{
+				get
+				{
+					// Create an enumeration equal to 0
+					var result = SignalType.Empty;
+					
+					// Check for DC, if present set the flag
+					if(DC != 0)
+					{
+						result |= SignalType.DC;
+					}
+
+					// Get the number of phasors
+					var phasorsCount = ComposingPhasors.Count();
+
+					// If it's greater than 0
+					if(phasorsCount > 0)
+					{
+						// And greater than 1, set the multi AC flag
+						if(phasorsCount > 1)
+						{
+							result |= SignalType.MultipleAC;
+						}
+						// Otherwise just set the single AC flag
+						else
+						{
+							result |= SignalType.SingleAC;
+						}						
+					}
+
+					return result;
+				}
+			}
 
 			#endregion
 
@@ -89,8 +123,6 @@ namespace ECAT.Simulation
 				RMS = signalInformation.RMS;
 
 				InvertedDirection = signalInformation.InvertedDirection;
-
-				Type = signalInformation.Type;
 			}
 
 			/// <summary>
