@@ -19,7 +19,12 @@ namespace ECAT.Design
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public VoltageSource() : base(new string[] { "Current", "Power" }) { }
+		public VoltageSource() : base(new string[] { "Current", "Power" })
+		{
+			// Reverse directions by default - voltage source usually produces current that flows in the same direction as is the
+			// direction of the produced voltage drop
+			ReverseVoltageDrops = true;
+		}
 
 		#endregion
 
