@@ -73,8 +73,9 @@ namespace ECAT.Design
 
 		/// <summary>
 		/// If true, voltage drop is calculated from B to A (B is the reference node) instead of from A to B (A is the reference node)
+		/// Current is adjusted accordingly (instead of B to A, A to B)
 		/// </summary>
-		public bool ReverseVoltageDrops { get; set; }
+		public bool ChangeVIDirections { get; set; }
 
 		/// <summary>
 		/// Radius of sockets on the component

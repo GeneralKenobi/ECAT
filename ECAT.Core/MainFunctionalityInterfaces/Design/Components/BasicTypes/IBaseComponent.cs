@@ -15,7 +15,7 @@ namespace ECAT.Core
 		/// <summary>
 		/// If true, voltage drop is calculated in reverse
 		/// </summary>
-		bool ReverseVoltageDrops { get; set; }
+		bool ChangeVIDirections { get; set; }
 
 		/// <summary>
 		/// The center of the component

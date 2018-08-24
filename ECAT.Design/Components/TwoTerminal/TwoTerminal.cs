@@ -46,7 +46,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Gets the voltage drop between nodes B and A (with A being the reference node)
 		/// </summary>
-		protected ISignalInformation _VoltageDrop => ReverseVoltageDrops ?
+		protected ISignalInformation _VoltageDrop => ChangeVIDirections ?
 			IoC.Resolve<ISimulationResults>().GetVoltageDropOrZero(TerminalB.NodeIndex, TerminalA.NodeIndex) :
 			IoC.Resolve<ISimulationResults>().GetVoltageDropOrZero(TerminalA.NodeIndex, TerminalB.NodeIndex);
 

@@ -23,7 +23,7 @@ namespace ECAT.Design
 		{
 			// Reverse directions by default - voltage source usually produces current that flows in the same direction as is the
 			// direction of the produced voltage drop
-			ReverseVoltageDrops = true;
+			ChangeVIDirections = true;
 		}
 
 		#endregion

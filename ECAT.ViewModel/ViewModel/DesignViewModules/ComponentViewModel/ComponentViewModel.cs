@@ -136,7 +136,7 @@ namespace ECAT.ViewModel
 		{
 			if (IsFocused)
 			{
-				Component.ReverseVoltageDrops = !Component.ReverseVoltageDrops;
+				Component.ChangeVIDirections = !Component.ChangeVIDirections;
 
 				Component.UpdateInfo();
 			}
