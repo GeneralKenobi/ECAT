@@ -14,6 +14,11 @@ namespace ECAT.Design
 		/// Round all values to this digit
 		/// </summary>
 		private static int _RoundToDigit { get; } = 4;
+
+		/// <summary>
+		/// Unit of frequency
+		/// </summary>
+		private static string _FrequencyUnit { get; } = "Hz";
 		
 		#endregion
 
@@ -33,14 +38,27 @@ namespace ECAT.Design
 
 		/// <summary>
 		/// Returns a string for display in component info section which will be in the form: 
-		/// "{<paramref name="description"/>}: {<paramref name="value"/>}{<paramref name="unit"/>}"
+		/// "{<paramref name="description"/>}: {<paramref name="phasor"/>}{<paramref name="unit"/>}"
 		/// </summary>
 		/// <param name="description"></param>
-		/// <param name="value"></param>
+		/// <param name="phasor"></param>
 		/// <param name="unit"></param>
 		/// <returns></returns>
-		public static string LineInfo(string description, Complex value, string unit) => description + ": " +
-			SIHelpers.ToAltSIStringExcludingSmallPrefixes(value, unit, _RoundToDigit);
+		public static string LineInfo(string description, Complex phasor, string unit) => description + ": " +
+			SIHelpers.ToAltSIStringExcludingSmallPrefixes(phasor, unit, _RoundToDigit);
+
+		/// <summary>
+		/// Returns a string for display in component info section which will be in the form: 
+		/// "{<paramref name="description"/>}: {<paramref name="phasor"/>}{<paramref name="unit"/>} at {<paramref name="frequency"/>Hz}"
+		/// </summary>
+		/// <param name="description"></param>
+		/// <param name="phasor"></param>
+		/// <param name="unit"></param>
+		/// <param name="frequency">Frequency of the <paramref name="phasor"/></param>
+		/// <returns></returns>
+		public static string LineInfo(string description, Complex phasor, string unit, double frequency) =>
+			LineInfo(description, phasor, unit) + " at " + 
+			SIHelpers.ToAltSIStringExcludingSmallPrefixes(frequency, _FrequencyUnit, _RoundToDigit);
 
 		#endregion
 	}
