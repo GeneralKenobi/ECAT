@@ -1,4 +1,5 @@
 ﻿using CSharpEnhanced.Helpers;
+using System.Numerics;
 
 namespace ECAT.Design
 {
@@ -29,6 +30,17 @@ namespace ECAT.Design
 		/// <returns></returns>
 		public static string LineInfo(string description, double value, string unit) =>	description + ": " + 
 			(double.IsNaN(value) ? "unavailable" : SIHelpers.ToSIStringExcludingSmallPrefixes(value, unit, _RoundToDigit));
+
+		/// <summary>
+		/// Returns a string for display in component info section which will be in the form: 
+		/// "{<paramref name="description"/>}: {<paramref name="value"/>}{<paramref name="unit"/>}"
+		/// </summary>
+		/// <param name="description"></param>
+		/// <param name="value"></param>
+		/// <param name="unit"></param>
+		/// <returns></returns>
+		public static string LineInfo(string description, Complex value, string unit) => description + ": " +
+			SIHelpers.ToAltSIStringExcludingSmallPrefixes(value, unit, _RoundToDigit);
 
 		#endregion
 	}
