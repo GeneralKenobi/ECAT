@@ -99,6 +99,17 @@
 		/// <returns></returns>
 		IPowerInformation GetPower(ISignalInformation current, IVoltageSource voltageSource);
 
+		/// <summary>
+		/// Gets information about power on an <see cref="IACVoltageSource"/>. If the <paramref name="current"/> is composed of
+		/// phasors with different frequency than that of <paramref name="voltageSource"/> the average power will be assigned
+		/// <see cref="Double.NaN"/> (it's impossible to calculate it using only phasors). Doesn't compute maximum/minimum
+		/// instantenous power.
+		/// </summary>
+		/// <param name="current"></param>
+		/// <param name="voltageSource"></param>
+		/// <returns></returns>
+		IPowerInformation GetPower(ISignalInformation current, IACVoltageSource voltageSource);
+
 		#endregion
 
 		#endregion
