@@ -1,4 +1,6 @@
 ﻿using CSharpEnhanced.Helpers;
+using ECAT.Core;
+using System.Collections.Generic;
 using System.Numerics;
 
 namespace ECAT.Design
@@ -59,6 +61,43 @@ namespace ECAT.Design
 		public static string LineInfo(string description, Complex phasor, string unit, double frequency) =>
 			LineInfo(description, phasor, unit) + " at " + 
 			SIHelpers.ToAltSIStringExcludingSmallPrefixes(frequency, _FrequencyUnit, _RoundToDigit);
+
+		/// <summary>
+		/// Returns info related to some <see cref="ISignalInformation"/>
+		/// </summary>
+		/// <param name="signal"></param>
+		/// <param name="signalName">Name to associate with the signal, eg. voltage</param>
+		/// <param name="unit">Unit to use in display</param>
+		/// <returns></returns>
+		public static IEnumerable<string> GetSignalInfo(ISignalInformation signal, string signalName, string unit)
+		{
+			// Characteristic signal information
+			yield return LineInfo("Minimum instantenous " + signalName, signal.Minimum, unit);
+			yield return LineInfo("Maximum instantenous " + signalName, signal.Maximum, unit);
+			yield return LineInfo("RMS " + signalName, signal.RMS, unit);
+
+			// DC component information
+			if (signal.Type.HasFlag(SignalType.DC))
+			{
+				yield return LineInfo("DC " + signalName, signal.DC, unit);
+			}
+
+			// AC component information
+			if (signal.Type.HasFlag(SignalType.AC))
+			{
+				// If it's a multi-ac signal add a header
+				if (signal.Type.HasFlag(SignalType.MultipleAC))
+				{
+					yield return "Composing AC phasors:";
+				}
+
+				// Print each phasor
+				foreach (var acWaveform in signal.ComposingPhasors)
+				{
+					yield return LineInfo("AC " + signalName, acWaveform.Value, unit, acWaveform.Key);
+				}
+			}
+		}
 
 		#endregion
 	}
