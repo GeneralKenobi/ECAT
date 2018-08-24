@@ -608,8 +608,12 @@ namespace ECAT.Simulation
 				// Get non-inverted current
 				var nc = GetUninvertedSignal(current);
 
-				// Create a new info
-				var result = new PowerInformation();
+				// Create a new info, initialize Minimum and Maximum with NaN to indicate they couldn't have been calculated
+				var result = new PowerInformation()
+				{
+					Minimum = double.NaN,
+					Maximum = double.NaN,
+				};
 
 				// If it has only ony AC
 				if (current.Type.HasFlag(SignalType.AC))
