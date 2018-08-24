@@ -43,19 +43,14 @@ namespace ECAT.Design
 		/// <returns></returns>
 		protected IEnumerable<string> GetPowerInfoAC(IPowerInformation powerInformation)
 		{
-			// Present characteristic info, if a value is a NaN inform it's unavailable
-
 			// Minimum instantenous power
-			yield return "Minimum instantenous power: " + (double.IsNaN(powerInformation.Minimum) ? "unavailable" :
-				SIHelpers.ToSIStringExcludingSmallPrefixes(powerInformation.Minimum, "W", 4));
+			yield return CIFormat.LineInfo("Minimum instantenous power", powerInformation.Minimum, "W");
 			
 			// Maximum instantenous power
-			yield return "Maximum instantenous power: " + (double.IsNaN(powerInformation.Maximum) ? "unavailable" :
-				SIHelpers.ToSIStringExcludingSmallPrefixes(powerInformation.Maximum, "W", 4));
+			yield return CIFormat.LineInfo("Maximum instantenous power", powerInformation.Maximum, "W");
 
 			// Average power
-			yield return "Average power: " + (double.IsNaN(powerInformation.Average) ? "unavailable" :
-				SIHelpers.ToSIStringExcludingSmallPrefixes(powerInformation.Average, "W", 4));
+			yield return CIFormat.LineInfo("Average power", powerInformation.Average, "W");
 		}
 
 		/// <summary>
