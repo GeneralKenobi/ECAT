@@ -398,6 +398,7 @@ namespace ECAT.Design
 			yield return new Tuple<Type, object>(typeof(IComponentFactory), new ComponentFactory());
 			yield return new Tuple<Type, object>(typeof(IPlanePositionFactory), new PlanePositionFactory());
 			yield return new Tuple<Type, object>(typeof(IInfoLogger), new InfoLogger());
+			yield return new Tuple<Type, object>(typeof(ISIUnits), SIUnits.Singleton);
 		}
 
 		/// <summary>
