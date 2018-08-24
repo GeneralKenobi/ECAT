@@ -63,10 +63,8 @@ namespace ECAT.Design
 		protected IEnumerable<string> GetPowerInfo(IPowerInformation powerInformation)
 		{
 			// Return characteristic power information
-			yield return "Maximum instantenous power: " +
-				SIHelpers.ToSIStringExcludingSmallPrefixes(powerInformation.Maximum, "W", _RoundInfoToDigit);
-
-			yield return "Average power: " + SIHelpers.ToSIStringExcludingSmallPrefixes(powerInformation.Average, "W", _RoundInfoToDigit);
+			yield return CIFormat.LineInfo("Maximum instantenous power", powerInformation.Maximum, "W");
+			yield return CIFormat.LineInfo("Average power", powerInformation.Average, "W");
 		}
 
 		/// <summary>

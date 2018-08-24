@@ -1,5 +1,4 @@
-﻿using CSharpEnhanced.Helpers;
-using ECAT.Core;
+﻿using ECAT.Core;
 using System.Collections.Generic;
 using System.Numerics;
 
@@ -48,15 +47,9 @@ namespace ECAT.Design
 		protected IEnumerable<string> GetPowerInfo(IPowerInformation info)
 		{
 			// Return characteristic power information
-			yield return "Minimum instantenous power: " +
-				SIHelpers.ToSIStringExcludingSmallPrefixes(info.Minimum, "W", _RoundInfoToDigit);
-
-			// Return characteristic power information
-			yield return "Maximum instantenous power: " +
-				SIHelpers.ToSIStringExcludingSmallPrefixes(info.Maximum, "W", _RoundInfoToDigit);
-
-			// Average power is just the DC power - AC power averages to 0
-			yield return "Average power: " + SIHelpers.ToSIStringExcludingSmallPrefixes(info.Average, "W", _RoundInfoToDigit);
+			yield return CIFormat.LineInfo("Minimum instantenous power", info.Minimum, "W");
+			yield return CIFormat.LineInfo("Maximum instantenous power", info.Maximum, "W");
+			yield return CIFormat.LineInfo("Average power", info.Average, "W");
 		}
 
 		/// <summary>
