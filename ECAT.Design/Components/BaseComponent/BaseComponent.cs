@@ -62,11 +62,6 @@ namespace ECAT.Design
 		/// </summary>
 		protected ComponentInfo _ComponentInfo { get; }
 
-		/// <summary>
-		/// Digit to which numbers should be rounded to when being displayed
-		/// </summary>
-		protected int _RoundInfoToDigit { get; } = 4;
-
 		#endregion
 
 		#region Public properties
