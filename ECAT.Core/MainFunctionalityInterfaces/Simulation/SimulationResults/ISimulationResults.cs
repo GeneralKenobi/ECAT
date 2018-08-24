@@ -1,7 +1,8 @@
 ﻿namespace ECAT.Core
 {
 	/// <summary>
-	/// Interface for a class that manages and analyses results computed by <see cref="ISimulationManager"/>
+	/// Interface for a class that manages and analyses results computed by <see cref="ISimulationManager"/>. If a value could not be
+	/// calculated, it will be assigned <see cref="double.NaN"/>
 	/// </summary>
 	public interface ISimulationResults
     {
