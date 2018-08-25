@@ -16,8 +16,8 @@ namespace ECAT.Design
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public OpAmp() : base(new string[] { "Output " + QuantityNames.Singleton.Voltage, "Differential " +
-			QuantityNames.Singleton.Voltage}) { }
+		public OpAmp() : base(new string[] { "Output " + QuantityNames.Singleton.Voltage, "Output " + QuantityNames.Singleton.Current,
+			"Differential " + QuantityNames.Singleton.Voltage}) { }
 
 		#endregion
 
@@ -123,6 +123,8 @@ namespace ECAT.Design
 		protected override IEnumerable<IEnumerable<string>> GetComponentInfo()
 		{
 			yield return GetOutputVoltageInfo();
+			yield return CIFormat.GetSignalInfo(IoC.Resolve<ISimulationResults>().GetCurrentOrZero(ActiveComponentIndex, false),
+				QuantityNames.Singleton.Current, SIUnits.Singleton.CurrentShort);
 			yield return CIFormat.GetSignalInfo(IoC.Resolve<ISimulationResults>().GetVoltageDropOrZero(
 				TerminalA.NodeIndex, TerminalB.NodeIndex), QuantityNames.Singleton.Voltage, SIUnits.Singleton.VoltageShort);
 		}
