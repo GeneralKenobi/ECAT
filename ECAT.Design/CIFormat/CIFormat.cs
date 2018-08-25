@@ -16,11 +16,6 @@ namespace ECAT.Design
 		/// Round all values to this digit
 		/// </summary>
 		private static int _RoundToDigit { get; } = 4;
-
-		/// <summary>
-		/// Unit of frequency
-		/// </summary>
-		private static string _FrequencyUnit { get; } = "Hz";
 		
 		#endregion
 
@@ -60,7 +55,7 @@ namespace ECAT.Design
 		/// <returns></returns>
 		public static string LineInfo(string description, Complex phasor, string unit, double frequency) =>
 			LineInfo(description, phasor, unit) + " at " + 
-			SIHelpers.ToAltSIStringExcludingSmallPrefixes(frequency, _FrequencyUnit, _RoundToDigit);
+			SIHelpers.ToAltSIStringExcludingSmallPrefixes(frequency, SIUnits.Singleton.FrequencyShort, _RoundToDigit);
 
 		/// <summary>
 		/// Returns info related to some <see cref="ISignalInformation"/>

@@ -63,9 +63,9 @@ namespace ECAT.Design
 		protected IEnumerable<string> GetPowerInfo(IPowerInformation powerInformation)
 		{
 			// Return characteristic power information
-			yield return CIFormat.LineInfo("Minimum instantenous power", powerInformation.Minimum, "W");
-			yield return CIFormat.LineInfo("Maximum instantenous power", powerInformation.Maximum, "W");
-			yield return CIFormat.LineInfo("Average power", powerInformation.Average, "W");
+			yield return CIFormat.LineInfo("Minimum instantenous power", powerInformation.Minimum, SIUnits.Singleton.PowerShort);
+			yield return CIFormat.LineInfo("Maximum instantenous power", powerInformation.Maximum, SIUnits.Singleton.PowerShort);
+			yield return CIFormat.LineInfo("Average power", powerInformation.Average, SIUnits.Singleton.PowerShort);
 		}
 
 		/// <summary>
