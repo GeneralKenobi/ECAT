@@ -10,11 +10,11 @@ namespace ECAT.Design
 	public abstract class ThreeTerminal : BaseComponent, IThreeTerminal
 	{
 		#region Constructor
-
+		
 		/// <summary>
 		/// Default Constructor
 		/// </summary>
-		public ThreeTerminal()
+		public ThreeTerminal(IEnumerable<string> infoHeaders) : base(infoHeaders)
 		{
 			TerminalA = new Terminal(new PlanePosition(Complex.Zero, _TerminalAShift));
 			TerminalB = new Terminal(new PlanePosition(Complex.Zero, _TerminalBShift));
