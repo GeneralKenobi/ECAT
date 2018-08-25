@@ -635,12 +635,28 @@ namespace ECAT.Simulation
 				_Nodes[i].ACPotentials.Add(frequency, result[i]);
 			}
 
-			// Assign the currents through each active component (the remaining entries of the results)
-			for (int i = 0; i < _ActiveComponentsCount; ++i)
+			// Assign current to AC voltage sources
+			for (int i = 0; i < ACVoltageSourcesCount; ++i)
 			{
-				_ActiveComponentsCurrents[_ActiveComponents[i].ActiveComponentIndex].ComposingPhasors =
-					_ActiveComponentsCurrents[_ActiveComponents[i].ActiveComponentIndex].ComposingPhasors.Concat(
-						new KeyValuePair<double, Complex>(frequency, result[i + _BigDimension + DCVoltageSourcesCount]));
+				// For the current indexed with i-th ac voltage source's ActiveComponentIndex
+				_ActiveComponentsCurrents[_ACVoltageSources[i].ActiveComponentIndex].ComposingPhasors =
+					// Concat its ComposingPhasors
+					_ActiveComponentsCurrents[_ACVoltageSources[i].ActiveComponentIndex].ComposingPhasors.Concat(
+						// With new value: take the frequency and i-th (plus number of DC voltage sources and number of nodes) result
+						// (AC voltage sources' currents are after node voltages and DC voltage sources' currents in the result array)
+						new KeyValuePair<double, Complex>(frequency, result[i + _DCVoltageSourcesCount + _BigDimension]));
+			}
+
+			// Assign current to op-amps voltage sources
+			for (int i = 0; i < OpAmpsCount; ++i)
+			{
+				// For the current indexed with i-th op-amp's ActiveComponentIndex
+				_ActiveComponentsCurrents[_OpAmps[i].ActiveComponentIndex].ComposingPhasors =
+					// Concat its ComposingPhasors
+					_ActiveComponentsCurrents[_OpAmps[i].ActiveComponentIndex].ComposingPhasors.Concat(
+						// With new value: take the frequency and i-th (plus number of voltage sources and number of nodes) result
+						// (Op-Amp currents are after node voltages and voltage source currents in the result array)
+						new KeyValuePair<double, Complex>(frequency, result[i + _TotalVoltageSourcesCount + _BigDimension]));
 			}
 		}
 
@@ -656,11 +672,21 @@ namespace ECAT.Simulation
 				_Nodes[i].DCPotential.Value = result[i].Real;
 			}
 
-			// Assign the currents through each active component (the remaining entries of the results)
-			for (int i = 0; i < _ActiveComponentsCount; ++i)
+			// Assign current to DC voltage sources
+			for(int i=0; i< DCVoltageSourcesCount; ++i)
 			{
-				// For DC simulation the produced currents are guaranteed to be DC (real value only)
-				_ActiveComponentsCurrents[_ActiveComponents[i].ActiveComponentIndex].DC = result[i + _BigDimension].Real;
+				// DC voltage source currents are right after node potentials in result array so add number of nodes to i)
+				_ActiveComponentsCurrents[_DCVoltageSources[i].ActiveComponentIndex].DC = result[i + _BigDimension].Real;
+			}
+
+			// Assign current to op-amps voltage sources
+			for (int i = 0; i < OpAmpsCount; ++i)
+			{
+				// For the current indexed with i-th op-amp's ActiveComponentIndex
+				_ActiveComponentsCurrents[_OpAmps[i].ActiveComponentIndex].DC =
+					// Assign it to DC (i-th plus number of nodes and number of voltage sources) result
+					// (Op-amp currents are after node voltages and voltage sources' currents in the result array)
+					result[i + _BigDimension + _TotalVoltageSourcesCount].Real;
 			}
 		}
 
