@@ -89,7 +89,7 @@ namespace ECAT.Design
 				// Print each phasor
 				foreach (var acWaveform in signal.ComposingPhasors)
 				{
-					yield return LineInfo("AC " + signalName, acWaveform.Value, unit, acWaveform.Key);
+					yield return LineInfo("AC " + signalName + " (peak)", acWaveform.Value, unit, acWaveform.Key);
 				}
 			}
 		}
