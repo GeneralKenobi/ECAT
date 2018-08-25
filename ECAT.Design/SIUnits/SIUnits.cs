@@ -48,6 +48,16 @@ namespace ECAT.Design
 		/// </summary>
 		public string PowerShort { get; } = "W";
 
+		/// <summary>
+		/// Full name of unit of frequency
+		/// </summary>
+		public string Frequency { get; } = "Hertz";
+
+		/// <summary>
+		/// Shortened name of frequency unit
+		/// </summary>
+		public string FrequencyShort { get; } = "Hz";
+
 		#endregion
 
 		#region Singleton

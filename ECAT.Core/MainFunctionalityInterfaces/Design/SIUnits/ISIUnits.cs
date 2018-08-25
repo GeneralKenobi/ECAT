@@ -37,6 +37,16 @@
 		/// </summary>
 		string PowerShort { get; }
 
+		/// <summary>
+		/// Full name of unit of frequency
+		/// </summary>
+		string Frequency { get; }
+
+		/// <summary>
+		/// Shortened name of frequency unit
+		/// </summary>
+		string FrequencyShort { get; }
+
 		#endregion
 	}
 }
