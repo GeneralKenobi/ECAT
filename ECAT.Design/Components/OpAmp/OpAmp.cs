@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Collections.Generic;
+using System.Numerics;
 using ECAT.Core;
 
 namespace ECAT.Design
@@ -10,6 +11,16 @@ namespace ECAT.Design
 	/// </summary>
 	public class OpAmp : ThreeTerminal, IOpAmp
 	{
+		#region Constructors
+
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		public OpAmp() : base(new string[] { "Output " + QuantityNames.Singleton.Voltage, "Differential " +
+			QuantityNames.Singleton.Voltage}) { }
+
+		#endregion
+
 		#region Protected properties
 
 		/// <summary>
@@ -55,6 +66,61 @@ namespace ECAT.Design
 		/// Height of the <see cref="OpAmp"/> in horizontal position
 		/// </summary>
 		public override double Height { get; } = 200;
+
+		#endregion
+
+		#region Private methods
+
+		/// <summary>
+		/// Returns info about output voltage of the op-amp
+		/// </summary>
+		/// <returns></returns>
+		private IEnumerable<string> GetOutputVoltageInfo()
+		{
+			ISignalInformation voltageDrop = IoC.Resolve<ISimulationResults>().GetVoltageDropOrZero(TerminalC.NodeIndex);
+
+			foreach (var item in CIFormat.GetSignalInfo(voltageDrop, QuantityNames.Singleton.Voltage, SIUnits.Singleton.VoltageShort))
+			{
+				yield return item;
+			}
+
+			bool supplyExceeded = false;
+
+			// Check if positive supply is exceeded
+			if(voltageDrop.Maximum > PositiveSupplyVoltage)
+			{
+				supplyExceeded = true;
+				yield return "Positive supply voltage may be exceeded";
+			}
+
+			// Check if negative supply is exceeded
+			if (voltageDrop.Minimum < NegativeSupplyVoltage)
+			{
+				supplyExceeded = true;
+				yield return "Negative supply voltage may be exceeded";
+			}
+
+			// If any supply was exceeded elaborate on the results
+			if(supplyExceeded)
+			{
+				yield return "Consider running a full cycle simulation for more accurate results";
+			}
+		}
+
+		#endregion
+
+		#region Protected methods
+
+		/// <summary>
+		/// Returns info about the op-amp
+		/// </summary>
+		/// <returns></returns>
+		protected override IEnumerable<IEnumerable<string>> GetComponentInfo()
+		{
+			yield return GetOutputVoltageInfo();
+			yield return CIFormat.GetSignalInfo(IoC.Resolve<ISimulationResults>().GetVoltageDropOrZero(
+				TerminalA.NodeIndex, TerminalB.NodeIndex), QuantityNames.Singleton.Voltage, SIUnits.Singleton.VoltageShort);
+		}
 
 		#endregion
 	}
