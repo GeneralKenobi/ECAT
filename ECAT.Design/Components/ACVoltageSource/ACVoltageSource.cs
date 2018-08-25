@@ -43,13 +43,16 @@ namespace ECAT.Design
 		protected IEnumerable<string> GetPowerInfoAC(IPowerInformation powerInformation)
 		{
 			// Minimum instantenous power
-			yield return CIFormat.LineInfo("Minimum instantenous power", powerInformation.Minimum, SIUnits.Singleton.PowerShort);
+			yield return CIFormat.LineInfo("Minimum instantenous " + QuantityNames.Singleton.Power,
+				powerInformation.Minimum, SIUnits.Singleton.PowerShort);
 			
 			// Maximum instantenous power
-			yield return CIFormat.LineInfo("Maximum instantenous power", powerInformation.Maximum, SIUnits.Singleton.PowerShort);
+			yield return CIFormat.LineInfo("Maximum instantenous " + QuantityNames.Singleton.Power,
+				powerInformation.Maximum, SIUnits.Singleton.PowerShort);
 
 			// Average power
-			yield return CIFormat.LineInfo("Average power", powerInformation.Average, SIUnits.Singleton.PowerShort);
+			yield return CIFormat.LineInfo("Average " + QuantityNames.Singleton.Power,
+				powerInformation.Average, SIUnits.Singleton.PowerShort);
 		}
 
 		/// <summary>

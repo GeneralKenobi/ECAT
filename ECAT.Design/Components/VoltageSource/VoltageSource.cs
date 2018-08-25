@@ -15,7 +15,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public VoltageSource() : base(new string[] { "Current", "Power" })
+		public VoltageSource() : base(new string[] { QuantityNames.Singleton.CurrentCap, QuantityNames.Singleton.PowerCap })
 		{
 			// Reverse directions by default - voltage source usually produces current that flows in the same direction as is the
 			// direction of the produced voltage drop
@@ -63,9 +63,12 @@ namespace ECAT.Design
 		protected IEnumerable<string> GetPowerInfo(IPowerInformation powerInformation)
 		{
 			// Return characteristic power information
-			yield return CIFormat.LineInfo("Minimum instantenous power", powerInformation.Minimum, SIUnits.Singleton.PowerShort);
-			yield return CIFormat.LineInfo("Maximum instantenous power", powerInformation.Maximum, SIUnits.Singleton.PowerShort);
-			yield return CIFormat.LineInfo("Average power", powerInformation.Average, SIUnits.Singleton.PowerShort);
+			yield return CIFormat.LineInfo("Minimum instantenous " + QuantityNames.Singleton.Power,
+				powerInformation.Minimum, SIUnits.Singleton.PowerShort);
+			yield return CIFormat.LineInfo("Maximum instantenous " + QuantityNames.Singleton.Power,
+				powerInformation.Maximum, SIUnits.Singleton.PowerShort);
+			yield return CIFormat.LineInfo("Average " + QuantityNames.Singleton.Power,
+				powerInformation.Average, SIUnits.Singleton.PowerShort);
 		}
 
 		/// <summary>
