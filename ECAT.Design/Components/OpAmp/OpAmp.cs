@@ -67,6 +67,11 @@ namespace ECAT.Design
 		/// </summary>
 		public override double Height { get; } = 200;
 
+		/// <summary>
+		/// Index used to query <see cref="ISimulationResults"/> for produced current
+		/// </summary>
+		public int ActiveComponentIndex { get; set; }
+
 		#endregion
 
 		#region Private methods
