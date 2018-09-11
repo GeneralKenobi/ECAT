@@ -52,7 +52,7 @@ namespace ECAT.Simulation
 		/// Creates a copy of this object
 		/// </summary>
 		/// <returns></returns>
-		public PhasorDomainSignal CopySignal() => new PhasorDomainSignal(this);
+		public PhasorDomainSignal Copy() => new PhasorDomainSignal(this);
 
 		/// <summary>
 		/// Copies internal state of <paramref name="obj"/> to this instance
@@ -68,7 +68,7 @@ namespace ECAT.Simulation
 		/// Creates a copy of this object
 		/// </summary>
 		/// <returns></returns>
-		IPhasorDomainSignal IDeepCopyTo<IPhasorDomainSignal>.Copy() => CopySignal();
+		IPhasorDomainSignal IDeepCopyTo<IPhasorDomainSignal>.Copy() => Copy();
 	}
 
 	#endregion
