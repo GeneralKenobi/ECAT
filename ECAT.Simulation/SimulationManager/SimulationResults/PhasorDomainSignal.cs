@@ -1,6 +1,8 @@
 ﻿using CSharpEnhanced.CoreInterfaces;
 using ECAT.Core;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 
 namespace ECAT.Simulation
@@ -23,6 +25,19 @@ namespace ECAT.Simulation
 		public PhasorDomainSignal(IPhasorDomainSignal signal)
 		{
 			Copy(signal);
+		}
+
+		/// <summary>
+		/// Constructor with parameters
+		/// </summary>
+		/// <param name="dc"></param>
+		/// <param name="phasors">Composing phasors, exception will be thrown if null (use an empty enumeration when there are no phasors)
+		/// </param>
+		/// <exception cref="ArgumentNullException"></exception>
+		public PhasorDomainSignal(double dc, IEnumerable<KeyValuePair<double, Complex>> phasors)
+		{
+			DC = dc;
+			ComposingPhasors = phasors ?? throw new ArgumentNullException(nameof(phasors));
 		}
 
 		#endregion
@@ -69,7 +84,15 @@ namespace ECAT.Simulation
 		/// </summary>
 		/// <returns></returns>
 		IPhasorDomainSignal IDeepCopyTo<IPhasorDomainSignal>.Copy() => Copy();
+
+		/// <summary>
+		/// Creates a copy of the signal in reversed direction (<see cref="DC"/> and each <see cref="ComposingPhasors"/> value is negated)
+		/// </summary>
+		/// <returns></returns>
+		public PhasorDomainSignal CopyAndNegate() => new PhasorDomainSignal(-DC, ComposingPhasors.Select((phasor) =>
+			new KeyValuePair<double, Complex>(phasor.Key, -phasor.Value)));
+
+		#endregion
 	}
 
-	#endregion
 }
