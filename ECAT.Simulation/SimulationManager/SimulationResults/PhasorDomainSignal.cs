@@ -31,13 +31,19 @@ namespace ECAT.Simulation
 		/// Constructor with parameter
 		/// </summary>
 		/// <param name="dc"></param>
-		public PhasorDomainSignal(double dc) : this(dc, Enumerable.Empty<KeyValuePair<double, Complex>>()) { }
+		public PhasorDomainSignal(double dc)
+		{
+			DC = dc;
+		}
 
 		/// <summary>
 		/// Constructor with parameter
 		/// </summary>
 		/// <param name="phasors"></param>
-		public PhasorDomainSignal(IEnumerable<KeyValuePair<double, Complex>> phasors) : this(0, phasors) { }
+		public PhasorDomainSignal(IEnumerable<KeyValuePair<double, Complex>> phasors)
+		{
+			ComposingPhasors = phasors ?? throw new ArgumentNullException(nameof(phasors));
+		}
 
 		/// <summary>
 		/// Constructor with parameters
@@ -64,7 +70,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// List with phasors adding to the signal
 		/// </summary>
-		public IEnumerable<KeyValuePair<double, Complex>> ComposingPhasors { get; set; }
+		public IEnumerable<KeyValuePair<double, Complex>> ComposingPhasors { get; set; } = Enumerable.Empty<KeyValuePair<double, Complex>>();
 
 		/// <summary>
 		/// Object capable of calculating characteristic values for this <see cref="ISignalData"/>
