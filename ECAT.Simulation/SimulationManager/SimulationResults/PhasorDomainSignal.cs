@@ -28,6 +28,18 @@ namespace ECAT.Simulation
 		}
 
 		/// <summary>
+		/// Constructor with parameter
+		/// </summary>
+		/// <param name="dc"></param>
+		public PhasorDomainSignal(double dc) : this(dc, Enumerable.Empty<KeyValuePair<double, Complex>>()) { }
+
+		/// <summary>
+		/// Constructor with parameter
+		/// </summary>
+		/// <param name="phasors"></param>
+		public PhasorDomainSignal(IEnumerable<KeyValuePair<double, Complex>> phasors) : this(0, phasors) { }
+
+		/// <summary>
 		/// Constructor with parameters
 		/// </summary>
 		/// <param name="dc"></param>
