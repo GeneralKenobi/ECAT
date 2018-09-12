@@ -31,13 +31,11 @@ namespace ECAT.Simulation
 			/// Dictionary holding already computed voltage drops for the last performed simulation. Ints in key tuple are indexes of
 			/// nodes (Item1 for the first node (reference node) and Item2 for the second node (target node))
 			/// </summary>
-			private Dictionary<Tuple<int, int>, SignalInformationNew> _VoltageDropInformationCache { get; } =
-				new Dictionary<Tuple<int, int>, SignalInformationNew>(new CustomEqualityComparer<Tuple<int, int>>(
-					// Compare the elements of the Tuples, now tuples themselves
-					(x, y) => x.Item1 == y.Item1 && x.Item2 == y.Item2));
 
-			private Dictionary<Tuple<int, int>, PhasorDomainSignal> _VoltageDropCache { get; } =
-				new Dictionary<Tuple<int, int>, PhasorDomainSignal>(new CustomEqualityComparer<Tuple<int, int>>(
+
+			private Dictionary<Tuple<int, int>, Tuple<PhasorDomainSignal, SignalInformationNew>> _VoltageDropCache { get; } =
+				new Dictionary<Tuple<int, int>, Tuple<PhasorDomainSignal, SignalInformationNew>>(
+					new CustomEqualityComparer<Tuple<int, int>>(
 					// Compare the elements of the Tuples, now tuples themselves
 					(x, y) => x.Item1 == y.Item1 && x.Item2 == y.Item2));
 
@@ -73,20 +71,15 @@ namespace ECAT.Simulation
 			private void CacheVoltageDrop(PhasorDomainSignal signal, int nodeAIndex, int nodeBIndex)
 			{
 				// Cache the original
-				_VoltageDropCache.Add(new Tuple<int, int>(nodeAIndex, nodeBIndex), signal);
-
-				CacheVoltageDropInformation(new SignalInformationNew(signal), nodeAIndex, nodeBIndex);
+				_VoltageDropCache.Add(new Tuple<int, int>(nodeAIndex, nodeBIndex),
+					new Tuple<PhasorDomainSignal, SignalInformationNew>(signal, new SignalInformationNew(signal)));				
 
 				// And cache the reversed one
 				var reversed = signal.CopyAndNegate();
 
-				_VoltageDropCache.Add(new Tuple<int, int>(nodeBIndex, nodeAIndex), reversed);
-
-				CacheVoltageDropInformation(new SignalInformationNew(reversed), nodeBIndex, nodeAIndex);
+				_VoltageDropCache.Add(new Tuple<int, int>(nodeBIndex, nodeAIndex), new Tuple<PhasorDomainSignal, SignalInformationNew>(
+					reversed, new SignalInformationNew(reversed)));
 			}
-
-			private void CacheVoltageDropInformation(SignalInformationNew info, int nodeAIndex, int nodeBIndex) =>
-				_VoltageDropInformationCache.Add(new Tuple<int, int>(nodeAIndex, nodeBIndex), info);
 
 			/// <summary>
 			/// Caches the <paramref name="current"/> in <see cref="_CurrentCache"/>
@@ -112,7 +105,7 @@ namespace ECAT.Simulation
 			/// </summary>
 			private void ClearCaches()
 			{
-				_VoltageDropInformationCache.Clear();
+				_VoltageDropCache.Clear();
 				_CurrentCache.Clear();
 				_PowerCache.Clear();
 			}
@@ -234,7 +227,11 @@ namespace ECAT.Simulation
 			{
 				PhasorDomainSignal result = null;
 
-				if(!_VoltageDropCache.TryGetValue(new Tuple<int, int>(nodeAIndex, nodeBIndex), out result))
+				if(_VoltageDropCache.TryGetValue(new Tuple<int, int>(nodeAIndex, nodeBIndex), out var voltageDrop))
+				{
+					result = voltageDrop.Item1;
+				}
+				else
 				{
 					result = NodeExists(nodeAIndex) && NodeExists(nodeBIndex) ?
 						Construct(nodeAIndex, nodeBIndex) : new PhasorDomainSignal();
@@ -310,9 +307,9 @@ namespace ECAT.Simulation
 				}
 
 				// If that particular voltage drop was determined already return it
-				if(_VoltageDropInformationCache.ContainsKey(new Tuple<int, int>(nodeAIndex, nodeBIndex)))
+				if(_VoltageDropCache.TryGetValue(new Tuple<int, int>(nodeAIndex, nodeBIndex), out var cachedVoltageDrop))
 				{
-					voltageDrop = _VoltageDropInformationCache[new Tuple<int, int>(nodeAIndex, nodeBIndex)];
+					voltageDrop = cachedVoltageDrop.Item2;
 					return true;
 				}
 
