@@ -169,13 +169,32 @@ namespace ECAT.Simulation
 				NodeExists(nodeAIndex) && NodeExists(nodeBIndex) ? 	ConstructVoltageDrop(
 				_Nodes.Find((node) => node.Index == nodeAIndex), _Nodes.Find((node) => node.Index == nodeBIndex)) :
 				new PhasorDomainSignal();
-
+			
 			/// <summary>
-			/// Returns true if a node with the given index exists
+			/// Returns voltage drop between nodes A (reference) and B. If at least one node index isn't related to any of the nodes
+			/// in <see cref="_Nodes"/>, returns a voltage drop equal to 0. If there already was a cached value, return it.
 			/// </summary>
-			/// <param name="index"></param>
+			/// <param name="nodeAIndex"></param>
+			/// <param name="nodeBIndex"></param>
 			/// <returns></returns>
-			private bool NodeExists(int index) => _Nodes.Exists((node) => node.Index == index);
+			private PhasorDomainSignal ResolveVoltageDrop(int nodeAIndex, int nodeBIndex)
+			{
+				PhasorDomainSignal result = null;
+
+				// Check the cache
+				if (_VoltageDropCache.TryGetValue(new Tuple<int, int>(nodeAIndex, nodeBIndex), out var voltageDrop))
+				{
+					result = voltageDrop.Item1;
+				}
+				else
+				{
+					// If not successful, try to construct voltage drop (check if nodes exist first)
+					result = NodeExists(nodeAIndex) && NodeExists(nodeBIndex) ?
+						ConstructVoltageDrop(nodeAIndex, nodeBIndex) : new PhasorDomainSignal();
+				}
+
+				return result;
+			}
 
 			#endregion
 
@@ -214,7 +233,8 @@ namespace ECAT.Simulation
 					return current;
 				}
 
-				var voltageDrop = GetVoltageDrop(element.TerminalB.NodeIndex, element.TerminalA.NodeIndex);
+				// Get voltage drop across the element
+				var voltageDrop = ResolveVoltageDrop(element.TerminalB.NodeIndex, element.TerminalA.NodeIndex);
 
 				// Create a new current signal
 				var currentSignal = new PhasorDomainSignal()
@@ -229,22 +249,16 @@ namespace ECAT.Simulation
 				return new SignalInformationNew(currentSignal);
 			}
 
-			private PhasorDomainSignal GetVoltageDrop(int nodeAIndex, int nodeBIndex)
-			{
-				PhasorDomainSignal result = null;
+			#endregion
 
-				if(_VoltageDropCache.TryGetValue(new Tuple<int, int>(nodeAIndex, nodeBIndex), out var voltageDrop))
-				{
-					result = voltageDrop.Item1;
-				}
-				else
-				{
-					result = NodeExists(nodeAIndex) && NodeExists(nodeBIndex) ?
-						ConstructVoltageDrop(nodeAIndex, nodeBIndex) : new PhasorDomainSignal();
-				}
+			#region General
 
-				return result;
-			}
+			/// <summary>
+			/// Returns true if a node with the given index exists
+			/// </summary>
+			/// <param name="index"></param>
+			/// <returns></returns>
+			private bool NodeExists(int index) => _Nodes.Exists((node) => node.Index == index);
 
 			#endregion
 
@@ -456,7 +470,7 @@ namespace ECAT.Simulation
 					return power;
 				}
 
-				var voltageDrop = GetVoltageDrop(currentSource.TerminalB.NodeIndex, currentSource.TerminalA.NodeIndex);
+				var voltageDrop = ResolveVoltageDrop(currentSource.TerminalB.NodeIndex, currentSource.TerminalA.NodeIndex);
 
 				// Average is negative voltage drop times produced current (to abide passive sign convention)
 				var result = new PowerInformation()
