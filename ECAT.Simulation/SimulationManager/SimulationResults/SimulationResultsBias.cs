@@ -31,8 +31,6 @@ namespace ECAT.Simulation
 			/// Dictionary holding already computed voltage drops for the last performed simulation. Ints in key tuple are indexes of
 			/// nodes (Item1 for the first node (reference node) and Item2 for the second node (target node))
 			/// </summary>
-
-
 			private Dictionary<Tuple<int, int>, Tuple<PhasorDomainSignal, SignalInformationNew>> _VoltageDropCache { get; } =
 				new Dictionary<Tuple<int, int>, Tuple<PhasorDomainSignal, SignalInformationNew>>(
 					new CustomEqualityComparer<Tuple<int, int>>(
@@ -43,11 +41,8 @@ namespace ECAT.Simulation
 			/// Cache for currents, first item in key tuple is component for which the current is considered and second item is
 			/// the voltage drop for which the current flow is considered.
 			/// </summary>
-			private Dictionary<Tuple<IBaseComponent, PhasorDomainSignal>, SignalInformationNew> _CurrentCache { get; } =
-				new Dictionary<Tuple<IBaseComponent, PhasorDomainSignal>, SignalInformationNew>(
-					new CustomEqualityComparer<Tuple<IBaseComponent, PhasorDomainSignal>>(
-					// Compare the elements of the Tuples, now tuples themselves
-					(x, y) => x.Item1 == y.Item1 && x.Item2 == y.Item2));
+			private Dictionary<IBaseComponent, SignalInformationNew> _CurrentCache { get; } =
+				new Dictionary<IBaseComponent, SignalInformationNew>();
 
 			/// <summary>
 			/// Cache for power, first item in key tuple is component for which the power is considered and second item is
@@ -87,9 +82,8 @@ namespace ECAT.Simulation
 			/// <param name="component">Component for which the current flow is considered</param>
 			/// <param name="voltageDrop">Voltage drop on the component for which the current is considered</param>
 			/// <param name="current"></param>
-			private void CacheCurrent(IBaseComponent component, PhasorDomainSignal voltageDrop, PhasorDomainSignal current) =>				
-				_CurrentCache.Add(new Tuple<IBaseComponent, PhasorDomainSignal>(component, voltageDrop),
-					new SignalInformationNew(current));
+			private void CacheCurrent(IBaseComponent component, PhasorDomainSignal current) =>				
+				_CurrentCache.Add(component, new SignalInformationNew(current));
 
 			/// <summary>
 			/// Caches the <paramref name="power"/> in <see cref="_PowerCache"/>			
@@ -106,6 +100,7 @@ namespace ECAT.Simulation
 			private void ClearCaches()
 			{
 				_VoltageDropCache.Clear();
+				_ActiveComponentsCurrentCache.Clear();
 				_CurrentCache.Clear();
 				_PowerCache.Clear();
 			}
@@ -202,13 +197,13 @@ namespace ECAT.Simulation
 			/// <returns></returns>
 			private ISignalInformationNew GetStandardPassiveTwoTerminalCurrent(ITwoTerminal element)
 			{
-				var voltageDrop = Construct(element.TerminalB.NodeIndex, element.TerminalA.NodeIndex);
-
 				// If there was a cache entry already return it
-				if(_CurrentCache.TryGetValue(new Tuple<IBaseComponent, PhasorDomainSignal>(element, voltageDrop), out var current))
+				if(_CurrentCache.TryGetValue(element, out var current))
 				{
 					return current;
 				}
+
+				var voltageDrop = GetVoltageDrop(element.TerminalB.NodeIndex, element.TerminalA.NodeIndex);
 
 				// Create a new current signal
 				var currentSignal = new PhasorDomainSignal()
@@ -218,7 +213,7 @@ namespace ECAT.Simulation
 				};
 
 				// Cache it
-				CacheCurrent(element, voltageDrop, currentSignal);
+				CacheCurrent(element, currentSignal);
 				
 				return new SignalInformationNew(currentSignal);
 			}
