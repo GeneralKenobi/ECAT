@@ -21,6 +21,11 @@ namespace ECAT.Core
 		/// </summary>
 		IEnumerable<KeyValuePair<double, Complex>> ComposingPhasors { get; }
 
+		/// <summary>
+		/// The type of the signal
+		/// </summary>
+		SignalType Type { get; }
+
 		#endregion
 	}
 }

@@ -77,6 +77,44 @@ namespace ECAT.Simulation
 		/// </summary>
 		public ISignalDataInterpreter Interpreter { get; }
 
+		/// <summary>
+		/// The type of the signal
+		/// </summary>
+		public SignalType Type
+		{
+			get
+			{
+				// Create an enumeration equal to 0
+				var result = SignalType.Empty;
+
+				// Check for DC, if present set the flag
+				if (DC != 0)
+				{
+					result |= SignalType.DC;
+				}
+
+				// Get the number of phasors
+				var phasorsCount = ComposingPhasors.Count();
+
+				// If it's greater than 0
+				if (phasorsCount > 0)
+				{
+					// And greater than 1, set the multi AC flag
+					if (phasorsCount > 1)
+					{
+						result |= SignalType.MultipleAC;
+					}
+					// Otherwise just set the single AC flag
+					else
+					{
+						result |= SignalType.SingleAC;
+					}
+				}
+
+				return result;
+			}
+		}
+
 		#endregion
 
 		#region Public methods
