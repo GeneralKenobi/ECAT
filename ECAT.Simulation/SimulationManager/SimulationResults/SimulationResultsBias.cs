@@ -154,13 +154,27 @@ namespace ECAT.Simulation
 			/// <param name="nodeA"></param>
 			/// <param name="nodeB"></param>
 			/// <returns></returns>
-			private PhasorDomainSignal Construct(INode nodeA, INode nodeB) => GetForPositiveMaximum(
+			private PhasorDomainSignal ConstructVoltageDrop(INode nodeA, INode nodeB) => GetForPositiveMaximum(
 				new PhasorDomainSignal(nodeB.DCPotential.Value - nodeA.DCPotential.Value,
 					GetACWaveforms(nodeA.ACPotentials, nodeB.ACPotentials)));
 
-			private PhasorDomainSignal Construct(int nodeAIndex, int nodeBIndex) => Construct(
-				_Nodes.Find((node) => node.Index == nodeAIndex), _Nodes.Find((node) => node.Index == nodeBIndex));
+			/// <summary>
+			/// Constructs a new <see cref="PhasorDomainSignal"/> based on node indexes. If at least one of the indexes is not
+			/// corresponding to any of the nodes in <see cref="_Nodes"/>, returns a <see cref="PhasorDomainSignal"/> equal to 0.
+			/// </summary>
+			/// <param name="nodeAIndex"></param>
+			/// <param name="nodeBIndex"></param>
+			/// <returns></returns>
+			private PhasorDomainSignal ConstructVoltageDrop(int nodeAIndex, int nodeBIndex) => 
+				NodeExists(nodeAIndex) && NodeExists(nodeBIndex) ? 	ConstructVoltageDrop(
+				_Nodes.Find((node) => node.Index == nodeAIndex), _Nodes.Find((node) => node.Index == nodeBIndex)) :
+				new PhasorDomainSignal();
 
+			/// <summary>
+			/// Returns true if a node with the given index exists
+			/// </summary>
+			/// <param name="index"></param>
+			/// <returns></returns>
 			private bool NodeExists(int index) => _Nodes.Exists((node) => node.Index == index);
 
 			#endregion
@@ -226,7 +240,7 @@ namespace ECAT.Simulation
 				else
 				{
 					result = NodeExists(nodeAIndex) && NodeExists(nodeBIndex) ?
-						Construct(nodeAIndex, nodeBIndex) : new PhasorDomainSignal();
+						ConstructVoltageDrop(nodeAIndex, nodeBIndex) : new PhasorDomainSignal();
 				}
 
 				return result;
@@ -306,7 +320,7 @@ namespace ECAT.Simulation
 				}
 
 				// Otherwise construct it
-				var signal = Construct(_Nodes[nodeAIndex], _Nodes[nodeBIndex]);
+				var signal = ConstructVoltageDrop(_Nodes[nodeAIndex], _Nodes[nodeBIndex]);
 
 				// Cache it
 				CacheVoltageDrop(signal, nodeAIndex, nodeBIndex);
