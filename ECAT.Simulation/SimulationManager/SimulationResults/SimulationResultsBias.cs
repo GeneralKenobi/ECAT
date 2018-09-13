@@ -451,13 +451,16 @@ namespace ECAT.Simulation
 			/// </summary>
 			/// <param name="voltageDrop"></param>
 			/// <returns></returns>
-			public IPowerInformation GetPower(ISignalInformation voltageDrop, IResistor resistor)
+			public IPowerInformation GetPower(IResistor resistor)
 			{
 				// Check if there already is a cached entry
 				if(_PowerCache.TryGetValue(resistor, out var power))
 				{
 					return power;
 				}
+
+				// Get the voltage drop across the resistor
+				var voltageDrop = ResolveVoltageDrop(resistor);
 
 				// If not create a new power info
 				var result = new PowerInformation()
@@ -468,7 +471,7 @@ namespace ECAT.Simulation
 					Math.Pow(voltageDrop.DC, 2)) * resistor.GetConductance(),
 
 					// Maximum occurs for maximum voltage drop and is simply a square of voltage times conductance
-					Maximum = Math.Pow(voltageDrop.Maximum, 2) * resistor.GetConductance(),
+					Maximum = Math.Pow(voltageDrop.Interpreter.Maximum(), 2) * resistor.GetConductance(),
 				};
 
 				// Cache it
@@ -492,7 +495,7 @@ namespace ECAT.Simulation
 					return power;
 				}
 
-				var voltageDrop = ResolveVoltageDrop(currentSource.TerminalB.NodeIndex, currentSource.TerminalA.NodeIndex);
+				var voltageDrop = ResolveVoltageDrop(currentSource);
 
 				// Average is negative voltage drop times produced current (to abide passive sign convention)
 				var result = new PowerInformation()
@@ -569,9 +572,6 @@ namespace ECAT.Simulation
 			/// <returns></returns>
 			public IPowerInformation GetPower(IACVoltageSource voltageSource)
 			{
-				// TODO: When time-based simulation is implemented try to calcuate the average iteratively if there is more than one
-				// current phasor - for example as an average of power calculated for n points in one full cycle
-
 				// Check if there already is a cached entry
 				if (_PowerCache.TryGetValue(voltageSource, out var power))
 				{
