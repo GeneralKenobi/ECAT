@@ -39,10 +39,10 @@ namespace ECAT.Simulation
 					(x, y) => x.Item1 == y.Item1 && x.Item2 == y.Item2));
 
 			/// <summary>
-			/// Contains already computed currents
+			/// Contains already computed currents, Item1 is in the standard direction, Item2 is in the reverse direction
 			/// </summary>
-			private Dictionary<IBaseComponent, SignalInformationNew> _CurrentCache { get; } =
-				new Dictionary<IBaseComponent, SignalInformationNew>();
+			private Dictionary<IBaseComponent, Tuple<SignalInformationNew, SignalInformationNew>> _CurrentCache { get; } =
+				new Dictionary<IBaseComponent, Tuple<SignalInformationNew, SignalInformationNew>>();
 
 			/// <summary>
 			/// Contains already computed <see cref="PowerInformation"/>s
@@ -76,12 +76,13 @@ namespace ECAT.Simulation
 			}
 
 			/// <summary>
-			/// Caches the <paramref name="current"/> in <see cref="_CurrentCache"/>
+			/// Caches the <paramref name="current"/> in <see cref="_CurrentCache"/> as well as its negation
 			/// </summary>
 			/// <param name="component">Component for which the current flow is considered</param>
 			/// <param name="current"></param>
 			private void CacheCurrent(IBaseComponent component, PhasorDomainSignal current) =>				
-				_CurrentCache.Add(component, new SignalInformationNew(current));
+				_CurrentCache.Add(component, new Tuple<SignalInformationNew, SignalInformationNew>(
+					new SignalInformationNew(current), new SignalInformationNew(current.CopyAndNegate())));
 
 			/// <summary>
 			/// Caches the <paramref name="power"/> in <see cref="_PowerCache"/>			
@@ -224,17 +225,21 @@ namespace ECAT.Simulation
 			/// Returns current information about a standard two terminal element. Designed for: <see cref="IResistor"/>,
 			/// <see cref="ICapacitor"/>
 			/// </summary>
+			/// <param name="element">Element for which the current is considered</param>
+			/// <param name="reverseDirection">Reverses the direction upon which current flow is decided</param>
 			/// <returns></returns>
-			private ISignalInformationNew GetStandardPassiveTwoTerminalCurrent(ITwoTerminal element)
+			private ISignalInformationNew GetStandardPassiveTwoTerminalCurrent(ITwoTerminal element, bool reverseDirection)
 			{
 				// If there was a cache entry already return it
 				if(_CurrentCache.TryGetValue(element, out var current))
 				{
-					return current;
+					return reverseDirection ? current.Item2 : current.Item1;
 				}
 
 				// Get voltage drop across the element
-				var voltageDrop = ResolveVoltageDrop(element.TerminalB.NodeIndex, element.TerminalA.NodeIndex);
+				var voltageDrop = reverseDirection ?
+					ResolveVoltageDrop(element.TerminalA.NodeIndex, element.TerminalB.NodeIndex) :
+					ResolveVoltageDrop(element.TerminalB.NodeIndex, element.TerminalA.NodeIndex);
 
 				// Create a new current signal
 				var currentSignal = new PhasorDomainSignal()
@@ -301,7 +306,7 @@ namespace ECAT.Simulation
 			/// <param name="nodeIndex"></param>
 			/// <returns></returns>
 			public bool TryGetVoltageDrop(int nodeIndex, out ISignalInformationNew voltageDrop) =>
-				TryGetVoltageDrop(SimulationManager.GroundNodeIndex, nodeIndex, out voltageDrop);
+				TryGetVoltageDrop(GroundNodeIndex, nodeIndex, out voltageDrop);
 
 			/// <summary>
 			/// Gets information on voltage drop between two nodes (with node A being treated as the reference node). If the node
@@ -379,19 +384,19 @@ namespace ECAT.Simulation
 			/// Gets information about current flowing through an <see cref="IResistor"/>
 			/// </summary>
 			/// <param name="voltageDrop"></param>
-			/// <param name="resistor"></param>
+			/// <param name="reverseDirection">Reverses the direction upon which current flow is decided</param>
 			/// <returns></returns>
-			public ISignalInformationNew GetCurrent(IResistor resistor) =>
-				GetStandardPassiveTwoTerminalCurrent(resistor);
+			public ISignalInformationNew GetCurrent(IResistor resistor, bool reverseDirection) =>
+				GetStandardPassiveTwoTerminalCurrent(resistor, reverseDirection);
 
 			/// <summary>
 			/// Gets information about current flowing through an <see cref="IResistor"/>
 			/// </summary>
 			/// <param name="voltageDrop"></param>
-			/// <param name="capacitor"></param>
+			/// <param name="reverseDirection">Reverses the direction upon which current flow is decided</param>
 			/// <returns></returns>
-			public ISignalInformationNew GetCurrent(ICapacitor capacitor) =>
-				GetStandardPassiveTwoTerminalCurrent(capacitor);
+			public ISignalInformationNew GetCurrent(ICapacitor capacitor, bool reverseDirection) =>
+				GetStandardPassiveTwoTerminalCurrent(capacitor, reverseDirection);
 
 			/// <summary>
 			/// Returns current produced by some <see cref="IActiveComponent"/>
