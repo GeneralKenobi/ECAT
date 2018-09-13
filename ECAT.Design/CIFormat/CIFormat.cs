@@ -64,7 +64,7 @@ namespace ECAT.Design
 		/// <param name="signalName">Name to associate with the signal, eg. voltage</param>
 		/// <param name="unit">Unit to use in display</param>
 		/// <returns></returns>
-		public static IEnumerable<string> GetSignalInfo(ISignalInformationNew signal, string signalName, string unit)
+		public static IEnumerable<string> GetSignalInfo(ISignalInformation signal, string signalName, string unit)
 		{
 			// Characteristic signal information
 			yield return LineInfo("Minimum instantenous " + signalName, signal.Minimum, unit);

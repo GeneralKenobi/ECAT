@@ -5,7 +5,7 @@ namespace ECAT.Core
 	/// <summary>
 	/// Interface for classes presenting information about some <see cref="ISignalData"/>
 	/// </summary>
-	public interface ISignalInformationNew : IDeepCopy<ISignalInformationNew>
+	public interface ISignalInformation : IDeepCopy<ISignalInformation>
 	{
 		#region Properties
 

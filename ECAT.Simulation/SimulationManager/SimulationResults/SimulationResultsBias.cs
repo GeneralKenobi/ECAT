@@ -26,16 +26,16 @@ namespace ECAT.Simulation
 			/// Item1 is the data on which the signal is based, Item2 is information about the signal data, Item3 is information
 			/// about negated signal data.
 			/// </summary>
-			private Dictionary<int, Tuple<IPhasorDomainSignal, SignalInformationNew, SignalInformationNew>> _ActiveComponentsCurrentCache { get; set; } =
-				new Dictionary<int, Tuple<IPhasorDomainSignal, SignalInformationNew, SignalInformationNew>>();
+			private Dictionary<int, Tuple<IPhasorDomainSignal, SignalInformation, SignalInformation>> _ActiveComponentsCurrentCache { get; set; } =
+				new Dictionary<int, Tuple<IPhasorDomainSignal, SignalInformation, SignalInformation>>();
 
 			/// <summary>
 			/// Dictionary holding already computed voltage drops for the last performed simulation. Ints in key tuple are indexes of
 			/// nodes (Item1 for the first node (reference node) and Item2 for the second node (target node)). First item in value
-			/// is the voltage drop, second one is an <see cref="SignalInformationNew"/> built based on Item1.
+			/// is the voltage drop, second one is an <see cref="SignalInformation"/> built based on Item1.
 			/// </summary>
-			private Dictionary<Tuple<int, int>, Tuple<PhasorDomainSignal, SignalInformationNew>> _VoltageDropCache { get; } =
-				new Dictionary<Tuple<int, int>, Tuple<PhasorDomainSignal, SignalInformationNew>>(
+			private Dictionary<Tuple<int, int>, Tuple<PhasorDomainSignal, SignalInformation>> _VoltageDropCache { get; } =
+				new Dictionary<Tuple<int, int>, Tuple<PhasorDomainSignal, SignalInformation>>(
 					new CustomEqualityComparer<Tuple<int, int>>(
 					// Compare the elements of the Tuples, now tuples themselves
 					(x, y) => x.Item1 == y.Item1 && x.Item2 == y.Item2));
@@ -43,8 +43,8 @@ namespace ECAT.Simulation
 			/// <summary>
 			/// Contains already computed currents, Item1 is in the standard direction, Item2 is in the reverse direction
 			/// </summary>
-			private Dictionary<IBaseComponent, Tuple<SignalInformationNew, SignalInformationNew>> _CurrentCache { get; } =
-				new Dictionary<IBaseComponent, Tuple<SignalInformationNew, SignalInformationNew>>();
+			private Dictionary<IBaseComponent, Tuple<SignalInformation, SignalInformation>> _CurrentCache { get; } =
+				new Dictionary<IBaseComponent, Tuple<SignalInformation, SignalInformation>>();
 
 			/// <summary>
 			/// Contains already computed <see cref="PowerInformation"/>s
@@ -68,13 +68,13 @@ namespace ECAT.Simulation
 			{
 				// Cache the original
 				_VoltageDropCache.Add(new Tuple<int, int>(nodeAIndex, nodeBIndex),
-					new Tuple<PhasorDomainSignal, SignalInformationNew>(signal, new SignalInformationNew(signal)));				
+					new Tuple<PhasorDomainSignal, SignalInformation>(signal, new SignalInformation(signal)));				
 
 				// And cache the reversed one
 				var reversed = signal.CopyAndNegate();
 
-				_VoltageDropCache.Add(new Tuple<int, int>(nodeBIndex, nodeAIndex), new Tuple<PhasorDomainSignal, SignalInformationNew>(
-					reversed, new SignalInformationNew(reversed)));
+				_VoltageDropCache.Add(new Tuple<int, int>(nodeBIndex, nodeAIndex), new Tuple<PhasorDomainSignal, SignalInformation>(
+					reversed, new SignalInformation(reversed)));
 			}
 
 			/// <summary>
@@ -83,8 +83,8 @@ namespace ECAT.Simulation
 			/// <param name="component">Component for which the current flow is considered</param>
 			/// <param name="current"></param>
 			private void CacheCurrent(IBaseComponent component, PhasorDomainSignal current) =>				
-				_CurrentCache.Add(component, new Tuple<SignalInformationNew, SignalInformationNew>(
-					new SignalInformationNew(current), new SignalInformationNew(current.CopyAndNegate())));
+				_CurrentCache.Add(component, new Tuple<SignalInformation, SignalInformation>(
+					new SignalInformation(current), new SignalInformation(current.CopyAndNegate())));
 
 			/// <summary>
 			/// Caches the <paramref name="power"/> in <see cref="_PowerCache"/>			
@@ -253,7 +253,7 @@ namespace ECAT.Simulation
 			/// <param name="element">Element for which the current is considered</param>
 			/// <param name="reverseDirection">Reverses the direction upon which current flow is decided</param>
 			/// <returns></returns>
-			private ISignalInformationNew GetStandardPassiveTwoTerminalCurrent(ITwoTerminal element, bool reverseDirection)
+			private ISignalInformation GetStandardPassiveTwoTerminalCurrent(ITwoTerminal element, bool reverseDirection)
 			{
 				// If there was a cache entry already return it
 				if(_CurrentCache.TryGetValue(element, out var current))
@@ -276,7 +276,7 @@ namespace ECAT.Simulation
 				// Cache it
 				CacheCurrent(element, currentSignal);
 				
-				return new SignalInformationNew(currentSignal);
+				return new SignalInformation(currentSignal);
 			}
 
 			#endregion
@@ -312,9 +312,9 @@ namespace ECAT.Simulation
 
 				// Creates a dictionary of active component currents
 				_ActiveComponentsCurrentCache =
-					new Dictionary<int, Tuple<IPhasorDomainSignal, SignalInformationNew, SignalInformationNew>>(vsCurrents.ToDictionary(
-					(current) => current.Key, (current) => new Tuple<IPhasorDomainSignal, SignalInformationNew, SignalInformationNew>(
-						current.Value, new SignalInformationNew(current.Value), new SignalInformationNew(current.Value.CopyAndNegate()))));
+					new Dictionary<int, Tuple<IPhasorDomainSignal, SignalInformation, SignalInformation>>(vsCurrents.ToDictionary(
+					(current) => current.Key, (current) => new Tuple<IPhasorDomainSignal, SignalInformation, SignalInformation>(
+						current.Value, new SignalInformation(current.Value), new SignalInformation(current.Value.CopyAndNegate()))));
 						
 				// Add an empty node as the ground node (which is normally not included in simulation due to optimization)
 				// and effectively increment every node index by 1
@@ -330,7 +330,7 @@ namespace ECAT.Simulation
 			/// </summary>
 			/// <param name="nodeIndex"></param>
 			/// <returns></returns>
-			public bool TryGetVoltageDrop(int nodeIndex, out ISignalInformationNew voltageDrop) =>
+			public bool TryGetVoltageDrop(int nodeIndex, out ISignalInformation voltageDrop) =>
 				TryGetVoltageDrop(GroundNodeIndex, nodeIndex, out voltageDrop);
 
 			/// <summary>
@@ -340,7 +340,7 @@ namespace ECAT.Simulation
 			/// <param name="nodeAIndex"></param>
 			/// <param name="nodeBIndex"></param>
 			/// <returns></returns>
-			public bool TryGetVoltageDrop(int nodeAIndex, int nodeBIndex, out ISignalInformationNew voltageDrop)
+			public bool TryGetVoltageDrop(int nodeAIndex, int nodeBIndex, out ISignalInformation voltageDrop)
 			{
 				// If one of the node indexes exceeds the number of nodes
 				if(nodeAIndex >= _Nodes.Count || nodeBIndex >= _Nodes.Count)
@@ -352,7 +352,7 @@ namespace ECAT.Simulation
 				// If the node indexes are equal (the same nodes) return default voltage drop (equivalent to no drop)
 				if(nodeAIndex == nodeBIndex)
 				{
-					voltageDrop = new SignalInformationNew();
+					voltageDrop = new SignalInformation();
 					return true;
 				}
 
@@ -369,7 +369,7 @@ namespace ECAT.Simulation
 				// Cache it
 				CacheVoltageDrop(signal, nodeAIndex, nodeBIndex);
 
-				voltageDrop = new SignalInformationNew(signal);
+				voltageDrop = new SignalInformation(signal);
 
 				// And return success
 				return true;
@@ -380,7 +380,7 @@ namespace ECAT.Simulation
 			/// </summary>
 			/// <param name="nodeIndex"></param>
 			/// <returns></returns>
-			public ISignalInformationNew GetVoltageDropOrZero(int nodeIndex) => GetVoltageDropOrZero(GroundNodeIndex, nodeIndex);				
+			public ISignalInformation GetVoltageDropOrZero(int nodeIndex) => GetVoltageDropOrZero(GroundNodeIndex, nodeIndex);				
 
 			/// <summary>
 			/// Gets information on voltage drop between two nodes (with node A being treated as the reference node) or returns a drop
@@ -389,7 +389,7 @@ namespace ECAT.Simulation
 			/// <param name="nodeAIndex"></param>
 			/// <param name="nodeBIndex"></param>
 			/// <returns></returns>
-			public ISignalInformationNew GetVoltageDropOrZero(int nodeAIndex, int nodeBIndex)
+			public ISignalInformation GetVoltageDropOrZero(int nodeAIndex, int nodeBIndex)
 			{
 				if(TryGetVoltageDrop(nodeAIndex, nodeBIndex, out var info))
 				{
@@ -397,7 +397,7 @@ namespace ECAT.Simulation
 				}
 				else
 				{
-					return new SignalInformationNew();
+					return new SignalInformation();
 				}
 			}
 
@@ -411,7 +411,7 @@ namespace ECAT.Simulation
 			/// <param name="voltageDrop"></param>
 			/// <param name="reverseDirection">Reverses the direction upon which current flow is decided</param>
 			/// <returns></returns>
-			public ISignalInformationNew GetCurrent(IResistor resistor, bool reverseDirection) =>
+			public ISignalInformation GetCurrent(IResistor resistor, bool reverseDirection) =>
 				GetStandardPassiveTwoTerminalCurrent(resistor, reverseDirection);
 
 			/// <summary>
@@ -420,7 +420,7 @@ namespace ECAT.Simulation
 			/// <param name="voltageDrop"></param>
 			/// <param name="reverseDirection">Reverses the direction upon which current flow is decided</param>
 			/// <returns></returns>
-			public ISignalInformationNew GetCurrent(ICapacitor capacitor, bool reverseDirection) =>
+			public ISignalInformation GetCurrent(ICapacitor capacitor, bool reverseDirection) =>
 				GetStandardPassiveTwoTerminalCurrent(capacitor, reverseDirection);
 
 			/// <summary>
@@ -430,7 +430,7 @@ namespace ECAT.Simulation
 			/// <param name="reverseDirection">True if the direction of current should be reversed with respect to the one given
 			/// by convention for the specific element</param>
 			/// <returns></returns>
-			public ISignalInformationNew GetCurrentOrZero(int activeComponentIndex, bool reverseDirection)
+			public ISignalInformation GetCurrentOrZero(int activeComponentIndex, bool reverseDirection)
 			{
 				// If the current can be found
 				if(_ActiveComponentsCurrentCache.TryGetValue(activeComponentIndex, out var currentPackage))
@@ -439,7 +439,7 @@ namespace ECAT.Simulation
 				}
 
 				// Otherwise return a new SignalInformation
-				return new SignalInformationNew();
+				return new SignalInformation();
 			}
 
 			#endregion

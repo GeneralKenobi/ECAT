@@ -9,19 +9,19 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Standard implementation of <see cref="ISignalInformation"/>, presents information about a signal - voltage drop or current flow		
 		/// </summary>
-		private class SignalInformationNew : ISignalInformationNew
+		private class SignalInformation : ISignalInformation
 		{
 			#region Constructors
 
 			/// <summary>
 			/// Default constructor
 			/// </summary>
-			public SignalInformationNew() { }
+			public SignalInformation() { }
 
 			/// <summary>
 			/// Constructor with parameter
 			/// </summary>
-			public SignalInformationNew(ISignalData data)
+			public SignalInformation(ISignalData data)
 			{
 				Data = data;
 			}
@@ -29,7 +29,7 @@ namespace ECAT.Simulation
 			/// <summary>
 			/// Copy constructor
 			/// </summary>
-			public SignalInformationNew(ISignalInformationNew source)
+			public SignalInformation(ISignalInformation source)
 			{
 				Copy(source);
 			}
@@ -112,7 +112,7 @@ namespace ECAT.Simulation
 			/// Copies all contents of <paramref name="signalInformation"/> to this object.
 			/// </summary>
 			/// <param name="signalInformation"></param>
-			public void Copy(ISignalInformationNew signalInformation)
+			public void Copy(ISignalInformation signalInformation)
 			{
 				if(signalInformation == null)
 				{
@@ -134,13 +134,13 @@ namespace ECAT.Simulation
 			/// Returns a copy of this instance
 			/// </summary>
 			/// <returns></returns>
-			ISignalInformationNew IDeepCopyTo<ISignalInformationNew>.Copy() => CopySignalInformation();
+			ISignalInformation IDeepCopyTo<ISignalInformation>.Copy() => CopySignalInformation();
 
 			/// <summary>
 			/// Returns a copy of this instance
 			/// </summary>
 			/// <returns></returns>
-			public SignalInformationNew CopySignalInformation() =>	new SignalInformationNew(this);
+			public SignalInformation CopySignalInformation() =>	new SignalInformation(this);
 
 			#endregion
 		}
