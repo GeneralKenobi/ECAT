@@ -152,14 +152,21 @@ namespace ECAT.Simulation
 			private PhasorDomainSignal GetForPositiveMaximum(PhasorDomainSignal info) => info.DC >= 0 ? info : info.CopyAndNegate();
 
 			/// <summary>
-			/// Constructs a new VoltageDropInformation based on two nodes (with <paramref name="nodeA"/> being the reference node)
+			/// Constructs a new VoltageDropInformation based on two nodes (with <paramref name="nodeA"/> being the reference node).
+			/// Caches the result.
 			/// </summary>
 			/// <param name="nodeA"></param>
 			/// <param name="nodeB"></param>
 			/// <returns></returns>
-			private PhasorDomainSignal ConstructVoltageDrop(INode nodeA, INode nodeB) => GetForPositiveMaximum(
-				new PhasorDomainSignal(nodeB.DCPotential.Value - nodeA.DCPotential.Value,
-					GetACWaveforms(nodeA.ACPotentials, nodeB.ACPotentials)));
+			private PhasorDomainSignal ConstructVoltageDrop(INode nodeA, INode nodeB)
+			{
+				var result = new PhasorDomainSignal(nodeB.DCPotential.Value - nodeA.DCPotential.Value,
+					GetACWaveforms(nodeA.ACPotentials, nodeB.ACPotentials));
+
+				CacheVoltageDrop(result, nodeA.Index, nodeB.Index);
+
+				return GetForPositiveMaximum(result);
+			}
 
 			/// <summary>
 			/// Constructs a new <see cref="PhasorDomainSignal"/> based on node indexes. If at least one of the indexes is not
@@ -175,7 +182,7 @@ namespace ECAT.Simulation
 			
 			/// <summary>
 			/// Returns voltage drop between nodes A (reference) and B. If at least one node index isn't related to any of the nodes
-			/// in <see cref="_Nodes"/>, returns a voltage drop equal to 0. If there already was a cached value, return it.
+			/// in <see cref="_Nodes"/>, returns a voltage drop equal to 0. If there already was a cached value, returns it.
 			/// </summary>
 			/// <param name="nodeAIndex"></param>
 			/// <param name="nodeBIndex"></param>
