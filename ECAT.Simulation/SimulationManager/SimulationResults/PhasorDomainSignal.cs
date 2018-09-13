@@ -148,6 +148,12 @@ namespace ECAT.Simulation
 		public PhasorDomainSignal CopyAndNegate() => new PhasorDomainSignal(-DC, ComposingPhasors.Select((phasor) =>
 			new KeyValuePair<double, Complex>(phasor.Key, -phasor.Value)));
 
+		/// <summary>
+		/// Creates a copy of the signal in reversed direction (<see cref="DC"/> and each <see cref="ComposingPhasors"/> value is negated)
+		/// </summary>
+		/// <returns></returns>
+		IPhasorDomainSignal IPhasorDomainSignal.CopyAndNegate() => CopyAndNegate();
+
 		#endregion
 	}
 

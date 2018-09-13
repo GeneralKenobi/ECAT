@@ -27,5 +27,15 @@ namespace ECAT.Core
 		SignalType Type { get; }
 
 		#endregion
+
+		#region Methods
+
+		/// <summary>
+		/// Creates a copy of the signal in reversed direction (<see cref="DC"/> and each <see cref="ComposingPhasors"/> value is negated)
+		/// </summary>
+		/// <returns></returns>
+		IPhasorDomainSignal CopyAndNegate();
+
+		#endregion
 	}
 }
