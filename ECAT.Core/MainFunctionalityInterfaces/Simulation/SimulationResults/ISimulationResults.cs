@@ -15,7 +15,7 @@
 		/// </summary>
 		/// <param name="nodeIndex"></param>
 		/// <returns></returns>
-		bool TryGetVoltageDrop(int nodeIndex, out ISignalInformation voltageDrop);
+		bool TryGetVoltageDrop(int nodeIndex, out ISignalInformationNew voltageDrop);
 
 		/// <summary>
 		/// Gets information on voltage drop between two nodes (with node A being treated as the reference node). If the node
@@ -24,14 +24,14 @@
 		/// <param name="nodeAIndex"></param>
 		/// <param name="nodeBIndex"></param>
 		/// <returns></returns>
-		bool TryGetVoltageDrop(int nodeAIndex, int nodeBIndex, out ISignalInformation voltageDrop);
+		bool TryGetVoltageDrop(int nodeAIndex, int nodeBIndex, out ISignalInformationNew voltageDrop);
 
 		/// <summary>
 		/// Gets a voltage drop of a node with respect to ground or returns a drop equal to zero if unsuccessful
 		/// </summary>
 		/// <param name="nodeIndex"></param>
 		/// <returns></returns>
-		ISignalInformation GetVoltageDropOrZero(int nodeIndex);
+		ISignalInformationNew GetVoltageDropOrZero(int nodeIndex);
 
 		/// <summary>
 		/// Gets information on voltage drop between two nodes (with node A being treated as the reference node) or returns a drop
@@ -40,7 +40,7 @@
 		/// <param name="nodeAIndex"></param>
 		/// <param name="nodeBIndex"></param>
 		/// <returns></returns>
-		ISignalInformation GetVoltageDropOrZero(int nodeAIndex, int nodeBIndex);
+		ISignalInformationNew GetVoltageDropOrZero(int nodeAIndex, int nodeBIndex);
 
 		#endregion
 
@@ -52,7 +52,7 @@
 		/// <param name="voltageDrop"></param>
 		/// <param name="resistor"></param>
 		/// <returns></returns>
-		ISignalInformation GetCurrent(ISignalInformation voltageDrop, IResistor resistor);
+		ISignalInformationNew GetCurrent(IResistor resistor, bool reverseDirection);
 
 		/// <summary>
 		/// Gets information about current flowing through an <see cref="ICapacitor"/>
@@ -60,7 +60,7 @@
 		/// <param name="voltageDrop"></param>
 		/// <param name="capacitor"></param>
 		/// <returns></returns>
-		ISignalInformation GetCurrent(ISignalInformation voltageDrop, ICapacitor capacitor);
+		ISignalInformationNew GetCurrent(ICapacitor capacitor, bool reverseDirection);
 
 		/// <summary>
 		/// Returns current produced by some <see cref="IActiveComponent"/>. If simulation was not yet performed or the current can't be
@@ -70,7 +70,7 @@
 		/// <param name="reverseDirection">True if the direction of current should be reversed with respect to the one given
 		/// by convention for the specific element</param>
 		/// <returns></returns>
-		ISignalInformation GetCurrentOrZero(int activeComponentIndex, bool reverseDirection);
+		ISignalInformationNew GetCurrentOrZero(int activeComponentIndex, bool reverseDirection);
 
 		#endregion
 
@@ -82,7 +82,7 @@
 		/// <param name="voltageDrop"></param>
 		/// <param name="resistor"></param>
 		/// <returns></returns>
-		IPowerInformation GetPower(ISignalInformation voltageDrop, IResistor resistor);
+		IPowerInformation GetPower(IResistor resistor);
 
 		/// <summary>
 		/// Gets information about power on an <see cref="ICurrentSource"/>
@@ -90,7 +90,7 @@
 		/// <param name="voltageDrop"></param>
 		/// <param name="currentSource"></param>
 		/// <returns></returns>
-		IPowerInformation GetPower(ISignalInformation voltageDrop, ICurrentSource currentSource);
+		IPowerInformation GetPower(ICurrentSource currentSource);
 
 		/// <summary>
 		/// Gets information about power on an <see cref="IVoltageSource"/>
@@ -98,7 +98,7 @@
 		/// <param name="current"></param>
 		/// <param name="voltageSource"></param>
 		/// <returns></returns>
-		IPowerInformation GetPower(ISignalInformation current, IVoltageSource voltageSource);
+		IPowerInformation GetPower(IVoltageSource voltageSource);
 
 		/// <summary>
 		/// Gets information about power on an <see cref="IACVoltageSource"/>. If the <paramref name="current"/> is composed of
@@ -109,7 +109,7 @@
 		/// <param name="current"></param>
 		/// <param name="voltageSource"></param>
 		/// <returns></returns>
-		IPowerInformation GetPower(ISignalInformation current, IACVoltageSource voltageSource);
+		IPowerInformation GetPower(IACVoltageSource voltageSource);
 
 		#endregion
 
