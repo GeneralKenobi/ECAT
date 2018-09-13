@@ -206,6 +206,22 @@ namespace ECAT.Simulation
 				return result;
 			}
 
+			/// <summary>
+			/// Returns voltage drop between nodes A (reference) and B. If at least one node doesn't belong to
+			/// <see cref="_Nodes"/>, returns a voltage drop equal to 0. If there already was a cached value, returns it.
+			/// </summary>
+			/// <param name="nodeA"></param>
+			/// <param name="nodeB"></param>
+			/// <returns></returns>
+			private PhasorDomainSignal ResolveVoltageDrop(INode nodeA, INode nodeB) => ResolveVoltageDrop(nodeA.Index, nodeB.Index);
+
+			/// <summary>
+			/// Returns voltage drop between nodes A (reference) and B of the <paramref name="twoTerminal"/>. If at least one node
+			/// doesn't belong to <see cref="_Nodes"/>, returns a voltage drop equal to 0. If there already was a cached value, returns it.
+			/// </summary>
+			private PhasorDomainSignal ResolveVoltageDrop(ITwoTerminal twoTerminal) => 
+				ResolveVoltageDrop(twoTerminal.TerminalA.NodeIndex, twoTerminal.TerminalB.NodeIndex);
+
 			#endregion
 
 			#region Current Related
