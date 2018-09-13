@@ -64,7 +64,7 @@ namespace ECAT.Design
 		/// <param name="signalName">Name to associate with the signal, eg. voltage</param>
 		/// <param name="unit">Unit to use in display</param>
 		/// <returns></returns>
-		public static IEnumerable<string> GetSignalInfo(ISignalInformation signal, string signalName, string unit)
+		public static IEnumerable<string> GetSignalInfo(ISignalInformationNew signal, string signalName, string unit)
 		{
 			// Characteristic signal information
 			yield return LineInfo("Minimum instantenous " + signalName, signal.Minimum, unit);
@@ -72,26 +72,26 @@ namespace ECAT.Design
 			yield return LineInfo("RMS " + signalName, signal.RMS, unit);
 
 			// DC component information
-			if (signal.Type.HasFlag(SignalType.DC))
-			{
-				yield return LineInfo("DC " + signalName, signal.DC, unit);
-			}
+			//if (signal.Type.HasFlag(SignalType.DC))
+			//{
+			//	yield return LineInfo("DC " + signalName, signal.DC, unit);
+			//}
 
-			// AC component information
-			if (signal.Type.HasFlag(SignalType.AC))
-			{
-				// If it's a multi-ac signal add a header
-				if (signal.Type.HasFlag(SignalType.MultipleAC))
-				{
-					yield return "Composing AC phasors:";
-				}
+			//// AC component information
+			//if (signal.Type.HasFlag(SignalType.AC))
+			//{
+			//	// If it's a multi-ac signal add a header
+			//	if (signal.Type.HasFlag(SignalType.MultipleAC))
+			//	{
+			//		yield return "Composing AC phasors:";
+			//	}
 
-				// Print each phasor
-				foreach (var acWaveform in signal.ComposingPhasors)
-				{
-					yield return LineInfo("AC " + signalName + " (peak)", acWaveform.Value, unit, acWaveform.Key);
-				}
-			}
+			//	// Print each phasor
+			//	foreach (var acWaveform in signal.ComposingPhasors)
+			//	{
+			//		yield return LineInfo("AC " + signalName + " (peak)", acWaveform.Value, unit, acWaveform.Key);
+			//	}
+			//}
 		}
 
 		#endregion

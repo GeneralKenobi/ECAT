@@ -45,7 +45,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Gets the voltage drop between nodes B and A (with A being the reference node)
 		/// </summary>
-		protected ISignalInformation _VoltageDrop => ChangeVIDirections ?
+		protected ISignalInformationNew _VoltageDrop => ChangeVIDirections ?
 			IoC.Resolve<ISimulationResults>().GetVoltageDropOrZero(TerminalB.NodeIndex, TerminalA.NodeIndex) :
 			IoC.Resolve<ISimulationResults>().GetVoltageDropOrZero(TerminalA.NodeIndex, TerminalB.NodeIndex);
 
@@ -86,14 +86,14 @@ namespace ECAT.Design
 		/// Returns info related to voltage
 		/// </summary>
 		/// <returns></returns>
-		protected virtual IEnumerable<string> GetVoltageInfo(ISignalInformation voltageDrop) => 
+		protected virtual IEnumerable<string> GetVoltageInfo(ISignalInformationNew voltageDrop) => 
 			CIFormat.GetSignalInfo(voltageDrop, QuantityNames.Singleton.Voltage, SIUnits.Singleton.VoltageShort);		
 
 		/// <summary>
 		/// Returns info related to current
 		/// </summary>
 		/// <returns></returns>
-		protected virtual IEnumerable<string> GetCurrentInfo(ISignalInformation currentInfo) =>
+		protected virtual IEnumerable<string> GetCurrentInfo(ISignalInformationNew currentInfo) =>
 			CIFormat.GetSignalInfo(currentInfo, QuantityNames.Singleton.Current, SIUnits.Singleton.CurrentShort);		
 
 		/// <summary>

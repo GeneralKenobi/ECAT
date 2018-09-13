@@ -48,7 +48,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Dictionary with currents produced by active components (<see cref="_ActiveComponents"/>)
 		/// </summary>
-		private Dictionary<int, Signal> _ActiveComponentsCurrents { get; set; }
+		private Dictionary<int, PhasorDomainSignal> _ActiveComponentsCurrents { get; set; }
 
 		#endregion
 
@@ -246,8 +246,8 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Returns an enumeration of currents produced by active components. The key is the index of the active component
 		/// </summary>
-		public IEnumerable<KeyValuePair<int, ISignal>> ActiveComponentsCurrents =>
-			_ActiveComponentsCurrents.ToDictionary((item) => item.Key, (item) => item.Value as ISignal);
+		public IEnumerable<KeyValuePair<int, IPhasorDomainSignal>> ActiveComponentsCurrents =>
+			_ActiveComponentsCurrents.ToDictionary((item) => item.Key, (item) => item.Value as IPhasorDomainSignal);
 
 		#endregion
 
@@ -362,13 +362,13 @@ namespace ECAT.Simulation
 				_Schematic.Components.Where((component) => component is IActiveComponent).Cast<IActiveComponent>());
 
 			// Create a dictionary for their currents
-			_ActiveComponentsCurrents = new Dictionary<int, Signal>();
+			_ActiveComponentsCurrents = new Dictionary<int, PhasorDomainSignal>();
 
 			// Assign index to each active component and add the component to the ActiveComponentsDictionary
 			for (int i = 0; i < _ActiveComponents.Count; ++i)
 			{
 				_ActiveComponents[i].ActiveComponentIndex = i;
-				_ActiveComponentsCurrents.Add(i, new Signal());
+				_ActiveComponentsCurrents.Add(i, new PhasorDomainSignal());
 			}
 		}
 

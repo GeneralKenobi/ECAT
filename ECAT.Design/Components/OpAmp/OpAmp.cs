@@ -82,7 +82,7 @@ namespace ECAT.Design
 		/// <returns></returns>
 		private IEnumerable<string> GetOutputVoltageInfo()
 		{
-			ISignalInformation voltageDrop = IoC.Resolve<ISimulationResults>().GetVoltageDropOrZero(TerminalC.NodeIndex);
+			ISignalInformationNew voltageDrop = IoC.Resolve<ISimulationResults>().GetVoltageDropOrZero(TerminalC.NodeIndex);
 
 			foreach (var item in CIFormat.GetSignalInfo(voltageDrop, QuantityNames.Singleton.Voltage, SIUnits.Singleton.VoltageShort))
 			{

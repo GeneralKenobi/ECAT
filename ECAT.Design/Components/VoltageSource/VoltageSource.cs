@@ -79,7 +79,7 @@ namespace ECAT.Design
 		{
 			var current = IoC.Resolve<ISimulationResults>().GetCurrentOrZero(ActiveComponentIndex, InvertedVoltageCurrentDirections);
 			yield return GetCurrentInfo(current);
-			yield return GetPowerInfo(IoC.Resolve<ISimulationResults>().GetPower(current, this));
+			yield return GetPowerInfo(IoC.Resolve<ISimulationResults>().GetPower(this));
 		}
 
 		#endregion
