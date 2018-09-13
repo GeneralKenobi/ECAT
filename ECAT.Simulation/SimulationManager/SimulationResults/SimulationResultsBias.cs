@@ -23,9 +23,11 @@ namespace ECAT.Simulation
 
 			/// <summary>
 			/// Cache with currents produced by <see cref="IVoltageSource"/>s, <see cref="IACVoltageSource"/>s and <see cref="IOpAmp"/>s
+			/// Item1 is the data on which the signal is based, Item2 is information about the signal data, Item3 is information
+			/// about negated signal data.
 			/// </summary>
-			private Dictionary<int, Tuple<IPhasorDomainSignal, SignalInformationNew>> _ActiveComponentsCurrentCache { get; set; } =
-				new Dictionary<int, Tuple<IPhasorDomainSignal, SignalInformationNew>>();
+			private Dictionary<int, Tuple<IPhasorDomainSignal, SignalInformationNew, SignalInformationNew>> _ActiveComponentsCurrentCache { get; set; } =
+				new Dictionary<int, Tuple<IPhasorDomainSignal, SignalInformationNew, SignalInformationNew>>();
 
 			/// <summary>
 			/// Dictionary holding already computed voltage drops for the last performed simulation. Ints in key tuple are indexes of
@@ -287,9 +289,9 @@ namespace ECAT.Simulation
 
 				// Creates a dictionary of active component currents
 				_ActiveComponentsCurrentCache =
-					new Dictionary<int, Tuple<IPhasorDomainSignal, SignalInformationNew>>(vsCurrents.ToDictionary(
-					(current) => current.Key, (current) => new Tuple<IPhasorDomainSignal, SignalInformationNew>(
-						current.Value, new SignalInformationNew(current.Value))));
+					new Dictionary<int, Tuple<IPhasorDomainSignal, SignalInformationNew, SignalInformationNew>>(vsCurrents.ToDictionary(
+					(current) => current.Key, (current) => new Tuple<IPhasorDomainSignal, SignalInformationNew, SignalInformationNew>(
+						current.Value, new SignalInformationNew(current.Value), new SignalInformationNew(current.Value.CopyAndNegate()))));
 						
 				// Add an empty node as the ground node (which is normally not included in simulation due to optimization)
 				// and effectively increment every node index by 1
@@ -399,7 +401,7 @@ namespace ECAT.Simulation
 				GetStandardPassiveTwoTerminalCurrent(capacitor, reverseDirection);
 
 			/// <summary>
-			/// Returns current produced by some <see cref="IActiveComponent"/>
+			/// Returns current produced by some <see cref="IActiveComponent"/>. If the source could not be found, returns 0.
 			/// </summary>
 			/// <param name="activeComponentIndex">Index of the <see cref="IActiveComponent"/> whose current to query</param>
 			/// <param name="reverseDirection">True if the direction of current should be reversed with respect to the one given
@@ -408,20 +410,12 @@ namespace ECAT.Simulation
 			public ISignalInformationNew GetCurrentOrZero(int activeComponentIndex, bool reverseDirection)
 			{
 				// If the current can be found
-				if(_ActiveComponentsCurrentCache.TryGetValue(activeComponentIndex, out var signal))
+				if(_ActiveComponentsCurrentCache.TryGetValue(activeComponentIndex, out var currentPackage))
 				{
-					// If reversion was requested
-					if(reverseDirection)
-					{
-						// Make a copy
-						//signal = new SignalInformation(signal);
-						// And negate it
-						//NegateSignal(signal);
-					}
-
-					return signal.Item2;
+					return reverseDirection ? currentPackage.Item3 : currentPackage.Item2;
 				}
 
+				// Otherwise return a new SignalInformation
 				return new SignalInformationNew();
 			}
 
