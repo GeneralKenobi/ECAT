@@ -13,30 +13,33 @@ namespace ECAT.Simulation
 			#region Methods
 
 			/// <summary>
-			/// Gets voltage drop of a node with respect to ground or returns null if unsuccessful
+			/// Gets voltage drop of a node with respect to ground or null if unsuccessful and assigns it to <paramref name="voltage"/>.
+			/// Returns true on success, false otherwise.
 			/// </summary>
 			/// <param name="nodeIndex"></param>
+			/// <param name="voltage"></param>
 			/// <returns></returns>
-			IPhasorDomainSignal GetVoltageDrop(int nodeIndex);
+			bool GetVoltageDrop(int nodeIndex, out IPhasorDomainSignal voltage);
 
 			/// <summary>
-			/// Gets voltage drop between two nodes (with node A being treated as the reference node) or returns null
-			/// if unsuccessful
+			/// Gets voltage drop between two nodes (with node A being treated as the reference node) or null if unsuccessful and
+			/// assigns it to <paramref name="voltage"/>. Returns true on success, false otherwise.
 			/// </summary>
 			/// <param name="nodeAIndex"></param>
 			/// <param name="nodeBIndex"></param>
+			/// <param name="voltage"></param>
 			/// <returns></returns>
-			IPhasorDomainSignal GetVoltageDrop(int nodeAIndex, int nodeBIndex);
+			bool GetVoltageDrop(int nodeAIndex, int nodeBIndex, out IPhasorDomainSignal voltage);
 
 			/// <summary>
-			/// Gets voltage drop across a <see cref="ITwoTerminal"/> component
+			/// Gets voltage drop across a <see cref="ITwoTerminal"/> component or null if unsuccessful and assigns it to
+			/// <paramref name="voltage"/>. Returns true on success, false otherwise.
 			/// </summary>
 			/// <param name="component"></param>
 			/// <param name="voltageBA">If true, voltage drop is calculated from <see cref="ITwoTerminal.TerminalB"/> to
-			/// <see cref="ITwoTerminal.TerminalA"/>, if false from <see cref="ITwoTerminal.TerminalA"/> to
-			/// <see cref="ITwoTerminal.TerminalB"/></param>
+			/// <param name="voltage"></param>
 			/// <returns></returns>
-			IPhasorDomainSignal GetVoltageDrop(ITwoTerminal component, bool voltageBA = true);
+			bool GetVoltageDrop(ITwoTerminal component, out IPhasorDomainSignal voltage, bool voltageBA = true);
 
 			#endregion
 		}
