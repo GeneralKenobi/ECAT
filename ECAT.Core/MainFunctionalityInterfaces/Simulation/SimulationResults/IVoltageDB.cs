@@ -28,8 +28,6 @@
 		/// </summary>
 		/// <param name="component"></param>
 		/// <param name="voltageBA">If true, voltage drop is calculated from <see cref="ITwoTerminal.TerminalB"/> to
-		/// <see cref="ITwoTerminal.TerminalA"/>, if false from <see cref="ITwoTerminal.TerminalA"/> to
-		/// <see cref="ITwoTerminal.TerminalB"/></param>
 		/// <returns></returns>
 		ISignalInformation GetVoltageDrop(ITwoTerminal component, bool voltageBA = true);
 
