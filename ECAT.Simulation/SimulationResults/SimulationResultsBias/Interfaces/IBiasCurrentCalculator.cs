@@ -1,10 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ECAT.Simulation
+﻿namespace ECAT.Simulation
 {
-    public interface IBiasCurrentCalculator
-    {
-    }
+	public partial class SimulationResultsBias
+	{
+		/// <summary>
+		/// Interface for classes capable of computing currents through components
+		/// </summary>
+		private interface IBiasCurrentCalculator
+		{
+
+		}
+	}
 }
