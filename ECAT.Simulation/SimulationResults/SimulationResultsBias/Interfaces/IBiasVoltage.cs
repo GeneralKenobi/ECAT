@@ -18,8 +18,10 @@ namespace ECAT.Simulation
 			/// </summary>
 			/// <param name="nodeIndex"></param>
 			/// <param name="voltage"></param>
+			/// <param name="nodeToGround">If true, voltage drop is calculated from ground to node given by
+			/// <paramref name="nodeIndex"/>, if false it is calculated from node given by <paramref name="nodeIndex"/> to ground</param>
 			/// <returns></returns>
-			bool TryGetVoltageDrop(int nodeIndex, out IPhasorDomainSignal voltage);
+			bool TryGetVoltageDrop(int nodeIndex, out IPhasorDomainSignal voltage, bool nodeToGround = true);
 
 			/// <summary>
 			/// Gets voltage drop between two nodes (with node A being treated as the reference node) or null if unsuccessful and
