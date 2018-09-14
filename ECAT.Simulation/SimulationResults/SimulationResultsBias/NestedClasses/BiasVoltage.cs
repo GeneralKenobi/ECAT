@@ -15,12 +15,26 @@ namespace ECAT.Simulation
 		/// </summary>
 		private class BiasVoltage : IVoltageDB, IBiasVoltage
 		{
+			#region Constructors
+
+			/// <summary>
+			/// Default constructor, requires nodes (can't be null) using which voltage drops will be calculated
+			/// </summary>
+			/// <param name="nodes">Nodes using which voltage drops will be calculated, can't be null</param>
+			/// <exception cref="ArgumentNullException"></exception>
+			public BiasVoltage(IEnumerable<INode> nodes)
+			{
+				_Nodes = new List<INode>(nodes ?? throw new ArgumentNullException(nameof(nodes)));
+			}
+
+			#endregion
+
 			#region Private properties
 
 			/// <summary>
 			/// List with all nodes upon which specific results are calculated
 			/// </summary>
-			private List<INode> _Nodes { get; set; } = new List<INode>();
+			private List<INode> _Nodes { get; }
 
 			/// <summary>
 			/// Dictionary holding already computed voltage drops. Ints in key tuple are indexes of nodes (Item1 for the first node
