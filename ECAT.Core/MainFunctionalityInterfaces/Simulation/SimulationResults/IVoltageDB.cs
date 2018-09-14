@@ -11,8 +11,10 @@
 		/// Gets a voltage drop of a node with respect to ground or returns null if unsuccessful
 		/// </summary>
 		/// <param name="nodeIndex"></param>
+		/// <param name="nodeToGround">If true, voltage drop is calculated from ground to node given by
+		/// <paramref name="nodeIndex"/>, if false it is calculated from node given by <paramref name="nodeIndex"/> to ground</param>
 		/// <returns></returns>
-		ISignalInformation GetVoltageDrop(int nodeIndex);
+		ISignalInformation GetVoltageDrop(int nodeIndex, bool nodeToGround = true);
 
 		/// <summary>
 		/// Gets information on voltage drop between two nodes (with node A being treated as the reference node) or returns null
