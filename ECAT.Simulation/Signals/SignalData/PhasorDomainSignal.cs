@@ -153,6 +153,14 @@ namespace ECAT.Simulation
 		/// </summary>
 		/// <returns></returns>
 		IPhasorDomainSignal IPhasorDomainSignal.CopyAndNegate() => CopyAndNegate();
+		
+		/// <summary>
+		/// Checks if average value is positive (<see cref="DC"/> is >= 0), if true returns a copy of this instance, if not returns a
+		/// negated copy of this instance
+		/// drops and sets the <see cref="ISignalInformation.InvertedDirection"/> flag to true
+		/// </summary>
+		/// <param name="info"></param>
+		public PhasorDomainSignal CopyWithPositiveAverage() => DC >= 0 ? Copy() : CopyAndNegate();
 
 		#endregion
 	}
