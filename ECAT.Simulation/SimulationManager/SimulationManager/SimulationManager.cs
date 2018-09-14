@@ -10,7 +10,7 @@ namespace ECAT.Simulation
 	/// <summary>
 	/// Implementation of the simulation module
 	/// </summary>
-	public partial class SimulationManager : ISimulationManager
+	public class SimulationManager : ISimulationManager
 	{
 		#region Events
 
