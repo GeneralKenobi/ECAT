@@ -5,7 +5,7 @@
 		/// <summary>
 		/// Interface for classes capable of computing currents through components
 		/// </summary>
-		private interface IBiasCurrentCalculator
+		private interface IBiasCurrent
 		{
 
 		}
