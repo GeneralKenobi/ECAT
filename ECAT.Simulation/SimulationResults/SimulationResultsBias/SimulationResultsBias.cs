@@ -10,7 +10,7 @@ namespace ECAT.Simulation
 	/// <summary>
 	/// Standard implementation of <see cref="ISimulationManager"/>, manages results for <see cref="SimulationManager"/>
 	/// </summary>
-	public class SimulationResultsBias : ISimulationResults
+	public partial class SimulationResultsBias : ISimulationResults
 	{
 		#region Private properties
 
