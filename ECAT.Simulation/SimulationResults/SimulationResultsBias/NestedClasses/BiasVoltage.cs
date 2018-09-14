@@ -27,7 +27,7 @@ namespace ECAT.Simulation
 			/// (reference node) and Item2 for the second node (target node)). First item in value is <see cref="PhasorDomainSignal"/>
 			/// representing the voltage drop, second one is an <see cref="SignalInformation"/> built based on Item1.
 			/// </summary>
-			private Dictionary<Tuple<int, int>, Tuple<PhasorDomainSignal, SignalInformation>> _VoltageDropCache { get; } =
+			private Dictionary<Tuple<int, int>, Tuple<PhasorDomainSignal, SignalInformation>> _Cache { get; } =
 				new Dictionary<Tuple<int, int>, Tuple<PhasorDomainSignal, SignalInformation>>(
 					new CustomEqualityComparer<Tuple<int, int>>(
 					// Compare the elements of the Tuples, not tuples themselves
@@ -46,13 +46,13 @@ namespace ECAT.Simulation
 			private void CacheVoltageDrop(PhasorDomainSignal signal, int nodeAIndex, int nodeBIndex)
 			{
 				// Cache the original
-				_VoltageDropCache.Add(new Tuple<int, int>(nodeAIndex, nodeBIndex),
+				_Cache.Add(new Tuple<int, int>(nodeAIndex, nodeBIndex),
 					new Tuple<PhasorDomainSignal, SignalInformation>(signal, new SignalInformation(signal)));
 
 				// And cache the reversed one
 				var reversed = signal.CopyAndNegate();
 
-				_VoltageDropCache.Add(new Tuple<int, int>(nodeBIndex, nodeAIndex), new Tuple<PhasorDomainSignal, SignalInformation>(
+				_Cache.Add(new Tuple<int, int>(nodeBIndex, nodeAIndex), new Tuple<PhasorDomainSignal, SignalInformation>(
 					reversed, new SignalInformation(reversed)));
 			}
 
@@ -115,6 +115,35 @@ namespace ECAT.Simulation
 				// Return it
 				return result;
 			}
+
+			/// <summary>
+			/// Checks if voltage drop between <paramref name="nodeAIndex"/> and <paramref name="nodeBIndex"/> can be obtained from
+			/// cache (<see cref="_Cache"/>), if not performs all possible actions to create it and cache it. Returns true if, at the
+			/// end of the method call, the voltage drop may be obtained from <see cref="_Cache"/>, false otherwise.
+			/// </summary>
+			/// <param name="nodeAIndex"></param>
+			/// <param name="nodeBIndex"></param>
+			/// <returns></returns>
+			private bool TryEnableVoltageDrop(int nodeAIndex, int nodeBIndex)
+			{
+				// Check if nodes exist
+				if (NodeExists(nodeAIndex) && NodeExists(nodeBIndex))
+				{
+					// If it does, check if it was already calculated
+					if (!_Cache.ContainsKey(new Tuple<int, int>(nodeAIndex, nodeBIndex)))
+					{
+						ConstructVoltageDrop(nodeAIndex, nodeBIndex);
+					}
+
+					// Return success
+					return true;
+				}
+				// If not, assign null and return failure
+				else
+				{
+					return false;
+				}
+			}
 			
 			/// <summary>
 			/// Returns true if a node with the given index exists
@@ -156,22 +185,13 @@ namespace ECAT.Simulation
 			/// <returns></returns>
 			public bool TryGetVoltageDrop(int nodeAIndex, int nodeBIndex, out IPhasorDomainSignal voltage)
 			{
-				// Check if nodes exist
-				if (NodeExists(nodeAIndex) && NodeExists(nodeBIndex))
-				{
-					// If it does, check if it was already calculated
-					if(_VoltageDropCache.TryGetValue(new Tuple<int, int>(nodeAIndex, nodeBIndex), out var voltagePackage))
-					{
-						// If so, assign it
-						voltage = voltagePackage.Item1;
-					}
-					else
-					{
-						// If not, construct it
-						voltage = ConstructVoltageDrop(nodeAIndex, nodeBIndex);
-					}
-
-					// Return success
+				// Check if it's possible to get the voltage drop from cache
+				if (TryEnableVoltageDrop(nodeAIndex, nodeBIndex) &&
+					// If the first condition returned true, the element should be in cache but check so as not to crash by accident
+					_Cache.TryGetValue(new Tuple<int, int>(nodeAIndex, nodeBIndex), out var voltagePackage))
+				{					
+					// Assign result and return success
+					voltage = voltagePackage.Item1;
 					return true;
 				}
 				// If not, assign null and return failure
@@ -197,6 +217,63 @@ namespace ECAT.Simulation
 				TryGetVoltageDrop(component.TerminalA.NodeIndex, component.TerminalB.NodeIndex, out voltage) :
 				// Get voltage drop from node B to node A
 				TryGetVoltageDrop(component.TerminalB.NodeIndex, component.TerminalA.NodeIndex, out voltage);
+
+			#endregion
+
+			#region IVolateDB interface
+
+			/// <summary>
+			/// Gets a voltage drop of a node with respect to ground or returns null if unsuccessful
+			/// </summary>
+			/// <param name="nodeIndex"></param>
+			/// <param name="nodeToGround">If true, voltage drop is calculated from ground to node given by
+			/// <paramref name="nodeIndex"/>, if false it is calculated from node given by <paramref name="nodeIndex"/> to ground</param>
+			/// <returns></returns>
+			public ISignalInformation GetVoltageDrop(int nodeIndex, bool nodeToGround = true) =>
+				// Depending on requested voltage drop direction
+				nodeToGround ?
+				// Get voltage drop from ground to node
+				GetVoltageDrop(SimulationManager.GroundNodeIndex, nodeIndex) :
+				// Get voltage drop from node to ground
+				GetVoltageDrop(nodeIndex, SimulationManager.GroundNodeIndex);
+			
+			/// <summary>
+			/// Gets information on voltage drop between two nodes (with node A being treated as the reference node) or returns null
+			/// if unsuccessful
+			/// </summary>
+			/// <param name="nodeAIndex"></param>
+			/// <param name="nodeBIndex"></param>
+			/// <returns></returns>
+			public ISignalInformation GetVoltageDrop(int nodeAIndex, int nodeBIndex)
+			{
+				// Check if it's possible to get the voltage drop from cache
+				if (TryEnableVoltageDrop(nodeAIndex, nodeBIndex) &&
+					// If the first condition returned true, the element should be in cache but check so as not to crash by accident
+					_Cache.TryGetValue(new Tuple<int, int>(nodeAIndex, nodeBIndex), out var voltagePackage))
+				{
+					// Return the result
+					return voltagePackage.Item2;
+				}
+				// If not return null
+				else
+				{
+					return null;
+				}
+			}
+
+			/// <summary>
+			/// Gets information on voltage drop across a <see cref="ITwoTerminal"/> component
+			/// </summary>
+			/// <param name="component"></param>
+			/// <param name="voltageBA">If true, voltage drop is calculated from <see cref="ITwoTerminal.TerminalB"/> to
+			/// <returns></returns>
+			public ISignalInformation GetVoltageDrop(ITwoTerminal component, bool voltageBA = true) =>
+				// Depending on requested voltage drop direction
+				voltageBA ?
+				// Get voltage drop from node A to node B
+				GetVoltageDrop(component.TerminalA.NodeIndex, component.TerminalB.NodeIndex) :
+				// Get voltage drop from node B to node A
+				GetVoltageDrop(component.TerminalB.NodeIndex, component.TerminalA.NodeIndex);
 
 			#endregion
 
