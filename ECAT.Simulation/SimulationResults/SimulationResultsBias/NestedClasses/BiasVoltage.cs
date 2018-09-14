@@ -1,0 +1,206 @@
+﻿using CSharpEnhanced.CoreClasses;
+using ECAT.Core;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
+
+namespace ECAT.Simulation
+{
+	public partial class SimulationResultsBias : ISimulationResults
+	{
+		/// <summary>
+		/// Provides functionality connected with storing, calculating and exposing voltage drops and information about them in
+		/// form of <see cref="IPhasorDomainSignal"/>s and <see cref="ISignalInformation"/>
+		/// </summary>
+		private class BiasVoltage : IVoltageDB, IBiasVoltage
+		{
+			#region Private properties
+
+			/// <summary>
+			/// List with all nodes upon which specific results are calculated
+			/// </summary>
+			private List<INode> _Nodes { get; set; } = new List<INode>();
+
+			/// <summary>
+			/// Dictionary holding already computed voltage drops. Ints in key tuple are indexes of nodes (Item1 for the first node
+			/// (reference node) and Item2 for the second node (target node)). First item in value is <see cref="PhasorDomainSignal"/>
+			/// representing the voltage drop, second one is an <see cref="SignalInformation"/> built based on Item1.
+			/// </summary>
+			private Dictionary<Tuple<int, int>, Tuple<PhasorDomainSignal, SignalInformation>> _VoltageDropCache { get; } =
+				new Dictionary<Tuple<int, int>, Tuple<PhasorDomainSignal, SignalInformation>>(
+					new CustomEqualityComparer<Tuple<int, int>>(
+					// Compare the elements of the Tuples, not tuples themselves
+					(x, y) => x.Item1 == y.Item1 && x.Item2 == y.Item2));
+
+			#endregion
+
+			#region Private methods
+
+			/// <summary>
+			/// Caches the <paramref name="signal"/> as well as its copy with inverted indexes into <see cref="_VoltageDropInformationCache"/>
+			/// </summary>
+			/// <param name="signal"></param>
+			/// <param name="nodeAIndex"></param>
+			/// <param name="nodeBIndex"></param>
+			private void CacheVoltageDrop(PhasorDomainSignal signal, int nodeAIndex, int nodeBIndex)
+			{
+				// Cache the original
+				_VoltageDropCache.Add(new Tuple<int, int>(nodeAIndex, nodeBIndex),
+					new Tuple<PhasorDomainSignal, SignalInformation>(signal, new SignalInformation(signal)));
+
+				// And cache the reversed one
+				var reversed = signal.CopyAndNegate();
+
+				_VoltageDropCache.Add(new Tuple<int, int>(nodeBIndex, nodeAIndex), new Tuple<PhasorDomainSignal, SignalInformation>(
+					reversed, new SignalInformation(reversed)));
+			}
+
+			/// <summary>
+			/// Finds all AC voltage waveforms between the two node potentials collections
+			/// </summary>
+			/// <param name="nodeAACPotentials"></param>
+			/// <param name="nodeBACPotentials"></param>
+			/// <returns></returns>
+			private IEnumerable<KeyValuePair<double, Complex>> GetACWaveforms(IDictionary<double, Complex> nodeAACPotentials,
+				IDictionary<double, Complex> nodeBACPotentials)
+			{
+				// Get the intersecting keys (i.e. find all waveforms that are present at both nodes, in 90% situations it will be all
+				// elements but not always)
+				var intersectingKeys = nodeAACPotentials.Keys.Intersect(nodeBACPotentials.Keys);
+
+				// For each waveform present at both nodes
+				foreach (var key in intersectingKeys)
+				{
+					// Return a difference between waveform at node B and waveform at node A
+					yield return new KeyValuePair<double, Complex>(key, nodeBACPotentials[key] - nodeAACPotentials[key]);
+				}
+
+				// For each waveform present only at node B
+				foreach (var key in nodeBACPotentials.Keys.Except(intersectingKeys))
+				{
+					// Add its value to the waveforms
+					yield return new KeyValuePair<double, Complex>(key, nodeBACPotentials[key]);
+				}
+
+				// For each waveform present only at node A
+				foreach (var key in nodeAACPotentials.Keys.Except(intersectingKeys))
+				{
+					// Subtract its value from the waveforms
+					yield return new KeyValuePair<double, Complex>(key, -nodeAACPotentials[key]);
+				}
+			}
+
+			/// <summary>
+			/// Constructs a new <see cref="PhasorDomainSignal"/> based on voltage drop between two nodes (with <paramref name="nodeA"/>
+			/// being the reference node). Caches the result (with its negation). Node indexes are assumed to have been checked that
+			/// corresponding to them nodes exist in <see cref="_Nodes"/>, if not an exception may be thrown.
+			/// </summary>
+			/// <param name="nodeA"></param>
+			/// <param name="nodeB"></param>
+			/// <returns></returns>
+			private PhasorDomainSignal ConstructVoltageDrop(int nodeAIndex, int nodeBIndex)
+			{
+				// Get the nodes
+				var nodeA = _Nodes.First((node) => node.Index == nodeAIndex);
+				var nodeB = _Nodes.First((node) => node.Index == nodeAIndex);
+
+				// Construct the result
+				var result = new PhasorDomainSignal(nodeB.DCPotential.Value - nodeA.DCPotential.Value,
+					GetACWaveforms(nodeA.ACPotentials, nodeB.ACPotentials));
+
+				// Cache it
+				CacheVoltageDrop(result, nodeA.Index, nodeB.Index);
+
+				// Return it
+				return result;
+			}
+			
+			/// <summary>
+			/// Returns true if a node with the given index exists
+			/// </summary>
+			/// <param name="index"></param>
+			/// <returns></returns>
+			private bool NodeExists(int index) => _Nodes.Exists((node) => node.Index == index);
+
+			#endregion
+
+			#region Public methods
+
+			#region IBiasVoltage interface
+
+			/// <summary>
+			/// Gets voltage drop of a node with respect to ground or null if unsuccessful and assigns it to <paramref name="voltage"/>.
+			/// Returns true on success, false otherwise.
+			/// </summary>
+			/// <param name="nodeIndex"></param>
+			/// <param name="voltage"></param>
+			/// <param name="nodeToGround">If true, voltage drop is calculated from ground to node given by
+			/// <paramref name="nodeIndex"/>, if false it is calculated from node given by <paramref name="nodeIndex"/> to ground</param>
+			/// <returns></returns>
+			public bool TryGetVoltageDrop(int nodeIndex, out IPhasorDomainSignal voltage, bool nodeToGround = true) =>
+				// Depending on requested voltage drop direction
+				nodeToGround ?
+				// Get voltage drop from ground to node
+				TryGetVoltageDrop(SimulationManager.GroundNodeIndex, nodeIndex, out voltage) :
+				// Get voltage drop from node to ground
+				TryGetVoltageDrop(nodeIndex, SimulationManager.GroundNodeIndex, out voltage);
+
+			/// <summary>
+			/// Gets voltage drop between two nodes (with node A being treated as the reference node) or null if unsuccessful and
+			/// assigns it to <paramref name="voltage"/>. Returns true on success, false otherwise.
+			/// </summary>
+			/// <param name="nodeAIndex"></param>
+			/// <param name="nodeBIndex"></param>
+			/// <param name="voltage"></param>
+			/// <returns></returns>
+			public bool TryGetVoltageDrop(int nodeAIndex, int nodeBIndex, out IPhasorDomainSignal voltage)
+			{
+				// Check if nodes exist
+				if (NodeExists(nodeAIndex) && NodeExists(nodeBIndex))
+				{
+					// If it does, check if it was already calculated
+					if(_VoltageDropCache.TryGetValue(new Tuple<int, int>(nodeAIndex, nodeBIndex), out var voltagePackage))
+					{
+						// If so, assign it
+						voltage = voltagePackage.Item1;
+					}
+					else
+					{
+						// If not, construct it
+						voltage = ConstructVoltageDrop(nodeAIndex, nodeBIndex);
+					}
+
+					// Return success
+					return true;
+				}
+				// If not, assign null and return failure
+				else
+				{
+					voltage = null;
+					return false;
+				}
+			}
+
+			/// <summary>
+			/// Gets voltage drop across a <see cref="ITwoTerminal"/> component or null if unsuccessful and assigns it to
+			/// <paramref name="voltage"/>. Returns true on success, false otherwise.
+			/// </summary>
+			/// <param name="component"></param>
+			/// <param name="voltageBA">If true, voltage drop is calculated from <see cref="ITwoTerminal.TerminalB"/> to
+			/// <param name="voltage"></param>
+			/// <returns></returns>
+			public bool TryGetVoltageDrop(ITwoTerminal component, out IPhasorDomainSignal voltage, bool voltageBA = true) =>
+				// Depending on requested voltage drop direction
+				voltageBA ?
+				// Get voltage drop from node A to node B
+				TryGetVoltageDrop(component.TerminalA.NodeIndex, component.TerminalB.NodeIndex, out voltage) :
+				// Get voltage drop from node B to node A
+				TryGetVoltageDrop(component.TerminalB.NodeIndex, component.TerminalA.NodeIndex, out voltage);
+
+			#endregion
+
+			#endregion
+		}
+	}
+}
