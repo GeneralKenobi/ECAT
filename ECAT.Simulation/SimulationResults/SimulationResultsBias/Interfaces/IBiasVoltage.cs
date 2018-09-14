@@ -19,7 +19,7 @@ namespace ECAT.Simulation
 			/// <param name="nodeIndex"></param>
 			/// <param name="voltage"></param>
 			/// <returns></returns>
-			bool GetVoltageDrop(int nodeIndex, out IPhasorDomainSignal voltage);
+			bool TryGetVoltageDrop(int nodeIndex, out IPhasorDomainSignal voltage);
 
 			/// <summary>
 			/// Gets voltage drop between two nodes (with node A being treated as the reference node) or null if unsuccessful and
@@ -29,7 +29,7 @@ namespace ECAT.Simulation
 			/// <param name="nodeBIndex"></param>
 			/// <param name="voltage"></param>
 			/// <returns></returns>
-			bool GetVoltageDrop(int nodeAIndex, int nodeBIndex, out IPhasorDomainSignal voltage);
+			bool TryGetVoltageDrop(int nodeAIndex, int nodeBIndex, out IPhasorDomainSignal voltage);
 
 			/// <summary>
 			/// Gets voltage drop across a <see cref="ITwoTerminal"/> component or null if unsuccessful and assigns it to
@@ -39,7 +39,7 @@ namespace ECAT.Simulation
 			/// <param name="voltageBA">If true, voltage drop is calculated from <see cref="ITwoTerminal.TerminalB"/> to
 			/// <param name="voltage"></param>
 			/// <returns></returns>
-			bool GetVoltageDrop(ITwoTerminal component, out IPhasorDomainSignal voltage, bool voltageBA = true);
+			bool TryGetVoltageDrop(ITwoTerminal component, out IPhasorDomainSignal voltage, bool voltageBA = true);
 
 			#endregion
 		}
