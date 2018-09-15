@@ -52,7 +52,7 @@ namespace ECAT.Simulation
 			#region Private methods
 
 			/// <summary>
-			/// Caches the <paramref name="signal"/> as well as its copy with inverted indexes into <see cref="_VoltageDropInformationCache"/>
+			/// Caches the <paramref name="signal"/> as well as its negated copy (with inverted indexes) into <see cref="_Cache"/>
 			/// </summary>
 			/// <param name="signal"></param>
 			/// <param name="nodeAIndex"></param>
