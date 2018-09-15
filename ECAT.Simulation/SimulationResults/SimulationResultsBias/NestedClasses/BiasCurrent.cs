@@ -204,6 +204,29 @@ namespace ECAT.Simulation
 				}
 			}
 
+			/// <summary>
+			/// Attempts to obtain a current for some <see cref="ITwoTerminal"/> <paramref name="component"/>, if not successful
+			/// returns null
+			/// </summary>
+			/// <param name="component"></param>
+			/// <param name="voltageBA">If true, voltage used to calculate the current is taken from <see cref="ITwoTerminal.TerminalA"/>
+			/// (reference node) to <see cref="ITwoTerminal.TerminalB"/>, if false the direction is reversed</param>			
+			/// <returns></returns>
+			private ISignalInformation GetStandardTwoTerminalCurrent(ITwoTerminal component, bool voltageBA)
+			{
+				// Check if the current may be obtained from cache
+				if (TryEnableCurrent(component, voltageBA) &&
+					// If so, try to get it from the cache (this condition should always be true if the previous one is true)
+					_Cache.TryGetValue(new Tuple<ITwoTerminal, bool>(component, voltageBA), out var currentPackage))
+				{
+					return currentPackage.Item2;
+				}
+				else
+				{
+					return null;
+				}
+			}
+
 			#endregion
 
 			#region Public methods
@@ -259,6 +282,55 @@ namespace ECAT.Simulation
 					// Otherwise assign null and return false
 					current = null;
 					return false;
+				}
+			}
+
+			#endregion
+
+			#region ICurrentDB
+
+			/// <summary>
+			/// Gets information about current flowing through an <see cref="IResistor"/> or null if unsuccessful
+			/// </summary>		
+			/// <param name="resistor"></param>
+			/// <param name="voltageBA">If true, voltage used to calculate the current is taken from <see cref="ITwoTerminal.TerminalA"/>
+			/// (reference node) to <see cref="ITwoTerminal.TerminalB"/>, if false the direction is reversed</param>
+			/// <returns></returns>
+			public ISignalInformation GetCurrent(IResistor resistor, bool voltageBA) =>
+				GetStandardTwoTerminalCurrent(resistor, voltageBA);
+
+			/// <summary>
+			/// Gets information about current flowing through an <see cref="ICapacitor"/> or null if unsuccessful
+			/// </summary>		
+			/// <param name="capacitor"></param>
+			/// <param name="voltageBA">If true, voltage used to calculate the current is taken from <see cref="ITwoTerminal.TerminalA"/>
+			/// (reference node) to <see cref="ITwoTerminal.TerminalB"/>, if false the direction is reversed</param>
+			/// <returns></returns>
+			public ISignalInformation GetCurrent(ICapacitor capacitor, bool voltageBA) =>
+				GetStandardTwoTerminalCurrent(capacitor, voltageBA);
+
+			/// <summary>
+			/// Returns current produced by some <see cref="IActiveComponent"/>. If simulation was not yet performed or the current can't be
+			/// found returns null
+			/// </summary>
+			/// <param name="activeComponentIndex">Index of the <see cref="IActiveComponent"/> whose current to query</param>
+			/// <param name="reverseDirection">True if the direction of current should be reversed with respect to the one given
+			/// by convention for the specific element (obtained during simulation)</param>
+			/// <returns></returns>
+			public ISignalInformation GetCurrent(int activeComponentIndex, bool reverseDirection)
+			{				
+				// Check if the current is in the cache (If it was not provided during object construction, it's not possible to
+				// calculate it now)
+				if (_ActiveComponentsCache.TryGetValue(
+					new Tuple<int, bool>(activeComponentIndex, reverseDirection), out var currentPackage))
+				{
+					// If so, return it
+					return currentPackage.Item2;
+				}
+				else
+				{
+					// Otherwise return null
+					return null;
 				}
 			}
 
