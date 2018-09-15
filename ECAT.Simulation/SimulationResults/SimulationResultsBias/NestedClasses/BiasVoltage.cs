@@ -52,6 +52,22 @@ namespace ECAT.Simulation
 			#region Private methods
 
 			/// <summary>
+			/// If <see cref="_Cache"/> does not contain an entry with key given by <paramref name="nodeAIndex"/> and
+			/// <paramref name="nodeBIndex"/>, caches <paramref name="signal"/>, otherwise doesn't do anything
+			/// </summary>
+			/// <param name="signal"></param>
+			/// <param name="nodeAIndex"></param>
+			/// <param name="nodeBIndex"></param>
+			private void CacheHelper(IPhasorDomainSignal signal, int nodeAIndex, int nodeBIndex)
+			{
+				if(!_Cache.ContainsKey(new Tuple<int, int>(nodeAIndex, nodeBIndex)))
+				{
+					_Cache.Add(new Tuple<int, int>(nodeAIndex, nodeBIndex),
+						new Tuple<IPhasorDomainSignal, ISignalInformation>(signal, new SignalInformation(signal)));
+				}
+			}
+
+			/// <summary>
 			/// Caches the <paramref name="signal"/> as well as its negated copy (with inverted indexes) into <see cref="_Cache"/>
 			/// </summary>
 			/// <param name="signal"></param>
@@ -60,14 +76,10 @@ namespace ECAT.Simulation
 			private void CacheVoltageDrop(IPhasorDomainSignal signal, int nodeAIndex, int nodeBIndex)
 			{
 				// Cache the original
-				_Cache.Add(new Tuple<int, int>(nodeAIndex, nodeBIndex),
-					new Tuple<IPhasorDomainSignal, ISignalInformation>(signal, new SignalInformation(signal)));
+				CacheHelper(signal, nodeAIndex, nodeBIndex);
 
 				// And cache the reversed one
-				var reversed = signal.CopyAndNegate();
-
-				_Cache.Add(new Tuple<int, int>(nodeBIndex, nodeAIndex), new Tuple<IPhasorDomainSignal, ISignalInformation>(
-					reversed, new SignalInformation(reversed)));
+				CacheHelper(signal.CopyAndNegate(), nodeBIndex, nodeAIndex);
 			}
 
 			/// <summary>
