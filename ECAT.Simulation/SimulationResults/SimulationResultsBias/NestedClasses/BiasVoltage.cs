@@ -41,8 +41,8 @@ namespace ECAT.Simulation
 			/// (reference node) and Item2 for the second node (target node)). First item in value is <see cref="PhasorDomainSignal"/>
 			/// representing the voltage drop, second one is an <see cref="SignalInformation"/> built based on Item1.
 			/// </summary>
-			private Dictionary<Tuple<int, int>, Tuple<PhasorDomainSignal, SignalInformation>> _Cache { get; } =
-				new Dictionary<Tuple<int, int>, Tuple<PhasorDomainSignal, SignalInformation>>(
+			private Dictionary<Tuple<int, int>, Tuple<IPhasorDomainSignal, ISignalInformation>> _Cache { get; } =
+				new Dictionary<Tuple<int, int>, Tuple<IPhasorDomainSignal, ISignalInformation>>(
 					new CustomEqualityComparer<Tuple<int, int>>(
 					// Compare the elements of the Tuples, not tuples themselves
 					(x, y) => x.Item1 == y.Item1 && x.Item2 == y.Item2));
@@ -57,16 +57,16 @@ namespace ECAT.Simulation
 			/// <param name="signal"></param>
 			/// <param name="nodeAIndex"></param>
 			/// <param name="nodeBIndex"></param>
-			private void CacheVoltageDrop(PhasorDomainSignal signal, int nodeAIndex, int nodeBIndex)
+			private void CacheVoltageDrop(IPhasorDomainSignal signal, int nodeAIndex, int nodeBIndex)
 			{
 				// Cache the original
 				_Cache.Add(new Tuple<int, int>(nodeAIndex, nodeBIndex),
-					new Tuple<PhasorDomainSignal, SignalInformation>(signal, new SignalInformation(signal)));
+					new Tuple<IPhasorDomainSignal, ISignalInformation>(signal, new SignalInformation(signal)));
 
 				// And cache the reversed one
 				var reversed = signal.CopyAndNegate();
 
-				_Cache.Add(new Tuple<int, int>(nodeBIndex, nodeAIndex), new Tuple<PhasorDomainSignal, SignalInformation>(
+				_Cache.Add(new Tuple<int, int>(nodeBIndex, nodeAIndex), new Tuple<IPhasorDomainSignal, ISignalInformation>(
 					reversed, new SignalInformation(reversed)));
 			}
 
