@@ -9,19 +9,21 @@
 
 		/// <summary>
 		/// Gets information about current flowing through an <see cref="IResistor"/> or null if unsuccessful
-		/// </summary>
-		/// <param name="voltageDrop"></param>
+		/// </summary>		
 		/// <param name="resistor"></param>
+		/// <param name="voltageBA">If true, voltage used to calculate the current is taken from <see cref="ITwoTerminal.TerminalA"/>
+		/// (reference node) to <see cref="ITwoTerminal.TerminalB"/>, if false the direction is reversed</param>
 		/// <returns></returns>
-		ISignalInformation GetCurrent(IResistor resistor, bool reverseDirection);
+		ISignalInformation GetCurrent(IResistor resistor, bool voltageBA);
 
 		/// <summary>
 		/// Gets information about current flowing through an <see cref="ICapacitor"/> or null if unsuccessful
-		/// </summary>
-		/// <param name="voltageDrop"></param>
+		/// </summary>		
 		/// <param name="capacitor"></param>
+		/// <param name="voltageBA">If true, voltage used to calculate the current is taken from <see cref="ITwoTerminal.TerminalA"/>
+		/// (reference node) to <see cref="ITwoTerminal.TerminalB"/>, if false the direction is reversed</param>
 		/// <returns></returns>
-		ISignalInformation GetCurrent(ICapacitor capacitor, bool reverseDirection);
+		ISignalInformation GetCurrent(ICapacitor capacitor, bool voltageBA);
 
 		/// <summary>
 		/// Returns current produced by some <see cref="IActiveComponent"/>. If simulation was not yet performed or the current can't be
@@ -29,7 +31,7 @@
 		/// </summary>
 		/// <param name="activeComponentIndex">Index of the <see cref="IActiveComponent"/> whose current to query</param>
 		/// <param name="reverseDirection">True if the direction of current should be reversed with respect to the one given
-		/// by convention for the specific element</param>
+		/// by convention for the specific element (obtained during simulation)</param>
 		/// <returns></returns>
 		ISignalInformation GetCurrent(int activeComponentIndex, bool reverseDirection);
 
