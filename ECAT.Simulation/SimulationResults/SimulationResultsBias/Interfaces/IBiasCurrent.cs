@@ -16,18 +16,22 @@ namespace ECAT.Simulation
 			/// Gets current flowing through an <see cref="IResistor"/> or null if unsuccessful and stores it in
 			/// <paramref name="current"/>. Returns true on success, false otherwise.
 			/// </summary>
-			/// <param name="resistor"></param>
+			/// <param name="voltageBA">If true, voltage used to calculate the current is taken from <see cref="ITwoTerminal.TerminalA"/>
+			/// (reference node) to <see cref="ITwoTerminal.TerminalB"/>, if false the direction is reversed</param>
 			/// <param name="current"></param>
 			/// <returns></returns>
-			bool TryGetCurrent(IResistor resistor, out IPhasorDomainSignal current);
+			bool TryGetCurrent(IResistor resistor, out IPhasorDomainSignal current, bool voltageBA = true);
 
 			/// <summary>
 			/// Gets current flowing through an <see cref="ICapacitor"/> or null if unsuccessful and stores it in
 			/// <paramref name="current"/>. Returns true on success, false otherwise.
+			/// </summary>
 			/// <param name="capacitor"></param>
 			/// <paramref name="current"></paramref>
+			/// <param name="voltageBA">If true, voltage used to calculate the current is taken from <see cref="ITwoTerminal.TerminalA"/>
+			/// (reference node) to <see cref="ITwoTerminal.TerminalB"/>, if false the direction is reversed</param>
 			/// <returns></returns>
-			bool GetCurrent(ICapacitor capacitor, out IPhasorDomainSignal current);
+			bool GetCurrent(ICapacitor capacitor, out IPhasorDomainSignal current, bool voltageBA = true);
 
 			/// <summary>
 			/// Gets current produced by some <see cref="IActiveComponent"/> or null if unsuccessful and stores it in
@@ -35,8 +39,10 @@ namespace ECAT.Simulation
 			/// </summary>
 			/// <param name="activeComponentIndex">Index of the <see cref="IActiveComponent"/> whose current to query</param>
 			/// <paramref name="current"></paramref>
+			/// <param name="reverseDirection">If true, the direction of the current will be reversed (with the respect to
+			/// the normal direction obtained in simulation)</param>
 			/// <returns></returns>
-			bool GetCurrent(int activeComponentIndex, out IPhasorDomainSignal current);
+			bool GetCurrent(int activeComponentIndex, out IPhasorDomainSignal current, bool reverseDirection = false);
 
 			#endregion
 		}
