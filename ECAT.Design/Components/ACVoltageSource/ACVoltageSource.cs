@@ -44,15 +44,15 @@ namespace ECAT.Design
 		{
 			// Minimum instantenous power
 			yield return CIFormat.LineInfo("Minimum instantenous " + QuantityNames.Singleton.Power,
-				powerInformation.Minimum, SIUnits.Singleton.PowerShort);
+				powerInformation.Minimum, IoC.Resolve<ISIUnits>().PowerShort);
 			
 			// Maximum instantenous power
 			yield return CIFormat.LineInfo("Maximum instantenous " + QuantityNames.Singleton.Power,
-				powerInformation.Maximum, SIUnits.Singleton.PowerShort);
+				powerInformation.Maximum, IoC.Resolve<ISIUnits>().PowerShort);
 
 			// Average power
 			yield return CIFormat.LineInfo("Average " + QuantityNames.Singleton.Power,
-				powerInformation.Average, SIUnits.Singleton.PowerShort);
+				powerInformation.Average, IoC.Resolve<ISIUnits>().PowerShort);
 		}
 
 		/// <summary>

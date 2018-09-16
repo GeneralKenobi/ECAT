@@ -48,11 +48,11 @@ namespace ECAT.Design
 		{
 			// Return characteristic power information
 			yield return CIFormat.LineInfo("Minimum instantenous " + QuantityNames.Singleton.Power,
-				info.Minimum, SIUnits.Singleton.PowerShort);
+				info.Minimum, IoC.Resolve<ISIUnits>().PowerShort);
 			yield return CIFormat.LineInfo("Maximum instantenous " + QuantityNames.Singleton.Power,
-				info.Maximum, SIUnits.Singleton.PowerShort);
+				info.Maximum, IoC.Resolve<ISIUnits>().PowerShort);
 			yield return CIFormat.LineInfo("Average " + QuantityNames.Singleton.Power,
-				info.Average, SIUnits.Singleton.PowerShort);
+				info.Average, IoC.Resolve<ISIUnits>().PowerShort);
 		}
 
 		/// <summary>

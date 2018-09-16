@@ -55,7 +55,7 @@ namespace ECAT.Design
 		/// <returns></returns>
 		public static string LineInfo(string description, Complex phasor, string unit, double frequency) =>
 			LineInfo(description, phasor, unit) + " at " + 
-			SIHelpers.ToAltSIStringExcludingSmallPrefixes(frequency, SIUnits.Singleton.FrequencyShort, _RoundToDigit);
+			SIHelpers.ToAltSIStringExcludingSmallPrefixes(frequency, IoC.Resolve<ISIUnits>().FrequencyShort, _RoundToDigit);
 
 		/// <summary>
 		/// Returns info related to some <see cref="ISignalInformation"/>
