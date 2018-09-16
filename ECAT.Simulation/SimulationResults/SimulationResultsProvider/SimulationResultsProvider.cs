@@ -5,7 +5,7 @@ namespace ECAT.Simulation
 	/// <summary>
 	/// Provides results from the latest simulation
 	/// </summary>
-	[RegisterAsInstance(typeof(ISimulationResultsProvider))]
+	[RegisterAsInstance(typeof(SimulationResultsProvider), typeof(ISimulationResultsProvider))]
 	public class SimulationResultsProvider : ISimulationResultsProvider
 	{
 		#region Public properties
