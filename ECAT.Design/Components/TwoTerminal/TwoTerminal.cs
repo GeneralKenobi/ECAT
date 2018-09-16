@@ -87,14 +87,14 @@ namespace ECAT.Design
 		/// </summary>
 		/// <returns></returns>
 		protected virtual IEnumerable<string> GetVoltageInfo(ISignalInformation voltageDrop) => 
-			CIFormat.GetSignalInfo(voltageDrop, IoC.Resolve<QuantityNames>().Voltage, IoC.Resolve<ISIUnits>().VoltageShort);		
+			CIFormat.GetSignalInfo(voltageDrop, IoC.Resolve<IQuantityNames>().Voltage, IoC.Resolve<ISIUnits>().VoltageShort);		
 
 		/// <summary>
 		/// Returns info related to current
 		/// </summary>
 		/// <returns></returns>
 		protected virtual IEnumerable<string> GetCurrentInfo(ISignalInformation currentInfo) =>
-			CIFormat.GetSignalInfo(currentInfo, IoC.Resolve<QuantityNames>().Current, IoC.Resolve<ISIUnits>().CurrentShort);		
+			CIFormat.GetSignalInfo(currentInfo, IoC.Resolve<IQuantityNames>().Current, IoC.Resolve<ISIUnits>().CurrentShort);		
 
 		/// <summary>
 		/// Assigns positions to all <see cref="ITerminal"/>s
