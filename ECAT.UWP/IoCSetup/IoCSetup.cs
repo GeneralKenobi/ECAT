@@ -1,7 +1,13 @@
 ﻿using Autofac;
+using CSharpEnhanced.Helpers;
 using ECAT.Core;
 using ECAT.Design;
 using ECAT.Simulation;
+using ECAT.ViewModel;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace ECAT.UWP
 {
@@ -10,53 +16,53 @@ namespace ECAT.UWP
 	/// </summary>
 	public static class IoCSetup
 	{
+		#region Private static properties
+
+		/// <summary>
+		/// Array with one type from each referenced project. It is necessary to have at least one in-code reference to the project
+		/// so that its assembly will be found (and not optimized out) when calling <see cref="Assembly.GetReferencedAssemblies"/>.
+		/// List a type from each project here.
+		/// </summary>
+		private static Type[] TypeRefArray { get; set; } = new Type[]
+		{
+			typeof(IDesignManager),
+			typeof(AppViewModel),
+			typeof(DesignManager),
+			typeof(SimulationManager),
+		};
+
+		#endregion
+
 		#region Private static methods
 
 		/// <summary>
-		/// Registers <see cref="IManager.GetTypesToRegister"/> as types and <see cref="IManager.GetInstancesToRegister"/> as instances
+		/// Gets all referenced assemblies (and self) that have ECAT in their name
 		/// </summary>
-		/// <param name="builder"></param>
-		/// <param name="manager"></param>
-		private static void RegisterManagersImplementations(ContainerBuilder builder, IManager manager)
-		{
-			// Register instances
-			foreach(var instance in manager.GetInstancesToRegister())
-			{
-				builder.RegisterInstance(instance.Item2).As(instance.Item1);
-			}
-
-			// Register types
-			foreach(var type in manager.GetTypesToRegister())
-			{
-				builder.RegisterType(type.Item2).As(type.Item1);
-			}
-		}
+		/// <returns></returns>
+		private static IEnumerable<Assembly> GetECATAssemblies() =>
+			// Get referenced AssemblyNames
+			Assembly.GetExecutingAssembly().GetReferencedAssemblies().
+			// Filter them to get only those with ECAT in their name
+			Where((assemblyName) => assemblyName.Name.Contains("ECAT")).
+			// Project them to Assemblies by loading them (if they were already loaded then nothing will happen)
+			Select((assemblyName) => Assembly.Load(assemblyName)).
+			// Finally add self to the enumeration
+			Concat(Assembly.GetExecutingAssembly());
 
 		#endregion
 
 		#region Public static methods
 
 		/// <summary>
-		/// Injects dependencies to <see cref="ECAT.Core.IoC"/>. Should be invoked at the beginning 
+		/// Injects dependencies to <see cref="ECAT.Core.IoC"/>. Should be invoked as soon as possible
 		/// </summary>
 		public static void Run()
 		{
-			// Create the builder
-			ContainerBuilder builder = new ContainerBuilder();
+			// Build the IoC
+			IoC.Build(GetECATAssemblies().ToArray());
 
-			// Create managers
-			var designManager = new DesignManager();
-			var simulationManager = new SimulationManager();
-
-			// Register them
-			builder.RegisterInstance(designManager).As<IDesignManager>();
-			builder.RegisterInstance(simulationManager).As<ISimulationManager>();
-
-			// Let them make their registrations
-			RegisterManagersImplementations(builder, designManager);
-			RegisterManagersImplementations(builder, simulationManager);
-
-			IoC.Build(builder);
+			// Remove the TypeRefArray from references
+			TypeRefArray = null;
 		}
 
 		#endregion
