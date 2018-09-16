@@ -8,7 +8,7 @@ namespace ECAT.Core
 	/// exception will be thrown on the first resolve action. If it's not possible, consider a custom registration by means of a
 	/// <see cref="Autofac.Module"/>
 	/// </summary>
-	public class RegisterAsInstance : RegisterAsBase
+	public class RegisterAsInstance : Attribute
 	{
 		#region Constructors
 
@@ -17,7 +17,19 @@ namespace ECAT.Core
 		/// </summary>
 		/// <param name="types">Services to register the attribute's target as, can't be null</param>
 		/// <exception cref="ArgumentNullException"></exception>
-		public RegisterAsInstance(params Type[] types) : base(types) { }
+		protected RegisterAsInstance(params Type[] types)
+		{
+			Types = types ?? throw new ArgumentNullException(nameof(types));
+		}
+
+		#endregion
+
+		#region Public properties
+
+		/// <summary>
+		/// Types to register the target type as
+		/// </summary>
+		public Type[] Types { get; }
 
 		#endregion
 	}
