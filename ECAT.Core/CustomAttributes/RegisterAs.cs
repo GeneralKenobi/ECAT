@@ -24,11 +24,6 @@ namespace ECAT.Core
 		#region Public properties
 
 		/// <summary>
-		/// If true, type is registered as instance, false by default
-		/// </summary>
-		public bool AsInstance { get; set; }
-
-		/// <summary>
 		/// Types to register the target type as
 		/// </summary>
 		public Type[] Types { get; }
