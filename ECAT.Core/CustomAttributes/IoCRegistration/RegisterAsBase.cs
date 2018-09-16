@@ -2,6 +2,9 @@
 
 namespace ECAT.Core
 {
+	/// <summary>
+	/// Base class for attributes that mark classes for registration with <see cref="IoC"/> during assembly scanning.
+	/// </summary>
 	public abstract class RegisterAsBase : Attribute
     {
 		#region Constructors
