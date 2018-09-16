@@ -9,6 +9,7 @@ namespace ECAT.Design
 	/// <summary>
 	/// Contains all component types and constructs them as needed
 	/// </summary>
+	[RegisterAsInstance(typeof(IComponentFactory))]
 	public class ComponentFactory : IComponentFactory
 	{
 		#region Constructors

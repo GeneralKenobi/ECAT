@@ -10,6 +10,7 @@ namespace ECAT.Design
 	/// <summary>
 	/// Standard implementation of the IInfoLogger interface
 	/// </summary>
+	[RegisterAsInstance(typeof(IInfoLogger))]
 	public class InfoLogger : IInfoLogger, INotifyPropertyChanged
     {
 		#region Events

@@ -6,6 +6,7 @@ namespace ECAT.Design
 	/// <summary>
 	/// Factory of <see cref="IPlanePosition"/>
 	/// </summary>
+	[RegisterAsInstance(typeof(IPlanePositionFactory))]
 	public class PlanePositionFactory : IPlanePositionFactory
 	{
 		#region Public properties

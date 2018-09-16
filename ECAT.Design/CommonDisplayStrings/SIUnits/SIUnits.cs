@@ -5,6 +5,7 @@ namespace ECAT.Design
 	/// <summary>
 	/// Standard implementation of <see cref="ISIUnits"/>, contains units of quantities
 	/// </summary>
+	[RegisterAsInstance(typeof(ISIUnits))]
 	public class SIUnits : ISIUnits
 	{
 		#region Public properties

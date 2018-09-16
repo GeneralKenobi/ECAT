@@ -5,6 +5,7 @@ namespace ECAT.Design
 	/// <summary>
 	/// Standard implementation of <see cref="IQuantityNames"/>
 	/// </summary>
+	[RegisterAsInstance(typeof(IQuantityNames))]
 	public class QuantityNames : IQuantityNames
     {
 		#region Public properties
