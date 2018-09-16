@@ -16,7 +16,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public CurrentSource() : base(new string[] { QuantityNames.Singleton.VoltageCap, QuantityNames.Singleton.PowerCap}) { }
+		public CurrentSource() : base(new string[] { IoC.Resolve<QuantityNames>().VoltageCap, IoC.Resolve<QuantityNames>().PowerCap}) { }
 
 		#endregion
 
@@ -47,11 +47,11 @@ namespace ECAT.Design
 		protected IEnumerable<string> GetPowerInfo(IPowerInformation info)
 		{
 			// Return characteristic power information
-			yield return CIFormat.LineInfo("Minimum instantenous " + QuantityNames.Singleton.Power,
+			yield return CIFormat.LineInfo("Minimum instantenous " + IoC.Resolve<QuantityNames>().Power,
 				info.Minimum, IoC.Resolve<ISIUnits>().PowerShort);
-			yield return CIFormat.LineInfo("Maximum instantenous " + QuantityNames.Singleton.Power,
+			yield return CIFormat.LineInfo("Maximum instantenous " + IoC.Resolve<QuantityNames>().Power,
 				info.Maximum, IoC.Resolve<ISIUnits>().PowerShort);
-			yield return CIFormat.LineInfo("Average " + QuantityNames.Singleton.Power,
+			yield return CIFormat.LineInfo("Average " + IoC.Resolve<QuantityNames>().Power,
 				info.Average, IoC.Resolve<ISIUnits>().PowerShort);
 		}
 

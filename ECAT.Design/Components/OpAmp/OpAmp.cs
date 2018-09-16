@@ -16,8 +16,8 @@ namespace ECAT.Design
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public OpAmp() : base(new string[] { "Output " + QuantityNames.Singleton.Voltage, "Output " + QuantityNames.Singleton.Current,
-			"Differential " + QuantityNames.Singleton.Voltage}) { }
+		public OpAmp() : base(new string[] { "Output " + IoC.Resolve<QuantityNames>().Voltage, "Output " + IoC.Resolve<QuantityNames>().Current,
+			"Differential " + IoC.Resolve<QuantityNames>().Voltage}) { }
 
 		#endregion
 
@@ -84,7 +84,7 @@ namespace ECAT.Design
 		{
 			ISignalInformation voltageDrop = IoC.Resolve<ISimulationResults>().GetVoltageDropOrZero(TerminalC.NodeIndex);
 
-			foreach (var item in CIFormat.GetSignalInfo(voltageDrop, QuantityNames.Singleton.Voltage, IoC.Resolve<ISIUnits>().VoltageShort))
+			foreach (var item in CIFormat.GetSignalInfo(voltageDrop, IoC.Resolve<QuantityNames>().Voltage, IoC.Resolve<ISIUnits>().VoltageShort))
 			{
 				yield return item;
 			}
@@ -124,9 +124,9 @@ namespace ECAT.Design
 		{
 			yield return GetOutputVoltageInfo();
 			yield return CIFormat.GetSignalInfo(IoC.Resolve<ISimulationResults>().GetCurrentOrZero(ActiveComponentIndex, false),
-				QuantityNames.Singleton.Current, IoC.Resolve<ISIUnits>().CurrentShort);
+				IoC.Resolve<QuantityNames>().Current, IoC.Resolve<ISIUnits>().CurrentShort);
 			yield return CIFormat.GetSignalInfo(IoC.Resolve<ISimulationResults>().GetVoltageDropOrZero(
-				TerminalA.NodeIndex, TerminalB.NodeIndex), QuantityNames.Singleton.Voltage, IoC.Resolve<ISIUnits>().VoltageShort);
+				TerminalA.NodeIndex, TerminalB.NodeIndex), IoC.Resolve<QuantityNames>().Voltage, IoC.Resolve<ISIUnits>().VoltageShort);
 		}
 
 		#endregion

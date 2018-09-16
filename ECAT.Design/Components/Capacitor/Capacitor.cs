@@ -15,7 +15,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public Capacitor() : base(new string[] { QuantityNames.Singleton.VoltageCap, QuantityNames.Singleton.CurrentCap}) { }
+		public Capacitor() : base(new string[] { IoC.Resolve<QuantityNames>().VoltageCap, IoC.Resolve<QuantityNames>().CurrentCap}) { }
 
 		#endregion
 
