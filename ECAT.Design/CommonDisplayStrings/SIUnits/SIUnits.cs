@@ -7,15 +7,6 @@ namespace ECAT.Design
 	/// </summary>
 	public class SIUnits : ISIUnits
 	{
-		#region Constructors
-
-		/// <summary>
-		/// Default constructor
-		/// </summary>
-		private SIUnits() { }
-
-		#endregion
-
 		#region Public properties
 
 		/// <summary>
@@ -57,15 +48,6 @@ namespace ECAT.Design
 		/// Shortened name of frequency unit
 		/// </summary>
 		public string FrequencyShort { get; } = "Hz";
-
-		#endregion
-
-		#region Singleton
-
-		/// <summary>
-		/// Singleton for the app
-		/// </summary>
-		public static SIUnits Singleton { get; } = new SIUnits();
 
 		#endregion
 	}

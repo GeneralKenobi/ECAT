@@ -7,15 +7,6 @@ namespace ECAT.Design
 	/// </summary>
 	public class QuantityNames : IQuantityNames
     {
-		#region Constructors
-
-		/// <summary>
-		/// Default constructor
-		/// </summary>
-		private QuantityNames() { }
-
-		#endregion
-
 		#region Public properties
 
 		/// <summary>
@@ -57,15 +48,6 @@ namespace ECAT.Design
 		/// Display name for frequency with first letter capitalized
 		/// </summary>
 		public string FrequencyCap { get; } = "Frequency";
-
-		#endregion
-
-		#region Singleton
-
-		/// <summary>
-		/// Singleton instance of this class
-		/// </summary>
-		public static QuantityNames Singleton = new QuantityNames();
 
 		#endregion
 	}
