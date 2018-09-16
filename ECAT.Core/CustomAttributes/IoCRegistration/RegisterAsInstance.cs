@@ -17,7 +17,7 @@ namespace ECAT.Core
 		/// </summary>
 		/// <param name="types">Services to register the attribute's target as, can't be null</param>
 		/// <exception cref="ArgumentNullException"></exception>
-		protected RegisterAsInstance(params Type[] types)
+		public RegisterAsInstance(params Type[] types)
 		{
 			Types = types ?? throw new ArgumentNullException(nameof(types));
 		}
