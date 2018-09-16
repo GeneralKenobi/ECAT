@@ -8,7 +8,7 @@ namespace ECAT.Simulation
 	[RegisterAsInstance(typeof(ISimulationResultsProvider))]
 	public class SimulationResultsProvider : ISimulationResultsProvider
 	{
-		#region Public methods
+		#region Public properties
 
 		/// <summary>
 		/// Results from the last simulation
