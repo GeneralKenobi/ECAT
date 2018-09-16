@@ -12,7 +12,7 @@ using System.Reflection;
 namespace ECAT.UWP
 {
 	/// <summary>
-	/// Class that contains a method that prepares the IoC container for use
+	/// Class responsible for initializing IoC container, <see cref="Run"/> method should be called as soon as possible
 	/// </summary>
 	public static class IoCSetup
 	{

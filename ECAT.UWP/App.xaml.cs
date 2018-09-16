@@ -15,9 +15,11 @@ namespace ECAT.UWP
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
+		/// Initalizes IoC container.
         /// </summary>
         public App()
 		{
+			// First of all initilize IoC
 			IoCSetup.Run();
 			
 			this.InitializeComponent();
