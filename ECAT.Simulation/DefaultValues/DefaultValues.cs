@@ -7,6 +7,7 @@ namespace ECAT.Simulation
 	/// Implementation of <see cref="IDefaultValues"/>, provides default values, allowed value ranges and similar
 	/// values constant throughout the application
 	/// </summary>
+	[RegisterAsInstance(typeof(IDefaultValues))]
 	public class DefaultValues : IDefaultValues
 	{
 		#region Public properties
