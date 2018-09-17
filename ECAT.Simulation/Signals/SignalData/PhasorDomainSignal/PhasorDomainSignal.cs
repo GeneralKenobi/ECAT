@@ -23,9 +23,10 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Copy constructor
 		/// </summary>
+		/// <exception cref="ArgumentNullException"></exception>
 		public PhasorDomainSignal(IPhasorDomainSignal signal)
 		{
-			Copy(signal);
+			Copy(signal ?? throw new ArgumentNullException(nameof(signal)));
 		}
 
 		/// <summary>
@@ -41,6 +42,7 @@ namespace ECAT.Simulation
 		/// Constructor with parameter
 		/// </summary>
 		/// <param name="phasors"></param>
+		/// <exception cref="ArgumentNullException"></exception>
 		public PhasorDomainSignal(IEnumerable<KeyValuePair<double, Complex>> phasors)
 		{
 			Phasors = phasors ?? throw new ArgumentNullException(nameof(phasors));
@@ -130,8 +132,14 @@ namespace ECAT.Simulation
 		/// Copies internal state of <paramref name="obj"/> to this instance
 		/// </summary>
 		/// <param name="obj"></param>
+		/// <exception cref="ArgumentNullException"></exception>
 		public void Copy(IPhasorDomainSignal obj)
 		{
+			if (obj == null)
+			{
+				throw new ArgumentNullException(nameof(obj));
+			}
+
 			DC = obj.DC;
 			Phasors = obj.Phasors;
 		}
