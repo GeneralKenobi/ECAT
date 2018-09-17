@@ -16,14 +16,14 @@
 		T Construct();
 
 		/// <summary>
-		/// Constructs a copy of <paramref name="signal"/>
+		/// Constructs a shallow copy of <paramref name="signal"/>
 		/// </summary>
 		/// <param name="signal"></param>
 		/// <returns></returns>
 		T Construct(T signal);
 
 		/// <summary>
-		/// Returns a negation (copy) of <paramref name="signal"/>
+		/// Returns a negation (shallow copy) of <paramref name="signal"/>
 		/// </summary>
 		/// <param name="signal"></param>
 		/// <returns></returns>
