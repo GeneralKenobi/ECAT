@@ -7,6 +7,7 @@ namespace ECAT.Simulation
 	/// <summary>
 	/// Factory of <see cref="ITimeDomainSignal"/>s
 	/// </summary>
+	[RegisterAsInstance(typeof(ITimeDomainSignalFactory))]
 	public class TimeDomainSignalFactory : ITimeDomainSignalFactory
 	{
 		#region Public methods

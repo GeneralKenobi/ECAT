@@ -9,6 +9,7 @@ namespace ECAT.Simulation
 	/// <summary>
 	/// Signal defined by a series of points with instantenous values for a specific time
 	/// </summary>
+	[RegisterAsType(typeof(ITimeDomainSignal))]
 	public partial class TimeDomainSignal : ITimeDomainSignal
 	{
 		#region Constructors
