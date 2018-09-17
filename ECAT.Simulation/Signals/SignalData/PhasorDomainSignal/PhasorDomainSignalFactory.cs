@@ -44,11 +44,11 @@ namespace ECAT.Simulation
 			new PhasorDomainSignal(dc, phasors ?? throw new ArgumentNullException(nameof(phasors)));
 
 		/// <summary>
-		/// Constructs a shallow copy of <paramref name="signal"/>
+		/// Constructs a shallow copy of <paramref name="source"/>
 		/// </summary>
-		/// <param name="signal"></param>
+		/// <param name="source"></param>
 		/// <returns></returns>
-		public IPhasorDomainSignal Construct(IPhasorDomainSignal signal) => signal.Copy();
+		public IPhasorDomainSignal Construct(IPhasorDomainSignal source) => source.Copy();
 
 		/// <summary>
 		/// Returns a negation (shallow copy) of <paramref name="signal"/>

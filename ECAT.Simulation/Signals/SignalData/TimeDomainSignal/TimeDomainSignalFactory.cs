@@ -30,13 +30,13 @@ namespace ECAT.Simulation
 			new TimeDomainSignal(instantenousValues ?? throw new ArgumentNullException(nameof(instantenousValues)), timeStep, startTime);
 
 		/// <summary>
-		/// Constructs a shallow copy of <paramref name="signal"/>
+		/// Constructs a shallow copy of <paramref name="source"/>
 		/// </summary>
-		/// <param name="signal"></param>
+		/// <param name="source"></param>
 		/// <returns></returns>
 		/// <exception cref="ArgumentNullException"></exception>
-		public ITimeDomainSignal Construct(ITimeDomainSignal signal) =>
-			new TimeDomainSignal(signal ?? throw new ArgumentNullException(nameof(signal)));
+		public ITimeDomainSignal Construct(ITimeDomainSignal source) =>
+			new TimeDomainSignal(source ?? throw new ArgumentNullException(nameof(source)));
 
 		/// <summary>
 		/// Returns a negation (shallow copy) of <paramref name="signal"/>
