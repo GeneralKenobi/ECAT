@@ -20,6 +20,7 @@
 		/// </summary>
 		/// <param name="signal"></param>
 		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
 		T Construct(T signal);
 
 		/// <summary>
@@ -27,6 +28,7 @@
 		/// </summary>
 		/// <param name="signal"></param>
 		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
 		T ConstructNegation(T signal);
 
 		#endregion
