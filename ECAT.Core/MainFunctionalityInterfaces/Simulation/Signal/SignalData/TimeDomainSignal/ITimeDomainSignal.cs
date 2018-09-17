@@ -26,5 +26,15 @@ namespace ECAT.Core
 		IEnumerable<double> InstantenousValues { get; }
 
 		#endregion
+
+		#region Methods
+		
+		/// <summary>
+		/// Creates a copy of the signal in reversed direction (values change their signs)
+		/// </summary>
+		/// <returns></returns>
+		ITimeDomainSignal CopyAndNegate();
+
+		#endregion
 	}
 }
