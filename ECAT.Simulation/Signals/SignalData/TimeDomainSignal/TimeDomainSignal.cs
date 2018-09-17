@@ -1,6 +1,8 @@
 ﻿using CSharpEnhanced.CoreInterfaces;
 using ECAT.Core;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ECAT.Simulation
 {
@@ -17,11 +19,26 @@ namespace ECAT.Simulation
 		public TimeDomainSignal() { }
 
 		/// <summary>
+		/// Constructor with parameters
+		/// </summary>
+		/// <param name="instantenousValues">Values occuring at specific time moments, can'be be null</param>
+		/// <param name="timeStep">Time step between two subsequent values</param>
+		/// <param name="startTime">Start time of the signal</param>
+		/// <exception cref="ArgumentNullException"></exception>
+		public TimeDomainSignal(IEnumerable<double> instantenousValues, double timeStep, double startTime = 0)
+		{
+			InstantenousValues = instantenousValues ?? throw new ArgumentNullException(nameof(instantenousValues));
+			TimeStep = timeStep;
+			StartTime = startTime;
+		}
+
+		/// <summary>
 		/// Copy constructor
 		/// </summary>
+		/// <exception cref="ArgumentNullException"></exception>
 		public TimeDomainSignal(ITimeDomainSignal signal)
 		{
-			Copy(signal);
+			Copy(signal ?? throw new ArgumentNullException(nameof(signal)));
 		}
 
 		#endregion
@@ -50,7 +67,7 @@ namespace ECAT.Simulation
 
 		#endregion
 
-		#region Public properties
+		#region Public methods
 
 		/// <summary>
 		/// Creates a copy of this object
@@ -62,8 +79,14 @@ namespace ECAT.Simulation
 		/// Copies internal state of <paramref name="obj"/> to this instance
 		/// </summary>
 		/// <param name="obj"></param>
+		/// <exception cref="ArgumentNullException"></exception>
 		public void Copy(ITimeDomainSignal obj)
 		{
+			if(obj == null)
+			{
+				throw new ArgumentNullException(nameof(obj));
+			}
+
 			StartTime = obj.StartTime;
 			TimeStep = obj.TimeStep;
 			InstantenousValues = obj.InstantenousValues;
@@ -74,6 +97,18 @@ namespace ECAT.Simulation
 		/// </summary>
 		/// <returns></returns>
 		ITimeDomainSignal IShallowCopyTo<ITimeDomainSignal>.Copy() => CopySignal();
+
+		/// <summary>
+		/// Creates a copy of the signal in reversed direction (values change their signs)
+		/// </summary>
+		/// <returns></returns>
+		public TimeDomainSignal CopyAndNegate() => new TimeDomainSignal(InstantenousValues.Select((value) => -value), TimeStep, StartTime);
+
+		/// <summary>
+		/// Creates a copy of the signal in reversed direction (values change their signs)
+		/// </summary>
+		/// <returns></returns>
+		ITimeDomainSignal ITimeDomainSignal.CopyAndNegate() => CopyAndNegate();
 
 		#endregion
 	}
