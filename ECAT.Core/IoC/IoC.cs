@@ -6,7 +6,9 @@ namespace ECAT.Core
 {
 	/// <summary>
 	/// IoC provider. Register elements either using <see cref="RegisterAsType"/> and <see cref="RegisterAsInstance"/> attributes or
-	/// manually in classes deriving from <see cref="Autofac.Module"/> by overriding <see cref="Autofac.Module.Load(ContainerBuilder)"/>
+	/// manually in classes deriving from <see cref="Autofac.Module"/> by overriding <see cref="Autofac.Module.Load(ContainerBuilder)"/>.
+	/// All registered classes should have a public, parameterless constructor (factory pattern is strongly recommended for
+	/// construction with parameters).
 	/// </summary>
 	public static class IoC
 	{
