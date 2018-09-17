@@ -63,7 +63,7 @@ namespace ECAT.Simulation
 				if(!_Cache.ContainsKey(new Tuple<int, int>(nodeAIndex, nodeBIndex)))
 				{
 					_Cache.Add(new Tuple<int, int>(nodeAIndex, nodeBIndex),
-						new Tuple<IPhasorDomainSignal, ISignalInformation>(signal, new SignalInformation(signal)));
+						Tuple.Create(signal, IoC.Resolve<ISignalInformationFactory>().Construct(signal)));
 				}
 			}
 
@@ -125,14 +125,14 @@ namespace ECAT.Simulation
 			/// <param name="nodeA"></param>
 			/// <param name="nodeB"></param>
 			/// <returns></returns>
-			private PhasorDomainSignal ConstructVoltageDrop(int nodeAIndex, int nodeBIndex)
+			private IPhasorDomainSignal ConstructVoltageDrop(int nodeAIndex, int nodeBIndex)
 			{
 				// Get the nodes
 				var nodeA = _Nodes.First((node) => node.Index == nodeAIndex);
 				var nodeB = _Nodes.First((node) => node.Index == nodeAIndex);
 
 				// Construct the result
-				var result = new PhasorDomainSignal(nodeB.DCPotential.Value - nodeA.DCPotential.Value,
+				var result = IoC.Resolve<IPhasorDomainSignalFactory>().Construct(nodeB.DCPotential.Value - nodeA.DCPotential.Value,
 					GetACWaveforms(nodeA.ACPotentials, nodeB.ACPotentials));
 
 				// Cache it

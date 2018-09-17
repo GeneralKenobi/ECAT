@@ -41,7 +41,7 @@ namespace ECAT.Simulation
 					// Key stays the same
 					(x) => x.Key,
 					// Value is the signal and information based on it
-					(x) => new Tuple<IPhasorDomainSignal, ISignalInformation>(x.Value, new SignalInformation(x.Value)))
+					(x) => new Tuple<IPhasorDomainSignal, ISignalInformation>(x.Value, IoC.Resolve<ISignalInformationFactory>().Construct(x.Value)))
 					// If the null check above caught a null value, this operator will result in the exception being thrown
 					?? throw new ArgumentNullException(nameof(activeComponentCurrents)));				
 			}
@@ -92,7 +92,7 @@ namespace ECAT.Simulation
 				if (!_Cache.ContainsKey(new Tuple<ITwoTerminal, bool>(component, voltageBA)))
 				{
 					_Cache.Add(new Tuple<ITwoTerminal, bool>(component, voltageBA),
-						new Tuple<IPhasorDomainSignal, ISignalInformation>(signal, new SignalInformation(signal)));
+						Tuple.Create(signal, IoC.Resolve<ISignalInformationFactory>().Construct(signal)));
 				}
 			}
 
@@ -146,15 +146,11 @@ namespace ECAT.Simulation
 				// Try to get voltage drop across the element
 				if (_VoltageDrops.TryGetVoltageDrop(element, out var voltageDrop, voltageBA))
 				{
-					// If successful, create a new current signal based on it
-					var current = new PhasorDomainSignal()
-					{
-						DC = GetPassiveTwoTerminalDCCurrent(voltageDrop, element),
-						Phasors = GetPassiveTwoTerminalACCurrentPhasors(voltageDrop, element),
-					};
-
-					// Cache it
-					CacheCurrent(current, element, voltageBA);
+					// If successful, create a new current signal based on it, cache it
+					CacheCurrent(IoC.Resolve<IPhasorDomainSignalFactory>().Construct(
+							GetPassiveTwoTerminalDCCurrent(voltageDrop, element),
+							GetPassiveTwoTerminalACCurrentPhasors(voltageDrop, element)),
+						element, voltageBA);
 
 					// And return success
 					return true;
