@@ -1,4 +1,4 @@
-﻿namespace ECAT.Core.GenericFactories
+﻿namespace ECAT.Core
 {
 	/// <summary>
 	/// Interface for factories allowing for parameterless construction of an instance of <see cref="T"/>

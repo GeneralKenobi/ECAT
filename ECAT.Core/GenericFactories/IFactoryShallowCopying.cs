@@ -1,4 +1,4 @@
-﻿namespace ECAT.Core.GenericFactories
+﻿namespace ECAT.Core
 {
 	/// <summary>
 	/// Interface for factories allowing for construction of an instance of <see cref="T"/> by making a shallow copy of another instance
