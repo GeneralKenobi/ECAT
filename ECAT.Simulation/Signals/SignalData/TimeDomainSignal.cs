@@ -73,7 +73,7 @@ namespace ECAT.Simulation
 		/// Creates a copy of this object
 		/// </summary>
 		/// <returns></returns>
-		ITimeDomainSignal IDeepCopyTo<ITimeDomainSignal>.Copy() => CopySignal();
+		ITimeDomainSignal IShallowCopyTo<ITimeDomainSignal>.Copy() => CopySignal();
 
 		#endregion
 	}

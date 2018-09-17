@@ -7,7 +7,7 @@ namespace ECAT.Core
 	/// <summary>
 	/// Interface for classes containing signal composed of a DC offset and phasors
 	/// </summary>
-	public interface IPhasorDomainSignal : ISignalData, IDeepCopy<IPhasorDomainSignal>
+	public interface IPhasorDomainSignal : ISignalData, IShallowCopy<IPhasorDomainSignal>
 	{
 		#region Properties
 

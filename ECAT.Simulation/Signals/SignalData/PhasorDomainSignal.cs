@@ -139,7 +139,7 @@ namespace ECAT.Simulation
 		/// Creates a copy of this object
 		/// </summary>
 		/// <returns></returns>
-		IPhasorDomainSignal IDeepCopyTo<IPhasorDomainSignal>.Copy() => Copy();
+		IPhasorDomainSignal IShallowCopyTo<IPhasorDomainSignal>.Copy() => Copy();
 
 		/// <summary>
 		/// Creates a copy of the signal in reversed direction (<see cref="DC"/> and each <see cref="ComposingPhasors"/> value is negated)

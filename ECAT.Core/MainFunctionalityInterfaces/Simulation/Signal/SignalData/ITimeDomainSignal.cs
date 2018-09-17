@@ -6,7 +6,7 @@ namespace ECAT.Core
 	/// <summary>
 	/// Interface for a signal calculated in time domain (based on instantenous values calculated for a specific time)
 	/// </summary>
-	public interface ITimeDomainSignal : ISignalData, IDeepCopy<ITimeDomainSignal>
+	public interface ITimeDomainSignal : ISignalData, IShallowCopy<ITimeDomainSignal>
 	{
 		#region Properties
 
