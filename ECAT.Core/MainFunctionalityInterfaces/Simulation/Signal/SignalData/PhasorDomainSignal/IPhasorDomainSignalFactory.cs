@@ -11,7 +11,7 @@ namespace ECAT.Core
 		#region Methods
 
 		/// <summary>
-		/// Constructrs an <see cref="IPhasorDomainSignal"/> with only a DC offset
+		/// Constructs an <see cref="IPhasorDomainSignal"/> with only a DC offset
 		/// </summary>
 		/// <param name="dc"></param>
 		/// <returns></returns>

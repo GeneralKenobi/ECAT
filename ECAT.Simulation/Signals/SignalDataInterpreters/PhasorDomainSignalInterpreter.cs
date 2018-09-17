@@ -38,20 +38,20 @@ namespace ECAT.Simulation
 		/// Calculates and returns the maximum instantenous value of the signal
 		/// </summary>
 		/// <returns></returns>
-		public double Maximum() => _Signal.DC + _Signal.ComposingPhasors.Sum((phasor) => phasor.Value.Magnitude);
+		public double Maximum() => _Signal.DC + _Signal.Phasors.Sum((phasor) => phasor.Value.Magnitude);
 
 		/// <summary>
 		/// Calculates and returns the minimum instantenous value of the signal
 		/// </summary>
 		/// <returns></returns>
-		public double Minimum() => _Signal.DC - _Signal.ComposingPhasors.Sum((phasor) => phasor.Value.Magnitude);
+		public double Minimum() => _Signal.DC - _Signal.Phasors.Sum((phasor) => phasor.Value.Magnitude);
 
 		/// <summary>
 		/// Calculates and returns the root-mean-square value of the signal
 		/// </summary>
 		/// <returns></returns>
 		public double RMS() =>
-			Math.Sqrt(Math.Pow(_Signal.DC, 2) + _Signal.ComposingPhasors.Sum((x) => Math.Pow(x.Value.Magnitude / Math.Sqrt(2), 2)));
+			Math.Sqrt(Math.Pow(_Signal.DC, 2) + _Signal.Phasors.Sum((x) => Math.Pow(x.Value.Magnitude / Math.Sqrt(2), 2)));
 
 		#endregion
 	}

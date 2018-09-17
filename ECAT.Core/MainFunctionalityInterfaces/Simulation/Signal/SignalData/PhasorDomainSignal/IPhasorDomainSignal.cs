@@ -19,7 +19,7 @@ namespace ECAT.Core
 		/// <summary>
 		/// List with phasors adding to the signal
 		/// </summary>
-		IEnumerable<KeyValuePair<double, Complex>> ComposingPhasors { get; }
+		IEnumerable<KeyValuePair<double, Complex>> Phasors { get; }
 
 		/// <summary>
 		/// The type of the signal
@@ -31,7 +31,7 @@ namespace ECAT.Core
 		#region Methods
 
 		/// <summary>
-		/// Creates a copy of the signal in reversed direction (<see cref="DC"/> and each <see cref="ComposingPhasors"/> value is negated)
+		/// Creates a copy of the signal in reversed direction (<see cref="DC"/> and each <see cref="Phasors"/> value is negated)
 		/// </summary>
 		/// <returns></returns>
 		IPhasorDomainSignal CopyAndNegate();

@@ -241,7 +241,7 @@ namespace ECAT.Simulation
 		/// <returns></returns>
 		private IEnumerable<KeyValuePair<double, Complex>> GetPassiveTwoTerminalACCurrentPhasors(
 			PhasorDomainSignal voltageDrop, ITwoTerminal twoTerminal) =>
-			voltageDrop.ComposingPhasors.Select((phasor) =>
+			voltageDrop.Phasors.Select((phasor) =>
 			new KeyValuePair<double, Complex>(phasor.Key, phasor.Value * twoTerminal.GetAdmittance(phasor.Key)));
 
 		/// <summary>
@@ -268,7 +268,7 @@ namespace ECAT.Simulation
 			var currentSignal = new PhasorDomainSignal()
 			{
 				DC = GetPassiveTwoTerminalDCCurrent(voltageDrop, element),
-				ComposingPhasors = GetPassiveTwoTerminalACCurrentPhasors(voltageDrop, element),
+				Phasors = GetPassiveTwoTerminalACCurrentPhasors(voltageDrop, element),
 			};
 
 			// Cache it
@@ -466,7 +466,7 @@ namespace ECAT.Simulation
 			{
 				// Average power on a resistor is a sqaure of DC voltage plus half of squares of AC magnitudes (RMS values) times
 				// the conductance of the resistor
-				Average = (voltageDrop.ComposingPhasors.Sum((phasor) => Math.Pow(phasor.Value.Magnitude, 2)) / 2 +
+				Average = (voltageDrop.Phasors.Sum((phasor) => Math.Pow(phasor.Value.Magnitude, 2)) / 2 +
 				Math.Pow(voltageDrop.DC, 2)) * resistor.GetConductance(),
 
 				// Maximum occurs for maximum voltage drop and is simply a square of voltage times conductance
@@ -595,7 +595,7 @@ namespace ECAT.Simulation
 			if (current.Type.HasFlag(SignalType.AC))
 			{
 				// If there is more than one phasor or the phasor, for some reason, has a different frequency than the source
-				if (current.Type.HasFlag(SignalType.MultipleAC) || current.ComposingPhasors.First().Key != voltageSource.Frequency)
+				if (current.Type.HasFlag(SignalType.MultipleAC) || current.Phasors.First().Key != voltageSource.Frequency)
 				{
 					// Assign NaN as the average value cannot be easily computed
 					result.Average = double.NaN;
@@ -603,7 +603,7 @@ namespace ECAT.Simulation
 				else
 				{
 					// Get the only phasor composing the 
-					var singlePhasors = current.ComposingPhasors.First();
+					var singlePhasors = current.Phasors.First();
 
 					// Calculate the average as Vrms*Irms*cos(phiV - phiI)
 					// TODO: When IAsyncVoltageSource has phase shift, include it in the formula

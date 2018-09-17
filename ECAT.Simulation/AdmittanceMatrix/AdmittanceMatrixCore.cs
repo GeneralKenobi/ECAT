@@ -639,9 +639,9 @@ namespace ECAT.Simulation
 			for (int i = 0; i < ACVoltageSourcesCount; ++i)
 			{
 				// For the current indexed with i-th ac voltage source's ActiveComponentIndex
-				_ActiveComponentsCurrents[_ACVoltageSources[i].ActiveComponentIndex].ComposingPhasors =
+				_ActiveComponentsCurrents[_ACVoltageSources[i].ActiveComponentIndex].Phasors =
 					// Concat its ComposingPhasors
-					_ActiveComponentsCurrents[_ACVoltageSources[i].ActiveComponentIndex].ComposingPhasors.Concat(
+					_ActiveComponentsCurrents[_ACVoltageSources[i].ActiveComponentIndex].Phasors.Concat(
 						// With new value: take the frequency and i-th (plus number of DC voltage sources and number of nodes) result
 						// (AC voltage sources' currents are after node voltages and DC voltage sources' currents in the result array)
 						new KeyValuePair<double, Complex>(frequency, result[i + _DCVoltageSourcesCount + _BigDimension]));
@@ -651,9 +651,9 @@ namespace ECAT.Simulation
 			for (int i = 0; i < OpAmpsCount; ++i)
 			{
 				// For the current indexed with i-th op-amp's ActiveComponentIndex
-				_ActiveComponentsCurrents[_OpAmps[i].ActiveComponentIndex].ComposingPhasors =
+				_ActiveComponentsCurrents[_OpAmps[i].ActiveComponentIndex].Phasors =
 					// Concat its ComposingPhasors
-					_ActiveComponentsCurrents[_OpAmps[i].ActiveComponentIndex].ComposingPhasors.Concat(
+					_ActiveComponentsCurrents[_OpAmps[i].ActiveComponentIndex].Phasors.Concat(
 						// With new value: take the frequency and i-th (plus number of voltage sources and number of nodes) result
 						// (Op-Amp currents are after node voltages and voltage source currents in the result array)
 						new KeyValuePair<double, Complex>(frequency, result[i + _TotalVoltageSourcesCount + _BigDimension]));

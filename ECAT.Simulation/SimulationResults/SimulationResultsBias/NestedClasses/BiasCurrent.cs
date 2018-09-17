@@ -130,7 +130,7 @@ namespace ECAT.Simulation
 			/// <returns></returns>
 			private IEnumerable<KeyValuePair<double, Complex>> GetPassiveTwoTerminalACCurrentPhasors(
 				IPhasorDomainSignal voltageDrop, ITwoTerminal twoTerminal) =>
-				voltageDrop.ComposingPhasors.Select((phasor) =>
+				voltageDrop.Phasors.Select((phasor) =>
 				new KeyValuePair<double, Complex>(phasor.Key, phasor.Value * twoTerminal.GetAdmittance(phasor.Key)));
 
 			/// <summary>
@@ -150,7 +150,7 @@ namespace ECAT.Simulation
 					var current = new PhasorDomainSignal()
 					{
 						DC = GetPassiveTwoTerminalDCCurrent(voltageDrop, element),
-						ComposingPhasors = GetPassiveTwoTerminalACCurrentPhasors(voltageDrop, element),
+						Phasors = GetPassiveTwoTerminalACCurrentPhasors(voltageDrop, element),
 					};
 
 					// Cache it

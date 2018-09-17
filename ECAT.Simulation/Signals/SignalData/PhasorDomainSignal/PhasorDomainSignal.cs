@@ -42,7 +42,7 @@ namespace ECAT.Simulation
 		/// <param name="phasors"></param>
 		public PhasorDomainSignal(IEnumerable<KeyValuePair<double, Complex>> phasors)
 		{
-			ComposingPhasors = phasors ?? throw new ArgumentNullException(nameof(phasors));
+			Phasors = phasors ?? throw new ArgumentNullException(nameof(phasors));
 		}
 
 		/// <summary>
@@ -55,7 +55,7 @@ namespace ECAT.Simulation
 		public PhasorDomainSignal(double dc, IEnumerable<KeyValuePair<double, Complex>> phasors)
 		{
 			DC = dc;
-			ComposingPhasors = phasors ?? throw new ArgumentNullException(nameof(phasors));
+			Phasors = phasors ?? throw new ArgumentNullException(nameof(phasors));
 		}
 
 		#endregion
@@ -70,7 +70,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// List with phasors adding to the signal
 		/// </summary>
-		public IEnumerable<KeyValuePair<double, Complex>> ComposingPhasors { get; set; } = Enumerable.Empty<KeyValuePair<double, Complex>>();
+		public IEnumerable<KeyValuePair<double, Complex>> Phasors { get; set; } = Enumerable.Empty<KeyValuePair<double, Complex>>();
 
 		/// <summary>
 		/// Object capable of calculating characteristic values for this <see cref="ISignalData"/>
@@ -94,7 +94,7 @@ namespace ECAT.Simulation
 				}
 
 				// Get the number of phasors
-				var phasorsCount = ComposingPhasors.Count();
+				var phasorsCount = Phasors.Count();
 
 				// If it's greater than 0
 				if (phasorsCount > 0)
@@ -132,7 +132,7 @@ namespace ECAT.Simulation
 		public void Copy(IPhasorDomainSignal obj)
 		{
 			DC = obj.DC;
-			ComposingPhasors = obj.ComposingPhasors;
+			Phasors = obj.Phasors;
 		}
 
 		/// <summary>
@@ -142,14 +142,14 @@ namespace ECAT.Simulation
 		IPhasorDomainSignal IShallowCopyTo<IPhasorDomainSignal>.Copy() => Copy();
 
 		/// <summary>
-		/// Creates a copy of the signal in reversed direction (<see cref="DC"/> and each <see cref="ComposingPhasors"/> value is negated)
+		/// Creates a copy of the signal in reversed direction (<see cref="DC"/> and each <see cref="Phasors"/> value is negated)
 		/// </summary>
 		/// <returns></returns>
-		public PhasorDomainSignal CopyAndNegate() => new PhasorDomainSignal(-DC, ComposingPhasors.Select((phasor) =>
+		public PhasorDomainSignal CopyAndNegate() => new PhasorDomainSignal(-DC, Phasors.Select((phasor) =>
 			new KeyValuePair<double, Complex>(phasor.Key, -phasor.Value)));
 
 		/// <summary>
-		/// Creates a copy of the signal in reversed direction (<see cref="DC"/> and each <see cref="ComposingPhasors"/> value is negated)
+		/// Creates a copy of the signal in reversed direction (<see cref="DC"/> and each <see cref="Phasors"/> value is negated)
 		/// </summary>
 		/// <returns></returns>
 		IPhasorDomainSignal IPhasorDomainSignal.CopyAndNegate() => CopyAndNegate();
