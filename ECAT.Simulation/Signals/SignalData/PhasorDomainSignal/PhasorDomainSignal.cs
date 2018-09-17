@@ -10,6 +10,7 @@ namespace ECAT.Simulation
 	/// <summary>
 	/// Signal defined in a phasor domain - composed of a DC offset and some phasors
 	/// </summary>
+	[RegisterAsType(typeof(IPhasorDomainSignal))]
 	public class PhasorDomainSignal : IPhasorDomainSignal
 	{
 		#region Constructors

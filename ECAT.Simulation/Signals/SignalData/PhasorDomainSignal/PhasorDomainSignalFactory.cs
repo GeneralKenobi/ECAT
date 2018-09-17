@@ -8,6 +8,7 @@ namespace ECAT.Simulation
 	/// <summary>
 	/// Factory of <see cref="PhasorDomainSignal"/>s
 	/// </summary>
+	[RegisterAsInstance(typeof(IPhasorDomainSignalFactory))]
 	public class PhasorDomainSignalFactory : IPhasorDomainSignalFactory
 	{
 		#region Public methods
