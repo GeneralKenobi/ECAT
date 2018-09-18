@@ -25,6 +25,12 @@
 		/// <returns></returns>
 		double RMS();
 
+		/// <summary>
+		/// Calculates and returns the average value
+		/// </summary>
+		/// <returns></returns>
+		double Average();
+
 		#endregion
 	}
 }
