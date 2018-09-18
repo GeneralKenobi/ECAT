@@ -1,4 +1,5 @@
 ﻿using ECAT.Core;
+using System;
 using System.Collections.Generic;
 
 namespace ECAT.Simulation
@@ -13,10 +14,14 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Default constructor
 		/// </summary>
+		/// <param name="nodes"></param>
+		/// <param name="activeComponentsCurrents"></param>
+		/// <exception cref="ArgumentNullException"></exception>
 		public SimulationResultsBias(IEnumerable<INode> nodes, IEnumerable<KeyValuePair<int, IPhasorDomainSignal>> activeComponentsCurrents)
 		{
-			var biasVoltage = new BiasVoltage(nodes);
-			var biasCurrent = new BiasCurrent(biasVoltage, activeComponentsCurrents);
+			var biasVoltage = new BiasVoltage(nodes ?? throw new ArgumentNullException(nameof(nodes)));
+			var biasCurrent = new BiasCurrent(
+				biasVoltage, activeComponentsCurrents ?? throw new ArgumentNullException(nameof(activeComponentsCurrents)));
 
 			Voltage = biasVoltage;
 			Current = biasCurrent;
