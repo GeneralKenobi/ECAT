@@ -5,7 +5,7 @@
 	/// </summary>
 	public interface ISignalDataInterpreter
     {
-		#region Properties
+		#region Methods
 
 		/// <summary>
 		/// Calculates and returns the maximum instantenous value of the signal
