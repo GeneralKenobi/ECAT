@@ -1,5 +1,4 @@
-﻿using CSharpEnhanced.CoreClasses;
-using ECAT.Core;
+﻿using ECAT.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,8 +9,8 @@ namespace ECAT.Simulation
 	public partial class SimulationResultsBias : ISimulationResults
 	{
 		/// <summary>
-		/// Provides functionality connected with storing, calculating and exposing voltage drops and information about them in
-		/// form of <see cref="IPhasorDomainSignal"/>s and <see cref="ISignalInformation"/>
+		/// Provides functionality connected with storing, calculating and exposing power information in
+		/// form of <see cref="ISignalInformation"/>
 		/// </summary>
 		private class BiasPower : IPowerDB
 		{
@@ -223,35 +222,10 @@ namespace ECAT.Simulation
 			/// <param name="voltageDrop"></param>
 			/// <param name="resistor"></param>
 			/// <returns></returns>
-			public IPowerInformation GetPower(IResistor resistor)
-			{
-				// Check if there already is a cached entry
-				if (_Cache.TryGetValue(resistor, out var power))
-				{
-					return power;
-				}
-
-				// Get the voltage drop across the resistor
-				var voltageDrop = ResolveVoltageDrop(resistor);
-
-				// If not create a new power info
-				var result = new PowerInformation()
-				{
-					// Average power on a resistor is a sqaure of DC voltage plus half of squares of AC magnitudes (RMS values) times
-					// the conductance of the resistor
-					Average = (voltageDrop.Phasors.Sum((phasor) => Math.Pow(phasor.Value.Magnitude, 2)) / 2 +
-					Math.Pow(voltageDrop.DC, 2)) * resistor.GetConductance(),
-
-					// Maximum occurs for maximum voltage drop and is simply a square of voltage times conductance
-					Maximum = Math.Pow(voltageDrop.Interpreter.Maximum(), 2) * resistor.GetConductance(),
-				};
-
-				// Cache it
-				CachePower(resistor, result);
-
-				// And return it
-				return result;
-			}
+			public ISignalInformation GetPower(IResistor resistor) =>
+				// Check if power can be enabled and if it can be fetched, if so return it, otherwise return null
+				TryEnablePower(resistor) && _Cache.TryGetValue(resistor, out var power) ? power : null;
+			
 
 			/// <summary>
 			/// Gets information about power on an <see cref="ICurrentSource"/>
@@ -259,38 +233,9 @@ namespace ECAT.Simulation
 			/// <param name="voltageDrop"></param>
 			/// <param name="currentSource"></param>
 			/// <returns></returns>
-			public IPowerInformation GetPower(ICurrentSource currentSource)
-			{
-				// Check if there already is a cached entry
-				if (_PowerCache.TryGetValue(currentSource, out var power))
-				{
-					return power;
-				}
-
-				var voltageDrop = ResolveVoltageDrop(currentSource);
-
-				// Average is negative voltage drop times produced current (to abide passive sign convention)
-				var result = new PowerInformation()
-				{
-					Average = -voltageDrop.DC * currentSource.ProducedCurrent,
-				};
-
-				// Minimum power (the maximum supplied or the least dissipated, depending on actual values)
-				// It's the minimum voltage drop minus twice DC voltage drop times current. (Minimum already has +VDC in it so in order
-				// to have -VDC in total there's -2VDC. We need to subtract DC due to passive sign convention)
-				result.Minimum = (voltageDrop.Interpreter.Maximum() - 2 * voltageDrop.DC) * currentSource.ProducedCurrent;
-
-				// Maximum power (the maximum dissipated or the least supplied, depending on actual values)
-				// It's the maximum voltage drop minus twice DC voltage drop times current. (Maximum already has +VDC in it so in order
-				// to have -VDC in total there's -2VDC. We need to subtract DC due to passive sign convention)
-				result.Maximum = (voltageDrop.Interpreter.Maximum() - 2 * voltageDrop.DC) * currentSource.ProducedCurrent;
-
-				// Cache the calculated value
-				CachePower(currentSource, result);
-
-				// And return it
-				return result;
-			}
+			public ISignalInformation GetPower(ICurrentSource currentSource) =>
+				// Check if power can be enabled and if it can be fetched, if so return it, otherwise return null
+				TryEnablePower(currentSource) && _Cache.TryGetValue(currentSource, out var power) ? power : null;
 
 			/// <summary>
 			/// Gets information about power on an <see cref="IVoltageSource"/>
@@ -298,40 +243,9 @@ namespace ECAT.Simulation
 			/// <param name="current"></param>
 			/// <param name="voltageSource"></param>
 			/// <returns></returns>
-			public IPowerInformation GetPower(IVoltageSource voltageSource)
-			{
-				// Check if there already is a cached entry
-				if (_PowerCache.TryGetValue(voltageSource, out var power))
-				{
-					return power;
-				}
-
-				if (!_ActiveComponentsCurrentCache.TryGetValue(voltageSource.ActiveComponentIndex, out var currentPackage))
-				{
-					return new PowerInformation();
-				}
-
-				var current = currentPackage.Item1;
-
-				// Average is voltage drop times produced current (current is assumed to flow right to left in standard convention,
-				// current produced flows left to right so produced power is negative)
-				var result = new PowerInformation()
-				{
-					Average = -current.DC * voltageSource.ProducedDCVoltage,
-				};
-
-				// Minimum power (the maximum supplied or the least dissipated, depending on actual values)				
-				result.Minimum = current.Interpreter.Minimum() * voltageSource.ProducedDCVoltage;
-
-				// Maximum power (the maximum dissipated or the least supplied, depending on actual values)
-				result.Maximum = current.Interpreter.Maximum() * voltageSource.ProducedDCVoltage;
-
-				// Cache the calculated value
-				CachePower(voltageSource, result);
-
-				// And return it
-				return result;
-			}
+			public ISignalInformation GetPower(IVoltageSource voltageSource) =>
+				// Check if power can be enabled and if it can be fetched, if so return it, otherwise return null
+				TryEnablePower(voltageSource) && _Cache.TryGetValue(voltageSource, out var power) ? power : null;
 
 			/// <summary>
 			/// Gets information about power on an <see cref="IACVoltageSource"/>. If the <paramref name="current"/> is composed of
@@ -342,55 +256,9 @@ namespace ECAT.Simulation
 			/// <param name="current"></param>
 			/// <param name="voltageSource"></param>
 			/// <returns></returns>
-			public IPowerInformation GetPower(IACVoltageSource voltageSource)
-			{
-				// Check if there already is a cached entry
-				if (_PowerCache.TryGetValue(voltageSource, out var power))
-				{
-					return power;
-				}
-
-				if (!_ActiveComponentsCurrentCache.TryGetValue(voltageSource.ActiveComponentIndex, out var currentPackage))
-				{
-					return new PowerInformation();
-				}
-
-				var current = currentPackage.Item1;
-
-				// Create a new info, initialize Minimum and Maximum with NaN to indicate they couldn't have been calculated
-				var result = new PowerInformation()
-				{
-					Minimum = double.NaN,
-					Maximum = double.NaN,
-				};
-
-				// If it has only ony AC
-				if (current.Type.HasFlag(SignalType.AC))
-				{
-					// If there is more than one phasor or the phasor, for some reason, has a different frequency than the source
-					if (current.Type.HasFlag(SignalType.MultipleAC) || current.Phasors.First().Key != voltageSource.Frequency)
-					{
-						// Assign NaN as the average value cannot be easily computed
-						result.Average = double.NaN;
-					}
-					else
-					{
-						// Get the only phasor composing the 
-						var singlePhasors = current.Phasors.First();
-
-						// Calculate the average as Vrms*Irms*cos(phiV - phiI)
-						// TODO: When IAsyncVoltageSource has phase shift, include it in the formula
-						result.Average = current.Interpreter.RMS() * Math.Sqrt(Math.Pow(voltageSource.ProducedDCVoltage, 2) +
-							Math.Pow(voltageSource.PeakProducedVoltage, 2) / 2) * Math.Cos(singlePhasors.Value.Phase);
-					}
-				}
-
-				// Cache the calculated value
-				CachePower(voltageSource, result);
-
-				// And return it
-				return result;
-			}
+			public ISignalInformation GetPower(IACVoltageSource voltageSource) =>
+				// Check if power can be enabled and if it can be fetched, if so return it, otherwise return null
+				TryEnablePower(voltageSource) && _Cache.TryGetValue(voltageSource, out var power) ? power : null;
 
 			#endregion
 		}
