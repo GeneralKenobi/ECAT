@@ -250,7 +250,7 @@ namespace ECAT.Simulation
 			/// <param name="voltageBA">If true, voltage used to calculate the current is taken from <see cref="ITwoTerminal.TerminalA"/>
 			/// (reference node) to <see cref="ITwoTerminal.TerminalB"/>, if false the direction is reversed</param>
 			/// <returns></returns>
-			public bool GetCurrent(ICapacitor capacitor, out IPhasorDomainSignal current, bool voltageBA = true) =>
+			public bool TryGetCurrent(ICapacitor capacitor, out IPhasorDomainSignal current, bool voltageBA = true) =>
 				TryGetStandardTwoTerminalCurrent(capacitor, voltageBA, out current);
 
 			/// <summary>
@@ -262,7 +262,7 @@ namespace ECAT.Simulation
 			/// <param name="reverseDirection">If true, the direction of the current will be reversed (with the respect to
 			/// the normal direction obtained in simulation)</param>
 			/// <returns></returns>
-			public bool GetCurrent(int activeComponentIndex, out IPhasorDomainSignal current, bool reverseDirection = false)
+			public bool TryGetCurrent(int activeComponentIndex, out IPhasorDomainSignal current, bool reverseDirection = false)
 			{
 				// Check if the current is in the cache (If it was not provided during object construction, it's not possible to
 				// calculate it now)
