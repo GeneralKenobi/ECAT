@@ -15,12 +15,6 @@ namespace ECAT.Core
 		ISignalData Data { get; }
 
 		/// <summary>
-		/// True if the direction of signal was inverted (with respect to assumed directions) to present <see cref="Maximum"/> as a
-		/// positive number
-		/// </summary>
-		bool InvertedDirection { get; }
-
-		/// <summary>
 		/// The maximum instantenous signal value that may occur
 		/// </summary>
 		double Maximum { get; }

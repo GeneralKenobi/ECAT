@@ -62,12 +62,6 @@ namespace ECAT.Simulation
 		}
 
 		/// <summary>
-		/// True if the direction of signal was inverted (with respect to assumed directions) to present <see cref="Maximum"/> as a
-		/// positive number
-		/// </summary>
-		public bool InvertedDirection { get; set; }
-
-		/// <summary>
 		/// The maximum signal value that may occur
 		/// </summary>
 		public double Maximum { get; set; }
@@ -124,8 +118,6 @@ namespace ECAT.Simulation
 			Minimum = signalInformation.Minimum;
 
 			RMS = signalInformation.RMS;
-
-			InvertedDirection = signalInformation.InvertedDirection;
 		}
 
 		/// <summary>
