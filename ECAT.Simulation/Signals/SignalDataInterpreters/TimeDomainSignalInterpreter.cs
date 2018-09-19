@@ -40,6 +40,12 @@ namespace ECAT.Simulation
 			/// <returns></returns>
 			public double RMS() => Math.Sqrt(_Signal.InstantenousValues.Sum((x) => Math.Pow(x, 2)) / _Signal.InstantenousValues.Count());
 
+			/// <summary>
+			/// Returns the average value of the signal
+			/// </summary>
+			/// <returns></returns>
+			public double Average() => _Signal.InstantenousValues.Average();
+
 			#endregion
 		}
 	}
