@@ -9,17 +9,17 @@
 		#region Properties
 
 		/// <summary>
-		/// Contains information about power
+		/// Contains information about power, guaranteed to be not null
 		/// </summary>
 		IVoltageDB Voltage { get; }
 
 		/// <summary>
-		/// Contains information about power
+		/// Contains information about power, guaranteed to be not null
 		/// </summary>
 		ICurrentDB Current { get; }
 
 		/// <summary>
-		/// Contains information about power
+		/// Contains information about power, guaranteed to be not null
 		/// </summary>
 		IPowerDB Power { get; }
 
