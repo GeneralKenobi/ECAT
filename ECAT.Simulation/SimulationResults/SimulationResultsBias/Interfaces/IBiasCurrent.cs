@@ -20,7 +20,7 @@ namespace ECAT.Simulation
 			/// (reference node) to <see cref="ITwoTerminal.TerminalB"/>, if false the direction is reversed</param>
 			/// <param name="current"></param>
 			/// <returns></returns>
-			bool TryGetCurrent(IResistor resistor, out IPhasorDomainSignal current, bool voltageBA = true);
+			bool TryGet(IResistor resistor, out IPhasorDomainSignal current, bool voltageBA = true);
 
 			/// <summary>
 			/// Gets current flowing through an <see cref="ICapacitor"/> or null if unsuccessful and stores it in
@@ -31,7 +31,7 @@ namespace ECAT.Simulation
 			/// <param name="voltageBA">If true, voltage used to calculate the current is taken from <see cref="ITwoTerminal.TerminalA"/>
 			/// (reference node) to <see cref="ITwoTerminal.TerminalB"/>, if false the direction is reversed</param>
 			/// <returns></returns>
-			bool TryGetCurrent(ICapacitor capacitor, out IPhasorDomainSignal current, bool voltageBA = true);
+			bool TryGet(ICapacitor capacitor, out IPhasorDomainSignal current, bool voltageBA = true);
 
 			/// <summary>
 			/// Gets current produced by some <see cref="IActiveComponent"/> or null if unsuccessful and stores it in
@@ -42,7 +42,7 @@ namespace ECAT.Simulation
 			/// <param name="reverseDirection">If true, the direction of the current will be reversed (with the respect to
 			/// the normal direction obtained in simulation)</param>
 			/// <returns></returns>
-			bool TryGetCurrent(int activeComponentIndex, out IPhasorDomainSignal current, bool reverseDirection = false);
+			bool TryGet(int activeComponentIndex, out IPhasorDomainSignal current, bool reverseDirection = false);
 
 			#endregion
 		}

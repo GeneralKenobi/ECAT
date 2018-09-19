@@ -61,9 +61,9 @@ namespace ECAT.Design
 		/// <returns></returns>
 		protected override IEnumerable<IEnumerable<string>> GetComponentInfo()
 		{
-			var current = IoC.Resolve<ISimulationResultsProvider>().Value.Current.GetCurrent(ActiveComponentIndex, InvertedVoltageCurrentDirections);
+			var current = IoC.Resolve<ISimulationResultsProvider>().Value.Current.Get(ActiveComponentIndex, InvertedVoltageCurrentDirections);
 			yield return GetCurrentInfo(current);
-			yield return GetPowerInfoAC(IoC.Resolve<ISimulationResultsProvider>().Value.Power.GetPower(this));
+			yield return GetPowerInfoAC(IoC.Resolve<ISimulationResultsProvider>().Value.Power.Get(this));
 		}
 
 		#endregion

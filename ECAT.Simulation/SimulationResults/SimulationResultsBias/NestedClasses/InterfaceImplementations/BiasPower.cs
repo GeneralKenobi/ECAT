@@ -76,7 +76,7 @@ namespace ECAT.Simulation
 			private bool TryConstructPower(IResistor resistor)
 			{
 				// Try to get voltage drop across the element
-				if (_VoltageDrops.TryGetVoltageDrop(resistor, out var voltageDrop))
+				if (_VoltageDrops.TryGet(resistor, out var voltageDrop))
 				{
 					// If successful, create a new power signal based on it, cache it
 					CachePower(resistor, 
@@ -112,7 +112,7 @@ namespace ECAT.Simulation
 			private bool TryConstructPower(IVoltageSource voltageSource)
 			{
 				// Try to get voltage drop across the element
-				if (_Currents.TryGetCurrent(voltageSource.ActiveComponentIndex, out var current))
+				if (_Currents.TryGet(voltageSource.ActiveComponentIndex, out var current))
 				{
 					// If successful, create a new power signal based on it, cache it
 					CachePower(voltageSource, new CharacteristicValuesPowerSignal(
@@ -148,7 +148,7 @@ namespace ECAT.Simulation
 			private bool TryConstructPower(IACVoltageSource voltageSource)
 			{
 				// Try to get voltage drop across the element
-				if (_Currents.TryGetCurrent(voltageSource.ActiveComponentIndex, out var current))
+				if (_Currents.TryGet(voltageSource.ActiveComponentIndex, out var current))
 				{
 					// If successful, create a new power signal based on it, cache it
 					CachePower(voltageSource, new CharacteristicValuesPowerSignal(
@@ -187,7 +187,7 @@ namespace ECAT.Simulation
 			private bool TryConstructPower(ICurrentSource currentSource)
 			{
 				// Try to get voltage drop across the element
-				if (_VoltageDrops.TryGetVoltageDrop(currentSource, out var voltageDrop))
+				if (_VoltageDrops.TryGet(currentSource, out var voltageDrop))
 				{
 					// If successful, create a new power signal based on it, cache it
 					CachePower(currentSource, new CharacteristicValuesPowerSignal(
@@ -222,7 +222,7 @@ namespace ECAT.Simulation
 			/// <param name="voltageDrop"></param>
 			/// <param name="resistor"></param>
 			/// <returns></returns>
-			public ISignalInformation GetPower(IResistor resistor) =>
+			public ISignalInformation Get(IResistor resistor) =>
 				// Check if power can be enabled and if it can be fetched, if so return it, otherwise return null
 				TryEnablePower(resistor) && _Cache.TryGetValue(resistor, out var power) ? power : null;
 			
@@ -233,7 +233,7 @@ namespace ECAT.Simulation
 			/// <param name="voltageDrop"></param>
 			/// <param name="currentSource"></param>
 			/// <returns></returns>
-			public ISignalInformation GetPower(ICurrentSource currentSource) =>
+			public ISignalInformation Get(ICurrentSource currentSource) =>
 				// Check if power can be enabled and if it can be fetched, if so return it, otherwise return null
 				TryEnablePower(currentSource) && _Cache.TryGetValue(currentSource, out var power) ? power : null;
 
@@ -243,7 +243,7 @@ namespace ECAT.Simulation
 			/// <param name="current"></param>
 			/// <param name="voltageSource"></param>
 			/// <returns></returns>
-			public ISignalInformation GetPower(IVoltageSource voltageSource) =>
+			public ISignalInformation Get(IVoltageSource voltageSource) =>
 				// Check if power can be enabled and if it can be fetched, if so return it, otherwise return null
 				TryEnablePower(voltageSource) && _Cache.TryGetValue(voltageSource, out var power) ? power : null;
 
@@ -256,7 +256,7 @@ namespace ECAT.Simulation
 			/// <param name="current"></param>
 			/// <param name="voltageSource"></param>
 			/// <returns></returns>
-			public ISignalInformation GetPower(IACVoltageSource voltageSource) =>
+			public ISignalInformation Get(IACVoltageSource voltageSource) =>
 				// Check if power can be enabled and if it can be fetched, if so return it, otherwise return null
 				TryEnablePower(voltageSource) && _Cache.TryGetValue(voltageSource, out var power) ? power : null;
 

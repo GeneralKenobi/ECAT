@@ -13,7 +13,7 @@
 		/// <param name="voltageDrop"></param>
 		/// <param name="resistor"></param>
 		/// <returns></returns>
-		ISignalInformation GetPower(IResistor resistor);
+		ISignalInformation Get(IResistor resistor);
 
 		/// <summary>
 		/// Gets information about power on an <see cref="ICurrentSource"/>
@@ -21,7 +21,7 @@
 		/// <param name="voltageDrop"></param>
 		/// <param name="currentSource"></param>
 		/// <returns></returns>
-		ISignalInformation GetPower(ICurrentSource currentSource);
+		ISignalInformation Get(ICurrentSource currentSource);
 
 		/// <summary>
 		/// Gets information about power on an <see cref="IVoltageSource"/>
@@ -29,7 +29,7 @@
 		/// <param name="current"></param>
 		/// <param name="voltageSource"></param>
 		/// <returns></returns>
-		ISignalInformation GetPower(IVoltageSource voltageSource);
+		ISignalInformation Get(IVoltageSource voltageSource);
 
 		/// <summary>
 		/// Gets information about power on an <see cref="IACVoltageSource"/>. If the <paramref name="current"/> is composed of
@@ -40,7 +40,7 @@
 		/// <param name="current"></param>
 		/// <param name="voltageSource"></param>
 		/// <returns></returns>
-		ISignalInformation GetPower(IACVoltageSource voltageSource);
+		ISignalInformation Get(IACVoltageSource voltageSource);
 
 		#endregion
 	}

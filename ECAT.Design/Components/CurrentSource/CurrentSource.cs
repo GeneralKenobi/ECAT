@@ -62,7 +62,7 @@ namespace ECAT.Design
 		protected override IEnumerable<IEnumerable<string>> GetComponentInfo()
 		{
 			yield return GetVoltageInfo(_VoltageDrop);
-			yield return GetPowerInfo(IoC.Resolve<ISimulationResultsProvider>().Value.Power.GetPower(this));
+			yield return GetPowerInfo(IoC.Resolve<ISimulationResultsProvider>().Value.Power.Get(this));
 		}
 
 		#endregion

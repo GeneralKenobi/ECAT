@@ -44,7 +44,7 @@ namespace ECAT.Design
 		protected override IEnumerable<IEnumerable<string>> GetComponentInfo()
 		{
 			yield return GetVoltageInfo(_VoltageDrop);
-			yield return GetCurrentInfo(IoC.Resolve<ISimulationResultsProvider>().Value.Current.GetCurrent(this, InvertedVoltageCurrentDirections));
+			yield return GetCurrentInfo(IoC.Resolve<ISimulationResultsProvider>().Value.Current.Get(this, InvertedVoltageCurrentDirections));
 		}
 
 		#endregion

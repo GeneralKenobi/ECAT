@@ -193,13 +193,13 @@ namespace ECAT.Simulation
 			/// <param name="nodeToGround">If true, voltage drop is calculated from ground to node given by
 			/// <paramref name="nodeIndex"/>, if false it is calculated from node given by <paramref name="nodeIndex"/> to ground</param>
 			/// <returns></returns>
-			public bool TryGetVoltageDrop(int nodeIndex, out IPhasorDomainSignal voltage, bool nodeToGround = true) =>
+			public bool TryGet(int nodeIndex, out IPhasorDomainSignal voltage, bool nodeToGround = true) =>
 				// Depending on requested voltage drop direction
 				nodeToGround ?
 				// Get voltage drop from ground to node
-				TryGetVoltageDrop(SimulationManager.GroundNodeIndex, nodeIndex, out voltage) :
+				TryGet(SimulationManager.GroundNodeIndex, nodeIndex, out voltage) :
 				// Get voltage drop from node to ground
-				TryGetVoltageDrop(nodeIndex, SimulationManager.GroundNodeIndex, out voltage);
+				TryGet(nodeIndex, SimulationManager.GroundNodeIndex, out voltage);
 
 			/// <summary>
 			/// Gets voltage drop between two nodes (with node A being treated as the reference node) or null if unsuccessful and
@@ -209,7 +209,7 @@ namespace ECAT.Simulation
 			/// <param name="nodeBIndex"></param>
 			/// <param name="voltage"></param>
 			/// <returns></returns>
-			public bool TryGetVoltageDrop(int nodeAIndex, int nodeBIndex, out IPhasorDomainSignal voltage)
+			public bool TryGet(int nodeAIndex, int nodeBIndex, out IPhasorDomainSignal voltage)
 			{
 				// Check if it's possible to get the voltage drop from cache
 				if (TryEnableVoltageDrop(nodeAIndex, nodeBIndex) &&
@@ -236,13 +236,13 @@ namespace ECAT.Simulation
 			/// <param name="voltageBA">If true, voltage drop is calculated from <see cref="ITwoTerminal.TerminalB"/> to
 			/// <param name="voltage"></param>
 			/// <returns></returns>
-			public bool TryGetVoltageDrop(ITwoTerminal component, out IPhasorDomainSignal voltage, bool voltageBA = true) =>
+			public bool TryGet(ITwoTerminal component, out IPhasorDomainSignal voltage, bool voltageBA = true) =>
 				// Depending on requested voltage drop direction
 				voltageBA ?
 				// Get voltage drop from node A to node B
-				TryGetVoltageDrop(component.TerminalA.NodeIndex, component.TerminalB.NodeIndex, out voltage) :
+				TryGet(component.TerminalA.NodeIndex, component.TerminalB.NodeIndex, out voltage) :
 				// Get voltage drop from node B to node A
-				TryGetVoltageDrop(component.TerminalB.NodeIndex, component.TerminalA.NodeIndex, out voltage);
+				TryGet(component.TerminalB.NodeIndex, component.TerminalA.NodeIndex, out voltage);
 
 			#endregion
 
@@ -255,13 +255,13 @@ namespace ECAT.Simulation
 			/// <param name="nodeToGround">If true, voltage drop is calculated from ground to node given by
 			/// <paramref name="nodeIndex"/>, if false it is calculated from node given by <paramref name="nodeIndex"/> to ground</param>
 			/// <returns></returns>
-			public ISignalInformation GetVoltageDrop(int nodeIndex, bool nodeToGround = true) =>
+			public ISignalInformation Get(int nodeIndex, bool nodeToGround = true) =>
 				// Depending on requested voltage drop direction
 				nodeToGround ?
 				// Get voltage drop from ground to node
-				GetVoltageDrop(SimulationManager.GroundNodeIndex, nodeIndex) :
+				Get(SimulationManager.GroundNodeIndex, nodeIndex) :
 				// Get voltage drop from node to ground
-				GetVoltageDrop(nodeIndex, SimulationManager.GroundNodeIndex);
+				Get(nodeIndex, SimulationManager.GroundNodeIndex);
 			
 			/// <summary>
 			/// Gets information on voltage drop between two nodes (with node A being treated as the reference node) or returns null
@@ -270,7 +270,7 @@ namespace ECAT.Simulation
 			/// <param name="nodeAIndex"></param>
 			/// <param name="nodeBIndex"></param>
 			/// <returns></returns>
-			public ISignalInformation GetVoltageDrop(int nodeAIndex, int nodeBIndex)
+			public ISignalInformation Get(int nodeAIndex, int nodeBIndex)
 			{
 				// Check if it's possible to get the voltage drop from cache
 				if (TryEnableVoltageDrop(nodeAIndex, nodeBIndex) &&
@@ -293,13 +293,13 @@ namespace ECAT.Simulation
 			/// <param name="component"></param>
 			/// <param name="voltageBA">If true, voltage drop is calculated from <see cref="ITwoTerminal.TerminalB"/> to
 			/// <returns></returns>
-			public ISignalInformation GetVoltageDrop(ITwoTerminal component, bool voltageBA = true) =>
+			public ISignalInformation Get(ITwoTerminal component, bool voltageBA = true) =>
 				// Depending on requested voltage drop direction
 				voltageBA ?
 				// Get voltage drop from node A to node B
-				GetVoltageDrop(component.TerminalA.NodeIndex, component.TerminalB.NodeIndex) :
+				Get(component.TerminalA.NodeIndex, component.TerminalB.NodeIndex) :
 				// Get voltage drop from node B to node A
-				GetVoltageDrop(component.TerminalB.NodeIndex, component.TerminalA.NodeIndex);
+				Get(component.TerminalB.NodeIndex, component.TerminalA.NodeIndex);
 
 			#endregion
 
