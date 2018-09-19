@@ -1,6 +1,7 @@
 ﻿using CSharpEnhanced.Helpers;
 using ECAT.Core;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 
 namespace ECAT.Design
@@ -66,6 +67,11 @@ namespace ECAT.Design
 		/// <returns></returns>
 		public static IEnumerable<string> GetSignalInfo(ISignalInformation signal, string signalName, string unit)
 		{
+			if(signal == null)
+			{
+				yield break;
+			}
+
 			// Characteristic signal information
 			yield return LineInfo("Minimum instantenous " + signalName, signal.Minimum, unit);
 			yield return LineInfo("Maximum instantenous " + signalName, signal.Maximum, unit);
