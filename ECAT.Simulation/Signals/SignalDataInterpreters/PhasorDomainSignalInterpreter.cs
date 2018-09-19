@@ -54,10 +54,11 @@ namespace ECAT.Simulation
 			Math.Sqrt(Math.Pow(_Signal.DC, 2) + _Signal.Phasors.Sum((x) => Math.Pow(x.Value.Magnitude / Math.Sqrt(2), 2)));
 
 		/// <summary>
-		/// Average value is equal to DC (sine waves have average value equal to 0)
+		/// Returns the average value of the signal
 		/// </summary>
 		/// <returns></returns>
 		public double Average() => _Signal.DC;
+		// Average value is equal to DC (sine waves have average value equal to 0)
 
 		#endregion
 	}
