@@ -5,6 +5,7 @@ namespace ECAT.Simulation
 	/// <summary>
 	/// Provides results from the latest simulation
 	/// </summary>
+	// Register as self so that SimulationManager can use the public setter for Value
 	[RegisterAsInstance(typeof(SimulationResultsProvider), typeof(ISimulationResultsProvider))]
 	public class SimulationResultsProvider : ISimulationResultsProvider
 	{
