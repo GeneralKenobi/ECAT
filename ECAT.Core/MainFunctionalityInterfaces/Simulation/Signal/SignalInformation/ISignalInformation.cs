@@ -29,6 +29,11 @@ namespace ECAT.Core
 		/// </summary>
 		double RMS { get; }
 
+		/// <summary>
+		/// The average value of the signal
+		/// </summary>
+		double Average { get; }
+
 		#endregion
 	}
 }

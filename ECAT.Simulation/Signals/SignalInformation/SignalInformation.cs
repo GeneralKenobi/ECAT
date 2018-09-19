@@ -76,6 +76,11 @@ namespace ECAT.Simulation
 		/// </summary>
 		public double RMS { get; set; }
 
+		/// <summary>
+		/// The average value of the signal
+		/// </summary>
+		public double Average { get; set; }
+
 		#endregion
 
 		#region Private methods
@@ -87,6 +92,7 @@ namespace ECAT.Simulation
 				Maximum = Data.Interpreter.Maximum();
 				Minimum = Data.Interpreter.Minimum();
 				RMS = Data.Interpreter.RMS();
+				Average = Data.Interpreter.Average();
 			}
 			else
 			{
