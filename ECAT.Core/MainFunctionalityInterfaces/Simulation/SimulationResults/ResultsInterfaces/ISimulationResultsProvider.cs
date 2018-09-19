@@ -8,7 +8,7 @@
 		#region Properties
 
 		/// <summary>
-		/// Results from the last simulation
+		/// Results from the last simulation, non-null
 		/// </summary>
 		ISimulationResults Value { get; }
 
