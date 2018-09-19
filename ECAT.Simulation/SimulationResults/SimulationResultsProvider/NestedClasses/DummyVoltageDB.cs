@@ -2,7 +2,7 @@
 
 namespace ECAT.Simulation
 {
-	public partial class SimulationResultsProvider : ISimulationResultsProvider
+	public partial class SimulationResultsProvider
 	{
 		/// <summary>
 		/// Dummy voltage database - always returns null.
