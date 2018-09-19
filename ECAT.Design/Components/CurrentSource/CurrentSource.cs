@@ -44,7 +44,7 @@ namespace ECAT.Design
 		/// Returns info related to power
 		/// </summary>
 		/// <returns></returns>
-		protected IEnumerable<string> GetPowerInfo(IPowerInformation info)
+		protected IEnumerable<string> GetPowerInfo(ISignalInformation info)
 		{
 			// Return characteristic power information
 			yield return CIFormat.LineInfo("Minimum instantenous " + IoC.Resolve<IQuantityNames>().Power,
@@ -62,7 +62,7 @@ namespace ECAT.Design
 		protected override IEnumerable<IEnumerable<string>> GetComponentInfo()
 		{
 			yield return GetVoltageInfo(_VoltageDrop);
-			yield return GetPowerInfo(IoC.Resolve<ISimulationResults>().GetPower(this));
+			yield return GetPowerInfo(IoC.Resolve<ISimulationResultsProvider>().Value.Power.GetPower(this));
 		}
 
 		#endregion

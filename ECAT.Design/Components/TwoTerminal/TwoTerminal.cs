@@ -46,8 +46,8 @@ namespace ECAT.Design
 		/// Gets the voltage drop between nodes B and A (with A being the reference node)
 		/// </summary>
 		protected ISignalInformation _VoltageDrop => ChangeVIDirections ?
-			IoC.Resolve<ISimulationResults>().GetVoltageDropOrZero(TerminalB.NodeIndex, TerminalA.NodeIndex) :
-			IoC.Resolve<ISimulationResults>().GetVoltageDropOrZero(TerminalA.NodeIndex, TerminalB.NodeIndex);
+			IoC.Resolve<ISimulationResultsProvider>().Value.Voltage.GetVoltageDrop(TerminalB.NodeIndex, TerminalA.NodeIndex) :
+			IoC.Resolve<ISimulationResultsProvider>().Value.Voltage.GetVoltageDrop(TerminalA.NodeIndex, TerminalB.NodeIndex);
 
 		#endregion
 
@@ -76,7 +76,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// True if the standard voltage drop direciton (Vb - Va) was inverted
 		/// </summary>
-		public virtual bool InvertedVoltageCurrentDirections => _VoltageDrop.InvertedDirection;
+		public virtual bool InvertedVoltageCurrentDirections => throw new NotImplementedException();
 
 		#endregion
 

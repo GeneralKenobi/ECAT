@@ -82,7 +82,7 @@ namespace ECAT.Design
 		/// <returns></returns>
 		private IEnumerable<string> GetOutputVoltageInfo()
 		{
-			ISignalInformation voltageDrop = IoC.Resolve<ISimulationResults>().GetVoltageDropOrZero(TerminalC.NodeIndex);
+			ISignalInformation voltageDrop = IoC.Resolve<ISimulationResultsProvider>().Value.Voltage.GetVoltageDrop(TerminalC.NodeIndex);
 
 			foreach (var item in CIFormat.GetSignalInfo(voltageDrop, IoC.Resolve<IQuantityNames>().Voltage, IoC.Resolve<ISIUnits>().VoltageShort))
 			{
@@ -123,9 +123,9 @@ namespace ECAT.Design
 		protected override IEnumerable<IEnumerable<string>> GetComponentInfo()
 		{
 			yield return GetOutputVoltageInfo();
-			yield return CIFormat.GetSignalInfo(IoC.Resolve<ISimulationResults>().GetCurrentOrZero(ActiveComponentIndex, false),
+			yield return CIFormat.GetSignalInfo(IoC.Resolve<ISimulationResultsProvider>().Value.Current.GetCurrent(ActiveComponentIndex, false),
 				IoC.Resolve<IQuantityNames>().Current, IoC.Resolve<ISIUnits>().CurrentShort);
-			yield return CIFormat.GetSignalInfo(IoC.Resolve<ISimulationResults>().GetVoltageDropOrZero(
+			yield return CIFormat.GetSignalInfo(IoC.Resolve<ISimulationResultsProvider>().Value.Voltage.GetVoltageDrop(
 				TerminalA.NodeIndex, TerminalB.NodeIndex), IoC.Resolve<IQuantityNames>().Voltage, IoC.Resolve<ISIUnits>().VoltageShort);
 		}
 
