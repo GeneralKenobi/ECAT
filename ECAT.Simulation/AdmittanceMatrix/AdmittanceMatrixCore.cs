@@ -40,6 +40,11 @@ namespace ECAT.Simulation
 		private List<INode> _Nodes { get; set; }
 
 		/// <summary>
+		/// Node that is used as reference (with potential equal to 0)
+		/// </summary>
+		private INode _ReferenceNode { get; set; }
+
+		/// <summary>
 		/// List with all active components:<see cref="IVoltageSource"/>s, <see cref="IACVoltageSource"/>,
 		/// <see cref="IOpAmp"/>s
 		/// </summary>
@@ -239,11 +244,6 @@ namespace ECAT.Simulation
 		#region Public properties
 
 		/// <summary>
-		/// Returns an enumeration of nodes created for this admittance matrix
-		/// </summary>
-		public IEnumerable<INode> Nodes => _Nodes;
-
-		/// <summary>
 		/// Returns an enumeration of currents produced by active components. The key is the index of the active component
 		/// </summary>
 		public IEnumerable<KeyValuePair<int, IPhasorDomainSignal>> ActiveComponentsCurrents =>
@@ -298,6 +298,12 @@ namespace ECAT.Simulation
 
 			// Remove them from the nodes list
 			_Nodes.RemoveAll((node) => referenceNodes.Contains(node));
+
+			// Create a new reference node
+			_ReferenceNode = new Node();
+
+			// Merge every node that was determined to be a reference node with it
+			referenceNodes.ForEach((node) => _ReferenceNode.Merge(node));
 		}
 
 		/// <summary>
@@ -1117,6 +1123,15 @@ namespace ECAT.Simulation
 		}
 
 		#endregion
+
+		#endregion
+
+		#region Public methods
+		
+		/// <summary>
+		/// Returns an enumeration of nodes created for this admittance matrix
+		/// </summary>
+		public IEnumerable<INode> GetNodes() => _Nodes.Concat(_ReferenceNode);
 
 		#endregion
 	}
