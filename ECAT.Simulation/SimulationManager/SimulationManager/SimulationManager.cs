@@ -59,7 +59,8 @@ namespace ECAT.Simulation
 				Debug.WriteLine(e.Message);
 			}
 
-			//IoC.Resolve<SimulationResultsProvider>().LoadNewData(admittanceMatrix.Nodes, admittanceMatrix.ActiveComponentsCurrents);
+			IoC.Resolve<SimulationResultsProvider>().Value =
+				new SimulationResultsBias(admittanceMatrix.GetNodes(), admittanceMatrix.ActiveComponentsCurrents);
 
 			watch.Reset();
 
