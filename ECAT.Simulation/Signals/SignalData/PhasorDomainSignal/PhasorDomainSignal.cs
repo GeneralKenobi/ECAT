@@ -11,20 +11,23 @@ namespace ECAT.Simulation
 	/// Signal defined in a phasor domain - composed of a DC offset and some phasors
 	/// </summary>
 	[RegisterAsType(typeof(IPhasorDomainSignal))]
-	public class PhasorDomainSignal : IPhasorDomainSignal
+	public partial class PhasorDomainSignal : IPhasorDomainSignal
 	{
 		#region Constructors
 
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public PhasorDomainSignal() { }
+		public PhasorDomainSignal()
+		{
+			Interpreter = new PhasorDomainSignalInterpreter(this);
+		}
 
 		/// <summary>
 		/// Copy constructor
 		/// </summary>
 		/// <exception cref="ArgumentNullException"></exception>
-		public PhasorDomainSignal(IPhasorDomainSignal signal)
+		public PhasorDomainSignal(IPhasorDomainSignal signal) : this()
 		{
 			Copy(signal ?? throw new ArgumentNullException(nameof(signal)));
 		}
@@ -33,7 +36,7 @@ namespace ECAT.Simulation
 		/// Constructor with parameter
 		/// </summary>
 		/// <param name="dc"></param>
-		public PhasorDomainSignal(double dc)
+		public PhasorDomainSignal(double dc) : this()
 		{
 			DC = dc;
 		}
@@ -43,7 +46,7 @@ namespace ECAT.Simulation
 		/// </summary>
 		/// <param name="phasors"></param>
 		/// <exception cref="ArgumentNullException"></exception>
-		public PhasorDomainSignal(IEnumerable<KeyValuePair<double, Complex>> phasors)
+		public PhasorDomainSignal(IEnumerable<KeyValuePair<double, Complex>> phasors) : this()
 		{
 			Phasors = phasors ?? throw new ArgumentNullException(nameof(phasors));
 		}
@@ -55,7 +58,7 @@ namespace ECAT.Simulation
 		/// <param name="phasors">Composing phasors, exception will be thrown if null (use an empty enumeration when there are no phasors)
 		/// </param>
 		/// <exception cref="ArgumentNullException"></exception>
-		public PhasorDomainSignal(double dc, IEnumerable<KeyValuePair<double, Complex>> phasors)
+		public PhasorDomainSignal(double dc, IEnumerable<KeyValuePair<double, Complex>> phasors) : this()
 		{
 			DC = dc;
 			Phasors = phasors ?? throw new ArgumentNullException(nameof(phasors));
