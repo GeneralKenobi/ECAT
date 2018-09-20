@@ -1131,7 +1131,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Returns an enumeration of nodes created for this admittance matrix
 		/// </summary>
-		public IEnumerable<INode> GetNodes() => _Nodes.Concat(_ReferenceNode);
+		public IEnumerable<INode> GetNodes() => _Nodes.ConcatAtBeginning(_ReferenceNode);
 
 		#endregion
 	}
