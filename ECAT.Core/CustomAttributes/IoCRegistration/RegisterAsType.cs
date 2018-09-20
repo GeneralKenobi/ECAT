@@ -5,6 +5,7 @@ namespace ECAT.Core
 	/// <summary>
 	/// Attribute used to mark classes that IoC container later locates and registers as services given by <see cref="Types"/>
 	/// </summary>
+	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false)]
 	public class RegisterAsType : Attribute
 	{
 		#region Constructors

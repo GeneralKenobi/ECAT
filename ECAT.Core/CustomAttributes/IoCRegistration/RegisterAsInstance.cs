@@ -8,6 +8,7 @@ namespace ECAT.Core
 	/// exception will be thrown on the first resolve action. If it's not possible, consider a custom registration by means of a
 	/// <see cref="Autofac.Module"/>
 	/// </summary>
+	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false)]
 	public class RegisterAsInstance : Attribute
 	{
 		#region Constructors
