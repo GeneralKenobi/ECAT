@@ -129,7 +129,7 @@ namespace ECAT.Simulation
 			{
 				// Get the nodes
 				var nodeA = _Nodes.First((node) => node.Index == nodeAIndex);
-				var nodeB = _Nodes.First((node) => node.Index == nodeAIndex);
+				var nodeB = _Nodes.First((node) => node.Index == nodeBIndex);
 
 				// Construct the result
 				var result = IoC.Resolve<IPhasorDomainSignalFactory>().Construct(nodeB.DCPotential.Value - nodeA.DCPotential.Value,
