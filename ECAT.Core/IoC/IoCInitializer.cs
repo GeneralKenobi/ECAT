@@ -18,8 +18,8 @@ namespace ECAT.Core
 		{
 			// All types that are marked with an IoCRegistration attribute are valid
 			(type) => Attribute.IsDefined(type, typeof(IoCRegistration)),
-			// All types that derive Autofac.Module are valid
-			(type) => typeof(Autofac.Module).IsAssignableFrom(type),
+			// All types that implement IIoCRegistrationModule are valid
+			(type) => typeof(IIoCRegistartionModule).IsAssignableFrom(type),
 		};
 
 		/// <summary>
