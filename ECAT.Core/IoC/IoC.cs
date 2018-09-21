@@ -12,8 +12,17 @@ namespace ECAT.Core
 	/// </summary>
 	public static class IoC
 	{
+		#region Private static properties
+
+		/// <summary>
+		/// True if the <see cref="Container"/> was already built
+		/// </summary>
+		private static bool IsBuilt => Container != null;
+
+		#endregion
+
 		#region Public static properties		
-		
+
 		/// <summary>
 		/// Container with component registration
 		/// </summary>
@@ -59,11 +68,20 @@ namespace ECAT.Core
 		#region Public static methods
 
 		/// <summary>
-		/// Builds the container, scans all assemblies in <paramref name="assemblies"/> for types marked with <see cref="RegisterAsType"/>
+		/// Builds the container, scans all assemblies in <paramref name="assemblies"/> for types marked with
+		/// <see cref="RegisterAsType"/> and <see cref="RegisterAsInstance"/>. Can only be built once. Each subsequent call to this
+		/// method won't do anything.
 		/// </summary>
-		/// <param name="assemblies">Assemblies to scan in search of types marked with <see cref="RegisterAsType"/></param>
+		/// <param name="assemblies">Assemblies to scan in search of types marked with <see cref="RegisterAsType"/> and
+		/// <see cref="RegisterAsInstance"/></param>
 		public static void Build(Assembly[] assemblies)
 		{
+			// Check if the container wasn't already built
+			if(IsBuilt)
+			{
+				return;
+			}
+
 			// Create a new builder
 			var builder = new ContainerBuilder();
 
