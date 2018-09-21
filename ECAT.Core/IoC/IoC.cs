@@ -1,16 +1,15 @@
 ﻿using Autofac;
+using CSharpEnhanced.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace ECAT.Core
 {
 	/// <summary>
 	/// IoC provider. Register elements either using <see cref="RegisterAsType"/> and <see cref="RegisterAsInstance"/> attributes or
-	/// manually in classes deriving from <see cref="Autofac.Module"/> by overriding <see cref="Autofac.Module.Load(ContainerBuilder)"/>.
-	/// All registered classes should have a public, parameterless constructor (factory pattern is strongly recommended for
-	/// construction with parameters).
+	/// manually in classes implementing from <see cref="IIoCRegistartionModule"/>. All registered classes should have a public,
+	/// parameterless constructor (factory pattern is strongly recommended for construction with parameters).
 	/// </summary>
 	public static class IoC
 	{
@@ -35,33 +34,54 @@ namespace ECAT.Core
 		#region Private static methods
 
 		/// <summary>
-		/// Scans the assembly and registers all types marked with <see cref="RegisterAsType"/> in the <paramref name="builder"/>.
+		/// Registers types with <see cref="RegisterAsType"/> attribute with <paramref name="builder"/>
 		/// </summary>
 		/// <param name="builder"></param>
-		/// <param name="assemblies"></param>
-		private static void ScanAndRegisterAssemblyTypes(this ContainerBuilder builder, Assembly[] assemblies) =>
-			// Check if the builder is not null (do nothing) and if assembly is not null (throw exception) and register assembly types
-			builder?.RegisterAssemblyTypes(assemblies).
-			// That have RegisterAsTyhpe attribute defined
+		/// <param name="types"></param>
+		private static void RegisterTypes(this ContainerBuilder builder, IEnumerable<Type> types) => types.
+			// Find all types with RegisterAsType attribute
 			Where((type) => Attribute.IsDefined(type, typeof(RegisterAsType))).
-			// Get the attribute (it's guaranteed to be be present) and use types defined in it (they're guaranteed to not be null)
-			As((type) => (Attribute.GetCustomAttribute(type, typeof(RegisterAsType)) as RegisterAsType).Types);
+			// For each type
+			ForEach((type) =>
+				// Register it
+				builder.RegisterType(type).
+				// As types defined in attribute
+				As((Attribute.GetCustomAttribute(type, typeof(RegisterAsType)) as RegisterAsType).Types));
 
 		/// <summary>
-		/// Scans the assembly and registers all types marked with <see cref="RegisterAsType"/> in the <paramref name="builder"/>
-		/// as single instances.
+		/// Registers types with <see cref="RegisterAsInstance"/> attribute with <paramref name="builder"/> as single instances
 		/// </summary>
 		/// <param name="builder"></param>
-		/// <param name="assemblies"></param>
-		private static void ScanAndRegisterAssemblyInstances(this ContainerBuilder builder, Assembly[] assemblies) =>
-			// Check if the builder is not null (do nothing) and if assembly is not null (throw exception) and register assembly types
-			builder?.RegisterAssemblyTypes(assemblies).
-			// That have RegisterAsTyhpe attribute defined
+		/// <param name="types"></param>
+		private static void RegisterInstances(this ContainerBuilder builder, IEnumerable<Type> types) => types.
+			// Find all types with RegisterAsInstance attribute
 			Where((type) => Attribute.IsDefined(type, typeof(RegisterAsInstance))).
-			// Get the attribute (it's guaranteed to be be present) and use types defined in it (they're guaranteed to not be null)
-			As((type) => (Attribute.GetCustomAttribute(type, typeof(RegisterAsInstance)) as RegisterAsInstance).Types).
-			// And specify single instance
-			SingleInstance();
+			// For each type
+			ForEach((type) =>
+				// Register it
+				builder.RegisterType(type).
+				// As types defined in attribute
+				As((Attribute.GetCustomAttribute(type, typeof(RegisterAsInstance)) as RegisterAsInstance).Types).
+				// As single instances
+				SingleInstance());
+
+		/// <summary>
+		/// Finds all <see cref="IIoCRegistartionModule"/>s, creates an instance of each and calls its
+		/// <see cref="IIoCRegistartionModule.Register(ContainerBuilder)"/> methods
+		/// </summary>
+		/// <param name="builder"></param>
+		/// <param name="types"></param>
+		private static void RegisterModules(this ContainerBuilder builder, IEnumerable<Type> types) => types.
+			// Find all types implementing IIoCRegistartionModule
+			Where((type) => typeof(IIoCRegistartionModule).IsAssignableFrom(type)).
+			// Filter out those that Activator won't be able to construct
+			Where((type) => type.CanBeConstructedWithoutParameters()).
+			// Create an instance of each
+			Select((type) => Activator.CreateInstance(type)).
+			// Cast it to IIoCRegistartionModule
+			Cast<IIoCRegistartionModule>().
+			// Call Register method on each
+			ForEach((module) => module.Register(builder));			
 
 		#endregion
 
@@ -75,35 +95,26 @@ namespace ECAT.Core
 		/// <param name="assemblies">Assemblies to scan in search of types marked with <see cref="RegisterAsType"/> and
 		/// <see cref="RegisterAsInstance"/></param>
 		/// <exception cref="ArgumentNullException"></exception>
-		public static void Build(IEnumerable<Assembly> assemblies)
+		public static void Build(IEnumerable<Type> types)
 		{
 			// Check if the container wasn't already built
-			if(IsBuilt)
+			if (IsBuilt)
 			{
 				return;
 			}
-
-			// Check if the array is not null
-			if(assemblies == null)
-			{
-				throw new ArgumentNullException(nameof(assemblies));
-			}
-
-			// Create an array of the assemblies (and filter out all null entries)
-			var assemblyArray = assemblies.Where((assembly) => assembly != null).ToArray();
-
+		
 			// Create a new builder
 			var builder = new ContainerBuilder();
 
+			// Register modules
+			builder.RegisterModules(types);
+
 			// Register types
-			builder.ScanAndRegisterAssemblyTypes(assemblyArray);
+			builder.RegisterTypes(types);
 
 			// Register instances
-			builder.ScanAndRegisterAssemblyInstances(assemblyArray);
-
-			// Register modules
-			builder.RegisterAssemblyModules(assemblyArray);
-
+			builder.RegisterInstances(types);
+			
 			// Build the container
 			Container = builder.Build();
 		}
