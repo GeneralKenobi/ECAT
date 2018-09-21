@@ -50,6 +50,26 @@ namespace ECAT.UWP
 			// Finally add self to the enumeration
 			Concat(Assembly.GetExecutingAssembly());
 
+		/// <summary>
+		/// Returns all types defined in <paramref name="assemblies"/>
+		/// </summary>
+		/// <param name="assemblies"></param>
+		/// <returns></returns>
+		private static IEnumerable<Type> GetTypes(IEnumerable<Assembly> assemblies)
+		{
+			// Start with an empty sequence
+			var types = Enumerable.Empty<Type>();
+
+			foreach (var item in assemblies)
+			{
+				// Add types from each assembly to it
+				types = types.Concat(item.DefinedTypes);
+			}
+
+			// Return it
+			return types;
+		}
+
 		#endregion
 
 		#region Public static methods
@@ -59,10 +79,9 @@ namespace ECAT.UWP
 		/// </summary>
 		public static void Run()
 		{
-			// Build the IoC
-			IoC.Build(GetECATAssemblies().ToArray());
-			var assemblies = GetECATAssemblies();
-			//var publicTypes = assemblies.First().ExportedTypes.Where((type) => type.IsNe)
+			// Get assemblies, get types defined in them and run the initialization in Core
+			Core.Initialization.Run(GetTypes(GetECATAssemblies()));
+
 			// Remove the TypeRefArray from references
 			TypeRefArray = null;
 		}
