@@ -4,7 +4,9 @@ using System.Collections.Generic;
 namespace ECAT.Core
 {
 	/// <summary>
-	/// Interface for classes that want to be called at start-up to perform initialization routine
+	/// Interface for classes that want to be called at start-up to perform initialization routine. One instance is created using
+	/// <see cref="System.Activator"/> and <see cref="InitializationTypeScan(IEnumerable{Type})"/> is called using types that match
+	/// <see cref="TypeScanPredicates"/>.
 	/// </summary>
 	public interface IInitializationTypeScan
     {
