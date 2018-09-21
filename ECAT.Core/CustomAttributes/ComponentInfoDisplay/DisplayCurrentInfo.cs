@@ -5,8 +5,8 @@ using System.Text;
 namespace ECAT.Core
 {
 	
-    public class DisplayCurrentInfo : Attribute
-    {
+    public class DisplayCurrentInfo : AppWideTypeScan
+	{
 
     }
 }

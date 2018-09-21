@@ -5,8 +5,8 @@ using System.Text;
 namespace ECAT.Core
 {
 	
-    public class DisplayPowerInfo : Attribute
-    {
+    public class DisplayPowerInfo : AppWideTypeScan
+	{
 
     }
 }
