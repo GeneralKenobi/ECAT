@@ -20,7 +20,7 @@ namespace ECAT.UWP
         public App()
 		{
 			// First of all initilize IoC
-			IoCSetup.Run();
+			Initialization.Run();
 			
 			this.InitializeComponent();
             this.Suspending += OnSuspending;
