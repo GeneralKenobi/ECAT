@@ -1,5 +1,7 @@
 ﻿using Autofac;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace ECAT.Core
@@ -36,11 +38,10 @@ namespace ECAT.Core
 		/// Scans the assembly and registers all types marked with <see cref="RegisterAsType"/> in the <paramref name="builder"/>.
 		/// </summary>
 		/// <param name="builder"></param>
-		/// <param name="assemblies">Can't be null</param>
-		/// <exception cref="ArgumentNullException"></exception>
+		/// <param name="assemblies"></param>
 		private static void ScanAndRegisterAssemblyTypes(this ContainerBuilder builder, Assembly[] assemblies) =>
 			// Check if the builder is not null (do nothing) and if assembly is not null (throw exception) and register assembly types
-			builder?.RegisterAssemblyTypes(assemblies ?? throw new ArgumentNullException(nameof(assemblies))).
+			builder?.RegisterAssemblyTypes(assemblies).
 			// That have RegisterAsTyhpe attribute defined
 			Where((type) => Attribute.IsDefined(type, typeof(RegisterAsType))).
 			// Get the attribute (it's guaranteed to be be present) and use types defined in it (they're guaranteed to not be null)
@@ -51,11 +52,10 @@ namespace ECAT.Core
 		/// as single instances.
 		/// </summary>
 		/// <param name="builder"></param>
-		/// <param name="assemblies">Can't be null</param>
-		/// <exception cref="ArgumentNullException"></exception>
+		/// <param name="assemblies"></param>
 		private static void ScanAndRegisterAssemblyInstances(this ContainerBuilder builder, Assembly[] assemblies) =>
 			// Check if the builder is not null (do nothing) and if assembly is not null (throw exception) and register assembly types
-			builder?.RegisterAssemblyTypes(assemblies ?? throw new ArgumentNullException(nameof(assemblies))).
+			builder?.RegisterAssemblyTypes(assemblies).
 			// That have RegisterAsTyhpe attribute defined
 			Where((type) => Attribute.IsDefined(type, typeof(RegisterAsInstance))).
 			// Get the attribute (it's guaranteed to be be present) and use types defined in it (they're guaranteed to not be null)
@@ -74,7 +74,8 @@ namespace ECAT.Core
 		/// </summary>
 		/// <param name="assemblies">Assemblies to scan in search of types marked with <see cref="RegisterAsType"/> and
 		/// <see cref="RegisterAsInstance"/></param>
-		public static void Build(Assembly[] assemblies)
+		/// <exception cref="ArgumentNullException"></exception>
+		public static void Build(IEnumerable<Assembly> assemblies)
 		{
 			// Check if the container wasn't already built
 			if(IsBuilt)
@@ -82,17 +83,26 @@ namespace ECAT.Core
 				return;
 			}
 
+			// Check if the array is not null
+			if(assemblies == null)
+			{
+				throw new ArgumentNullException(nameof(assemblies));
+			}
+
+			// Create an array of the assemblies (and filter out all null entries)
+			var assemblyArray = assemblies.Where((assembly) => assembly != null).ToArray();
+
 			// Create a new builder
 			var builder = new ContainerBuilder();
 
 			// Register types
-			builder.ScanAndRegisterAssemblyTypes(assemblies);
+			builder.ScanAndRegisterAssemblyTypes(assemblyArray);
 
 			// Register instances
-			builder.ScanAndRegisterAssemblyInstances(assemblies);
+			builder.ScanAndRegisterAssemblyInstances(assemblyArray);
 
 			// Register modules
-			builder.RegisterAssemblyModules(assemblies);
+			builder.RegisterAssemblyModules(assemblyArray);
 
 			// Build the container
 			Container = builder.Build();
