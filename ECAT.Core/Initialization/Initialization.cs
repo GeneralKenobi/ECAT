@@ -20,6 +20,8 @@ namespace ECAT.Core
 		private static void RunIInitializationRoutines(IEnumerable<Type> scannableTypes) => scannableTypes.
 			// Find all types that can be assigned to IInitializationRoutine
 			Where((type) => typeof(IInitializationRoutine).IsAssignableFrom(type)).
+			// Filter out those that Activator won't be able to construct
+			Where((type) => type.CanBeConstructedWithoutParameters()).
 			// Create an instance of each
 			Select((type) => Activator.CreateInstance(type)).
 			// Cast it to IInitializationRoutine
@@ -35,6 +37,8 @@ namespace ECAT.Core
 		private static void RunIInitializationTypeScans(IEnumerable<Type> scannableTypes) => scannableTypes.
 			// Find all types that can be assigned to IInitializationTypeScan
 			Where((type) => typeof(IInitializationTypeScan).IsAssignableFrom(type)).
+			// Filter out those that Activator won't be able to construct
+			Where((type) => type.CanBeConstructedWithoutParameters()).
 			// Create an instance of each
 			Select((type) => Activator.CreateInstance(type)).
 			// Cast it to IInitializationTypeScan
