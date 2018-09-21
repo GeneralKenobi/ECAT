@@ -12,9 +12,10 @@ using System.Reflection;
 namespace ECAT.UWP
 {
 	/// <summary>
-	/// Class responsible for initializing IoC container, <see cref="Run"/> method should be called as soon as possible
+	/// Class responsible for calling <see cref="Core.Initialization.Run(IEnumerable{Type})"/>, <see cref="Run"/> method should be
+	/// called as soon as possible.
 	/// </summary>
-	public static class IoCSetup
+	public static class Initialization
 	{
 		#region Private static properties
 
@@ -60,7 +61,8 @@ namespace ECAT.UWP
 		{
 			// Build the IoC
 			IoC.Build(GetECATAssemblies().ToArray());
-
+			var assemblies = GetECATAssemblies();
+			//var publicTypes = assemblies.First().ExportedTypes.Where((type) => type.IsNe)
 			// Remove the TypeRefArray from references
 			TypeRefArray = null;
 		}
