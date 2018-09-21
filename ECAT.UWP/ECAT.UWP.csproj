@@ -147,7 +147,7 @@
     <Compile Include="GeneralValueConverters\DoubleToChosenParameterConverter.cs" />
     <Compile Include="GeneralValueConverters\DoubleToVisibilityConverter.cs" />
     <Compile Include="GeneralValueConverters\TextPositionFixRotationConverter.cs" />
-    <Compile Include="IoCSetup\IoCSetup.cs" />
+    <Compile Include="IoCSetup\Initialization.cs" />
     <Compile Include="MainPage\IBaseComponentToComponentViewModelConverter.cs" />
     <Compile Include="MainPage\IWireToWireViewModelConverter.cs" />
     <Compile Include="MainPage\MainPage.xaml.cs">
