@@ -9,7 +9,7 @@ namespace ECAT.Core
 	/// have to obtainable from the target type (otherwise exception will be thrown during initalization).
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-	public class DisplayVoltageInfo : AppWideTypeScan
+	public class DisplayVoltageInfo : Attribute
 	{
 		#region Constructors
 
