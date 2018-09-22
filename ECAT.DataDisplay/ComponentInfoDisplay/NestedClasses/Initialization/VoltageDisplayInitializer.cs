@@ -55,7 +55,10 @@ namespace ECAT.DataDisplay
 							type.TryGetProperty<ITerminal>(attribute.TerminalB, out var terminalB))
 						{
 							// Add a new info section definition to the list
-							infoSections.Add(new InfoSectionDefinition(new VoltageInfoResolver(), null, attribute.SectionIndex));
+							infoSections.Add(new InfoSectionDefinition(
+								new VoltageInfoResolver(type, terminalA, terminalB),
+								null,
+								attribute.SectionIndex));
 						}
 						else
 						{
