@@ -128,6 +128,12 @@ namespace ECAT.Core
 		public static T Resolve<T>() => Container.Resolve<T>();
 
 		/// <summary>
+		/// Shortcut to BeginLifetimeScope method on <see cref="Container"/>
+		/// </summary>
+		/// <returns></returns>
+		public static ILifetimeScope Scope() => Container.BeginLifetimeScope();
+
+		/// <summary>
 		/// Shortcut to log messages through <see cref="IInfoLogger"/>
 		/// </summary>
 		/// <param name="message"></param>
