@@ -19,11 +19,24 @@ namespace ECAT.DataDisplay
 			/// <param name="targetType"></param>
 			/// <param name="terminalA"></param>
 			/// <param name="terminalB"></param>
+			/// <exception cref="ArgumentNullException"></exception>
+			/// <exception cref="ArgumentException"></exception>
 			public VoltageInfoResolver(Type targetType, PropertyInfo terminalA, PropertyInfo terminalB)
 			{
 				_TargetType = targetType ?? throw new ArgumentNullException(nameof(targetType));
-				_TerminalA = terminalA ?? throw new ArgumentNullException(nameof(terminalA));
-				_TerminalB = terminalB ?? throw new ArgumentNullException(nameof(terminalB));
+
+				// Check if given property infos are correct
+				if(IsPropertyInfoValid(terminalA ?? throw new ArgumentNullException(nameof(terminalA)), targetType) &&
+					IsPropertyInfoValid(terminalB ?? throw new ArgumentNullException(nameof(terminalB)), targetType))
+				{
+					_TerminalA = terminalA;
+					_TerminalB = terminalB;
+				}
+				else
+				{
+					throw new ArgumentException("Property informations don't have a proper return type (" + typeof(ITerminal).FullName +
+						") or don't match target type (" + targetType.FullName + ")");
+				}
 			}
 
 			#endregion
@@ -46,6 +59,19 @@ namespace ECAT.DataDisplay
 			/// </summary>
 			private PropertyInfo _TerminalB { get; }
 
+			#endregion
+
+			#region Private properties
+
+			/// <summary>
+			/// Returns true if <paramref name="info"/> is a valid property info that matches the <paramref name="targetType"/>
+			/// </summary>
+			/// <param name="info"></param>
+			/// <param name="targetType"></param>
+			/// <returns></returns>
+			private bool IsPropertyInfoValid(PropertyInfo info, Type targetType) =>
+				info.DeclaringType == targetType && info.PropertyType == typeof(ITerminal);
+				
 			#endregion
 
 			#region Public Methods
