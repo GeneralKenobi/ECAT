@@ -95,7 +95,7 @@ namespace ECAT.Core
 		/// <param name="assemblies">Assemblies to scan in search of types marked with <see cref="RegisterAsType"/> and
 		/// <see cref="RegisterAsInstance"/></param>
 		/// <exception cref="ArgumentNullException"></exception>
-		public static void Build(IEnumerable<Type> types)
+		internal static void Build(IEnumerable<Type> types)
 		{
 			// Check if the container wasn't already built
 			if (IsBuilt)
