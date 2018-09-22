@@ -372,6 +372,10 @@
       <Project>{d134819f-aeaf-4625-b413-72d6edc6ca20}</Project>
       <Name>ECAT.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ECAT.DataDisplay\ECAT.DataDisplay.csproj">
+      <Project>{83af512a-6463-4f04-83ef-49808ad8f34c}</Project>
+      <Name>ECAT.DataDisplay</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ECAT.Design\ECAT.Design.csproj">
       <Project>{5112987c-a231-4d27-941b-7bec84ed3871}</Project>
       <Name>ECAT.Design</Name>
