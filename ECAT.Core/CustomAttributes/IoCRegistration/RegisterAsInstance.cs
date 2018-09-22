@@ -9,7 +9,7 @@ namespace ECAT.Core
 	/// <see cref="Autofac.Module"/>
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false, Inherited = false)]
-	public class RegisterAsInstance : IoCRegistration
+	public class RegisterAsInstance : Attribute
 	{
 		#region Constructors
 
