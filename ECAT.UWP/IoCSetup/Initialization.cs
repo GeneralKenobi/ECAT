@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using CSharpEnhanced.Helpers;
 using ECAT.Core;
+using ECAT.DataDisplay;
 using ECAT.Design;
 using ECAT.Simulation;
 using ECAT.ViewModel;
@@ -30,6 +31,7 @@ namespace ECAT.UWP
 			typeof(AppViewModel),
 			typeof(DesignManager),
 			typeof(SimulationManager),
+			typeof(ComponentInfoDisplay),
 		};
 
 		#endregion
