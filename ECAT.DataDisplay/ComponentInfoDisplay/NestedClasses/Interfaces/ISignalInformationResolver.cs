@@ -9,7 +9,7 @@ namespace ECAT.DataDisplay
 		/// </summary>
 		private interface ISignalInformationResolver
 		{
-			#region Public methods
+			#region Methods
 
 			/// <summary>
 			/// Gets some signal information associated with <paramref name="target"/>
