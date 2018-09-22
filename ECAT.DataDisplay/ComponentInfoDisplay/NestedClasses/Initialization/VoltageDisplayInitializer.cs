@@ -10,7 +10,7 @@ namespace ECAT.DataDisplay
 	{
 		/// <summary>
 		/// Finds all types with <see cref="DisplayVoltageInfo"/> attribute and attempts to construct <see cref="InfoSectionDefinition"/>
-		/// based on them and add those to <see cref="ComponentInfoDisplay"/> singleton resoled from <see cref="IoC"/>
+		/// based on them and add those to <see cref="ComponentInfoDisplay"/> singleton resolved from <see cref="IoC"/>
 		/// </summary>
 		internal class VoltageDisplayInitializer : InitializerBase
 		{
