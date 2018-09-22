@@ -9,14 +9,21 @@ namespace ECAT.Core
 	/// have to obtainable from the target type (otherwise exception will be thrown during initalization).
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-	public class DisplayVoltageInfo : Attribute
+	public class DisplayVoltageInfo : DisplayInfo
 	{
 		#region Constructors
 
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public DisplayVoltageInfo(string header, string terminalA, string terminalB)
+		/// <param name="header">Header displayed above the info section</param>
+		/// <param name="terminalA">Name of the property of the first (reference) terminal on target type</param>
+		/// <param name="terminalB">Name of the property of the second terminal on target type</param>
+		/// <param name="sectionIndex">Final position of the section, nonnegative, default value is <see cref="int.MaxValue"/></param>
+		/// <exception cref="ArgumentNullException"></exception>
+		/// <exception cref="ArgumentOutOfRangeException"></exception>
+		public DisplayVoltageInfo(string header, string terminalA, string terminalB, int sectionIndex = int.MaxValue) :
+			base(sectionIndex)
 		{
 			Header = header ?? throw new ArgumentNullException(nameof(header));
 			TerminalA = terminalA ?? throw new ArgumentNullException(nameof(terminalA));
