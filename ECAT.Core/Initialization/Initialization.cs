@@ -61,6 +61,8 @@ namespace ECAT.Core
 		/// <param name="scannableTypes">All types that were declared for ECAT assemblies (that will be used during runtime)</param>
 		public static void Run(IEnumerable<Type> scannableTypes)
 		{
+			IoC.Build(scannableTypes);
+
 			RunIInitializationRoutines(scannableTypes);
 
 			RunIInitializationTypeScans(scannableTypes);
