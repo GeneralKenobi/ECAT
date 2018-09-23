@@ -22,22 +22,16 @@ namespace ECAT.Core
 		/// <param name="sectionIndex">Final position of the section, nonnegative, default value is <see cref="int.MaxValue"/></param>
 		/// <exception cref="ArgumentNullException"></exception>
 		/// <exception cref="ArgumentOutOfRangeException"></exception>
-		public DisplayVoltageInfo(string header, string terminalA, string terminalB, int sectionIndex = int.MaxValue) :
-			base(sectionIndex)
+		public DisplayVoltageInfo(string terminalA, string terminalB, string header = "Voltage drop", int sectionIndex = int.MaxValue) :
+			base(sectionIndex, header)
 		{
-			Header = header ?? throw new ArgumentNullException(nameof(header));
 			TerminalA = terminalA ?? throw new ArgumentNullException(nameof(terminalA));
 			TerminalB = terminalB ?? throw new ArgumentNullException(nameof(terminalB));
 		}
 
 		#endregion
 
-		#region Public properties
-
-		/// <summary>
-		/// Header to display for that info section
-		/// </summary>
-		public string Header { get; }
+		#region Public properties		
 
 		/// <summary>
 		/// First (reference) terminal taken for the voltage drop query (name of the property)
