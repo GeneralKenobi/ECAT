@@ -1,7 +1,7 @@
 ﻿namespace ECAT.Core
 {
 	/// <summary>
-	/// Interface for a class containing information about untis for quantities
+	/// Interface for a class containing information about untis for quantities. Its purpose is to unify units throught application.
 	/// </summary>
 	public interface ISIUnits
     {

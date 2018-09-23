@@ -1,7 +1,8 @@
 ﻿namespace ECAT.Core
 {
 	/// <summary>
-	/// Interface for a class providing unified display names of common quantities, eg. voltage
+	/// Interface for a class providing unified display names of common quantities, eg. voltage.
+	/// Its purpose is to unify common strings related to quantities throught application.
 	/// </summary>
 	public interface IQuantityNames
     {
@@ -16,6 +17,7 @@
 		/// Display name for voltage with first letter capitalized
 		/// </summary>
 		string VoltageCap { get; }
+
 		/// <summary>
 		/// Display name for current
 		/// </summary>
