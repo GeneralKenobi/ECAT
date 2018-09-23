@@ -1,4 +1,6 @@
-﻿namespace ECAT.DataDisplay
+﻿using ECAT.Core;
+
+namespace ECAT.DataDisplay
 {
 	public partial class ComponentInfoDisplay
 	{
@@ -12,7 +14,7 @@
 			/// <summary>
 			/// Default constructor
 			/// </summary>
-			public CurrentInfoInterpreter() : base("Current", "A") { }
+			public CurrentInfoInterpreter() : base(IoC.Resolve<IQuantityNames>().CurrentCap, IoC.Resolve<ISIUnits>().CurrentShort) { }
 
 			#endregion
 		}

@@ -1,4 +1,6 @@
-﻿namespace ECAT.DataDisplay
+﻿using ECAT.Core;
+
+namespace ECAT.DataDisplay
 {
 	public partial class ComponentInfoDisplay
 	{
@@ -12,7 +14,7 @@
 			/// <summary>
 			/// Default constructor
 			/// </summary>
-			public VoltageInfoInterpreter() : base("Voltage", "V") { }
+			public VoltageInfoInterpreter() : base(IoC.Resolve<IQuantityNames>().VoltageCap, IoC.Resolve<ISIUnits>().VoltageShort) { }
 
 			#endregion
 		}
