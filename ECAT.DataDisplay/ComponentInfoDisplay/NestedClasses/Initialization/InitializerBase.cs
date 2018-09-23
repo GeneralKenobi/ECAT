@@ -15,7 +15,8 @@ namespace ECAT.DataDisplay
 		/// debug information about each that that was marked but doesn't implement the interface) to
 		/// <see cref="InitializationTypeScanRoutine(IEnumerable{Type})"/>.
 		/// </summary>
-		internal abstract class InitializerBase : IInitializationTypeScan
+		private abstract class InitializerBase<T> : IInitializationTypeScan
+			where T : DisplayInfo
 		{
 			#region Private methods
 
@@ -37,11 +38,14 @@ namespace ECAT.DataDisplay
 			#region Protected methods
 
 			/// <summary>
-			/// Method called by <see cref="InitializationTypeScan(IEnumerable{Type})"/> with types determined by
-			/// <see cref="GetTypeScanPredicates"/> and checked to implement <see cref="IBaseComponent"/>
+			/// Method called on each type with each T attribute defined for it that should try to construct an InfoSectionDefinition
+			/// and return true on success.
 			/// </summary>
-			/// <param name="types"></param>
-			protected abstract void InitializationTypeScanRoutine(IEnumerable<Type> types);
+			/// <param name="type"></param>
+			/// <param name="attribute"></param>
+			/// <param name="infoSection"></param>
+			/// <returns></returns>
+			protected abstract bool TryConstructInfoSection(Type type, T attribute, out InfoSectionDefinition infoSection);
 
 			#endregion
 
@@ -63,8 +67,37 @@ namespace ECAT.DataDisplay
 				// In Debug notify about all types that were marked with display info parameter but do not implement IBaseComponent
 				LogTypesNotImplementingIBaseComponent(foundTypes);
 
-				// Call the protected method with all types that can be assigned to IBaseComponent
-				InitializationTypeScanRoutine(foundTypes.Where((type) => typeof(IBaseComponent).IsAssignableFrom(type)));
+				// Filter out the types that don't implement IBaseComponent
+				foundTypes = foundTypes.Where((type) => typeof(IBaseComponent).IsAssignableFrom(type));
+
+				// Create a dictionary of infosections keyed by their target types
+				var result = new Dictionary<Type, IEnumerable<InfoSectionDefinition>>();
+
+				foreach (var type in foundTypes)
+				{
+					// Create a list for info sections
+					var infoSections = new List<InfoSectionDefinition>();
+
+					// Get all DisplayVoltageInfo attributes (these may be multiple)
+					var attributes = Attribute.GetCustomAttributes(type, typeof(T));
+
+					// For each attribute
+					foreach (T attribute in attributes)
+					{
+						// Try to construct info sections
+						if (TryConstructInfoSection(type, attribute, out var infoSection))
+						{
+							// If successful, add it to the list
+							infoSections.Add(infoSection);
+						}
+					}
+
+					// Add the sections to result
+					result.Add(type, infoSections);
+				}
+
+				// Get the singletion and add keyed info sections to it
+				IoC.Resolve<ComponentInfoDisplay>().AddInfoSections(result);
 			}
 
 			#endregion
