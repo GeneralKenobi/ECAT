@@ -1,6 +1,6 @@
 ﻿using ECAT.Core;
 
-namespace ECAT.Design
+namespace ECAT.DataDisplay
 {
 	/// <summary>
 	/// Standard implementation of <see cref="ISIUnits"/>, contains units of quantities
