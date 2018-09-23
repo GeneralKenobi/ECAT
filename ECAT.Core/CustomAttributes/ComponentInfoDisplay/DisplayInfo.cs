@@ -13,16 +13,24 @@ namespace ECAT.Core
 		/// Default constructor
 		/// </summary>
 		/// <param name="sectionIndex">Nonnegative integer</param>
+		/// <param name="header">Header displayed above the info section</param>
 		/// <exception cref="ArgumentOutOfRangeException"></exception>
-		public DisplayInfo(int sectionIndex)
+		public DisplayInfo(int sectionIndex, string header)
 		{
 			SectionIndex = sectionIndex >= 0 ?
 				sectionIndex : throw new ArgumentOutOfRangeException(nameof(sectionIndex) + " has to be nonnegative");
+
+			Header = header ?? throw new ArgumentNullException(nameof(header));
 		}
 
 		#endregion
 
 		#region Public properties
+
+		/// <summary>
+		/// Header to display for that info section
+		/// </summary>
+		public string Header { get; }
 
 		/// <summary>
 		/// Index for the section. Index 0 is the first one. Negative indexes cause an exception. Sections with equal indexes have
