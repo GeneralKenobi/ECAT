@@ -57,7 +57,7 @@ namespace ECAT.DataDisplay
 							// Add a new info section definition to the list
 							infoSections.Add(new InfoSectionDefinition(
 								new VoltageInfoResolver(type, terminalA, terminalB),
-								null,
+								new VoltageInfoInterpreter(),
 								attribute.SectionIndex));
 						}
 						else
