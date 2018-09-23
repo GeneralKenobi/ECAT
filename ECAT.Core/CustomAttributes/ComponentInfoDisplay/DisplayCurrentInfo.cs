@@ -20,7 +20,7 @@ namespace ECAT.Core
 		/// <param name="sectionIndex">Final position of the section, nonnegative, default value is <see cref="int.MaxValue"/></param>
 		/// <exception cref="ArgumentNullException"></exception>
 		/// <exception cref="ArgumentOutOfRangeException"></exception>
-		public DisplayCurrentInfo(string header = "Current", int sectionIndex = int.MaxValue) : base(sectionIndex, header) { }
+		public DisplayCurrentInfo(string header = "Current", int sectionIndex = int.MaxValue - 1) : base(sectionIndex, header) { }
 
 		#endregion
 	}

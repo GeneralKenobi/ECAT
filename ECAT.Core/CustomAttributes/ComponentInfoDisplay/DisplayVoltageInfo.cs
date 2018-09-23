@@ -22,8 +22,8 @@ namespace ECAT.Core
 		/// <param name="sectionIndex">Final position of the section, nonnegative, default value is <see cref="int.MaxValue"/></param>
 		/// <exception cref="ArgumentNullException"></exception>
 		/// <exception cref="ArgumentOutOfRangeException"></exception>
-		public DisplayVoltageInfo(string terminalA, string terminalB, string header = "Voltage drop", int sectionIndex = int.MaxValue) :
-			base(sectionIndex, header)
+		public DisplayVoltageInfo(string terminalA, string terminalB, string header = "Voltage drop",
+			int sectionIndex = int.MaxValue - 2) : base(sectionIndex, header)
 		{
 			TerminalA = terminalA ?? throw new ArgumentNullException(nameof(terminalA));
 			TerminalB = terminalB ?? throw new ArgumentNullException(nameof(terminalB));
