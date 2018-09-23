@@ -12,7 +12,7 @@ namespace ECAT.DataDisplay
 		/// Finds all types with <see cref="DisplayVoltageInfo"/> attribute and attempts to construct <see cref="InfoSectionDefinition"/>
 		/// based on them and add those to <see cref="ComponentInfoDisplay"/> singleton resolved from <see cref="IoC"/>
 		/// </summary>
-		internal class VoltageDisplayInitializer : InitializerBase
+		private class VoltageDisplayInitializer : InitializerBase<DisplayVoltageInfo>
 		{
 			#region Private methods
 
@@ -31,48 +31,37 @@ namespace ECAT.DataDisplay
 			#region Protected methods
 
 			/// <summary>
-			/// Creates an info section based on each type and its <see cref="DisplayVoltageInfo"/> attributes
+			/// Tries to construct InfoSectionDefinition for <paramref name="type"/> and <paramref name="attribute"/>.
 			/// </summary>
-			/// <param name="types"></param>
-			protected override void InitializationTypeScanRoutine(IEnumerable<Type> types)
+			/// <param name="type"></param>
+			/// <param name="attribute"></param>
+			/// <param name="infoSection"></param>
+			/// <returns></returns>
+			protected override bool TryConstructInfoSection(Type type, DisplayVoltageInfo attribute, out InfoSectionDefinition infoSection)
 			{
-				// Create a dictionary of infosections keyed by their target types
-				var result = new Dictionary<Type, IEnumerable<InfoSectionDefinition>>();
-
-				foreach (var type in types)
+				// Try to get both terminals
+				if (type.TryGetProperty<ITerminal>(attribute.TerminalA, out var terminalA) &&
+					type.TryGetProperty<ITerminal>(attribute.TerminalB, out var terminalB))
 				{
-					// Create a list for info sections
-					var infoSections = new List<InfoSectionDefinition>();
+					// Add a new info section definition to the list
+					infoSection = new InfoSectionDefinition(
+						new VoltageInfoResolver(type, terminalA, terminalB),
+						new VoltageInfoInterpreter(),
+						attribute.SectionIndex);
 
-					// Get all DisplayVoltageInfo attributes (these may be multiple)
-					var attributes = Attribute.GetCustomAttributes(type, typeof(DisplayVoltageInfo));
-
-					// For each attribute
-					foreach (DisplayVoltageInfo attribute in attributes)
-					{
-						// Try to get both terminals
-						if(type.TryGetProperty<ITerminal>(attribute.TerminalA, out var terminalA) &&
-							type.TryGetProperty<ITerminal>(attribute.TerminalB, out var terminalB))
-						{
-							// Add a new info section definition to the list
-							infoSections.Add(new InfoSectionDefinition(
-								new VoltageInfoResolver(type, terminalA, terminalB),
-								new VoltageInfoInterpreter(),
-								attribute.SectionIndex));
-						}
-						else
-						{
-							// Log failure when debugging
-							LogIncorrectTerminalPropertyNames(type, attribute);
-						}
-					}
-
-					// Add the sections to result
-					result.Add(type, infoSections);
+					return true;
 				}
+				else
+				{
+					// Log failure when debugging
+					LogIncorrectTerminalPropertyNames(type, attribute);
 
-				// Get the singletion and add keyed info sections to it
-				IoC.Resolve<ComponentInfoDisplay>().AddInfoSections(result);
+					// Assign null
+					infoSection = null;
+
+					// Return failure
+					return false;
+				}
 			}
 
 			#endregion
