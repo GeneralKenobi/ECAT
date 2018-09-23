@@ -55,7 +55,11 @@ namespace ECAT.DataDisplay
 			/// Returns predicates that match the given initializer's needs.
 			/// </summary>
 			/// <returns></returns>
-			public abstract IEnumerable<Predicate<Type>> GetTypeScanPredicates();			
+			public IEnumerable<Predicate<Type>> GetTypeScanPredicates() => new Predicate<Type>[]
+			{
+				// Voltage drop information attribute
+				(type) => Attribute.IsDefined(type, typeof(T)),
+			};
 
 			/// <summary>
 			/// Called on start-up with all types determined by <see cref="GetTypeScanPredicates"/>, additionally checks if all types

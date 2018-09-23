@@ -1,7 +1,6 @@
 ﻿using CSharpEnhanced.Helpers;
 using ECAT.Core;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace ECAT.DataDisplay
@@ -63,20 +62,6 @@ namespace ECAT.DataDisplay
 					return false;
 				}
 			}
-
-			#endregion
-
-			#region Public methods
-
-			/// <summary>
-			/// Predicates that check whether types have attributes related to specific information display
-			/// </summary>
-			/// <returns></returns>
-			public override IEnumerable<Predicate<Type>> GetTypeScanPredicates() => new Predicate<Type>[]
-			{
-				// Voltage drop information attribute
-				(type) => Attribute.IsDefined(type, typeof(DisplayVoltageInfo)),
-			};
 
 			#endregion
 		}
