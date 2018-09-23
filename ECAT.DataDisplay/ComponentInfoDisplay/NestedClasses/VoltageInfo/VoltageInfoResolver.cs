@@ -9,7 +9,7 @@ namespace ECAT.DataDisplay
 		/// <summary>
 		/// Resolves voltage drops on components
 		/// </summary>
-		private class VoltageInfoResolver : ISignalInformationResolver
+		private class VoltageInfoResolver : ResolverBase
 		{
 			#region Constructors
 
@@ -21,10 +21,8 @@ namespace ECAT.DataDisplay
 			/// <param name="terminalB"></param>
 			/// <exception cref="ArgumentNullException"></exception>
 			/// <exception cref="ArgumentException"></exception>
-			public VoltageInfoResolver(Type targetType, PropertyInfo terminalA, PropertyInfo terminalB)
+			public VoltageInfoResolver(Type targetType, PropertyInfo terminalA, PropertyInfo terminalB) : base(targetType)
 			{
-				_TargetType = targetType ?? throw new ArgumentNullException(nameof(targetType));
-
 				// Check if given property infos are correct
 				if(IsPropertyInfoValid(terminalA ?? throw new ArgumentNullException(nameof(terminalA)), targetType) &&
 					IsPropertyInfoValid(terminalB ?? throw new ArgumentNullException(nameof(terminalB)), targetType))
@@ -42,12 +40,6 @@ namespace ECAT.DataDisplay
 			#endregion
 
 			#region Private properties
-
-			/// <summary>
-			/// Target type of objects for which voltage drops will be resolved (used to check if properly typed parameter was passed
-			/// to <see cref="Get(IBaseComponent)"/>).
-			/// </summary>
-			private Type _TargetType { get; }
 
 			/// <summary>
 			/// Property info of first (reference) terminal
@@ -81,16 +73,8 @@ namespace ECAT.DataDisplay
 			/// </summary>
 			/// <param name="target"></param>
 			/// <returns></returns>
-			public ISignalInformation Get(IBaseComponent target)
+			protected override ISignalInformation GetSignalInformation(IBaseComponent target)
 			{
-				// If target object's type doesn't match target type, throw an exception
-				if(target.GetType() != _TargetType)
-				{
-					throw new ArgumentException(nameof(target) + " is of type that is not a target type for this instance " +
-						"(" + nameof(target) + " is of type " + target.GetType().FullName +
-						", target type is " + _TargetType.FullName + ")");
-				}
-
 				// At this point type is guaranteed to have a property given by both property infos with ITerminal return type
 				var terminalAValue = (ITerminal)_TerminalA.GetValue(target);
 				var terminalBValue = (ITerminal)_TerminalB.GetValue(target);
