@@ -9,8 +9,8 @@ namespace ECAT.DataDisplay
 	/// <summary>
 	/// Manages component info display
 	/// </summary>
-	[RegisterAsInstance(typeof(ComponentInfoProvider))]
-	public partial class ComponentInfoProvider
+	[RegisterAsInstance(typeof(ComponentInfoProvider), typeof(IComponentInfoProvider))]
+	public partial class ComponentInfoProvider : IComponentInfoProvider
     {
 		#region Constructors
 
@@ -33,9 +33,9 @@ namespace ECAT.DataDisplay
 		private Dictionary<Type, SortedSet<InfoSectionDefinition>> _DisplaySettings { get; }
 
 		/// <summary>
-		/// Backing store for <see cref="Info"/>
+		/// Backing store for <see cref="Value"/>
 		/// </summary>
-		private ComponentInfo _Info { get; set; }
+		private ComponentInfo _Value { get; set; }
 
 		#endregion
 
@@ -44,14 +44,14 @@ namespace ECAT.DataDisplay
 		/// <summary>
 		/// Currently presented info
 		/// </summary>
-		public IComponentInfoNew Info => _Info;
+		public IComponentInfo Value => _Value;
 
 		#endregion
 
 		#region Private methods
 
 		/// <summary>
-		/// Callback for when simulation finishes, if there is a focused element updates <see cref="_Info"/>
+		/// Callback for when simulation finishes, if there is a focused element updates <see cref="_Value"/>
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
@@ -60,14 +60,14 @@ namespace ECAT.DataDisplay
 			var focused = IoC.Resolve<IFocusManager>().FocusedComponent;
 
 			// If the info is not null and there is a focused element, update the info
-			if (_Info != null && focused != null)
+			if (_Value != null && focused != null)
 			{
-				_Info.Update(focused);
+				_Value.Update(focused);
 			}
 		}
 
 		/// <summary>
-		/// Callback for when focused component changes; removes, updates or creates a new <see cref="_Info"/>
+		/// Callback for when focused component changes; removes, updates or creates a new <see cref="_Value"/>
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
@@ -81,10 +81,10 @@ namespace ECAT.DataDisplay
 			}
 
 			// If both the old and new component aren't null, they have the same type and _Info is already constructed
-			if (e.LostFocus != null && e.GettingFocus != null && e.LostFocus.GetType() == e.GettingFocus.GetType() && _Info != null)
+			if (e.LostFocus != null && e.GettingFocus != null && e.LostFocus.GetType() == e.GettingFocus.GetType() && _Value != null)
 			{
 				// Update it
-				_Info.Update(e.GettingFocus);
+				_Value.Update(e.GettingFocus);
 
 				// And return it
 				return;
@@ -92,13 +92,13 @@ namespace ECAT.DataDisplay
 
 			// If we got here it means that the _Info will either be removed, changed or constructed so, no matter which case it is,
 			// reset _Info
-			_Info = null;
+			_Value = null;
 
 			// If an element gets focus and it requests info display
 			if (e.GettingFocus != null && _DisplaySettings.TryGetValue(e.GettingFocus.GetType(), out var infoSections))
 			{
 				// Construct a ComponentInfo for it
-				_Info = new ComponentInfo(infoSections);
+				_Value = new ComponentInfo(infoSections);
 			}
 		}
 
