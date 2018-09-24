@@ -12,6 +12,19 @@ namespace ECAT.DataDisplay
 	[RegisterAsInstance(typeof(ComponentInfoProvider))]
 	public partial class ComponentInfoProvider
     {
+		#region Constructors
+
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		public ComponentInfoProvider()
+		{
+			IoC.Resolve<IFocusManager>().FocusedComponentChanged += FocusedComponentChanged;
+			IoC.Resolve<ISimulationManager>().SimulationCompleted += SimulationCompleted;
+		}
+
+		#endregion
+
 		#region Private properties
 
 		/// <summary>
@@ -19,9 +32,75 @@ namespace ECAT.DataDisplay
 		/// </summary>
 		private Dictionary<Type, SortedSet<InfoSectionDefinition>> _DisplaySettings { get; }
 
+		/// <summary>
+		/// Backing store for <see cref="Info"/>
+		/// </summary>
+		private ComponentInfo _Info { get; set; }
+
+		#endregion
+
+		#region Public properties
+
+		/// <summary>
+		/// Currently presented info
+		/// </summary>
+		public IComponentInfoNew Info => _Info;
+
 		#endregion
 
 		#region Private methods
+
+		/// <summary>
+		/// Callback for when simulation finishes, if there is a focused element updates <see cref="_Info"/>
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void SimulationCompleted(object sender, SimulationCompletedEventArgs e)
+		{
+			var focused = IoC.Resolve<IFocusManager>().FocusedComponent;
+
+			// If the info is not null and there is a focused element, update the info
+			if (_Info != null && focused != null)
+			{
+				_Info.Update(focused);
+			}
+		}
+
+		/// <summary>
+		/// Callback for when focused component changes; removes, updates or creates a new <see cref="_Info"/>
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void FocusedComponentChanged(object sender, FocusedComponentChangedEventArgs e)
+		{
+			// If the focus did not change (shouldn't happen but it's better to cover this case)
+			if (e.LostFocus == e.GettingFocus)
+			{
+				// Don't do anything
+				return;
+			}
+
+			// If both the old and new component aren't null, they have the same type and _Info is already constructed
+			if (e.LostFocus != null && e.GettingFocus != null && e.LostFocus.GetType() == e.GettingFocus.GetType() && _Info != null)
+			{
+				// Update it
+				_Info.Update(e.GettingFocus);
+
+				// And return it
+				return;
+			}
+
+			// If we got here it means that the _Info will either be removed, changed or constructed so, no matter which case it is,
+			// reset _Info
+			_Info = null;
+
+			// If an element gets focus and it requests info display
+			if (e.GettingFocus != null && _DisplaySettings.TryGetValue(e.GettingFocus.GetType(), out var infoSections))
+			{
+				// Construct a ComponentInfo for it
+				_Info = new ComponentInfo(infoSections);
+			}
+		}
 
 		/// <summary>
 		/// Adds new info sections to <see cref="_DisplaySettings"/>. Each type has to implement <see cref="IBaseComponent"/>
