@@ -5,7 +5,7 @@ namespace ECAT.DataDisplay
 	public partial class ComponentInfoDisplay
 	{
 		/// <summary>
-		/// Interprets signals related to 
+		/// Interprets signals related to power
 		/// </summary>
 		private class PowerInfoInterpreter : GenericSignalInformationInterpreter
 		{
