@@ -19,12 +19,15 @@ namespace ECAT.DataDisplay
 			/// <param name="resolver">Used to get the signal information for some <see cref="IBaseComponent"/></param>
 			/// <param name="interpreter">Used to interpret the information fetched by <paramref name="resolver"/></param>
 			/// <param name="index">Position of this InfoSection on display</param>
+			/// <param name="header">Header for this info section</param>
 			/// <exception cref="ArgumentNullException"></exception>
-			public InfoSectionDefinition(ISignalInformationResolver resolver, ISignalInformationInterpreter interpreter, int index)
+			public InfoSectionDefinition(ISignalInformationResolver resolver, ISignalInformationInterpreter interpreter, int index,
+				string header)
 			{
 				Index = index;
 				_Resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
 				_Interpreter = interpreter ?? throw new ArgumentNullException(nameof(interpreter));
+				Header = header ?? throw new ArgumentNullException(nameof(header));
 			}
 
 			#endregion
@@ -49,6 +52,11 @@ namespace ECAT.DataDisplay
 			/// Position of this InfoSection on display
 			/// </summary>
 			public int Index { get; }
+
+			/// <summary>
+			/// Header for this info section
+			/// </summary>
+			public string Header { get; }
 
 			#endregion
 
