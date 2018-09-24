@@ -25,7 +25,8 @@ namespace ECAT.DataDisplay
 				infoSection = new InfoSectionDefinition(
 					new PowerInfoResolver(type),
 					new PowerInfoInterpreter(),
-					attribute.SectionIndex);
+					attribute.SectionIndex,
+					attribute.Header);
 
 				// InfoSectionDefinition for power can always be constructed
 				return true;

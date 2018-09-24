@@ -46,7 +46,8 @@ namespace ECAT.DataDisplay
 					infoSection = new InfoSectionDefinition(
 						new VoltageInfoResolver(type, terminalA, terminalB),
 						new VoltageInfoInterpreter(),
-						attribute.SectionIndex);
+						attribute.SectionIndex,
+						attribute.Header);
 
 					return true;
 				}

@@ -25,7 +25,8 @@ namespace ECAT.DataDisplay
 				infoSection = new InfoSectionDefinition(
 					new CurrentInfoResolver(type),
 					new CurrentInfoInterpreter(),
-					attribute.SectionIndex);
+					attribute.SectionIndex,
+					attribute.Header);
 
 				// InfoSectionDefinition for current can always be constructed
 				return true;
