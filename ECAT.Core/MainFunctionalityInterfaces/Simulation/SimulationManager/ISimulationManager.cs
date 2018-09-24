@@ -13,7 +13,7 @@ namespace ECAT.Core
 		/// <summary>
 		/// Event fired whenever simulation completes
 		/// </summary>
-		EventHandler<SimulationCompletedEventArgs> SimulationCompleted { get; set; }
+		event EventHandler<SimulationCompletedEventArgs> SimulationCompleted;
 
 		#endregion
 

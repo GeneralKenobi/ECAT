@@ -21,7 +21,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Event fired whenever simulation completes
 		/// </summary>
-		public EventHandler<SimulationCompletedEventArgs> SimulationCompleted { get; set; }
+		public event EventHandler<SimulationCompletedEventArgs> SimulationCompleted;
 
 		#endregion
 

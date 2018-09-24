@@ -26,7 +26,7 @@ namespace ECAT.ViewModel
 		/// <summary>
 		/// Event fired whenever edited part changes
 		/// </summary>
-		public EventHandler<EditedComponentChangedEventArgs> EditedPartChangedEvent;
+		public event EventHandler<EditedComponentChangedEventArgs> EditedPartChangedEvent;
 
 		#endregion
 
