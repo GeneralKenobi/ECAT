@@ -12,7 +12,7 @@ namespace ECAT.DataDisplay
 		/// <summary>
 		/// Provides data that should be displayed in the component info section
 		/// </summary>
-		private class ComponentInfo : IComponentInfoNew
+		private class ComponentInfo : IComponentInfo
 		{
 			#region Constructors
 
