@@ -11,14 +11,14 @@ namespace ECAT.Core
 		#region Properties
 
 		/// <summary>
-		/// Info to present from the currently section
+		/// The presented info, interpreted and ready to be displayed on screen
 		/// </summary>
-		IEnumerable<string> CurrentSection { get; }
+		IEnumerable<string> InterpretedInfo { get; }
 
 		/// <summary>
-		/// Index of the currently selected section
+		/// The presented info
 		/// </summary>
-		int CurrentSectionIndex { get; set; }
+		ISignalInformation Info { get; }
 
 		/// <summary>
 		/// Headers of all info sections
