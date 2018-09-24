@@ -69,7 +69,12 @@ namespace ECAT.DataDisplay
 			/// </summary>
 			/// <param name="target"></param>
 			/// <returns></returns>
-			public IEnumerable<string> GetInfo(IBaseComponent target) => _Interpreter.Get(_Resolver.Get(target));
+			public Tuple<ISignalInformation, IEnumerable<string>> GetInfo(IBaseComponent target)
+			{
+				var signalInfo = _Resolver.Get(target);
+
+				return Tuple.Create(signalInfo, _Interpreter.Get(signalInfo));
+			}
 
 			#endregion
 		}
