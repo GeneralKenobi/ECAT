@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace ECAT.DataDisplay
 {
-	public partial class ComponentInfoDisplay
+	public partial class ComponentInfoProvider
 	{
 		/// <summary>
 		/// Generic class for interpreting some signal information

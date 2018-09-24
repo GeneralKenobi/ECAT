@@ -5,11 +5,11 @@ using System.Diagnostics;
 
 namespace ECAT.DataDisplay
 {
-	public partial class ComponentInfoDisplay
+	public partial class ComponentInfoProvider
 	{
 		/// <summary>
 		/// Finds all types with <see cref="DisplayVoltageInfo"/> attribute and attempts to construct <see cref="InfoSectionDefinition"/>
-		/// based on them and add those to <see cref="ComponentInfoDisplay"/> singleton resolved from <see cref="IoC"/>
+		/// based on them and add those to <see cref="ComponentInfoProvider"/> singleton resolved from <see cref="IoC"/>
 		/// </summary>
 		private class VoltageDisplayInitializer : InitializerBase<DisplayVoltageInfo>
 		{

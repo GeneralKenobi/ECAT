@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace ECAT.DataDisplay
 {
-	public partial class ComponentInfoDisplay
+	public partial class ComponentInfoProvider
 	{
 		/// <summary>
 		/// Manages resolving and interpreting information about some <see cref="IBaseComponent"/>

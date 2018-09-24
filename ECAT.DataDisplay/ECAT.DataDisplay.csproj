@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ComponentInfoDisplay\NestedClasses\Current\" />
+    <Folder Include="ComponentInfo\NestedClasses\Current\" />
   </ItemGroup>
 
 </Project>

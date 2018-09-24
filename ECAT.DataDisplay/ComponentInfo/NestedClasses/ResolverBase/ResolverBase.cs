@@ -3,7 +3,7 @@ using System;
 
 namespace ECAT.DataDisplay
 {
-	public partial class ComponentInfoDisplay
+	public partial class ComponentInfoProvider
 	{
 		/// <summary>
 		/// Base class for resolvers that provides means of checking type compatibility between target type and type of object passed

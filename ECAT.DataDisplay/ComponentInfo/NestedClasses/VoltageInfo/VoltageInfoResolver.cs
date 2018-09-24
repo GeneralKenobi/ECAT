@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace ECAT.DataDisplay
 {
-	public partial class ComponentInfoDisplay
+	public partial class ComponentInfoProvider
 	{
 		/// <summary>
 		/// Resolves voltage drops on components

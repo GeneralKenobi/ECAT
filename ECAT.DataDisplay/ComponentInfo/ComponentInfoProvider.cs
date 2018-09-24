@@ -9,8 +9,8 @@ namespace ECAT.DataDisplay
 	/// <summary>
 	/// Manages component info display
 	/// </summary>
-	[RegisterAsInstance(typeof(ComponentInfoDisplay))]
-	public partial class ComponentInfoDisplay
+	[RegisterAsInstance(typeof(ComponentInfoProvider))]
+	public partial class ComponentInfoProvider
     {
 		#region Private properties
 

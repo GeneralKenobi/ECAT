@@ -2,7 +2,7 @@
 
 namespace ECAT.DataDisplay
 {
-	public partial class ComponentInfoDisplay
+	public partial class ComponentInfoProvider
 	{
 		/// <summary>
 		/// Interface for classes that resolve some signal information for base components

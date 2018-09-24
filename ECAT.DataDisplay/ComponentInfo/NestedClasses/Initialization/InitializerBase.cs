@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace ECAT.DataDisplay
 {
-	public partial class ComponentInfoDisplay
+	public partial class ComponentInfoProvider
 	{
 		/// <summary>
 		/// Base class for initializers of <see cref="InfoSectionDefinition"/>s for specific signals (voltage, current, etc.).
@@ -101,7 +101,7 @@ namespace ECAT.DataDisplay
 				}
 
 				// Get the singletion and add keyed info sections to it
-				IoC.Resolve<ComponentInfoDisplay>().AddInfoSections(result);
+				IoC.Resolve<ComponentInfoProvider>().AddInfoSections(result);
 			}
 
 			#endregion

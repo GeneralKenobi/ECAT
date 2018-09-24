@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ECAT.DataDisplay
 {
-	public partial class ComponentInfoDisplay
+	public partial class ComponentInfoProvider
 	{
 		/// <summary>
 		/// Interprets an <see cref="ISignalInformation"/> (converts from <see cref="ISignalInformation"/> to a sequence of strings
