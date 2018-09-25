@@ -8,6 +8,8 @@ namespace ECAT.Design
 	/// Component representing an ideal voltage source (<see cref="TwoTerminal.TerminalA"/> corresponds to the negative terminal and
 	/// <see cref="TwoTerminal.TerminalB"/> corresponds to the positive terminal)
 	/// </summary>
+	[DisplayCurrentInfo(sectionIndex: 1)]
+	[DisplayPowerInfo(sectionIndex: 2)]
 	public class VoltageSource : TwoTerminal, IVoltageSource
 	{
 		#region Constructors

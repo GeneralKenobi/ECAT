@@ -8,6 +8,8 @@ namespace ECAT.Design
 	/// <see cref="ThreeTerminal.TerminalA"/> is the non-inverting input, <see cref="ThreeTerminal.TerminalB"/>
 	/// is the inverting input and <see cref="ThreeTerminal.TerminalC"/> is the output.
 	/// </summary>
+	[DisplayVoltageInfo(nameof(TerminalA), nameof(TerminalB), "Differential Voltage", 0)]
+	[DisplayCurrentInfo(sectionIndex: 1)]
 	public class OpAmp : ThreeTerminal, IOpAmp
 	{
 		#region Protected properties

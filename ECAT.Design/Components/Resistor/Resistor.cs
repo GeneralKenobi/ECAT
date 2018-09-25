@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Numerics;
+﻿using System.Numerics;
 using ECAT.Core;
 
 namespace ECAT.Design
@@ -7,6 +6,9 @@ namespace ECAT.Design
 	/// <summary>
 	/// Resistor is a passive component that is characterized by resistance - a real component of impedance
 	/// </summary>
+	[DisplayVoltageInfo(nameof(TerminalA), nameof(TerminalB), "Voltage", 0)]
+	[DisplayCurrentInfo(sectionIndex:1)]
+	[DisplayPowerInfo(sectionIndex:2)]
 	public class Resistor : TwoTerminal, IResistor
     {
 		#region Private members

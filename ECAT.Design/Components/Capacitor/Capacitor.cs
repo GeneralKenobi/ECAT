@@ -7,6 +7,8 @@ namespace ECAT.Design
 	/// <summary>
 	/// Class implementing capacitors, standard implementation of <see cref="ICapacitor"/>
 	/// </summary>
+	[DisplayVoltageInfo(nameof(TerminalA), nameof(TerminalB), "Voltage", 0)]
+	[DisplayCurrentInfo(sectionIndex: 1)]	
 	public class Capacitor : TwoTerminal, ICapacitor
     {
 		#region Public properties

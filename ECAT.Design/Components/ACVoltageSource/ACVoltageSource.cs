@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
-using ECAT.Core;
+﻿using ECAT.Core;
 
 namespace ECAT.Design
 {
 	/// <summary>
 	/// Class implementing AC voltage sources, standard implementation of <see cref="IACVoltageSource"/>
 	/// </summary>
+	[DisplayCurrentInfo(sectionIndex: 1)]
+	[DisplayPowerInfo(sectionIndex: 2)]
 	public class ACVoltageSource : VoltageSource, IACVoltageSource
 	{
 		#region Constructor
