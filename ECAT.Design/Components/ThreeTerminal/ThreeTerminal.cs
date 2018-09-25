@@ -14,7 +14,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Default Constructor
 		/// </summary>
-		public ThreeTerminal(IEnumerable<string> infoHeaders) : base(infoHeaders)
+		public ThreeTerminal()
 		{
 			TerminalA = new Terminal(new PlanePosition(Complex.Zero, _TerminalAShift));
 			TerminalB = new Terminal(new PlanePosition(Complex.Zero, _TerminalBShift));
