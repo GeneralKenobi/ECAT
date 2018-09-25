@@ -12,31 +12,6 @@ namespace ECAT.Design
 	/// </summary>
 	public abstract class BaseComponent : IBaseComponent
 	{
-		#region Constructor
-
-		/// <summary>
-		/// Default constructor
-		/// </summary>
-		public BaseComponent()
-		{
-			_ComponentInfo = new ComponentInfo(Enumerable.Empty<string>());
-		}
-
-		/// <summary>
-		/// Constructor with parameter used to construct <see cref="_ComponentInfo"/>
-		/// </summary>
-		public BaseComponent(IEnumerable<string> infoSectionsHeaders)
-		{
-			if(infoSectionsHeaders == null)
-			{
-				throw new ArgumentNullException(nameof(infoSectionsHeaders));
-			}
-
-			_ComponentInfo = new ComponentInfo(infoSectionsHeaders);
-		}
-
-		#endregion
-
 		#region Events
 
 		/// <summary>
@@ -52,15 +27,6 @@ namespace ECAT.Design
 		/// Backing store for <see cref="Center"/>
 		/// </summary>
 		private IPlanePosition mCenter = new PlanePosition();
-
-		#endregion
-
-		#region Protected properties
-
-		/// <summary>
-		/// Backing store for <see cref="ComponentInfo"/>
-		/// </summary>
-		protected ComponentInfo _ComponentInfo { get; }
 
 		#endregion
 
@@ -119,11 +85,6 @@ namespace ECAT.Design
 		/// </summary>
 		public abstract double Height { get; }
 
-		/// <summary>
-		/// Info about this component (voltage drops, currents etc.) organized into subsections
-		/// </summary>
-		public IComponentInfo ComponentInfo => _ComponentInfo;
-
 		#endregion
 
 		#region Private methods
@@ -172,11 +133,6 @@ namespace ECAT.Design
 		#endregion
 
 		#region Public methods
-
-		/// <summary>
-		/// Updates <see cref="ComponentInfo"/>. Should be overriden if derived class provides info
-		/// </summary>
-		public void UpdateInfo() => _ComponentInfo.SetInfo(GetComponentInfo());
 		
 		/// <summary>
 		/// Returns a list with all terminals in this component
