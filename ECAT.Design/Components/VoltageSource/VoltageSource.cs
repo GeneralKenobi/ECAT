@@ -15,7 +15,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public VoltageSource() : base(new string[] { IoC.Resolve<IQuantityNames>().CurrentCap, IoC.Resolve<IQuantityNames>().PowerCap })
+		public VoltageSource()
 		{
 			// Reverse directions by default - voltage source usually produces current that flows in the same direction as is the
 			// direction of the produced voltage drop
