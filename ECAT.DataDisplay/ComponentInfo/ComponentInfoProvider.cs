@@ -132,5 +132,20 @@ namespace ECAT.DataDisplay
 		}
 
 		#endregion
+
+		#region Public methods
+
+		/// <summary>
+		/// Moves the info to next section
+		/// </summary>
+		public void GoToNextSection()
+		{
+			if(_Value != null)
+			{
+				_Value.GoToNextSection();
+			}
+		}
+
+		#endregion
 	}
 }

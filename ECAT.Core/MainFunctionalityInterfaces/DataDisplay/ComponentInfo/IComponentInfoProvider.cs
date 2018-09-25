@@ -12,6 +12,11 @@
 		/// </summary>
 		IComponentInfo Value { get; }
 
+		/// <summary>
+		/// Moves the info to next section
+		/// </summary>
+		void GoToNextSection();
+
 		#endregion
 	}
 }
