@@ -10,6 +10,18 @@ namespace ECAT.Design
 	/// </summary>
 	public abstract class OneTerminal : BaseComponent, IOneTerminal
 	{
+		#region Constructors
+
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		public OneTerminal()
+		{
+			Terminal = new Terminal(new PlanePosition(Complex.Zero, _TerminalShift));
+		}
+
+		#endregion
+
 		#region Protected properties
 
 		/// <summary>
