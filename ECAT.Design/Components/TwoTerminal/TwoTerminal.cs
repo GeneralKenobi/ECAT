@@ -35,14 +35,7 @@ namespace ECAT.Design
 		/// The shift assigned to <see cref="TerminalB"/>, override to provide custom value
 		/// </summary>
 		protected virtual Complex _TerminalBShift => new Complex(Width / 2, 0);
-
-		/// <summary>
-		/// Gets the voltage drop between nodes B and A (with A being the reference node)
-		/// </summary>
-		protected ISignalInformation _VoltageDrop => ChangeVIDirections ?
-			IoC.Resolve<ISimulationResultsProvider>().Value.Voltage.Get(TerminalB.NodeIndex, TerminalA.NodeIndex) :
-			IoC.Resolve<ISimulationResultsProvider>().Value.Voltage.Get(TerminalA.NodeIndex, TerminalB.NodeIndex);
-
+		
 		#endregion
 
 		#region Public properties		
@@ -75,20 +68,6 @@ namespace ECAT.Design
 		#endregion
 
 		#region Protected methods
-
-		/// <summary>
-		/// Returns info related to voltage
-		/// </summary>
-		/// <returns></returns>
-		protected virtual IEnumerable<string> GetVoltageInfo(ISignalInformation voltageDrop) => 
-			CIFormat.GetSignalInfo(voltageDrop, IoC.Resolve<IQuantityNames>().Voltage, IoC.Resolve<ISIUnits>().VoltageShort);		
-
-		/// <summary>
-		/// Returns info related to current
-		/// </summary>
-		/// <returns></returns>
-		protected virtual IEnumerable<string> GetCurrentInfo(ISignalInformation currentInfo) =>
-			CIFormat.GetSignalInfo(currentInfo, IoC.Resolve<IQuantityNames>().Current, IoC.Resolve<ISIUnits>().CurrentShort);		
 
 		/// <summary>
 		/// Assigns positions to all <see cref="ITerminal"/>s
