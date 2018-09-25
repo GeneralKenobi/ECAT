@@ -11,16 +11,6 @@ namespace ECAT.Design
 	/// </summary>
 	public class OpAmp : ThreeTerminal, IOpAmp
 	{
-		#region Constructors
-
-		/// <summary>
-		/// Default constructor
-		/// </summary>
-		public OpAmp() : base(new string[] { "Output " + IoC.Resolve<IQuantityNames>().Voltage, "Output " + IoC.Resolve<IQuantityNames>().Current,
-			"Differential " + IoC.Resolve<IQuantityNames>().Voltage}) { }
-
-		#endregion
-
 		#region Protected properties
 
 		/// <summary>
