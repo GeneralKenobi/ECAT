@@ -16,16 +16,10 @@ namespace ECAT.Design
 		/// <summary>
 		/// Default Constructor
 		/// </summary>
-		protected TwoTerminal() : this(Enumerable.Empty<string>()) { }
-
-		/// <summary>
-		/// Default Constructor
-		/// </summary>
-		protected TwoTerminal(IEnumerable<string> headers) : base(headers)
+		protected TwoTerminal()
 		{
 			TerminalA = new Terminal(new PlanePosition(Complex.Zero, _TerminalAShift));
 			TerminalB = new Terminal(new PlanePosition(Complex.Zero, _TerminalBShift));
-			IoC.Resolve<ISimulationManager>().SimulationCompleted += (s, e) => InvokePropertyChanged(nameof(InvertedVoltageCurrentDirections));
 		}
 
 		#endregion
