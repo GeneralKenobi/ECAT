@@ -58,11 +58,6 @@ namespace ECAT.Core
 		/// <returns></returns>
 		IEnumerable<ITerminal> GetTerminals();
 
-		/// <summary>
-		/// Updates <see cref="ComponentInfo"/>
-		/// </summary>
-		void UpdateInfo();
-
 		#endregion
 	}
 }
