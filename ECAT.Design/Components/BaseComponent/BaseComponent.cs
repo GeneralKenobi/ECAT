@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Numerics;
 
 namespace ECAT.Design
@@ -100,12 +99,6 @@ namespace ECAT.Design
 		#endregion
 
 		#region Protected methods
-		
-		/// <summary>
-		/// Returns complete info for the component
-		/// </summary>
-		/// <returns></returns>
-		protected abstract IEnumerable<IEnumerable<string>> GetComponentInfo();
 
 		/// <summary>
 		/// Assigns positions to all <see cref="PartialNode"/>s, invoked by <see cref="BaseComponent"/>'s constructor

@@ -1,5 +1,4 @@
 ﻿using ECAT.Core;
-using System.Collections.Generic;
 using System.Numerics;
 
 namespace ECAT.Design
@@ -26,35 +25,6 @@ namespace ECAT.Design
 		/// Accessor to the current supplied by this <see cref="ICurrentSource"/>
 		/// </summary>
 		public double ProducedCurrent { get; set; } = IoC.Resolve<IDefaultValues>().DefaultCurrentSourceProducedCurrent;
-
-		#endregion
-
-		#region Protected methods
-
-		/// <summary>
-		/// Returns info related to power
-		/// </summary>
-		/// <returns></returns>
-		protected IEnumerable<string> GetPowerInfo(ISignalInformation info)
-		{
-			// Return characteristic power information
-			yield return CIFormat.LineInfo("Minimum instantenous " + IoC.Resolve<IQuantityNames>().Power,
-				info.Minimum, IoC.Resolve<ISIUnits>().PowerShort);
-			yield return CIFormat.LineInfo("Maximum instantenous " + IoC.Resolve<IQuantityNames>().Power,
-				info.Maximum, IoC.Resolve<ISIUnits>().PowerShort);
-			yield return CIFormat.LineInfo("Average " + IoC.Resolve<IQuantityNames>().Power,
-				info.Average, IoC.Resolve<ISIUnits>().PowerShort);
-		}
-
-		/// <summary>
-		/// Returns info related to this current source which is voltage info plus power info
-		/// </summary>
-		/// <returns></returns>
-		protected override IEnumerable<IEnumerable<string>> GetComponentInfo()
-		{
-			yield return GetVoltageInfo(_VoltageDrop);
-			yield return GetPowerInfo(IoC.Resolve<ISimulationResultsProvider>().Value.Power.Get(this));
-		}
 
 		#endregion
 

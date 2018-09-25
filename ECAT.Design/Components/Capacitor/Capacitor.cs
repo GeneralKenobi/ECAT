@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Numerics;
 using ECAT.Core;
 
@@ -27,16 +26,6 @@ namespace ECAT.Design
 		/// <param name="frequency"></param>
 		/// <returns></returns>
 		protected override Complex CalculateAdmittance(double frequency) => new Complex(0, 2 * Math.PI * frequency * Capacitance);
-
-		/// <summary>
-		/// Returns capacitor's info
-		/// </summary>
-		/// <returns></returns>
-		protected override IEnumerable<IEnumerable<string>> GetComponentInfo()
-		{
-			yield return GetVoltageInfo(_VoltageDrop);
-			yield return GetCurrentInfo(IoC.Resolve<ISimulationResultsProvider>().Value.Current.Get(this, InvertedVoltageCurrentDirections));
-		}
 
 		#endregion
 	}

@@ -55,33 +55,7 @@ namespace ECAT.Design
 		/// <param name="frequency"></param>
 		/// <returns></returns>
 		protected override Complex CalculateAdmittance(double frequency) => _Admittance;
-
-		/// <summary>
-		/// Returns info related to power
-		/// </summary>
-		/// <returns></returns>
-		protected IEnumerable<string> GetPowerInfo(ISignalInformation powerInformation)
-		{
-			// Return characteristic power information
-			yield return CIFormat.LineInfo("Minimum instantenous " + IoC.Resolve<IQuantityNames>().Power,
-				powerInformation.Minimum, IoC.Resolve<ISIUnits>().PowerShort);
-			yield return CIFormat.LineInfo("Maximum instantenous " + IoC.Resolve<IQuantityNames>().Power,
-				powerInformation.Maximum, IoC.Resolve<ISIUnits>().PowerShort);
-			yield return CIFormat.LineInfo("Average " + IoC.Resolve<QuantityNames>().Power,
-				powerInformation.Average, IoC.Resolve<ISIUnits>().PowerShort);
-		}
-
-		/// <summary>
-		/// Returns current info plus power info
-		/// </summary>
-		/// <returns></returns>
-		protected override IEnumerable<IEnumerable<string>> GetComponentInfo()
-		{
-			var current = IoC.Resolve<ISimulationResultsProvider>().Value.Current.Get(ActiveComponentIndex, InvertedVoltageCurrentDirections);
-			yield return GetCurrentInfo(current);
-			yield return GetPowerInfo(IoC.Resolve<ISimulationResultsProvider>().Value.Power.Get(this));
-		}
-
+		
 		#endregion
 	}
 }

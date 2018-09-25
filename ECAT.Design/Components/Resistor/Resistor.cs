@@ -45,31 +45,7 @@ namespace ECAT.Design
 		/// <param name="frequency"></param>
 		/// <returns></returns>
 		protected override Complex CalculateAdmittance(double frequency) => 1 / Resistance;
-
-		/// <summary>
-		/// Returns info related to power
-		/// </summary>
-		/// <returns></returns>
-		protected IEnumerable<string> GetPowerInfo(ISignalInformation powerInformation)
-		{
-			// Return characteristic power information
-			yield return CIFormat.LineInfo("Maximum instantenous " + IoC.Resolve<IQuantityNames>().Power,
-				powerInformation.Maximum, IoC.Resolve<ISIUnits>().PowerShort);
-			yield return CIFormat.LineInfo("Average " + IoC.Resolve<IQuantityNames>().Power,
-				powerInformation.Average, IoC.Resolve<ISIUnits>().PowerShort);
-		}
-
-		/// <summary>
-		/// Returns complete info for the component (basic two terminal plus power)
-		/// </summary>
-		/// <returns></returns>
-		protected override IEnumerable<IEnumerable<string>> GetComponentInfo()
-		{
-			yield return GetVoltageInfo(_VoltageDrop);
-			yield return GetCurrentInfo(IoC.Resolve<ISimulationResultsProvider>().Value.Current.Get(this, InvertedVoltageCurrentDirections));
-			yield return GetPowerInfo(IoC.Resolve<ISimulationResultsProvider>().Value.Power.Get(this));
-		}
-
+		
 		#endregion
 	}
 }

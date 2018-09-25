@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Numerics;
+﻿using System.Numerics;
 using ECAT.Core;
 
 namespace ECAT.Design
@@ -61,63 +60,6 @@ namespace ECAT.Design
 		/// Index used to query <see cref="ISimulationResults"/> for produced current
 		/// </summary>
 		public int ActiveComponentIndex { get; set; }
-
-		#endregion
-
-		#region Private methods
-
-		/// <summary>
-		/// Returns info about output voltage of the op-amp
-		/// </summary>
-		/// <returns></returns>
-		private IEnumerable<string> GetOutputVoltageInfo()
-		{
-			ISignalInformation voltageDrop = IoC.Resolve<ISimulationResultsProvider>().Value.Voltage.Get(TerminalC.NodeIndex);
-
-			foreach (var item in CIFormat.GetSignalInfo(voltageDrop, IoC.Resolve<IQuantityNames>().Voltage, IoC.Resolve<ISIUnits>().VoltageShort))
-			{
-				yield return item;
-			}
-
-			bool supplyExceeded = false;
-
-			// Check if positive supply is exceeded
-			if(voltageDrop.Maximum > PositiveSupplyVoltage)
-			{
-				supplyExceeded = true;
-				yield return "Positive supply voltage may be exceeded";
-			}
-
-			// Check if negative supply is exceeded
-			if (voltageDrop.Minimum < NegativeSupplyVoltage)
-			{
-				supplyExceeded = true;
-				yield return "Negative supply voltage may be exceeded";
-			}
-
-			// If any supply was exceeded elaborate on the results
-			if(supplyExceeded)
-			{
-				yield return "Consider running a full cycle simulation for more accurate results";
-			}
-		}
-
-		#endregion
-
-		#region Protected methods
-
-		/// <summary>
-		/// Returns info about the op-amp
-		/// </summary>
-		/// <returns></returns>
-		protected override IEnumerable<IEnumerable<string>> GetComponentInfo()
-		{
-			yield return GetOutputVoltageInfo();
-			yield return CIFormat.GetSignalInfo(IoC.Resolve<ISimulationResultsProvider>().Value.Current.Get(ActiveComponentIndex, false),
-				IoC.Resolve<IQuantityNames>().Current, IoC.Resolve<ISIUnits>().CurrentShort);
-			yield return CIFormat.GetSignalInfo(IoC.Resolve<ISimulationResultsProvider>().Value.Voltage.Get(
-				TerminalA.NodeIndex, TerminalB.NodeIndex), IoC.Resolve<IQuantityNames>().Voltage, IoC.Resolve<ISIUnits>().VoltageShort);
-		}
 
 		#endregion
 	}
