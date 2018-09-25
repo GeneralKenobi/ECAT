@@ -10,15 +10,6 @@ namespace ECAT.Design
 	/// </summary>
 	public class Capacitor : TwoTerminal, ICapacitor
     {
-		#region Constructors
-
-		/// <summary>
-		/// Default constructor
-		/// </summary>
-		public Capacitor() : base(new string[] { IoC.Resolve<IQuantityNames>().VoltageCap, IoC.Resolve<IQuantityNames>().CurrentCap}) { }
-
-		#endregion
-
 		#region Public properties
 
 		/// <summary>

@@ -11,15 +11,6 @@ namespace ECAT.Design
 	/// </summary>
 	public class CurrentSource : TwoTerminal, ICurrentSource
 	{
-		#region Constructors
-
-		/// <summary>
-		/// Default constructor
-		/// </summary>
-		public CurrentSource() : base(new string[] { IoC.Resolve<IQuantityNames>().VoltageCap, IoC.Resolve<IQuantityNames>().PowerCap}) { }
-
-		#endregion
-
 		#region Private properties
 
 		/// <summary>

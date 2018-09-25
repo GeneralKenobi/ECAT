@@ -9,16 +9,6 @@ namespace ECAT.Design
 	/// </summary>
 	public class Resistor : TwoTerminal, IResistor
     {
-		#region Constructors
-
-		/// <summary>
-		/// Default constructor
-		/// </summary>
-		public Resistor() : base(new string[] { IoC.Resolve<IQuantityNames>().VoltageCap, IoC.Resolve<IQuantityNames>().CurrentCap,
-			IoC.Resolve<IQuantityNames>().PowerCap }) { }
-
-		#endregion
-
 		#region Private members
 
 		/// <summary>
