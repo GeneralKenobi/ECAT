@@ -41,11 +41,6 @@ namespace ECAT.Core
 		/// Radius of sockets on the component
 		/// </summary>
 		double SocketRadius { get; }
-		
-		/// <summary>
-		/// Info about this component (voltage drops, currents etc.) organized into subsections
-		/// </summary>
-		IComponentInfo ComponentInfo { get; }
 
 		#endregion
 
