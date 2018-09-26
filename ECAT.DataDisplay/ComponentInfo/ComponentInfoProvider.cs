@@ -74,17 +74,17 @@ namespace ECAT.DataDisplay
 		private void FocusedComponentChanged(object sender, FocusedComponentChangedEventArgs e)
 		{
 			// If the focus did not change (shouldn't happen but it's better to cover this case)
-			if (e.LostFocus == e.GettingFocus)
+			if (e.LostFocus == e.GotFocus)
 			{
 				// Don't do anything
 				return;
 			}
 
 			// If both the old and new component aren't null, they have the same type and _Info is already constructed
-			if (e.LostFocus != null && e.GettingFocus != null && e.LostFocus.GetType() == e.GettingFocus.GetType() && _Value != null)
+			if (e.LostFocus != null && e.GotFocus != null && e.LostFocus.GetType() == e.GotFocus.GetType() && _Value != null)
 			{
 				// Update it
-				_Value.Update(e.GettingFocus);
+				_Value.Update(e.GotFocus);
 
 				// And return it
 				return;
@@ -95,7 +95,7 @@ namespace ECAT.DataDisplay
 			_Value = null;
 
 			// If an element gets focus and it requests info display
-			if (e.GettingFocus != null && _DisplaySettings.TryGetValue(e.GettingFocus.GetType(), out var infoSections))
+			if (e.GotFocus != null && _DisplaySettings.TryGetValue(e.GotFocus.GetType(), out var infoSections))
 			{
 				// Construct a ComponentInfo for it
 				_Value = new ComponentInfo(infoSections);
