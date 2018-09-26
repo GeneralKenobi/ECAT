@@ -101,7 +101,7 @@ namespace ECAT.DataDisplay
 				}
 
 				// Get the singletion and add keyed info sections to it
-				IoC.Resolve<ComponentInfoProvider>().AddInfoSections(result);
+				IoC.Resolve<IComponentInfoProviderControl>().AddInfoSections(result);
 			}
 
 			#endregion
