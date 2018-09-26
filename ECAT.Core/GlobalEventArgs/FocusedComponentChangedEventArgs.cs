@@ -13,11 +13,11 @@ namespace ECAT.Core
 		/// Default constructor, requires parameters
 		/// </summary>
 		/// <param name="lostFocus"></param>
-		/// <param name="gettingFocus"></param>
-		public FocusedComponentChangedEventArgs(IBaseComponent lostFocus, IBaseComponent gettingFocus)
+		/// <param name="gotFocus"></param>
+		public FocusedComponentChangedEventArgs(IBaseComponent lostFocus, IBaseComponent gotFocus)
 		{
 			LostFocus = lostFocus;
-			GettingFocus = gettingFocus;
+			GotFocus = gotFocus;
 		}
 		
 		#endregion
@@ -25,14 +25,14 @@ namespace ECAT.Core
 		#region Public properties
 
 		/// <summary>
-		/// Component that is losing focus or null if no component was focused
+		/// Component that lost focus or null if no component was focused
 		/// </summary>
 		public IBaseComponent LostFocus { get; }
 
 		/// <summary>
-		/// Component that will get focus or null if no component will be focused
+		/// Component that got focused or null if no component is focused after the event
 		/// </summary>
-		public IBaseComponent GettingFocus { get; }
+		public IBaseComponent GotFocus { get; }
 
 		#endregion
 	}
