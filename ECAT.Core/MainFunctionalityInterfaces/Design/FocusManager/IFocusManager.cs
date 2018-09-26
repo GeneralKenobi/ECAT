@@ -11,7 +11,7 @@ namespace ECAT.Core
 		#region Events
 
 		/// <summary>
-		/// Event fired when focus changes - after the old component lost focus and before the new component got focus.
+		/// Event fired when focus changes - after the old component lost focus and the new component got focus.
 		/// </summary>
 		event EventHandler<FocusedComponentChangedEventArgs> FocusedComponentChanged;
 
