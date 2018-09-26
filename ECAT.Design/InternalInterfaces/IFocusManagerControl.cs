@@ -1,6 +1,6 @@
 ﻿using ECAT.Core;
 
-namespace ECAT.DataDisplay
+namespace ECAT.Design
 {
 	/// <summary>
 	/// Control interface for functionalities of <see cref="IFocusManager"/>

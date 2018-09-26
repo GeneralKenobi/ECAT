@@ -1,7 +1,7 @@
 ﻿using ECAT.Core;
 using System;
 
-namespace ECAT.DataDisplay
+namespace ECAT.Design
 {
 	/// <summary>
 	/// Manages giving and taking focus from <see cref="IBaseComponent"/>s
