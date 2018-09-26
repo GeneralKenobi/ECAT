@@ -9,8 +9,8 @@ namespace ECAT.DataDisplay
 	/// <summary>
 	/// Manages component info display
 	/// </summary>
-	[RegisterAsInstance(typeof(ComponentInfoProvider), typeof(IComponentInfoProvider))]
-	public partial class ComponentInfoProvider : IComponentInfoProvider
+	[RegisterAsInstance(typeof(IComponentInfoProvider), typeof(IComponentInfoProviderControl))]
+	public partial class ComponentInfoProvider : IComponentInfoProvider, ComponentInfoProvider.IComponentInfoProviderControl
     {
 		#region Constructors
 
@@ -107,7 +107,7 @@ namespace ECAT.DataDisplay
 		/// (otherwise an exception is thrown).
 		/// </summary>
 		/// <param name="sections"></param>
-		private void AddInfoSections(IEnumerable<KeyValuePair<Type, IEnumerable<InfoSectionDefinition>>> sections)
+		void IComponentInfoProviderControl.AddInfoSections(IEnumerable<KeyValuePair<Type, IEnumerable<InfoSectionDefinition>>> sections)
 		{			
 			foreach(var entry in sections)
 			{
