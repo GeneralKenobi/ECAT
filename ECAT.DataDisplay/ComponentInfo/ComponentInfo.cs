@@ -29,7 +29,14 @@ namespace ECAT.DataDisplay
 				_Sections = new List<Tuple<InfoSectionDefinition, ComponentInfoSectionHeader>>(infoSections.
 					Select((section) => Tuple.Create(section, new ComponentInfoSectionHeader(section.Index, section.Header))));
 
+				// Create the enumerator
 				_CurrentSection = _Sections.GetEnumerator();
+				// Move it to the first element
+				if(_CurrentSection.MoveNext())
+				{
+					// If it was possible, set the section to be selected
+					_CurrentSection.Current.Item2.IsSelected = true;
+				}
 			}
 
 			#endregion
@@ -116,6 +123,13 @@ namespace ECAT.DataDisplay
 
 				// Select its header
 				_CurrentSection.Current.Item2.IsSelected = true;
+
+				// If there's a focused component
+				if(IoC.Resolve<IFocusManager>().FocusedComponent != null)
+				{
+					// Update self
+					Update(IoC.Resolve<IFocusManager>().FocusedComponent);
+				}
 			}
 
 			#endregion
