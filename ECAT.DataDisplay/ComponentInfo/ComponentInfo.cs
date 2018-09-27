@@ -26,8 +26,11 @@ namespace ECAT.DataDisplay
 					throw new ArgumentNullException(nameof(infoSections));
 				}
 
+				int counter = 0;
+
 				_Sections = new List<Tuple<InfoSectionDefinition, ComponentInfoSectionHeader>>(infoSections.
-					Select((section) => Tuple.Create(section, new ComponentInfoSectionHeader(section.Index, section.Header))));
+					// Assign indexes starting from 0 and increasing by 1 for each subsequent section header
+					Select((section) => Tuple.Create(section, new ComponentInfoSectionHeader(counter++, section.Header))));
 
 				// Create the enumerator
 				_CurrentSection = _Sections.GetEnumerator();
