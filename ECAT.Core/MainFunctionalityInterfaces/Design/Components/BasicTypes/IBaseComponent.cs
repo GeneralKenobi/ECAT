@@ -58,6 +58,16 @@ namespace ECAT.Core
 		/// <returns></returns>
 		IEnumerable<ITerminal> GetTerminals();
 
+		/// <summary>
+		/// Sets focus to this <see cref="IBaseComponent"/>
+		/// </summary>
+		void SetFocus();
+
+		/// <summary>
+		/// Loses focus from this <see cref="IBaseComponent"/>
+		/// </summary>
+		void LoseFocus();
+
 		#endregion
 	}
 }
