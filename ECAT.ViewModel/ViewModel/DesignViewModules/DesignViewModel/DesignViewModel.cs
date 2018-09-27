@@ -4,6 +4,7 @@ using ECAT.Core;
 using System;
 using System.ComponentModel;
 using System.Numerics;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace ECAT.ViewModel
@@ -30,13 +31,13 @@ namespace ECAT.ViewModel
 			}
 
 			DesignManager.PropertyChanged += WireManipulated;
-
+			
 			StopActionCommand = new RelayCommand(StopAction);
 			DesignAreaClickedCommand = new RelayParametrizedCommand(DesignAreaClicked);
 			PrepareToPlaceLooseWireCommand = new RelayCommand(PrepareToPlaceLooseWire);
 			EditComponentCommand = new RelayParametrizedCommand(EditComponent);
 		}
-
+		
 		#endregion
 
 		#region Private members
@@ -65,14 +66,9 @@ namespace ECAT.ViewModel
 		#region Public properties
 
 		/// <summary>
-		/// Indicates whether component info should be visible on the screen
+		/// Provider of <see cref="IComponentInfo"/> to display.
 		/// </summary>
-		public bool ComponentInfoVisible => CurrentComponentInfo != null && CurrentComponentInfo.SectionsCount > 0;
-
-		/// <summary>
-		/// Component info to currently present
-		/// </summary>
-		public IComponentInfo CurrentComponentInfo { get; private set; }
+		public IComponentInfoProvider ComponentInfoProvider { get; } = IoC.Resolve<IComponentInfoProvider>();
 
 		/// <summary>
 		/// InfoLogger for this app
@@ -248,17 +244,6 @@ namespace ECAT.ViewModel
 		#endregion
 
 		#region Public methods
-
-		/// <summary>
-		/// Method for <see cref="HideComponentInfoCommand"/>
-		/// </summary>
-		public void HideComponentInfo() => CurrentComponentInfo = null;
-
-		/// <summary>
-		/// Method for <see cref="ShowComponentInfoCommand"/>
-		/// </summary>
-		/// <param name="parameter"></param>
-		public void ShowComponentInfo(IComponentInfo info) => CurrentComponentInfo = info;
 
 		/// <summary>
 		/// Adds a component on the given position
