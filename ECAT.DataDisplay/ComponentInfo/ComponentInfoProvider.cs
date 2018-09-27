@@ -30,7 +30,8 @@ namespace ECAT.DataDisplay
 		/// <summary>
 		/// Info sections defined for types that want to display them. Each type implements <see cref="IBaseComponent"/>.
 		/// </summary>
-		private Dictionary<Type, SortedSet<InfoSectionDefinition>> _DisplaySettings { get; }
+		private Dictionary<Type, SortedSet<InfoSectionDefinition>> _DisplaySettings { get; } =
+			new Dictionary<Type, SortedSet<InfoSectionDefinition>>();
 
 		/// <summary>
 		/// Backing store for <see cref="Value"/>
@@ -112,7 +113,7 @@ namespace ECAT.DataDisplay
 			foreach(var entry in sections)
 			{
 				// Check if the type implements IBaseComponent
-				if(typeof(IBaseComponent).IsAssignableFrom(entry.Key))
+				if(!typeof(IBaseComponent).IsAssignableFrom(entry.Key))
 				{
 					throw new Exception(entry.Key.FullName + " does not implement " + nameof(IBaseComponent));
 				}
