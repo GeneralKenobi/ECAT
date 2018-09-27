@@ -32,7 +32,7 @@ namespace ECAT.DataDisplay
 				}
 				else
 				{
-					throw new ArgumentException("Property informations don't have a proper return type (" + typeof(ITerminal).FullName +
+					throw new ArgumentException("Property informations doesn't have a proper return type (" + typeof(ITerminal).FullName +
 						") or don't match target type (" + targetType.FullName + ")");
 				}
 			}
@@ -62,7 +62,7 @@ namespace ECAT.DataDisplay
 			/// <param name="targetType"></param>
 			/// <returns></returns>
 			private bool IsPropertyInfoValid(PropertyInfo info, Type targetType) =>
-				info.DeclaringType == targetType && info.PropertyType == typeof(ITerminal);
+				info.DeclaringType.IsAssignableFrom(targetType) && info.PropertyType == typeof(ITerminal);
 				
 			#endregion
 
