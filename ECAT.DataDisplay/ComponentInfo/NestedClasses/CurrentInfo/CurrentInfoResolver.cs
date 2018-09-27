@@ -44,6 +44,8 @@ namespace ECAT.DataDisplay
 					LazyCase<ICapacitor>((x) => info = results.Get(x, false)).
 					LazyCase<IActiveComponent>((x) => info = results.Get(x.ActiveComponentIndex, false));
 
+				typeSwitch.Switch(target);
+
 				return info;
 			}
 
