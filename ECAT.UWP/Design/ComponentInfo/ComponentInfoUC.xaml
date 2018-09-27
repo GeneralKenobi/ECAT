@@ -30,7 +30,6 @@
 				<!-- Header name and diagonal border -->
 				<controls:ItemsContainer FlowDirection="LeftToRight"
 					HorizontalAlignment="Stretch"
-					
 					ItemSpacing="0"					
 					Margin="0 -3 0 0">
 
@@ -161,7 +160,7 @@
 
 			<!-- Presenter for info --> 
 			<controls:ItemsContainer FlowDirection="TopToBottom"
-				ItemsSource="{Binding CurrentSection}"
+				ItemsSource="{Binding InterpretedInfo}"
 				Grid.Row="1"
 				Margin="10 5 0 0"
 				HorizontalAlignment="Left">
