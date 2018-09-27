@@ -27,11 +27,11 @@ namespace ECAT.UWP
 		/// </summary>
 		private static Type[] TypeRefArray { get; set; } = new Type[]
 		{
-			typeof(IDesignManager),
-			typeof(AppViewModel),
-			typeof(DesignManager),
-			typeof(SimulationManager),
-			typeof(ComponentInfoDisplay),
+			typeof(Core.DummyType),
+			typeof(DataDisplay.DummyType),
+			typeof(Design.DummyType),
+			typeof(Simulation.DummyType),
+			typeof(ViewModel.DummyType),
 		};
 
 		#endregion
