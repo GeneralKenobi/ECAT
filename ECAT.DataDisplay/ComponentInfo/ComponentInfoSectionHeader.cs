@@ -15,6 +15,9 @@ namespace ECAT.DataDisplay
 			/// <summary>
 			/// Default constructor
 			/// </summary>
+			/// <param name="index">Zero-based index of the header from beginning (whole enumeration for a given component should be
+			/// strictly increasing by 1)</param>
+			/// <param name="text"></param>
 			public ComponentInfoSectionHeader(int index, string text)
 			{
 				Index = index;
@@ -35,7 +38,7 @@ namespace ECAT.DataDisplay
 			#region Public properties
 
 			/// <summary>
-			/// Zero-based index
+			/// Zero-based index of the header from beginning (whole enumeration for a given component should be strictly increasing by 1)
 			/// </summary>
 			public int Index { get; }
 
