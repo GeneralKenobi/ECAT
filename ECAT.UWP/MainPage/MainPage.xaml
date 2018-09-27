@@ -100,8 +100,8 @@
 			VerticalAlignment="Bottom">
 
 			<local:ComponentInfoUC HorizontalAlignment="Right"
-				DataContext="{Binding DesignVM.CurrentComponentInfo}"
-				Visibility="{Binding ElementName=RootPage, Path=DataContext.DesignVM.ComponentInfoVisible, Converter={converters:BoolToVisibilityMEC}}"/>
+				DataContext="{Binding DesignVM.ComponentInfoProvider.Value}"
+				Visibility="{Binding ElementName=RootPage, Path=DataContext.DesignVM.ComponentInfoProvider.CanBeHidden, Converter={converters:BoolToVisibilityMEC InvertConvesion=True}}"/>
 
 			<!-- The dark blue border at the bottom of the screen with the currently logged message -->
 			<Border Background="{StaticResource DarkBlue5Brush}"
