@@ -39,6 +39,14 @@ namespace ECAT.DataDisplay
 				}
 			}
 
+			/// <summary>
+			/// Constructor that takes component that is presented from construction
+			/// </summary>
+			public ComponentInfo(IEnumerable<InfoSectionDefinition> infoSections, IBaseComponent component) : this(infoSections)
+			{
+				Update(component);
+			}
+
 			#endregion
 
 			#region Events
