@@ -1,9 +1,11 @@
-﻿namespace ECAT.Core
+﻿using System.ComponentModel;
+
+namespace ECAT.Core
 {
 	/// <summary>
 	/// Interface for a class providing component info to display
 	/// </summary>
-	public interface IComponentInfoProvider
+	public interface IComponentInfoProvider : INotifyPropertyChanged
 	{
 		#region Properties
 

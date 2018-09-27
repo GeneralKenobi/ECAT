@@ -3,6 +3,7 @@ using CSharpEnhanced.Helpers;
 using ECAT.Core;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace ECAT.DataDisplay
 {
@@ -22,6 +23,15 @@ namespace ECAT.DataDisplay
 			IoC.Resolve<IFocusManager>().FocusedComponentChanged += FocusedComponentChanged;
 			IoC.Resolve<ISimulationManager>().SimulationCompleted += SimulationCompleted;
 		}
+
+		#endregion
+		
+		#region Events
+
+		/// <summary>
+		/// Event fired whenever a property changes its value
+		/// </summary>
+		public event PropertyChangedEventHandler PropertyChanged;
 
 		#endregion
 
