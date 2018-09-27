@@ -57,6 +57,11 @@ namespace ECAT.DataDisplay
 		/// </summary>
 		public IComponentInfo Value => _Value;
 
+		/// <summary>
+		/// True if the current info doesn't provide any value and can be not displayed
+		/// </summary>
+		public bool CanBeHidden => _Value == null || _Value.SectionsCount == 0;
+
 		#endregion
 
 		#region Private methods

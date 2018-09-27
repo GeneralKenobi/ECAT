@@ -15,6 +15,11 @@ namespace ECAT.Core
 		IComponentInfo Value { get; }
 
 		/// <summary>
+		/// True if the current info doesn't provide any value and can be not displayed
+		/// </summary>
+		bool CanBeHidden { get; }
+
+		/// <summary>
 		/// Moves the info to next section
 		/// </summary>
 		void GoToNextSection();
