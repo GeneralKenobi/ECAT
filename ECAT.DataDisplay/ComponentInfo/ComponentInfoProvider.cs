@@ -114,7 +114,7 @@ namespace ECAT.DataDisplay
 			if (e.GotFocus != null && _DisplaySettings.TryGetValue(e.GotFocus.GetType(), out var infoSections))
 			{
 				// Construct a ComponentInfo for it
-				_Value = new ComponentInfo(infoSections);
+				_Value = new ComponentInfo(infoSections, e.GotFocus);
 			}
 		}
 
