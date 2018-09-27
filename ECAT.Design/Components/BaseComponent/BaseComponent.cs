@@ -145,6 +145,16 @@ namespace ECAT.Design
 		}
 
 		/// <summary>
+		/// Sets focus to this <see cref="IBaseComponent"/>
+		/// </summary>
+		public void SetFocus() => IoC.Resolve<IFocusManagerControl>().SetFocus(this);
+
+		/// <summary>
+		/// Attempts to lose focus from this control
+		/// </summary>
+		public void LoseFocus() => IoC.Resolve<IFocusManagerControl>().LoseFocus(this);
+
+		/// <summary>
 		/// Disposes of the component
 		/// </summary>
 		public virtual void Dispose() { }
