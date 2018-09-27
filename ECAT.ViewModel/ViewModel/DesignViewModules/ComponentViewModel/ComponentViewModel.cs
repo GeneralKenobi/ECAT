@@ -18,9 +18,6 @@ namespace ECAT.ViewModel
 		public ComponentViewModel(IBaseComponent component)
 		{
 			Component = component ?? throw new ArgumentNullException(nameof(component) + " cannot be null");
-
-			// Subscribe to simualtion completed event
-			IoC.Resolve<ISimulationManager>().SimulationCompleted += SimulationCompletedCallback;
 			
 			RotateLeftCommand = new RelayCommand(RotateLeft);
 			RotateRightCommand = new RelayCommand(RotateRight);
@@ -59,7 +56,7 @@ namespace ECAT.ViewModel
 		/// <summary>
 		/// True if the component is focused (eg. pointer is over the element)
 		/// </summary>
-		public bool IsFocused { get; set; }
+		public bool IsFocused => IoC.Resolve<IFocusManager>().FocusedComponent == Component;
 
 		#endregion
 
@@ -125,7 +122,7 @@ namespace ECAT.ViewModel
 		{
 			if (IsFocused)
 			{
-				++Component.ComponentInfo.CurrentSectionIndex;
+				IoC.Resolve<IComponentInfoProvider>().GoToNextSection();
 			}
 		}
 
@@ -137,51 +134,18 @@ namespace ECAT.ViewModel
 			if (IsFocused)
 			{
 				Component.ChangeVIDirections = !Component.ChangeVIDirections;
-
-				Component.UpdateInfo();
 			}
 		}
-
-		/// <summary>
-		/// Callback invoked when simulation completes, if the element is focused passes new info the the design view model
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void SimulationCompletedCallback(object sender, SimulationCompletedEventArgs e)
-		{
-			if(IsFocused)
-			{
-				Component.UpdateInfo();
-			}
-		}
-
-		/// <summary>
-		/// Passes this component's info to the current DesignViewModel
-		/// </summary>
-		private void PassInfoToDesignVM() => AppViewModel.Singleton.DesignVM.ShowComponentInfo(Component.ComponentInfo);
 
 		/// <summary>
 		/// Method for <see cref="EngageFocusCommand"/>
 		/// </summary>
-		private void EngageFocus()
-		{
-			IsFocused = true;
-
-			Component.UpdateInfo();
-
-			PassInfoToDesignVM();
-		}
+		private void EngageFocus() => Component.SetFocus();
 
 		/// <summary>
 		/// Method for <see cref="DisengageFocusCommand"/>
 		/// </summary>
-		private void DisengageFocus()
-		{
-			IsFocused = false;
-
-			// Remove info from design view model
-			AppViewModel.Singleton.DesignVM.HideComponentInfo();
-		}
+		private void DisengageFocus() => Component.LoseFocus();
 
 		/// <summary>
 		/// Method for <see cref="RotateLeftCommand"/>
@@ -205,10 +169,7 @@ namespace ECAT.ViewModel
 				// Stop editing
 				AppViewModel.Singleton.DesignVM.ComponentEditSectionVM.CurrentlyEditedComponentViewModel = null;
 			}
-
-			// Unsubscribe from the simulation completed event
-			IoC.Resolve<ISimulationManager>().SimulationCompleted -= SimulationCompletedCallback;
-
+			
 			// Remove the component from its schematic
 			AppViewModel.Singleton.DesignVM.DesignManager.RemoveComponent(Component);
 
