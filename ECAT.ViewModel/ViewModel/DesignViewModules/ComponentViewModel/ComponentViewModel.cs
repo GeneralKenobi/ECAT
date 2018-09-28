@@ -125,7 +125,7 @@ namespace ECAT.ViewModel
 		/// <param name="e"></param>
 		private void FocusedComponentChanged(object sender, FocusedComponentChangedEventArgs e)
 		{
-			if(e.GotFocus == Component || e.LostFocus == this)
+			if(e.GotFocus == Component || e.LostFocus == Component)
 			{
 				InvokePropertyChanged(nameof(IsFocused));
 			}
