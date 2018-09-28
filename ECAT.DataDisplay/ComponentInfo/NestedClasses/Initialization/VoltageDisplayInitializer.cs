@@ -38,30 +38,50 @@ namespace ECAT.DataDisplay
 			/// <returns></returns>
 			protected override bool TryConstructInfoSection(Type type, DisplayVoltageInfo attribute, out InfoSectionDefinition infoSection)
 			{
-				// Try to get both terminals
-				if (type.TryGetProperty<ITerminal>(attribute.TerminalA, out var terminalA) &&
-					type.TryGetProperty<ITerminal>(attribute.TerminalB, out var terminalB))
+				// Try to get terminalB
+				if (type.TryGetProperty<ITerminal>(attribute.TerminalB, out var terminalB))
 				{
-					// Add a new info section definition to the list
-					infoSection = new InfoSectionDefinition(
-						new VoltageInfoResolver(type, terminalA, terminalB),
-						new VoltageInfoInterpreter(),
-						attribute.SectionIndex,
-						attribute.Header);
+					// If successful, create a variable for a resolver
+					VoltageInfoResolver resolver = null;
 
-					return true;
+					// If TerminalA is an empty string
+					if (attribute.TerminalA == string.Empty)
+					{
+						// Create a resolver from ground to terminal B
+						resolver = new VoltageInfoResolver(type, terminalB);
+					}
+					// Otherwise try to get terminalA
+					else if (type.TryGetProperty<ITerminal>(attribute.TerminalA, out var terminalA))
+					{
+						// If successful create a resolver from terminalA to terminalB
+						resolver = new VoltageInfoResolver(type, terminalA, terminalB);
+					}
+
+					// If resolver was successfully created
+					if(resolver != null)
+					{
+						// Create a new info section definition
+						infoSection = new InfoSectionDefinition(
+							resolver,
+							new VoltageInfoInterpreter(),
+							attribute.SectionIndex,
+							attribute.Header);
+
+						// And return success
+						return true;
+					}
 				}
-				else
-				{
-					// Log failure when debugging
-					LogIncorrectTerminalPropertyNames(type, attribute);
+				
+				// If the method didn't return by now it means that it failed
 
-					// Assign null
-					infoSection = null;
+				// Log failure when debugging
+				LogIncorrectTerminalPropertyNames(type, attribute);
 
-					// Return failure
-					return false;
-				}
+				// Assign null
+				infoSection = null;
+
+				// Return failure
+				return false;				
 			}
 
 			#endregion
