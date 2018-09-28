@@ -27,6 +27,8 @@ namespace ECAT.ViewModel
 			DisengageFocusCommand = new RelayCommand(DisengageFocus);
 			ReverseVoltageDropsCommand = new RelayCommand(ReverseVoltageDrops);
 			ProceedToAnotherInfoSectionCommand = new RelayCommand(ProceedToAnotherInfoSection);
+
+			IoC.Resolve<IFocusManager>().FocusedComponentChanged += FocusedComponentChanged;
 		}
 
 		#endregion
@@ -114,6 +116,20 @@ namespace ECAT.ViewModel
 		#endregion
 
 		#region Private methods
+
+		/// <summary>
+		/// Callback for when focused component changes, if <see cref="Component"/> was part of the action invokes PropertyChanged event
+		/// for <see cref="IsFocused"/>
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void FocusedComponentChanged(object sender, FocusedComponentChangedEventArgs e)
+		{
+			if(e.GotFocus == Component || e.LostFocus == this)
+			{
+				InvokePropertyChanged(nameof(IsFocused));
+			}
+		}
 
 		/// <summary>
 		/// Method for <see cref="ProceedToAnotherInfoSectionCommand"/>
