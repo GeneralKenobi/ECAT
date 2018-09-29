@@ -101,7 +101,9 @@
     <Compile Include="Design\ComponentInfo\ComponentInfoUC.xaml.cs">
       <DependentUpon>ComponentInfoUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Design\ComponentInfo\SignalDataTemplateSelector\SignalDataTemplateSelector.cs" />
     <Compile Include="Design\ComponentInfo\ValueConverters\DiagonalVisibilityConverter.cs" />
+    <Compile Include="Design\ComponentInfo\ValueConverters\InfoContentConverter.cs" />
     <Compile Include="Design\Components\ACVoltageSource\ACVoltageSourceTC.cs" />
     <Compile Include="Design\Components\Capacitor\CapacitorTC.cs" />
     <Compile Include="Design\Components\OpAmp\OpAmpTC.cs" />
@@ -147,7 +149,7 @@
     <Compile Include="GeneralValueConverters\DoubleToChosenParameterConverter.cs" />
     <Compile Include="GeneralValueConverters\DoubleToVisibilityConverter.cs" />
     <Compile Include="GeneralValueConverters\TextPositionFixRotationConverter.cs" />
-    <Compile Include="IoCSetup\Initialization.cs" />
+    <Compile Include="Initialization\Initialization.cs" />
     <Compile Include="MainPage\IBaseComponentToComponentViewModelConverter.cs" />
     <Compile Include="MainPage\IWireToWireViewModelConverter.cs" />
     <Compile Include="MainPage\MainPage.xaml.cs">
