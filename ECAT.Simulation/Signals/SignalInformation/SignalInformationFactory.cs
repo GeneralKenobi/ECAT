@@ -14,9 +14,11 @@ namespace ECAT.Simulation
 		/// Constructs an <see cref="ISignalInformation"/> based on <paramref name="data"/>
 		/// </summary>
 		/// <param name="data"></param>
+		/// <param name="description"></param>
 		/// <returns></returns>
 		/// <exception cref="System.ArgumentNullException"></exception>
-		public ISignalInformation Construct(ISignalData data) => new SignalInformation(data);
+		public ISignalInformation Construct(ISignalData data, ISignalDescription description) =>
+			new SignalInformation(data, description);
 
 		#endregion
 	}
