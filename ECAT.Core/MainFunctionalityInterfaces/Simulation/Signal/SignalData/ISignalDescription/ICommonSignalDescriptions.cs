@@ -5,7 +5,7 @@
 	/// </summary>
 	public interface ICommonSignalDescriptions
     {
-		#region Public properties
+		#region Properties
 
 		/// <summary>
 		/// Description of a voltage signal
