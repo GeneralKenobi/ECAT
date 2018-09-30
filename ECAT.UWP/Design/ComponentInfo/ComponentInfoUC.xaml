@@ -164,7 +164,30 @@
 				Margin="10 5 0 0">
 
 				<StackPanel.Resources>
-					<local:InfoContentConverter x:Key="InfoContentConverter"/>
+					<local:SignalDataToViewModelConverter x:Key="SignalDataConverter"/>
+
+					<DataTemplate x:Key="PhasorDomainSignalDataTemplate">
+						<controls:ItemsContainer FlowDirection="TopToBottom"
+							ItemsSource="{Binding DisplayText}"
+							HorizontalAlignment="Left">
+
+							<controls:ItemsContainer.ItemTemplate>
+								<DataTemplate>
+									<!-- Each item is simply a line of text shown by a TextBlock -->
+									<TextBlock Text="{Binding }"
+										Foreground="{StaticResource BlackBrush}"
+										FontSize="{StaticResource FontSizeRegular}"
+										HorizontalTextAlignment="Left"/>
+								</DataTemplate>
+							</controls:ItemsContainer.ItemTemplate>
+
+						</controls:ItemsContainer>
+					</DataTemplate>
+
+					<xaml:TypeBasedDataTemplateSelector x:Key="SignalDataTemplateSelector">
+						<xaml:LazyTemplateTypeRule Template="{StaticResource PhasorDomainSignalDataTemplate}"
+							Type="{xaml:TypeResolver TypeName=ECAT.ViewModel.PhasorDomainSignalViewModel}"/>
+					</xaml:TypeBasedDataTemplateSelector>
 				</StackPanel.Resources>
 
 				<controls:ItemsContainer FlowDirection="TopToBottom"
@@ -184,7 +207,10 @@
 				</controls:ItemsContainer>
 
 				<!-- Custom presenter for specific ISignalData -->
-				<ContentPresenter Content="{Binding Info, Converter={StaticResource InfoContentConverter}}"/>
+				<ContentControl Content="{Binding Info.Data, Converter={StaticResource SignalDataConverter}}"
+					MaxHeight="400"
+					MaxWidth="400"
+					ContentTemplateSelector="{StaticResource SignalDataTemplateSelector}"/>
 
 			</StackPanel>
 		</Grid>
