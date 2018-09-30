@@ -15,6 +15,11 @@ namespace ECAT.Core
 		ISignalData Data { get; }
 
 		/// <summary>
+		/// Description (meaning) of this <see cref="ISignalInformation"/>
+		/// </summary>
+		ISignalDescription Description { get; }
+
+		/// <summary>
 		/// The maximum instantenous signal value that may occur
 		/// </summary>
 		double Maximum { get; }
