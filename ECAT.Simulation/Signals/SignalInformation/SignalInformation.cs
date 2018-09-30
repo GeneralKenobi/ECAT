@@ -12,24 +12,25 @@ namespace ECAT.Simulation
 		#region Constructors
 
 		/// <summary>
-		/// Default constructor
+		/// Constructor with parameters
 		/// </summary>
-		public SignalInformation() { }
-
-		/// <summary>
-		/// Constructor with parameter
-		/// </summary>
-		public SignalInformation(ISignalData data)
+		/// <param name="data"></param>
+		/// <param name="description"></param>
+		/// <exception cref="ArgumentNullException"></exception>
+		public SignalInformation(ISignalData data, ISignalDescription description)
 		{
-			Data = data;
+			Data = data ?? throw new ArgumentNullException(nameof(data));
+			Description = description ?? throw new ArgumentNullException(nameof(description));
 		}
 
 		/// <summary>
 		/// Copy constructor
 		/// </summary>
+		/// <param name="source"></param>
+		/// <exception cref="ArgumentNullException"></exception>
 		public SignalInformation(ISignalInformation source)
 		{
-			Copy(source);
+			Copy(source ?? throw new ArgumentNullException(nameof(source)));
 		}
 
 		#endregion
@@ -62,44 +63,43 @@ namespace ECAT.Simulation
 		}
 
 		/// <summary>
+		/// Description (meaning) of this <see cref="ISignalInformation"/>
+		/// </summary>
+		public ISignalDescription Description { get; private set; }
+
+		/// <summary>
 		/// The maximum signal value that may occur
 		/// </summary>
-		public double Maximum { get; set; }
+		public double Maximum { get; private set; }
 
 		/// <summary>
 		/// The minimum signal that may occur
 		/// </summary>
-		public double Minimum { get; set; }
+		public double Minimum { get; private set; }
 
 		/// <summary>
 		/// RMS value of this signal
 		/// </summary>
-		public double RMS { get; set; }
+		public double RMS { get; private set; }
 
 		/// <summary>
 		/// The average value of the signal
 		/// </summary>
-		public double Average { get; set; }
+		public double Average { get; private set; }
 
 		#endregion
 
 		#region Private methods
 
+		/// <summary>
+		/// Updates properties based on new <see cref="Data"/>
+		/// </summary>
 		private void DataChanged()
 		{
-			if (Data != null)
-			{
-				Maximum = Data.Interpreter.Maximum();
-				Minimum = Data.Interpreter.Minimum();
-				RMS = Data.Interpreter.RMS();
-				Average = Data.Interpreter.Average();
-			}
-			else
-			{
-				Maximum = 0;
-				Minimum = 0;
-				RMS = 0;
-			}
+			Maximum = Data.Interpreter.Maximum();
+			Minimum = Data.Interpreter.Minimum();
+			RMS = Data.Interpreter.RMS();
+			Average = Data.Interpreter.Average();
 		}
 
 		#endregion
@@ -118,6 +118,8 @@ namespace ECAT.Simulation
 			}
 
 			Data = signalInformation.Data;
+
+			Description = signalInformation.Description;
 
 			Maximum = signalInformation.Maximum;
 
