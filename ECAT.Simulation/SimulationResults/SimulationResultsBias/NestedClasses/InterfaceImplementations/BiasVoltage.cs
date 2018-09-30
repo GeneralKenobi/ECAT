@@ -63,7 +63,9 @@ namespace ECAT.Simulation
 				if(!_Cache.ContainsKey(new Tuple<int, int>(nodeAIndex, nodeBIndex)))
 				{
 					_Cache.Add(new Tuple<int, int>(nodeAIndex, nodeBIndex),
-						Tuple.Create(signal, IoC.Resolve<ISignalInformationFactory>().Construct(signal)));
+						Tuple.Create(
+							signal,
+							IoC.Resolve<ISignalInformationFactory>().Construct(signal, IoC.Resolve<ICommonSignalDescriptions>().Voltage)));
 				}
 			}
 

@@ -57,7 +57,9 @@ namespace ECAT.Simulation
 			/// <param name="component">Component for which the current flow is considered</param>
 			/// <param name="power"></param>
 			private void CachePower(IBaseComponent component, ISignalData power) =>
-				_Cache.Add(component, IoC.Resolve<ISignalInformationFactory>().Construct(power));
+				_Cache.Add(
+					component,
+					IoC.Resolve<ISignalInformationFactory>().Construct(power, IoC.Resolve<ICommonSignalDescriptions>().Power));
 
 			/// <summary>
 			/// Returns true if power for <paramref name="resistor"/> can be obtained from <see cref="_Cache"/>
