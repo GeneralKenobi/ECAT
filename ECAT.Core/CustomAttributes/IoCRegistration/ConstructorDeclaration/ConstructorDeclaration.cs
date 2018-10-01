@@ -18,81 +18,17 @@ namespace ECAT.Core
 		/// <summary>
 		/// Constructor for a declaration of a paremeterless constructor
 		/// </summary>
-		public ConstructorDeclaration()
-		{
-
-		}
+		public ConstructorDeclaration() : this(Array.Empty<Type>()) { }
 
 		/// <summary>
-		/// Constructor for a declaration of a constructor with one parameter
+		/// Constructor for a declaration of a constructor with parameters
 		/// </summary>
-		/// <param name="firstParamName"></param>
-		/// <param name="firstParamType"></param>
-		public ConstructorDeclaration(string firstParamName, Type firstParamType)
+		/// <param name="types">Types of parameters that should appear in the constructor (in that particular order)</param>
+		/// <param name="descriptions">Descriptions of what each parameter represents (should represent). It's only stored in the
+		/// metadata for interface providers and consumers</param>
+		public ConstructorDeclaration(Type[] types, params string[] descriptions)
 		{
-			DeclaradParameters = new Dictionary<string, Type>()
-			{
-				{firstParamName, firstParamType },
-			};
-		}
-
-		/// <summary>
-		/// Constructor for a declaration of a constructor with two parameters
-		/// </summary>
-		/// <param name="firstParamName"></param>
-		/// <param name="firstParamType"></param>
-		/// <param name="secondParamName"></param>
-		/// <param name="secondParamType"></param>
-		public ConstructorDeclaration(string firstParamName, Type firstParamType, string secondParamName, Type secondParamType)
-		{
-			DeclaradParameters = new Dictionary<string, Type>()
-			{
-				{firstParamName, firstParamType },
-				{secondParamName, secondParamType},
-			};
-		}
-
-		/// <summary>
-		/// Constructor for a declaration of a constructor with three parameters
-		/// </summary>
-		/// <param name="firstParamName"></param>
-		/// <param name="firstParamType"></param>
-		/// <param name="secondParamName"></param>
-		/// <param name="secondParamType"></param>
-		/// <param name="thirdParamName"></param>
-		/// <param name="thirdParamType"></param>
-		public ConstructorDeclaration(string firstParamName, Type firstParamType, string secondParamName, Type secondParamType,
-			string thirdParamName, Type thirdParamType)
-		{
-			DeclaradParameters = new Dictionary<string, Type>()
-			{
-				{firstParamName, firstParamType },
-				{secondParamName, secondParamType},
-				{thirdParamName, thirdParamType },
-			};
-		}
-
-		/// <summary>
-		/// Constructor for a declaration of a constructor with four parameters
-		/// </summary>
-		/// <param name="firstParamName"></param>
-		/// <param name="firstParamType"></param>
-		/// <param name="secondParamName"></param>
-		/// <param name="secondParamType"></param>
-		/// <param name="thirdParamName"></param>
-		/// <param name="thirdParamType"></param>
-		/// <param name="fourthParamName"></param>
-		/// <param name="fourthParamType"></param>
-		public ConstructorDeclaration(string firstParamName, Type firstParamType, string secondParamName, Type secondParamType,
-			string thirdParamName, Type thirdParamType, string fourthParamName, Type fourthParamType)
-		{
-			DeclaradParameters = new Dictionary<string, Type>()
-			{
-				{firstParamName, firstParamType },
-				{secondParamName, secondParamType},
-				{thirdParamName, thirdParamType },
-				{fourthParamName, fourthParamType},
-			};
+			Parameters = types ?? throw new ArgumentNullException(nameof(types));
 		}
 
 		#endregion
@@ -100,9 +36,9 @@ namespace ECAT.Core
 		#region Internal properties
 
 		/// <summary>
-		/// Parameters of this constructor declaration
+		/// Parameters defining this constructor declaration (in that particular order)
 		/// </summary>
-		internal IEnumerable<KeyValuePair<string, Type>> DeclaradParameters { get; }
+		internal IEnumerable<Type> Parameters { get; }
 
 		#endregion
 	}
