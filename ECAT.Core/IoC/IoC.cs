@@ -81,7 +81,36 @@ namespace ECAT.Core
 			// Cast it to IIoCRegistartionModule
 			Cast<IIoCRegistartionModule>().
 			// Call Register method on each
-			ForEach((module) => module.Register(builder));			
+			ForEach((module) => module.Register(builder));
+
+		/// <summary>
+		/// Checks whether all types marked with <see cref="NecessaryService"/> attribute are available in the
+		/// <paramref name="container"/>
+		/// </summary>
+		/// <param name="container"></param>
+		/// <param name="types"></param>
+		/// <returns></returns>
+		private static IEnumerable<Type> FindUnregisteredServices(this IContainer container, IEnumerable<Type> types) => types.
+			// Get all types that notify that they want to be registered
+			Where((type) => Attribute.IsDefined(type, typeof(NecessaryService))).
+			// And check if each of them is registered
+			Where((type) => !container.IsRegistered(type));
+
+		/// <summary>
+		/// Checks whether all <paramref name="types"/> marked with <see cref="NecessaryService"/> attribute are available in the
+		/// <paramref name="container"/>, if not throws an exception with detailed information.
+		/// </summary>
+		/// <param name="container"></param>
+		/// <exception cref="ServicesUnregisteredException"></exception>
+		private static void CheckContainerIntegrity(this IContainer container, IEnumerable<Type> types)
+		{
+			var unregisteredServices = Container.FindUnregisteredServices(types);
+
+			if (unregisteredServices.Count() > 0)
+			{
+				throw new ServicesUnregisteredException(unregisteredServices);
+			}
+		}
 
 		#endregion
 
@@ -114,9 +143,12 @@ namespace ECAT.Core
 
 			// Register instances
 			builder.RegisterInstances(types);
-			
+
 			// Build the container
 			Container = builder.Build();
+
+			// Check integrity (if all types are registered, etc.)
+			Container.CheckContainerIntegrity(types);
 		}
 
 		/// <summary>
