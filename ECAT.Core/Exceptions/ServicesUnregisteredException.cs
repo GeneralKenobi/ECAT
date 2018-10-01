@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ECAT.Core.Exceptions
+namespace ECAT.Core
 {
 	/// <summary>
 	/// Exception thrown when an interface marked with <see cref="NecessaryService"/> attribute was not registered with <see cref="IoC"/>
