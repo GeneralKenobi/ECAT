@@ -9,5 +9,5 @@ namespace ECAT.Core
 	/// some service cannot be resolved.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Interface, AllowMultiple = false, Inherited = false)]
-	public class MandatoryInterfaceRegistration : Attribute { }
+	public class NecessaryService : Attribute { }
 }
