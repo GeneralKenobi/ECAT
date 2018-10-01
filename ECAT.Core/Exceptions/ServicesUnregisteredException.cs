@@ -1,0 +1,39 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace ECAT.Core.Exceptions
+{
+	/// <summary>
+	/// Exception thrown when an interface marked with <see cref="NecessaryService"/> attribute was not registered with <see cref="IoC"/>
+	/// </summary>
+	internal class ServicesUnregisteredException : Exception
+    {
+		#region Constructors
+
+		/// <summary>
+		/// Default constructor, requires parameter
+		/// </summary>
+		/// <param name="unregisteredServices">Services that were not registered with IoC, can't be null or empty</param>
+		public ServicesUnregisteredException(IEnumerable<Type> unregisteredServices)
+		{
+			if(unregisteredServices == null || unregisteredServices.Count() == 0)
+			{
+				throw new ArgumentException(nameof(unregisteredServices) + " can't be null or empty");
+			}
+
+			UnregisteredServices = unregisteredServices;
+		}
+
+		#endregion
+
+		#region Public properties
+
+		/// <summary>
+		/// Services that were not registered with IoC
+		/// </summary>
+		public IEnumerable<Type> UnregisteredServices { get; }
+
+		#endregion
+	}
+}
