@@ -34,6 +34,12 @@ namespace ECAT.Core.Exceptions
 		/// </summary>
 		public IEnumerable<Type> UnregisteredServices { get; }
 
+		/// <summary>
+		/// The error message that explains the reason for the exception
+		/// </summary>
+		public override string Message { get; } = "Not all interfaces marked with " + nameof(NecessaryService) +
+			" were registered with IoC, check " + nameof(UnregisteredServices) + " for list of missing services";
+
 		#endregion
 	}
 }
