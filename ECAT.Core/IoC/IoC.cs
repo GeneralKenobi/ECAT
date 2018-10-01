@@ -117,12 +117,11 @@ namespace ECAT.Core
 		#region Public static methods
 
 		/// <summary>
-		/// Builds the container, scans all assemblies in <paramref name="assemblies"/> for types marked with
-		/// <see cref="RegisterAsType"/> and <see cref="RegisterAsInstance"/>. Can only be built once. Each subsequent call to this
+		/// Builds the container, finds all types in <paramref name="types"/> marked with <see cref="RegisterAsType"/> and
+		/// <see cref="RegisterAsInstance"/> and registers them. Can only be built once. Each subsequent call to this
 		/// method won't do anything.
 		/// </summary>
-		/// <param name="assemblies">Assemblies to scan in search of types marked with <see cref="RegisterAsType"/> and
-		/// <see cref="RegisterAsInstance"/></param>
+		/// <param name="types">All types defined in ECAT assemblies that will be used in the app</param>
 		/// <exception cref="ArgumentNullException"></exception>
 		internal static void Build(IEnumerable<Type> types)
 		{
