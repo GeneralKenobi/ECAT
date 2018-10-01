@@ -6,8 +6,11 @@ namespace ECAT.Core
 	/// <summary>
 	/// Attribute used to mark what constructors should be available (this is enforceable by <see cref="IoC"/>) on a service
 	/// implementation. It can be considered as a guarantee that resolving a service with arguments matching this
-	/// <see cref="ConstructorDeclaration"/> won't fail due to no matching constructor.
+	/// <see cref="ConstructorDeclaration"/> won't fail due to no matching constructor. Every service is guaranteed to be resolvable
+	/// without any parameters unless <see cref="ConstructorDeclaration"/>s are specified and a parameterless
+	/// <see cref="ConstructorDeclaration"/> is not one of them (similarly to standard constructors).
 	/// </summary>
+	[AttributeUsage(AttributeTargets.Interface, AllowMultiple = true, Inherited = false)]
 	public class ConstructorDeclaration : Attribute
 	{
 		#region Constructors
