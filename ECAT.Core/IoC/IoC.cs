@@ -2,14 +2,17 @@
 using CSharpEnhanced.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace ECAT.Core
 {
 	/// <summary>
 	/// IoC provider. Register elements either using <see cref="RegisterAsType"/> and <see cref="RegisterAsInstance"/> attributes or
-	/// manually in classes implementing from <see cref="IIoCRegistartionModule"/>. All registered classes should have a public,
-	/// parameterless constructor (factory pattern is strongly recommended for construction with parameters).
+	/// manually in classes implementing from <see cref="IIoCRegistartionModule"/>. Availabilty is determined by presence of
+	/// <see cref="ConstructorDeclaration"/> parameter on each interface. Every service is guaranteed to be resolvable
+	/// without any parameters unless <see cref="ConstructorDeclaration"/>s are specified and a parameterless
+	/// <see cref="ConstructorDeclaration"/> is not one of them (similarly to standard constructors).
 	/// </summary>
 	public static class IoC
 	{
@@ -95,27 +98,99 @@ namespace ECAT.Core
 			Where((type) => Attribute.IsDefined(type, typeof(NecessaryService))).
 			// And check if each of them is registered
 			Where((type) => !container.IsRegistered(type));
+		
+		/// <summary>
+		/// Gets <see cref="ConstructorDeclaration"/>s from <paramref name="type"/>. Treats no declarations as a declaration of a
+		/// parameterless constructor. Projects the attributes to an enumeration (each element is a different constructor declaration)
+		/// of type enumerations (which corresponds to types of parameters for the constructor).
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		private static IEnumerable<IEnumerable<Type>> GetConstructorDeclarations(Type type) =>
+			// Check if the attribute is defined
+			Attribute.IsDefined(type, typeof(ConstructorDeclaration)) ?
+			// If so get all its instances
+			Attribute.GetCustomAttributes(type, typeof(ConstructorDeclaration)).
+			// Cast them to the proper type
+			Cast<ConstructorDeclaration>().
+			// Get their parameter types
+			Select((attribute) => attribute.Parameters) :
+			// If the parameter was not defined return a one-element array of an empty type enumeration
+			new IEnumerable<Type>[] { Enumerable.Empty<Type>() };
+
+		/// <summary>
+		/// Returns true if <paramref name="type"/> has a public constructor with given parameters
+		/// </summary>
+		/// <param name="type"></param>
+		/// <param name="parameters"></param>
+		/// <returns></returns>
+		private static bool HasPublicConstructor(this Type type, IEnumerable<Type> parameters)
+		{
+			// Try to get the matching constructor
+			var constructor = type.GetMatchingConstructor(parameters.ToArray());
+
+			// Return true if it was found (it's not null) and if it's public
+			return constructor != null && constructor.IsPublic;
+		}
+
+		/// <summary>
+		/// Returns a sequence of KeyValuePairs where key is a type which implements some services but doesn't implement all
+		/// constructors requested by them, value is a sequence of services that don't have the requested constructors implemented.
+		/// </summary>
+		/// <param name="container"></param>
+		/// <param name="types"></param>
+		/// <returns></returns>
+		private static IEnumerable<KeyValuePair<Type, IEnumerable<Type>>> FindServicesWithoutImplementedConstructors(
+			this IEnumerable<Type> types) => types.
+			// Get types that wanted to be registered as type
+			Where((type) => Attribute.IsDefined(type, typeof(RegisterAsType))).
+			// Project them to a dictionary
+			ToDictionary(
+				// Key is the type
+				(type) => type,
+				// Value is chosen as follows: Get the services the type wants to register as
+				(type) => (Attribute.GetCustomAttribute(type, typeof(RegisterAsType)) as RegisterAsType).Types.
+					// And get only those services whose at least one speicifed constructor isn't available
+					Where((service) => !GetConstructorDeclarations(service).
+						// Check each declaration using a helper method
+						All((declaration) => type.HasPublicConstructor(declaration)))).
+			// Finally filter out those entries from the dictionary that are false positives (their value sequence has no elements)
+			// They appear because if type implements all constructors for its all services then the filtering will return an empty
+			// sequence rather than omit it entirely
+			Where((x) => x.Value.Count() > 0);
+
 
 		/// <summary>
 		/// Checks whether all <paramref name="types"/> marked with <see cref="NecessaryService"/> attribute are available in the
 		/// <paramref name="container"/>, if not throws an exception with detailed information.
+		/// Checks whether all types implement all requested constructors from their services, throws an exception if it's not the case.
 		/// </summary>
 		/// <param name="container"></param>
 		/// <exception cref="ServicesUnregisteredException"></exception>
+		[Conditional("DEBUG")]
 		private static void CheckContainerIntegrity(this IContainer container, IEnumerable<Type> types)
 		{
+			// Check if all services were registered
 			var unregisteredServices = Container.FindUnregisteredServices(types);
 
 			if (unregisteredServices.Count() > 0)
 			{
 				throw new ServicesUnregisteredException(unregisteredServices);
 			}
+
+			// Check if all constructors were created
+			var typesMissingConstructors = FindServicesWithoutImplementedConstructors(types);
+
+			if(typesMissingConstructors.Count() > 0)
+			{
+				throw new ServicesWithMissingConstructorsException(typesMissingConstructors);
+			}
 		}
 
 		#endregion
 
 		#region Public static methods
-
+		
 		/// <summary>
 		/// Builds the container, finds all types in <paramref name="types"/> marked with <see cref="RegisterAsType"/> and
 		/// <see cref="RegisterAsInstance"/> and registers them. Can only be built once. Each subsequent call to this
