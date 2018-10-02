@@ -3,8 +3,9 @@
 	/// <summary>
 	/// Interface for factories of <see cref="ISignalInformation"/>
 	/// </summary>
+	[NecessaryService]
 	public interface ISignalInformationFactory
-    {
+	{
 		#region Methods
 
 		/// <summary>

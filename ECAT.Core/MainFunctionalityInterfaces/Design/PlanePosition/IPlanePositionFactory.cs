@@ -5,8 +5,9 @@ namespace ECAT.Core
 	/// <summary>
 	/// Factory of <see cref="IPlanePosition"/>
 	/// </summary>
+	[NecessaryService]
 	public interface IPlanePositionFactory
-    {
+	{
 		#region Properties
 
 		/// <summary>

@@ -4,6 +4,7 @@
 	/// Interface for a class providing unified display names of common quantities, eg. voltage.
 	/// Its purpose is to unify common strings related to quantities throught application.
 	/// </summary>
+	[NecessaryService]
 	public interface IQuantityNames
     {
 		#region Properties

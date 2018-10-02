@@ -3,6 +3,7 @@
 	/// <summary>
 	/// Interface for a class that acts as a logger of information on screen, for example to present current action
 	/// </summary>
+	[NecessaryService]
 	public interface IInfoLogger
 	{
 		#region Properties

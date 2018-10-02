@@ -5,6 +5,7 @@ namespace ECAT.Core
 	/// <summary>
 	/// Interface for factories of <see cref="ITimeDomainSignal"/>
 	/// </summary>
+	[NecessaryService]
 	public interface ITimeDomainSignalFactory : ISignalDataFactory<ITimeDomainSignal>
 	{
 		#region Methods

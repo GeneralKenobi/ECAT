@@ -6,6 +6,7 @@ namespace ECAT.Core
 	/// Interface for a class managing focus on components. Component is focused when, for example (it boils down to what UI will
 	/// deem as focus action but it can be generalized to), pointer is over the component or the component was tapped.
 	/// </summary>
+	[NecessaryService]
 	public interface IFocusManager
     {
 		#region Events

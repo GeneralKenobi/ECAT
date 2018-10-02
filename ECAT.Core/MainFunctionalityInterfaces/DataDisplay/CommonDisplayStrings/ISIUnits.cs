@@ -3,6 +3,7 @@
 	/// <summary>
 	/// Interface for a class containing information about untis for quantities. Its purpose is to unify units throught application.
 	/// </summary>
+	[NecessaryService]
 	public interface ISIUnits
     {
 		#region Properties

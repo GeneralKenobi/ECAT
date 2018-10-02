@@ -4,6 +4,7 @@
 	/// Base interface for factories of <see cref="ISignalData"/>s
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
+	[NecessaryService]
 	public interface ISignalDataFactory<T> : IFactoryParameterless<T>, IFactoryShallowCopying<T>
 		where T : ISignalData
     {

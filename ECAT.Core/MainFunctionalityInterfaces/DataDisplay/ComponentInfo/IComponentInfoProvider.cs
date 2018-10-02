@@ -5,6 +5,7 @@ namespace ECAT.Core
 	/// <summary>
 	/// Interface for a class providing component info to display
 	/// </summary>
+	[NecessaryService]
 	public interface IComponentInfoProvider : INotifyPropertyChanged
 	{
 		#region Properties

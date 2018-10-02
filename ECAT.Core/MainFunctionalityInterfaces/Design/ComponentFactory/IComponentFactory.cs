@@ -6,6 +6,7 @@ namespace ECAT.Core
 	/// <summary>
 	/// A Factory producing <see cref="IBaseComponent"/> 
 	/// </summary>
+	[NecessaryService]
 	public interface IComponentFactory
     {
 		#region Properties

@@ -6,6 +6,7 @@ namespace ECAT.Core
 	/// <summary>
 	/// Interface for factories of <see cref="IPhasorDomainSignal"/>
 	/// </summary>
+	[NecessaryService]
 	public interface IPhasorDomainSignalFactory : ISignalDataFactory<IPhasorDomainSignal>
     {
 		#region Methods

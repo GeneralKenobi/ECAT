@@ -6,6 +6,7 @@ namespace ECAT.Core
 	/// <summary>
 	/// Interface for a module responsible for simulation and circuit operation
 	/// </summary>
+	[NecessaryService]
 	public interface ISimulationManager : INotifyPropertyChanged
     {
 		#region Events

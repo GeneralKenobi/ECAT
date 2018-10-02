@@ -5,8 +5,9 @@ namespace ECAT.Core
 	/// <summary>
 	/// Interface for a class that defines default values for certain components (allowed ranges, fixed values, etc.)
 	/// </summary>
+	[NecessaryService]
 	public interface IDefaultValues
-    {
+	{
 		#region Properties
 
 		/// <summary>

@@ -3,8 +3,9 @@
 	/// <summary>
 	/// Interface for classes containing <see cref="ISignalDescription"/>s for common signals
 	/// </summary>
+	[NecessaryService]
 	public interface ICommonSignalDescriptions
-    {
+	{
 		#region Properties
 
 		/// <summary>

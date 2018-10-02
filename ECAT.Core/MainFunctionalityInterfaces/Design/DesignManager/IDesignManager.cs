@@ -6,6 +6,7 @@ namespace ECAT.Core
 	/// <summary>
 	/// Interface for design of a circuit
 	/// </summary>
+	[NecessaryService]
 	public interface IDesignManager : INotifyPropertyChanged
     {
 		#region Properties

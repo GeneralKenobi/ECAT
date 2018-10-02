@@ -3,6 +3,7 @@
 	/// <summary>
 	/// Interface for classes providing results from simulation
 	/// </summary>
+	[NecessaryService]
 	public interface ISimulationResultsProvider
 	{
 		#region Properties
