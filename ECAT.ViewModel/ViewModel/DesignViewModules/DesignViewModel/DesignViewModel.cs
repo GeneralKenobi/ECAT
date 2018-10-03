@@ -191,13 +191,13 @@ namespace ECAT.ViewModel
 				{
 					case AppState.AddingComponents:
 						{
-							AddComponent(IoC.Resolve<IPlanePositionFactory>().Construct(position));
+							AddComponent(IoC.Resolve<IPlanePosition>(position));
 						}
 						break;
 
 					case AppState.PlacingWire:
 						{
-							DesignManager.AddPointToPlacedWire(IoC.Resolve<IPlanePositionFactory>().Construct(position));
+							DesignManager.AddPointToPlacedWire(IoC.Resolve<IPlanePosition>(position));
 						}
 						break;
 
@@ -205,7 +205,7 @@ namespace ECAT.ViewModel
 						{
 							if(_PlaceLooseWireOnNextClick)
 							{
-								DesignManager.PlaceLooseWire(IoC.Resolve<IPlanePositionFactory>().Construct(position));
+								DesignManager.PlaceLooseWire(IoC.Resolve<IPlanePosition>(position));
 							}
 						} break;
 				}
