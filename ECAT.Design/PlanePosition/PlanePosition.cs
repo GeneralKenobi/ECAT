@@ -220,7 +220,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// All coordinates are rounded to multiples of this value
 		/// </summary>
-		public static double RoundTo { get; } = IoC.Resolve<IPlanePositionFactory>().RoundTo;
+		public static double RoundTo { get; } = IoC.Resolve<IDefaultValues>().RoundToCoordinates;
 
 		#endregion
 	}

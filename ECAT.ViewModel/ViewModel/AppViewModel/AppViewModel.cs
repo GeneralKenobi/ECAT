@@ -27,7 +27,7 @@ namespace ECAT.ViewModel
 		/// <summary>
 		/// All coordinates are rounded to multiples of this value
 		/// </summary>
-		public double RoundTo { get; } = IoC.Resolve<IPlanePositionFactory>().RoundTo;
+		public double RoundTo { get; } = IoC.Resolve<IDefaultValues>().RoundToCoordinates;
 		
 		/// <summary>
 		/// ViewModel related with circuit design functionalities

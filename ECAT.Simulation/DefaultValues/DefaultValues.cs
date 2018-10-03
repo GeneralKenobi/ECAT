@@ -13,6 +13,11 @@ namespace ECAT.Simulation
 		#region Public properties
 
 		/// <summary>
+		/// All coordinates are rounded to multiples of this value
+		/// </summary>
+		public double RoundToCoordinates { get; } = 50;
+
+		/// <summary>
 		/// A maximum value for parameters in the circuit (admittance, voltage source voltage, etc)
 		/// </summary>
 		public double MaximumParameterValue { get; } = _MaximumParameterValue;

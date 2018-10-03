@@ -11,6 +11,11 @@ namespace ECAT.Core
 		#region Properties
 
 		/// <summary>
+		/// All coordinates are rounded to multiples of this value
+		/// </summary>
+		double RoundToCoordinates { get; }
+
+		/// <summary>
 		/// A maximum value for parameters in the circuit (admittance, voltage source voltage, etc)
 		/// </summary>
 		double MaximumParameterValue { get; }
