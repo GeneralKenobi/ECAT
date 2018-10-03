@@ -7,6 +7,7 @@ namespace ECAT.Core
 	/// <summary>
 	/// Interface for a class acting as a coordinate
 	/// </summary>
+	[NecessaryService]
 	[ConstructorDeclaration]
 	[ConstructorDeclaration(new Type[] { typeof(double), typeof(double) }, "Absolute coordinate on X axis", "Absolute coordinate on Y axis")]
 	[ConstructorDeclaration(new Type[] { typeof(double), typeof(double), typeof(double), typeof(double) }, "Absolute coordinate on X axis", "Absolute coordinate on Y axis", "Shift relative to X axis", "Shift relative to Y axis")]

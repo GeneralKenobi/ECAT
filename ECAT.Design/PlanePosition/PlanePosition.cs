@@ -10,6 +10,7 @@ namespace ECAT.Design
 	/// <summary>
 	/// Position on a plane that can be shifted without losing the absolute center coordinate and rotated around it
 	/// </summary>
+	[RegisterAsType(typeof(IPlanePosition))]
 	public class PlanePosition : IPlanePosition
 	{
 		#region Constructors
