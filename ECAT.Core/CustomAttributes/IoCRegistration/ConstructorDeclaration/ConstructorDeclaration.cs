@@ -21,6 +21,13 @@ namespace ECAT.Core
 		public ConstructorDeclaration() : this(Array.Empty<Type>()) { }
 
 		/// <summary>
+		/// Constructor for a declaration of a constructor with one parameter
+		/// </summary>
+		/// <param name="type">Type of the single parameter</param>
+		/// <param name="description">Description of the argument</param>
+		public ConstructorDeclaration(Type type, string description) : this(new Type[] { type }, description) { }
+
+		/// <summary>
 		/// Constructor for a declaration of a constructor with parameters
 		/// </summary>
 		/// <param name="types">Types of parameters that should appear in the constructor (in that particular order)</param>
