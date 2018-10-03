@@ -45,12 +45,8 @@ namespace ECAT.Core
 		/// Returns an array of parameters
 		/// </summary>
 		/// <returns></returns>
-		public PositionParameter[] GetParameters()
-		{
-			int counter = 0;
-
-			return _StoredValues.Select((value) => new PositionParameter(counter++, value)).ToArray();
-		}
+		public PositionParameter[] GetParameters() =>
+			_StoredValues.Select((value, counter) => new PositionParameter(counter, value)).ToArray();
 
 		#endregion
 
