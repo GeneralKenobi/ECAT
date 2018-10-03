@@ -251,12 +251,8 @@ namespace ECAT.Core
 		/// <typeparam name="T"></typeparam>
 		/// <param name="parameters"></param>
 		/// <returns></returns>
-		public static T Resolve<T>(params object[] parameters)
-		{
-			int counter = 0;
-
-			return Container.Resolve<T>(parameters.Select((parameter) => new PositionParameter(counter++, parameter)));
-		}
+		public static T Resolve<T>(params object[] parameters) =>
+			Container.Resolve<T>(parameters.Select((parameter, counter) => new PositionParameter(counter, parameter)));
 
 		/// <summary>
 		/// Shortcut to BeginLifetimeScope method on <see cref="Container"/>
