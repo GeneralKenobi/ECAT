@@ -7,6 +7,11 @@ namespace ECAT.Core
 	/// <summary>
 	/// Interface for a class acting as a coordinate
 	/// </summary>
+	[ConstructorDeclaration]
+	[ConstructorDeclaration(new Type[] { typeof(double), typeof(double) }, "Absolute coordinate on X axis", "Absolute coordinate on Y axis")]
+	[ConstructorDeclaration(new Type[] { typeof(double), typeof(double), typeof(double), typeof(double) }, "Absolute coordinate on X axis", "Absolute coordinate on Y axis", "Shift relative to X axis", "Shift relative to Y axis")]
+	[ConstructorDeclaration(typeof(Complex), "Absolute coordinate")]
+	[ConstructorDeclaration(new Type[] { typeof(Complex), typeof(Complex) }, "Absolute coordinate", "Shift")]
 	public interface IPlanePosition : INotifyPropertyChanged
     {
 		#region Events
