@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Autofac.Core;
 using CSharpEnhanced.Helpers;
 using System;
 using System.Collections.Generic;
@@ -227,11 +228,35 @@ namespace ECAT.Core
 
 		/// <summary>
 		/// Calls and returns the result of <see cref="IoC.Container.Resolve{T}"/> (without getting a lifetime scope;
-		/// should be used on singletons or possibility of not being cleaned-up is not a problem)
+		/// should be used on singletons or when possibility of not being cleaned-up is not a problem)
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
 		public static T Resolve<T>() => Container.Resolve<T>();
+
+		/// <summary>
+		/// Calls and returns the result of Resolve with an array of parameters (without getting a lifetime scope;
+		/// should be used on singletons or when possibility of not being cleaned-up is not a problem)
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="parameters"></param>
+		/// <returns></returns>
+		public static T Resolve<T>(params Parameter[] parameters) => Container.Resolve<T>(parameters);
+
+		/// <summary>
+		/// Calls and returns the result of Resolve with an array of parameters that are transformed to <see cref="PositionParameter"/>s
+		/// where position is the position of parameter in <paramref name="parameters"/> array. It's done without getting a lifetime
+		/// scope; should be used on singletons or when possibility of not being cleaned-up is not a problem.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="parameters"></param>
+		/// <returns></returns>
+		public static T Resolve<T>(params object[] parameters)
+		{
+			int counter = 0;
+
+			return Container.Resolve<T>(parameters.Select((parameter) => new PositionParameter(counter++, parameter)));
+		}
 
 		/// <summary>
 		/// Shortcut to BeginLifetimeScope method on <see cref="Container"/>
