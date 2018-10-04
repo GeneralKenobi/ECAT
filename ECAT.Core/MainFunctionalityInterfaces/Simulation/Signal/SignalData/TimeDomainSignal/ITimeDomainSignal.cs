@@ -1,4 +1,5 @@
 ﻿using CSharpEnhanced.CoreInterfaces;
+using System;
 using System.Collections.Generic;
 
 namespace ECAT.Core
@@ -6,6 +7,11 @@ namespace ECAT.Core
 	/// <summary>
 	/// Interface for a signal calculated in time domain (based on instantenous values calculated for a specific time)
 	/// </summary>
+	[NecessaryService]
+	[ConstructorDeclaration]
+	[ConstructorDeclaration(typeof(ITimeDomainSignal), "Copy constructor")]
+	[ConstructorDeclaration(new Type[] { typeof(IEnumerable<double>), typeof(double)}, "Instantenous Values", "Time step", "Start time is equal to 0")]
+	[ConstructorDeclaration(new Type[] { typeof(IEnumerable<double>), typeof(double), typeof(double)}, "Instantenous Values", "Time step", "Start time")]
 	public interface ITimeDomainSignal : ISignalData, IShallowCopy<ITimeDomainSignal>
 	{
 		#region Properties
