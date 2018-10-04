@@ -165,18 +165,21 @@
 
 				<StackPanel.Resources>
 					<ResourceDictionary>
+
 						<ResourceDictionary.MergedDictionaries>
 							<ResourceDictionary Source="Templates/PhasorDomainSignalDataPresenterTemplate.xaml"/>
+							<ResourceDictionary Source="Templates/TimeDomainSignalDataPresenterTemplate.xaml"/>
 						</ResourceDictionary.MergedDictionaries>
 
-						<local:SignalDataToViewModelConverter x:Key="SignalDataConverter"/>
-					
-					
+						<local:SignalDataToViewModelConverter x:Key="SignalDataConverter"/>					
 
 						<xaml:TypeBasedDataTemplateSelector x:Key="SignalDataTemplateSelector">
 							<xaml:LazyTemplateTypeRule Template="{StaticResource PhasorDomainSignalDataTemplate}"
 								Type="{xaml:TypeResolver TypeName=ECAT.ViewModel.PhasorDomainSignalViewModel}"/>
+							<xaml:LazyTemplateTypeRule Template="{StaticResource TimeDomainSignalDataTemplate}"
+								Type="{xaml:TypeResolver TypeName=ECAT.ViewModel.TimeDomainSignalViewModel}"/>
 						</xaml:TypeBasedDataTemplateSelector>
+
 					</ResourceDictionary>
 				</StackPanel.Resources>
 
