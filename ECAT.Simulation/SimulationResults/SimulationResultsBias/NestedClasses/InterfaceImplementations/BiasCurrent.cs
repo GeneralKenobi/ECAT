@@ -41,7 +41,7 @@ namespace ECAT.Simulation
 					// Key stays the same
 					(x) => x.Key,
 					// Value is the signal and information based on it
-					(x) => Tuple.Create(x.Value, IoC.Resolve<ISignalInformationFactory>().Construct(x.Value, IoC.Resolve<ICommonSignalDescriptions>().Current)))
+					(x) => Tuple.Create(x.Value, IoC.Resolve<ISignalInformation>(x.Value, IoC.Resolve<ICommonSignalDescriptions>().Current)))
 					// If the null check above caught a null value, this operator will result in the exception being thrown
 					?? throw new ArgumentNullException(nameof(activeComponentCurrents)));				
 			}
@@ -94,7 +94,7 @@ namespace ECAT.Simulation
 					_Cache.Add(new Tuple<ITwoTerminal, bool>(component, voltageBA),
 						Tuple.Create(
 							signal,
-							IoC.Resolve<ISignalInformationFactory>().Construct(signal, IoC.Resolve<ICommonSignalDescriptions>().Current)));
+							IoC.Resolve<ISignalInformation>(signal, IoC.Resolve<ICommonSignalDescriptions>().Current)));
 				}
 			}
 

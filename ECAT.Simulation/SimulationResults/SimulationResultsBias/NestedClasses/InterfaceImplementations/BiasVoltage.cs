@@ -65,7 +65,7 @@ namespace ECAT.Simulation
 					_Cache.Add(new Tuple<int, int>(nodeAIndex, nodeBIndex),
 						Tuple.Create(
 							signal,
-							IoC.Resolve<ISignalInformationFactory>().Construct(signal, IoC.Resolve<ICommonSignalDescriptions>().Voltage)));
+							IoC.Resolve<ISignalInformation>(signal, IoC.Resolve<ICommonSignalDescriptions>().Voltage)));
 				}
 			}
 

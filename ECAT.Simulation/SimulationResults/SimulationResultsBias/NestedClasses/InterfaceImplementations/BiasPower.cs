@@ -59,7 +59,7 @@ namespace ECAT.Simulation
 			private void CachePower(IBaseComponent component, ISignalData power) =>
 				_Cache.Add(
 					component,
-					IoC.Resolve<ISignalInformationFactory>().Construct(power, IoC.Resolve<ICommonSignalDescriptions>().Power));
+					IoC.Resolve<ISignalInformation>(power, IoC.Resolve<ICommonSignalDescriptions>().Power));
 
 			/// <summary>
 			/// Returns true if power for <paramref name="resistor"/> can be obtained from <see cref="_Cache"/>
