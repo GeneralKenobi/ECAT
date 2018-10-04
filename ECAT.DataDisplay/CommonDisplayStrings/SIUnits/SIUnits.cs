@@ -49,7 +49,17 @@ namespace ECAT.DataDisplay
 		/// Shortened name of frequency unit
 		/// </summary>
 		public string FrequencyShort { get; } = "Hz";
+		
+		/// <summary>
+		/// Full name of time unit
+		/// </summary>
+		public string Time { get; } = "Second";
 
+		/// <summary>
+		/// Shortened name of time unit
+		/// </summary>
+		public string TimeShort { get; } = "s";
+		
 		#endregion
 	}
 }

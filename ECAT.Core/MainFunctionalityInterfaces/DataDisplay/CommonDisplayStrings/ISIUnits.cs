@@ -47,6 +47,16 @@
 		/// Shortened name of frequency unit
 		/// </summary>
 		string FrequencyShort { get; }
+		
+		/// <summary>
+		/// Full name of time unit
+		/// </summary>
+		string Time { get; }
+
+		/// <summary>
+		/// Shortened name of time unit
+		/// </summary>
+		string TimeShort { get; }
 
 		#endregion
 	}
