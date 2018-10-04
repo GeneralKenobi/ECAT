@@ -155,7 +155,6 @@ namespace ECAT.Core
 			// sequence rather than omit it entirely
 			Where((x) => x.Value.Count() > 0);
 
-
 		/// <summary>
 		/// Checks whether all <paramref name="types"/> marked with <see cref="NecessaryService"/> attribute are available in the
 		/// <paramref name="container"/>, if not throws an exception with detailed information.
