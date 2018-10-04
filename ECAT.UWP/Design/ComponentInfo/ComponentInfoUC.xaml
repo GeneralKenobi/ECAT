@@ -164,30 +164,20 @@
 				Margin="10 5 0 0">
 
 				<StackPanel.Resources>
-					<local:SignalDataToViewModelConverter x:Key="SignalDataConverter"/>
+					<ResourceDictionary>
+						<ResourceDictionary.MergedDictionaries>
+							<ResourceDictionary Source="Templates/PhasorDomainSignalDataPresenterTemplate.xaml"/>
+						</ResourceDictionary.MergedDictionaries>
 
-					<DataTemplate x:Key="PhasorDomainSignalDataTemplate">
-						<controls:ItemsContainer FlowDirection="TopToBottom"
-							ItemsSource="{Binding DisplayText}"
-							HorizontalAlignment="Left">
+						<local:SignalDataToViewModelConverter x:Key="SignalDataConverter"/>
+					
+					
 
-							<controls:ItemsContainer.ItemTemplate>
-								<DataTemplate>
-									<!-- Each item is simply a line of text shown by a TextBlock -->
-									<TextBlock Text="{Binding }"
-										Foreground="{StaticResource BlackBrush}"
-										FontSize="{StaticResource FontSizeRegular}"
-										HorizontalTextAlignment="Left"/>
-								</DataTemplate>
-							</controls:ItemsContainer.ItemTemplate>
-
-						</controls:ItemsContainer>
-					</DataTemplate>
-
-					<xaml:TypeBasedDataTemplateSelector x:Key="SignalDataTemplateSelector">
-						<xaml:LazyTemplateTypeRule Template="{StaticResource PhasorDomainSignalDataTemplate}"
-							Type="{xaml:TypeResolver TypeName=ECAT.ViewModel.PhasorDomainSignalViewModel}"/>
-					</xaml:TypeBasedDataTemplateSelector>
+						<xaml:TypeBasedDataTemplateSelector x:Key="SignalDataTemplateSelector">
+							<xaml:LazyTemplateTypeRule Template="{StaticResource PhasorDomainSignalDataTemplate}"
+								Type="{xaml:TypeResolver TypeName=ECAT.ViewModel.PhasorDomainSignalViewModel}"/>
+						</xaml:TypeBasedDataTemplateSelector>
+					</ResourceDictionary>
 				</StackPanel.Resources>
 
 				<controls:ItemsContainer FlowDirection="TopToBottom"
