@@ -1,10 +1,13 @@
 ﻿using CSharpEnhanced.CoreInterfaces;
+using System;
 
 namespace ECAT.Core
 {
 	/// <summary>
 	/// Interface for classes presenting information about some <see cref="ISignalData"/>
 	/// </summary>
+	[NecessaryService]
+	[ConstructorDeclaration(new Type[] { typeof(ISignalData), typeof(ISignalDescription)}, "Data", "Description")]
 	public interface ISignalInformation : IDeepCopy<ISignalInformation>
 	{
 		#region Properties

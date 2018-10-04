@@ -7,6 +7,7 @@ namespace ECAT.Simulation
 	/// <summary>
 	/// Standard implementation of <see cref="ISignalInformation"/>, presents information about a signal - voltage drop or current flow		
 	/// </summary>
+	[RegisterAsType(typeof(ISignalInformation))]
 	public class SignalInformation : ISignalInformation
 	{
 		#region Constructors
