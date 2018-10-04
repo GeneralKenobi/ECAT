@@ -134,7 +134,7 @@ namespace ECAT.Simulation
 				var nodeB = _Nodes.First((node) => node.Index == nodeBIndex);
 
 				// Construct the result
-				var result = IoC.Resolve<IPhasorDomainSignalFactory>().Construct(nodeB.DCPotential.Value - nodeA.DCPotential.Value,
+				var result = IoC.Resolve<IPhasorDomainSignal>(nodeB.DCPotential.Value - nodeA.DCPotential.Value,
 					GetACWaveforms(nodeA.ACPotentials, nodeB.ACPotentials));
 
 				// Cache it

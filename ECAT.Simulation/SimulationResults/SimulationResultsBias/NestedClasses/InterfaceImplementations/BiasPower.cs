@@ -82,7 +82,7 @@ namespace ECAT.Simulation
 				{
 					// If successful, create a new power signal based on it, cache it
 					CachePower(resistor, 
-						IoC.Resolve<IPhasorDomainSignalFactory>().Construct(
+						IoC.Resolve<IPhasorDomainSignal>(
 						Math.Pow(voltageDrop.DC, 2) / resistor.Resistance,
 						voltageDrop.Phasors.
 						Select((v) => new KeyValuePair<double, Complex>(v.Key, Complex.Pow(v.Value, 2) / resistor.Resistance))));

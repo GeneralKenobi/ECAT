@@ -149,7 +149,7 @@ namespace ECAT.Simulation
 				if (_VoltageDrops.TryGet(element, out var voltageDrop, voltageBA))
 				{
 					// If successful, create a new current signal based on it, cache it
-					CacheCurrent(IoC.Resolve<IPhasorDomainSignalFactory>().Construct(
+					CacheCurrent(IoC.Resolve<IPhasorDomainSignal>(
 							GetPassiveTwoTerminalDCCurrent(voltageDrop, element),
 							GetPassiveTwoTerminalACCurrentPhasors(voltageDrop, element)),
 						element, voltageBA);
