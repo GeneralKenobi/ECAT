@@ -20,13 +20,22 @@ namespace ECAT.Simulation
 		public TimeDomainSignal() { }
 
 		/// <summary>
+		/// Constructor with parameters, start time is considered 0
+		/// </summary>
+		/// <param name="instantenousValues">Values occuring at specific time moments, can'be be null</param>
+		/// <param name="timeStep">Time step between two subsequent values</param>
+		/// <exception cref="ArgumentNullException"></exception>
+		public TimeDomainSignal(IEnumerable<double> instantenousValues, double timeStep)
+			: this(instantenousValues, timeStep, 0) { }
+
+		/// <summary>
 		/// Constructor with parameters
 		/// </summary>
 		/// <param name="instantenousValues">Values occuring at specific time moments, can'be be null</param>
 		/// <param name="timeStep">Time step between two subsequent values</param>
 		/// <param name="startTime">Start time of the signal</param>
 		/// <exception cref="ArgumentNullException"></exception>
-		public TimeDomainSignal(IEnumerable<double> instantenousValues, double timeStep, double startTime = 0)
+		public TimeDomainSignal(IEnumerable<double> instantenousValues, double timeStep, double startTime)
 		{
 			InstantenousValues = instantenousValues ?? throw new ArgumentNullException(nameof(instantenousValues));
 			TimeStep = timeStep;
