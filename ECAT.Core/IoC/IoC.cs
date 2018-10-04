@@ -125,14 +125,9 @@ namespace ECAT.Core
 		/// <param name="type"></param>
 		/// <param name="parameters"></param>
 		/// <returns></returns>
-		private static bool HasPublicConstructor(this Type type, IEnumerable<Type> parameters)
-		{
-			// Try to get the matching constructor
-			var constructor = type.GetMatchingConstructor(parameters.ToArray());
-
-			// Return true if it was found (it's not null) and if it's public
-			return constructor != null && constructor.IsPublic;
-		}
+		private static bool HasPublicConstructor(this Type type, IEnumerable<Type> parameters) =>
+			// Try to get the matching constructor (only public constructors are returned), check if it succeeded (not null)
+			type.GetConstructor(parameters.ToArray()) != null;
 
 		/// <summary>
 		/// Returns a sequence of KeyValuePairs where key is a type which implements some services but doesn't implement all
