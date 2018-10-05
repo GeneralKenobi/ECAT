@@ -1,4 +1,5 @@
-﻿using ECAT.Core;
+﻿using CSharpEnhanced.CoreClasses;
+using ECAT.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,6 +50,17 @@ namespace ECAT.Simulation
 			/// Start time of the simulation
 			/// </summary>
 			private double _StartTime { get; }
+
+			/// <summary>
+			/// Dictionary holding already computed voltage drops. Ints in key tuple are indexes of nodes (Item1 for the first node
+			/// (reference node) and Item2 for the second node (target node)). First item in value is <see cref="PhasorDomainSignal"/>
+			/// representing the voltage drop, second one is an <see cref="SignalInformation"/> built based on Item1.
+			/// </summary>
+			private Dictionary<Tuple<int, int>, Tuple<ITimeDomainSignal, ISignalInformation>> _Cache { get; } =
+				new Dictionary<Tuple<int, int>, Tuple<ITimeDomainSignal, ISignalInformation>>(
+					new CustomEqualityComparer<Tuple<int, int>>(
+					// Compare the elements of the Tuples, not tuples themselves
+					(x, y) => x.Item1 == y.Item1 && x.Item2 == y.Item2));
 
 			#endregion
 
