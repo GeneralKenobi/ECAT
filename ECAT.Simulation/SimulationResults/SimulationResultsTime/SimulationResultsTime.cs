@@ -5,7 +5,7 @@ namespace ECAT.Simulation
 	/// <summary>
 	/// Manages results of time domain simulations
 	/// </summary>
-	public class SimulationResultsTime : ISimulationResults
+	public partial class SimulationResultsTime : ISimulationResults
 	{
 		#region Properties
 
