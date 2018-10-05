@@ -7,7 +7,7 @@ namespace ECAT.Simulation
 	/// </summary>
 	public partial class SimulationResultsTime : ISimulationResults
 	{
-		#region Properties
+		#region Public properties
 
 		/// <summary>
 		/// Contains information about power, guaranteed to be not null
