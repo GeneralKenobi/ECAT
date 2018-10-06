@@ -61,17 +61,6 @@ namespace ECAT.Core
 		}
 
 		/// <summary>
-		/// AC potentials present at the node with respect to ground. Item1 (double) refers
-		/// to the frequency of the source generating the potential and Item2 (Complex) to the value of the potential.
-		/// </summary>		
-		public IDictionary<double, Complex> ACPotentials { get; } = new Dictionary<double, Complex>();
-
-		/// <summary>
-		/// The DC potential of the node with respect to ground
-		/// </summary>
-		public RefWrapper<double> DCPotential { get; } = new RefWrapper<double>();
-
-		/// <summary>
 		/// List with all components that are connected to the <see cref="INode"/>
 		/// </summary>
 		public List<IBaseComponent> ConnectedComponents { get; set; } = new List<IBaseComponent>();
