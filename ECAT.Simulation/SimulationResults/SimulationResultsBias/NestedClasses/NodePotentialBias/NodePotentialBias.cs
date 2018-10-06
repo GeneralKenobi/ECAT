@@ -10,7 +10,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Class used to store potential on a node after bias simulation
 		/// </summary>
-		[RegisterAsType(typeof(INodePotentialBias))]
+		[RegisterAsType(typeof(INodePotentialBias), typeof(INodePotentialBiasControl))]
 		private class NodePotentialBias : INodePotentialBiasControl
 		{
 			#region Constructors
