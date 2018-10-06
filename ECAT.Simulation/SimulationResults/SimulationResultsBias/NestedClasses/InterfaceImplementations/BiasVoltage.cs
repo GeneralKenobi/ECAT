@@ -22,9 +22,14 @@ namespace ECAT.Simulation
 			/// </summary>
 			/// <param name="nodes">Nodes using which voltage drops will be calculated, can't be null</param>
 			/// <exception cref="ArgumentNullException"></exception>
-			public BiasVoltage(IEnumerable<INode> nodes)
+			public BiasVoltage(IEnumerable<KeyValuePair<INode, INodePotentialBias>> nodes)
 			{
-				_Nodes = new List<INode>(nodes ?? throw new ArgumentNullException(nameof(nodes)));
+				if(nodes == null)
+				{
+					throw new ArgumentNullException(nameof(nodes));
+				}
+
+				_Nodes = nodes.ToDictionary((x) => x.Key, (x) => x.Value);
 			}
 
 			#endregion
@@ -34,7 +39,7 @@ namespace ECAT.Simulation
 			/// <summary>
 			/// List with all nodes upon which specific results are calculated
 			/// </summary>
-			private List<INode> _Nodes { get; }
+			private Dictionary<INode, INodePotentialBias> _Nodes { get; }
 
 			/// <summary>
 			/// Dictionary holding already computed voltage drops. Ints in key tuple are indexes of nodes (Item1 for the first node
@@ -130,15 +135,15 @@ namespace ECAT.Simulation
 			private IPhasorDomainSignal ConstructVoltageDrop(int nodeAIndex, int nodeBIndex)
 			{
 				// Get the nodes
-				var nodeA = _Nodes.First((node) => node.Index == nodeAIndex);
-				var nodeB = _Nodes.First((node) => node.Index == nodeBIndex);
+				var nodeA = _Nodes.First((node) => node.Key.Index == nodeAIndex).Value;
+				var nodeB = _Nodes.First((node) => node.Key.Index == nodeBIndex).Value;
 
 				// Construct the result
-				var result = IoC.Resolve<IPhasorDomainSignal>(nodeB.DCPotential.Value - nodeA.DCPotential.Value,
-					GetACWaveforms(nodeA.ACPotentials, nodeB.ACPotentials));
+				var result = IoC.Resolve<IPhasorDomainSignal>(nodeB.DC - nodeA.DC,
+					GetACWaveforms(nodeA.Phasors, nodeB.Phasors));
 
 				// Cache it
-				CacheVoltageDrop(result, nodeA.Index, nodeB.Index);
+				CacheVoltageDrop(result, nodeAIndex, nodeBIndex);
 
 				// Return it
 				return result;
@@ -178,7 +183,7 @@ namespace ECAT.Simulation
 			/// </summary>
 			/// <param name="index"></param>
 			/// <returns></returns>
-			private bool NodeExists(int index) => _Nodes.Exists((node) => node.Index == index);
+			private bool NodeExists(int index) => _Nodes.Keys.First((node) => node.Index == index) != null;
 
 			#endregion
 
