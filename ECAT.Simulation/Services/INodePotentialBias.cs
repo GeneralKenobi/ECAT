@@ -10,7 +10,7 @@ namespace ECAT.Simulation
 	/// </summary>
 	[NecessaryService]
 	[ConstructorDeclaration(new Type[] { typeof(double), typeof(IDictionary<double, Complex>)}, "DC", "AC Phasors")]
-	internal interface INodePotentialBias
+	public interface INodePotentialBias
     {
 		#region Properties
 
