@@ -26,7 +26,7 @@ namespace ECAT.Core
 		/// <summary>
 		/// List with phasors adding to the signal
 		/// </summary>
-		IEnumerable<KeyValuePair<double, Complex>> Phasors { get; }
+		IDictionary<double, Complex> Phasors { get; }
 
 		/// <summary>
 		/// The type of the signal

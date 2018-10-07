@@ -88,7 +88,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// List with phasors adding to the signal
 		/// </summary>
-		public IEnumerable<KeyValuePair<double, Complex>> Phasors => _Phasors;
+		public IDictionary<double, Complex> Phasors => _Phasors;
 
 		/// <summary>
 		/// Object capable of calculating characteristic values for this <see cref="ISignalData"/>
