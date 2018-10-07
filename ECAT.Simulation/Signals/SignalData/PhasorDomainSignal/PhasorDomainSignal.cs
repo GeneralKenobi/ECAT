@@ -71,12 +71,12 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// DC component of the signal
 		/// </summary>
-		public double DC { get; set; }
+		public double DC { get; protected set; }
 
 		/// <summary>
 		/// List with phasors adding to the signal
 		/// </summary>
-		public IEnumerable<KeyValuePair<double, Complex>> Phasors { get; set; } = Enumerable.Empty<KeyValuePair<double, Complex>>();
+		public IEnumerable<KeyValuePair<double, Complex>> Phasors { get; protected set; } = Enumerable.Empty<KeyValuePair<double, Complex>>();
 
 		/// <summary>
 		/// Object capable of calculating characteristic values for this <see cref="ISignalData"/>
