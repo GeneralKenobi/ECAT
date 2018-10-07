@@ -1,4 +1,5 @@
 ﻿using CSharpEnhanced.CoreInterfaces;
+using CSharpEnhanced.Helpers;
 using ECAT.Core;
 using System;
 using System.Collections.Generic;
@@ -48,7 +49,8 @@ namespace ECAT.Simulation
 		/// <exception cref="ArgumentNullException"></exception>
 		public PhasorDomainSignal(IEnumerable<KeyValuePair<double, Complex>> phasors) : this()
 		{
-			Phasors = phasors ?? throw new ArgumentNullException(nameof(phasors));
+			_Phasors = new Dictionary<double, Complex>(phasors?.ToDictionary((x) => x.Key, (x) => x.Value) ??
+				throw new ArgumentNullException(nameof(phasors)));
 		}
 
 		/// <summary>
@@ -61,8 +63,18 @@ namespace ECAT.Simulation
 		public PhasorDomainSignal(double dc, IEnumerable<KeyValuePair<double, Complex>> phasors) : this()
 		{
 			DC = dc;
-			Phasors = phasors ?? throw new ArgumentNullException(nameof(phasors));
+			_Phasors = new Dictionary<double, Complex>(phasors?.ToDictionary((x) => x.Key, (x) => x.Value) ??
+				throw new ArgumentNullException(nameof(phasors)));
 		}
+
+		#endregion
+
+		#region Protected properties
+
+		/// <summary>
+		/// Backing store for <see cref="Phasors"/>
+		/// </summary>
+		protected Dictionary<double, Complex> _Phasors { get; } = new Dictionary<double, Complex>();
 
 		#endregion
 
@@ -76,7 +88,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// List with phasors adding to the signal
 		/// </summary>
-		public IEnumerable<KeyValuePair<double, Complex>> Phasors { get; protected set; } = Enumerable.Empty<KeyValuePair<double, Complex>>();
+		public IEnumerable<KeyValuePair<double, Complex>> Phasors => _Phasors;
 
 		/// <summary>
 		/// Object capable of calculating characteristic values for this <see cref="ISignalData"/>
@@ -144,7 +156,10 @@ namespace ECAT.Simulation
 			}
 
 			DC = obj.DC;
-			Phasors = obj.Phasors;
+
+			// Clear the phasors and add obj's elements to it
+			_Phasors.Clear();
+			obj.Phasors.ForEach((x) => _Phasors.Add(x.Key, x.Value));
 		}
 
 		/// <summary>
