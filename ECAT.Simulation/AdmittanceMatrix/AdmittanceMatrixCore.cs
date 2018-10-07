@@ -160,6 +160,8 @@ namespace ECAT.Simulation
 
 		#region Protected properties
 
+		protected IList<INode> Nodes => _Nodes;
+
 		/// <summary>
 		/// List with all AC frequencies present in the circuit (DC is present by default and is not included in this list)
 		/// </summary>
@@ -267,7 +269,7 @@ namespace ECAT.Simulation
 			_Nodes.ForEach((node) =>
 			{
 				// Clear the potentials collection
-				node.ACPotentials.Clear();
+				//node.ACPotentials.Clear();
 			});
 
 			// Find, assign and remove the reference (ground) nodes
@@ -629,72 +631,72 @@ namespace ECAT.Simulation
 
 		#region Result assigning
 
-		/// <summary>
-		/// Assigns the results - potentials to nodes and currents to voltage sources for AC simulation
-		/// </summary>
-		/// <param name="result"></param>
-		private void AssignACResults(Complex[] result, double frequency)
-		{
-			// Assign the node potentials (entries from 0 to the number of nodes - 1)
-			for (int i = 0; i < _BigDimension; ++i)
-			{
-				_Nodes[i].ACPotentials.Add(frequency, result[i]);
-			}
+		///// <summary>
+		///// Assigns the results - potentials to nodes and currents to voltage sources for AC simulation
+		///// </summary>
+		///// <param name="result"></param>
+		//private void AssignACResults(Complex[] result, double frequency)
+		//{
+		//	// Assign the node potentials (entries from 0 to the number of nodes - 1)
+		//	for (int i = 0; i < _BigDimension; ++i)
+		//	{
+		//		_Nodes[i].ACPotentials.Add(frequency, result[i]);
+		//	}
 
-			// Assign current to AC voltage sources
-			for (int i = 0; i < ACVoltageSourcesCount; ++i)
-			{
-				// For the current indexed with i-th ac voltage source's ActiveComponentIndex
-				_ActiveComponentsCurrents[_ACVoltageSources[i].ActiveComponentIndex].Phasors =
-					// Concat its ComposingPhasors
-					_ActiveComponentsCurrents[_ACVoltageSources[i].ActiveComponentIndex].Phasors.Concat(
-						// With new value: take the frequency and i-th (plus number of DC voltage sources and number of nodes) result
-						// (AC voltage sources' currents are after node voltages and DC voltage sources' currents in the result array)
-						new KeyValuePair<double, Complex>(frequency, result[i + _DCVoltageSourcesCount + _BigDimension]));
-			}
+		//	// Assign current to AC voltage sources
+		//	for (int i = 0; i < ACVoltageSourcesCount; ++i)
+		//	{
+		//		// For the current indexed with i-th ac voltage source's ActiveComponentIndex
+		//		_ActiveComponentsCurrents[_ACVoltageSources[i].ActiveComponentIndex].Phasors =
+		//			// Concat its ComposingPhasors
+		//			_ActiveComponentsCurrents[_ACVoltageSources[i].ActiveComponentIndex].Phasors.Concat(
+		//				// With new value: take the frequency and i-th (plus number of DC voltage sources and number of nodes) result
+		//				// (AC voltage sources' currents are after node voltages and DC voltage sources' currents in the result array)
+		//				new KeyValuePair<double, Complex>(frequency, result[i + _DCVoltageSourcesCount + _BigDimension]));
+		//	}
 
-			// Assign current to op-amps voltage sources
-			for (int i = 0; i < OpAmpsCount; ++i)
-			{
-				// For the current indexed with i-th op-amp's ActiveComponentIndex
-				_ActiveComponentsCurrents[_OpAmps[i].ActiveComponentIndex].Phasors =
-					// Concat its ComposingPhasors
-					_ActiveComponentsCurrents[_OpAmps[i].ActiveComponentIndex].Phasors.Concat(
-						// With new value: take the frequency and i-th (plus number of voltage sources and number of nodes) result
-						// (Op-Amp currents are after node voltages and voltage source currents in the result array)
-						new KeyValuePair<double, Complex>(frequency, result[i + _TotalVoltageSourcesCount + _BigDimension]));
-			}
-		}
+		//	// Assign current to op-amps voltage sources
+		//	for (int i = 0; i < OpAmpsCount; ++i)
+		//	{
+		//		// For the current indexed with i-th op-amp's ActiveComponentIndex
+		//		_ActiveComponentsCurrents[_OpAmps[i].ActiveComponentIndex].Phasors =
+		//			// Concat its ComposingPhasors
+		//			_ActiveComponentsCurrents[_OpAmps[i].ActiveComponentIndex].Phasors.Concat(
+		//				// With new value: take the frequency and i-th (plus number of voltage sources and number of nodes) result
+		//				// (Op-Amp currents are after node voltages and voltage source currents in the result array)
+		//				new KeyValuePair<double, Complex>(frequency, result[i + _TotalVoltageSourcesCount + _BigDimension]));
+		//	}
+		//}
 
-		/// <summary>
-		/// Assigns the results - potentials to nodes and currents to voltage sources for DC simulation
-		/// </summary>
-		/// <param name="result"></param>
-		private void AssignDCResults(Complex[] result)
-		{
-			// Assign the node potentials (entries from 0 to the number of nodes - 1)
-			for (int i = 0; i < _BigDimension; ++i)
-			{
-				_Nodes[i].DCPotential.Value = result[i].Real;
-			}
+		///// <summary>
+		///// Assigns the results - potentials to nodes and currents to voltage sources for DC simulation
+		///// </summary>
+		///// <param name="result"></param>
+		//private void AssignDCResults(Complex[] result)
+		//{
+		//	// Assign the node potentials (entries from 0 to the number of nodes - 1)
+		//	for (int i = 0; i < _BigDimension; ++i)
+		//	{
+		//		_Nodes[i].DCPotential.Value = result[i].Real;
+		//	}
 
-			// Assign current to DC voltage sources
-			for(int i=0; i< DCVoltageSourcesCount; ++i)
-			{
-				// DC voltage source currents are right after node potentials in result array so add number of nodes to i)
-				_ActiveComponentsCurrents[_DCVoltageSources[i].ActiveComponentIndex].DC = result[i + _BigDimension].Real;
-			}
+		//	// Assign current to DC voltage sources
+		//	for(int i=0; i< DCVoltageSourcesCount; ++i)
+		//	{
+		//		// DC voltage source currents are right after node potentials in result array so add number of nodes to i)
+		//		_ActiveComponentsCurrents[_DCVoltageSources[i].ActiveComponentIndex].DC = result[i + _BigDimension].Real;
+		//	}
 
-			// Assign current to op-amps voltage sources
-			for (int i = 0; i < OpAmpsCount; ++i)
-			{
-				// For the current indexed with i-th op-amp's ActiveComponentIndex
-				_ActiveComponentsCurrents[_OpAmps[i].ActiveComponentIndex].DC =
-					// Assign it to DC (i-th plus number of nodes and number of voltage sources) result
-					// (Op-amp currents are after node voltages and voltage sources' currents in the result array)
-					result[i + _BigDimension + _TotalVoltageSourcesCount].Real;
-			}
-		}
+		//	// Assign current to op-amps voltage sources
+		//	for (int i = 0; i < OpAmpsCount; ++i)
+		//	{
+		//		// For the current indexed with i-th op-amp's ActiveComponentIndex
+		//		_ActiveComponentsCurrents[_OpAmps[i].ActiveComponentIndex].DC =
+		//			// Assign it to DC (i-th plus number of nodes and number of voltage sources) result
+		//			// (Op-amp currents are after node voltages and voltage sources' currents in the result array)
+		//			result[i + _BigDimension + _TotalVoltageSourcesCount].Real;
+		//	}
+		//}
 
 		#endregion
 
@@ -1081,21 +1083,21 @@ namespace ECAT.Simulation
 
 		#region Result assigning
 
-		/// <summary>
-		/// Assigns the results - potentials to nodes and currents to voltage sources
-		/// </summary>
-		/// <param name="result"></param>
-		protected void AssignResults(Complex[] result, double frequency)
-		{
-			if(frequency == 0)
-			{
-				AssignDCResults(result);
-			}
-			else
-			{
-				AssignACResults(result, frequency);
-			}
-		}
+		///// <summary>
+		///// Assigns the results - potentials to nodes and currents to voltage sources
+		///// </summary>
+		///// <param name="result"></param>
+		//protected void AssignResults(Complex[] result, double frequency)
+		//{
+		//	if(frequency == 0)
+		//	{
+		//		AssignDCResults(result);
+		//	}
+		//	else
+		//	{
+		//		AssignACResults(result, frequency);
+		//	}
+		//}
 
 		#endregion
 
