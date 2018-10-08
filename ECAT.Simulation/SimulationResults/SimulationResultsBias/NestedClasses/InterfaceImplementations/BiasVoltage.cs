@@ -22,7 +22,7 @@ namespace ECAT.Simulation
 			/// </summary>
 			/// <param name="nodes">Nodes using which voltage drops will be calculated, can't be null</param>
 			/// <exception cref="ArgumentNullException"></exception>
-			public BiasVoltage(IEnumerable<KeyValuePair<INode, INodePotentialBias>> nodes)
+			public BiasVoltage(IEnumerable<KeyValuePair<INode, IPhasorDomainSignal>> nodes)
 			{
 				if(nodes == null)
 				{
@@ -39,7 +39,7 @@ namespace ECAT.Simulation
 			/// <summary>
 			/// List with all nodes upon which specific results are calculated
 			/// </summary>
-			private Dictionary<INode, INodePotentialBias> _Nodes { get; }
+			private Dictionary<INode, IPhasorDomainSignal> _Nodes { get; }
 
 			/// <summary>
 			/// Dictionary holding already computed voltage drops. Ints in key tuple are indexes of nodes (Item1 for the first node
