@@ -9,7 +9,6 @@ namespace ECAT.Simulation
 	/// Extension of <see cref="INodePotentialBias"/> that allows for adding/modifying values of public properties of the inherited
 	/// interface
 	/// </summary>
-	[NecessaryService]
 	[ConstructorDeclaration]
 	[ConstructorDeclaration(typeof(double), "DC")]
 	[ConstructorDeclaration(typeof(IEnumerable<KeyValuePair<double, Complex>>), "Phasors")]

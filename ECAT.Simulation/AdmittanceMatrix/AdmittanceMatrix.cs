@@ -4,9 +4,6 @@ using ECAT.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Linq;
 using System.Numerics;
 
 namespace ECAT.Simulation
@@ -21,10 +18,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Default Constructor
 		/// </summary>
-		private AdmittanceMatrix(ISchematic schematic) : base(schematic)
-		{
-			
-		}
+		private AdmittanceMatrix(ISchematic schematic) : base(schematic) { }
 
 		#endregion
 
@@ -39,8 +33,6 @@ namespace ECAT.Simulation
 		/// Used to store tested combinations of opamps when searching for false-positives
 		/// </summary>
 		private BitArray _TestedCombinations { get; set; }
-		
-		private Dictionary<INode, IPhasorDomainSignalMutable> _Results { get; set; }
 
 		#endregion
 
@@ -149,51 +141,20 @@ namespace ECAT.Simulation
 		#endregion
 
 		#region Public methods
-
-		private void AssignDCResultsA(IEnumerable<KeyValuePair<INode, IPhasorDomainSignalMutable>> nodePotentials,
-			IEnumerable<KeyValuePair<int, IPhasorDomainSignalMutable>> activeComponentsCurrents, Complex[] results)
-		{
-			_Results.ForEach((x, i) => x.Value.SetDC(results[i].Real));
-		}
-
-		private void AssignACResultsA(double frequency, Complex[] results)
-		{
-			_Results.ForEach((x, i) => x.Value.AddPhasor(frequency, results[i]));
-		}
-
+		
 		/// <summary>
 		/// Performs a bias simulation of the schematic - calculates symbolical, time-independent voltages and currents produced by
 		/// voltage sources.
 		/// </summary>
 		/// <param name="simulationType"></param>
-		public void Bias(SimulationType simulationType, out IEnumerable<KeyValuePair<INode, IPhasorDomainSignal>> nodePotentials,
-			out IEnumerable<KeyValuePair<int, IPhasorDomainSignal>> activeComponentsCurrents)
+		public void Bias(SimulationType simulationType)
 		{
-			var potentials = new Dictionary<INode, IPhasorDomainSignalMutable>(GetNodes().
-				ToDictionary((x) => x, (x) => IoC.Resolve<IPhasorDomainSignalMutable>()));
-
-			var activeCurrents = new Dictionary<int, IPhasorDomainSignalMutable>(_ActiveComponentsCount.ToSequence().
-				ToDictionary((x) => x, (x) => IoC.Resolve<IPhasorDomainSignalMutable>()));
-
 			// If DC bias is specified
 			if (simulationType.HasFlag(SimulationType.DC))
 			{
 				// Configure for DC and assign result to combinedResult
 				ConfigureForFrequency(0);
-
-				var result = Solve(!simulationType.HasFlag(SimulationType.AC));
-
-				for(int i=0; i< result.Length; ++i)
-				{
-					if(i < potentials.Count)
-					{
-						potentials.ElementAt(i).Value.SetDC(result[i].Real);
-					}
-					else
-					{
-						activeCurrents.ElementAt(i - potentials.Count).Value.SetDC(result[i].Real);
-					}
-				}
+				AssignResults(Solve(!simulationType.HasFlag(SimulationType.AC)), 0);
 			}
 
 			// If AC is specified
@@ -206,25 +167,9 @@ namespace ECAT.Simulation
 					ConfigureForFrequency(_FrequenciesInCircuit[i]);
 
 					// Get a subresult
-					AssignACResultsA(_FrequenciesInCircuit[i], Solve(false));
-					var result = Solve(false);
-
-					for (int j = 0; j < result.Length; ++j)
-					{
-						if (j < potentials.Count)
-						{
-							potentials.ElementAt(j).Value.AddPhasor(_FrequenciesInCircuit[i], result[j]);
-						}
-						else
-						{
-							activeCurrents.ElementAt(j - potentials.Count).Value.AddPhasor(_FrequenciesInCircuit[i], result[j]);
-						}
-					}
+					AssignResults(Solve(false), _FrequenciesInCircuit[i]);
 				}
 			}
-
-			nodePotentials = potentials.ToDictionary((x) => x.Key, (x) => (IPhasorDomainSignal)x.Value);
-			activeComponentsCurrents = activeCurrents.ToDictionary((x) => x.Key, (x) => (IPhasorDomainSignal)x.Value);
 		}
 
 		#endregion

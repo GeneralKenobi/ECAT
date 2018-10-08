@@ -1,6 +1,5 @@
 ﻿using ECAT.Core;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 
@@ -50,18 +49,18 @@ namespace ECAT.Simulation
 			try
 			{
 				// Solve it (for now try-catch for debugging)
-				admittanceMatrix.Bias(simulationType, out var nodePotentials, out var activeComponentsCurrents);
+				admittanceMatrix.Bias(simulationType);
 
 				IoC.Log($"Calcualted {simulationType.ToString()} simulation in {watch.ElapsedMilliseconds}ms",
 					InfoLoggerMessageDuration.Short);
-
-				IoC.Resolve<SimulationResultsProvider>().Value =
-					new SimulationResultsBias(nodePotentials, activeComponentsCurrents);
 			}
 			catch (Exception e)
 			{
 				Debug.WriteLine(e.Message);
-			}		
+			}
+
+			IoC.Resolve<SimulationResultsProvider>().Value =
+				new SimulationResultsBias(admittanceMatrix.GetNodes(), admittanceMatrix.ActiveComponentsCurrents);
 
 			watch.Reset();
 
