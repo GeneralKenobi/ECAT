@@ -47,6 +47,11 @@ namespace ECAT.Core
 		/// </summary>
 		internal IEnumerable<Type> Parameters { get; }
 
+		/// <summary>
+		/// If true, missing contructor parameters will be resolved by IoC container. False by default
+		/// </summary>
+		internal bool Autowired { get; set; }
+
 		#endregion
 	}
 }
