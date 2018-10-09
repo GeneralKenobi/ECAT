@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Autofac.Core;
+using Autofac.Core.Activators.Reflection;
 using CSharpEnhanced.Helpers;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace ECAT.Core
 	/// without any parameters unless <see cref="ConstructorDeclaration"/>s are specified and a parameterless
 	/// <see cref="ConstructorDeclaration"/> is not one of them (similarly to standard constructors).
 	/// </summary>
-	public static class IoC
+	public static partial class IoC
 	{
 		#region Private static properties
 
@@ -23,6 +24,11 @@ namespace ECAT.Core
 		/// True if the <see cref="Container"/> was already built
 		/// </summary>
 		private static bool IsBuilt => Container != null;
+
+		/// <summary>
+		/// Constructor selector used to register types with specific constructor selectors
+		/// </summary>
+		private static IConstructorSelector _ConstructorSelector { get; } = new ExactConstructorSelector();
 
 		#endregion
 
@@ -47,10 +53,16 @@ namespace ECAT.Core
 			Where((type) => Attribute.IsDefined(type, typeof(RegisterAsType))).
 			// For each type
 			ForEach((type) =>
-				// Register it
-				builder.RegisterType(type).
-				// As types defined in attribute
-				As((Attribute.GetCustomAttribute(type, typeof(RegisterAsType)) as RegisterAsType).Types));
+				// Get the RegisterAsType attribute
+				(Attribute.GetCustomAttribute(type, typeof(RegisterAsType)) as RegisterAsType).Types.
+					// For each service to register as, register the type
+					ForEach((service) => builder.RegisterType(type).
+						// As that service
+						As(service).
+						// Find declared constructors
+						FindConstructorsWith(new DeclaredConstructorFinder(service)).
+						// Use the default constructor selector
+						UsingConstructor(_ConstructorSelector)));
 
 		/// <summary>
 		/// Registers types with <see cref="RegisterAsInstance"/> attribute with <paramref name="builder"/> as single instances
