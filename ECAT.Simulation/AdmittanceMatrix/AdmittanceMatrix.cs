@@ -185,13 +185,16 @@ namespace ECAT.Simulation
 
 				for(int i=0; i< result.Length; ++i)
 				{
-					if(i < potentials.Count)
+					// -1 because result does not contain value for reference node (which is always 0)
+					if(i < potentials.Count - 1)
 					{
-						potentials.ElementAt(i).Value.SetDC(result[i].Real);
+						// +1 to skip the reference node
+						potentials.ElementAt(i + 1).Value.SetDC(result[i].Real);
 					}
 					else
 					{
-						activeCurrents.ElementAt(i - potentials.Count).Value.SetDC(result[i].Real);
+						// -1 adjusts the indexing for reference node which is not included in result array
+						activeCurrents.ElementAt(i - (potentials.Count - 1)).Value.SetDC(result[i].Real);
 					}
 				}
 			}
