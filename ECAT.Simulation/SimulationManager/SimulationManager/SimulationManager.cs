@@ -61,11 +61,22 @@ namespace ECAT.Simulation
 			catch (Exception e)
 			{
 				Debug.WriteLine(e.Message);
-			}		
+			}
 
 			watch.Reset();
 
 			SimulationCompleted?.Invoke(this, new SimulationCompletedEventArgs(simulationType));
+		}
+
+		/// <summary>
+		/// Performs a full cycle AC simulation
+		/// </summary>
+		/// <param name="schematic"></param>
+		public void ACFullCycle(ISchematic schematic)
+		{
+			// Mock results for now
+			IoC.Resolve<SimulationResultsProvider>().Value =
+				new SimulationResultsTime();
 		}
 
 		#endregion

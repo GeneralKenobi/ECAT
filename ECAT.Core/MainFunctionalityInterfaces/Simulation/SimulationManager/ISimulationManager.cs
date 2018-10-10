@@ -26,6 +26,12 @@ namespace ECAT.Core
 		/// <param name="schematic"></param>
 		void Bias(ISchematic schematic, SimulationType simulationType);
 
+		/// <summary>
+		/// Performs a full cycle AC simulation
+		/// </summary>
+		/// <param name="schematic"></param>
+		void ACFullCycle(ISchematic schematic);
+
 		#endregion
 	}
 }
