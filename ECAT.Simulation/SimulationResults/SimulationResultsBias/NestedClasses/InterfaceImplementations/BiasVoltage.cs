@@ -84,9 +84,6 @@ namespace ECAT.Simulation
 				var result = IoC.Resolve<IPhasorDomainSignal>(nodeB.DC - nodeA.DC,
 					GetACWaveforms(nodeA.Phasors, nodeB.Phasors));
 
-				// Cache it
-				CacheVoltageDrop(result, nodeAIndex, nodeBIndex);
-
 				// Return it
 				return result;
 			}
