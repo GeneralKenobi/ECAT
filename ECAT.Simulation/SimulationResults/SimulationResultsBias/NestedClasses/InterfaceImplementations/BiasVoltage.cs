@@ -1,5 +1,4 @@
-﻿using CSharpEnhanced.CoreClasses;
-using ECAT.Core;
+﻿using ECAT.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +12,7 @@ namespace ECAT.Simulation
 		/// Provides functionality connected with storing, calculating and exposing voltage drops and information about them in
 		/// form of <see cref="IPhasorDomainSignal"/>s and <see cref="ISignalInformation"/>
 		/// </summary>
-		private class BiasVoltage : IVoltageDB, IBiasVoltage
+		private class BiasVoltage : VoltageCache<IPhasorDomainSignal, IPhasorDomainSignal>, IVoltageDB, IBiasVoltage
 		{
 			#region Constructors
 
@@ -22,72 +21,11 @@ namespace ECAT.Simulation
 			/// </summary>
 			/// <param name="nodes">Nodes using which voltage drops will be calculated, can't be null</param>
 			/// <exception cref="ArgumentNullException"></exception>
-			public BiasVoltage(IEnumerable<KeyValuePair<INode, IPhasorDomainSignal>> nodes)
-			{
-				if(nodes == null)
-				{
-					throw new ArgumentNullException(nameof(nodes));
-				}
-
-				_Nodes = nodes.ToDictionary((x) => x.Key, (x) => x.Value);
-			}
-
-			#endregion
-
-			#region Private properties
-
-			/// <summary>
-			/// List with all nodes upon which specific results are calculated
-			/// </summary>
-			private Dictionary<INode, IPhasorDomainSignal> _Nodes { get; }
-
-			/// <summary>
-			/// Dictionary holding already computed voltage drops. Ints in key tuple are indexes of nodes (Item1 for the first node
-			/// (reference node) and Item2 for the second node (target node)). First item in value is <see cref="PhasorDomainSignal"/>
-			/// representing the voltage drop, second one is an <see cref="SignalInformation"/> built based on Item1.
-			/// </summary>
-			private Dictionary<Tuple<int, int>, Tuple<IPhasorDomainSignal, ISignalInformation>> _Cache { get; } =
-				new Dictionary<Tuple<int, int>, Tuple<IPhasorDomainSignal, ISignalInformation>>(
-					new CustomEqualityComparer<Tuple<int, int>>(
-					// Compare the elements of the Tuples, not tuples themselves
-					(x, y) => x.Item1 == y.Item1 && x.Item2 == y.Item2));
+			public BiasVoltage(IEnumerable<KeyValuePair<INode, IPhasorDomainSignal>> nodes) : base(nodes) { }
 
 			#endregion
 
 			#region Private methods
-
-			/// <summary>
-			/// If <see cref="_Cache"/> does not contain an entry with key given by <paramref name="nodeAIndex"/> and
-			/// <paramref name="nodeBIndex"/>, caches <paramref name="signal"/>, otherwise doesn't do anything
-			/// </summary>
-			/// <param name="signal"></param>
-			/// <param name="nodeAIndex"></param>
-			/// <param name="nodeBIndex"></param>
-			private void CacheHelper(IPhasorDomainSignal signal, int nodeAIndex, int nodeBIndex)
-			{
-				if(!_Cache.ContainsKey(new Tuple<int, int>(nodeAIndex, nodeBIndex)))
-				{
-					_Cache.Add(new Tuple<int, int>(nodeAIndex, nodeBIndex),
-						Tuple.Create(
-							signal,
-							IoC.Resolve<ISignalInformation>(signal, IoC.Resolve<ICommonSignalDescriptions>().Voltage)));
-				}
-			}
-
-			/// <summary>
-			/// Caches the <paramref name="signal"/> as well as its negated copy (with inverted indexes) into <see cref="_Cache"/>
-			/// </summary>
-			/// <param name="signal"></param>
-			/// <param name="nodeAIndex"></param>
-			/// <param name="nodeBIndex"></param>
-			private void CacheVoltageDrop(IPhasorDomainSignal signal, int nodeAIndex, int nodeBIndex)
-			{
-				// Cache the original
-				CacheHelper(signal, nodeAIndex, nodeBIndex);
-
-				// And cache the reversed one
-				CacheHelper(signal.CopyAndNegate(), nodeBIndex, nodeAIndex);
-			}
 
 			/// <summary>
 			/// Finds all AC voltage waveforms between the two node potentials collections
@@ -124,6 +62,10 @@ namespace ECAT.Simulation
 				}
 			}
 
+			#endregion
+
+			#region Protected methods
+
 			/// <summary>
 			/// Constructs a new <see cref="PhasorDomainSignal"/> based on voltage drop between two nodes (with <paramref name="nodeA"/>
 			/// being the reference node). Caches the result (with its negation). Node indexes are assumed to have been checked that
@@ -132,11 +74,11 @@ namespace ECAT.Simulation
 			/// <param name="nodeA"></param>
 			/// <param name="nodeB"></param>
 			/// <returns></returns>
-			private IPhasorDomainSignal ConstructVoltageDrop(int nodeAIndex, int nodeBIndex)
+			protected override IPhasorDomainSignal ConstructVoltageDrop(int nodeAIndex, int nodeBIndex)
 			{
 				// Get the nodes
-				var nodeA = _Nodes.First((node) => node.Key.Index == nodeAIndex).Value;
-				var nodeB = _Nodes.First((node) => node.Key.Index == nodeBIndex).Value;
+				var nodeA = _Data.First((node) => node.Key.Index == nodeAIndex).Value;
+				var nodeB = _Data.First((node) => node.Key.Index == nodeBIndex).Value;
 
 				// Construct the result
 				var result = IoC.Resolve<IPhasorDomainSignal>(nodeB.DC - nodeA.DC,
@@ -150,40 +92,11 @@ namespace ECAT.Simulation
 			}
 
 			/// <summary>
-			/// Checks if voltage drop between <paramref name="nodeAIndex"/> and <paramref name="nodeBIndex"/> can be obtained from
-			/// cache (<see cref="_Cache"/>), if not performs all possible actions to create it and cache it. Returns true if, at the
-			/// end of the method call, the voltage drop may be obtained from <see cref="_Cache"/>, false otherwise.
+			/// Returns a negated (voltage drop direction is reversed) copy of <paramref name="signal"/>
 			/// </summary>
-			/// <param name="nodeAIndex"></param>
-			/// <param name="nodeBIndex"></param>
+			/// <param name="signal"></param>
 			/// <returns></returns>
-			private bool TryEnableVoltageDrop(int nodeAIndex, int nodeBIndex)
-			{
-				// Check if nodes exist
-				if (NodeExists(nodeAIndex) && NodeExists(nodeBIndex))
-				{
-					// If it does, check if it was already calculated
-					if (!_Cache.ContainsKey(new Tuple<int, int>(nodeAIndex, nodeBIndex)))
-					{
-						ConstructVoltageDrop(nodeAIndex, nodeBIndex);
-					}
-
-					// Return success
-					return true;
-				}
-				// If not, assign null and return failure
-				else
-				{
-					return false;
-				}
-			}
-			
-			/// <summary>
-			/// Returns true if a node with the given index exists
-			/// </summary>
-			/// <param name="index"></param>
-			/// <returns></returns>
-			private bool NodeExists(int index) => _Nodes.Keys.First((node) => node.Index == index) != null;
+			protected override IPhasorDomainSignal CopyAndNegate(IPhasorDomainSignal signal) => signal.CopyAndNegate();
 
 			#endregion
 
