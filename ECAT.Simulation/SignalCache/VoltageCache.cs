@@ -100,7 +100,7 @@ namespace ECAT.Simulation
 				// If it does, check if it was already calculated
 				if (!_Cache.ContainsKey(new Tuple<int, int>(nodeAIndex, nodeBIndex)))
 				{
-					ConstructVoltageDrop(nodeAIndex, nodeBIndex);
+					CacheVoltageDrop(ConstructVoltageDrop(nodeAIndex, nodeBIndex), nodeAIndex, nodeBIndex);
 				}
 
 				// Return success
@@ -129,7 +129,7 @@ namespace ECAT.Simulation
 
 		/// <summary>
 		/// Constructs a new <see cref="PhasorDomainSignal"/> based on voltage drop between two nodes (with <paramref name="nodeA"/>
-		/// being the reference node). Caches the result (with its negation). Node indexes are assumed to have been checked that
+		/// being the reference node). Node indexes are assumed to have been checked that
 		/// corresponding to them nodes exist in <see cref="_Nodes"/>, if not an exception may be thrown.
 		/// </summary>
 		/// <param name="nodeA"></param>
