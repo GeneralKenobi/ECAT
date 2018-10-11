@@ -73,6 +73,7 @@ namespace ECAT.Simulation
 		/// <param name="voltageBA">If true, it means that current was calculated for voltage drop from
 		/// <see cref="ITwoTerminal.TerminalA"/> (reference) to <see cref="ITwoTerminal.TerminalB"/>, if false it means that
 		/// that direction was reversed</param>
+		/// <param name="current">Current constructed if successful, null otherwise</param>
 		/// <returns></returns>
 		protected abstract bool TryConstructCurrent(ITwoTerminal component, bool voltageBA, out TSignal current);
 
