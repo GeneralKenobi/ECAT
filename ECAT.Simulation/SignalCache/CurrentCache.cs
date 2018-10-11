@@ -97,6 +97,5 @@ namespace ECAT.Simulation
 			_Cache.ContainsKey(new Tuple<ITwoTerminal, bool>(element, voltageBA)) || TryConstructCurrent(element, voltageBA);
 
 		#endregion
-	}
-	
+	}	
 }
