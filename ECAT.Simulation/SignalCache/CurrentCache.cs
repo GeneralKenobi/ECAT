@@ -74,7 +74,7 @@ namespace ECAT.Simulation
 		/// <see cref="ITwoTerminal.TerminalA"/> (reference) to <see cref="ITwoTerminal.TerminalB"/>, if false it means that
 		/// that direction was reversed</param>
 		/// <returns></returns>
-		protected abstract bool TryConstructCurrent(ITwoTerminal component, bool voltageBA);
+		protected abstract bool TryConstructCurrent(ITwoTerminal component, bool voltageBA, out TSignal current);
 
 		/// <summary>
 		/// Returns a negated (voltage drop direction is reversed) copy of <paramref name="signal"/>
@@ -84,17 +84,30 @@ namespace ECAT.Simulation
 		protected abstract TSignal CopyAndNegate(TSignal signal);
 
 		/// <summary>
-		/// Checks if current through <paramref name="element"/> can be obtained from cache, if not performs
+		/// Checks if current through <paramref name="component"/> can be obtained from cache, if not performs
 		/// all possible actions to create it and cache it. Returns true if, at the end of the method call, the current may be
 		/// obtained from <see cref="_PassiveCurrentsCache"/>, false otherwise.
 		/// </summary>
-		/// <param name="element">Element for which the current is considered</param>
+		/// <param name="component">Element for which the current is considered</param>
 		/// <param name="voltageBA">If true, voltage used to calculate the current is taken from <see cref="ITwoTerminal.TerminalA"/>
 		/// (reference node) to <see cref="ITwoTerminal.TerminalB"/>, if false the direction is reversed</param>
 		/// <returns></returns>
-		protected bool TryEnableCurrent(ITwoTerminal element, bool voltageBA) =>
+		protected bool TryEnableCurrent(ITwoTerminal component, bool voltageBA)
+		{
 			// If there was a cached entry already return it
-			_Cache.ContainsKey(new Tuple<ITwoTerminal, bool>(element, voltageBA)) || TryConstructCurrent(element, voltageBA);
+			if(_Cache.ContainsKey(new Tuple<ITwoTerminal, bool>(component, voltageBA)))
+			{
+				return true;
+			}
+			// Try to construct an entry
+			else if(TryConstructCurrent(component, voltageBA, out var current))
+			{
+				CacheCurrent(current, component, voltageBA);
+				return true;
+			}
+
+			return false;
+		}
 
 		#endregion
 	}	
