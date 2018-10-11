@@ -13,7 +13,7 @@ namespace ECAT.Simulation
 		/// Provides functionality connected with storing, calculating and exposing currents and information about them in
 		/// form of <see cref="IPhasorDomainSignal"/>s and <see cref="ISignalInformation"/>
 		/// </summary>
-		private class BiasCurrent : ICurrentDB, IBiasCurrent
+		private class BiasCurrent : CurrentCache<IPhasorDomainSignal>, ICurrentDB, IBiasCurrent
 		{
 			#region Constructors
 
@@ -62,58 +62,9 @@ namespace ECAT.Simulation
 			/// </summary>
 			private Dictionary<Tuple<int, bool>, Tuple<IPhasorDomainSignal, ISignalInformation>> _ActiveComponentsCache { get; }
 
-			/// <summary>
-			/// Contains already computed currents. Key is component through which the current flows and a bool which indicates direction
-			/// of voltage drop used to calculate the current: true for voltage from <see cref="ITwoTerminal.TerminalA"/> (reference
-			/// node) to <see cref="ITwoTerminal.TerminalB"/>, false for reverse direction. Value is the current (Item1) and
-			/// information build based on it (Item2)
-			/// </summary>
-			private Dictionary<Tuple<ITwoTerminal, bool>, Tuple<IPhasorDomainSignal, ISignalInformation>> _Cache { get; } =
-				new Dictionary<Tuple<ITwoTerminal, bool>, Tuple<IPhasorDomainSignal, ISignalInformation>>(
-					new CustomEqualityComparer<Tuple<ITwoTerminal, bool>>(
-					// Compare the elements of the Tuples, not tuples themselves
-					(x, y) => x.Item1 == y.Item1 && x.Item2 == y.Item2));
-
 			#endregion
 
 			#region Private methods
-
-			/// <summary>
-			/// If <see cref="_Cache"/> does not contain an entry with key given by <paramref name="component"/> and
-			/// <paramref name="voltageBA"/>, caches <paramref name="signal"/>, otherwise doesn't do anything
-			/// </summary>
-			/// <param name="signal"></param>
-			/// <param name="component"></param>
-			/// <param name="voltageBA">If true, it means that current was calculated for voltage drop from
-			/// <see cref="ITwoTerminal.TerminalA"/> (reference) to <see cref="ITwoTerminal.TerminalB"/>, if false it means that
-			/// that direction was reversed</param>
-			private void CacheHelper(IPhasorDomainSignal signal, ITwoTerminal component, bool voltageBA)
-			{
-				if (!_Cache.ContainsKey(new Tuple<ITwoTerminal, bool>(component, voltageBA)))
-				{
-					_Cache.Add(new Tuple<ITwoTerminal, bool>(component, voltageBA),
-						Tuple.Create(
-							signal,
-							IoC.Resolve<ISignalInformation>(signal, IoC.Resolve<ICommonSignalDescriptions>().Current)));
-				}
-			}
-
-			/// <summary>
-			/// Caches the <paramref name="signal"/> as well as its negated copy (with inverted indexes) into <see cref="_Cache"/>
-			/// </summary>
-			/// <param name="signal"></param>
-			/// <param name="component"></param>
-			/// <param name="voltageBA">If true, it means that current was calculated for voltage drop from
-			/// <see cref="ITwoTerminal.TerminalA"/> (reference) to <see cref="ITwoTerminal.TerminalB"/>, if false it means that
-			/// that direction was reversed</param>
-			private void CacheCurrent(IPhasorDomainSignal signal, ITwoTerminal component, bool voltageBA)
-			{
-				// Cache the original
-				CacheHelper(signal, component, voltageBA);
-
-				// And cache the reversed one
-				CacheHelper(signal.CopyAndNegate(), component, !voltageBA);
-			}
 
 			/// <summary>
 			/// Returns a DC current flowing through a two terminal
@@ -134,48 +85,6 @@ namespace ECAT.Simulation
 				IPhasorDomainSignal voltageDrop, ITwoTerminal twoTerminal) =>
 				voltageDrop.Phasors.Select((phasor) =>
 				new KeyValuePair<double, Complex>(phasor.Key, phasor.Value * twoTerminal.GetAdmittance(phasor.Key)));
-
-			/// <summary>
-			/// Tries to construct a current for <paramref name="element"/>, returns true on success
-			/// </summary>
-			/// <param name="element"></param>
-			/// <param name="voltageBA">If true, it means that current was calculated for voltage drop from
-			/// <see cref="ITwoTerminal.TerminalA"/> (reference) to <see cref="ITwoTerminal.TerminalB"/>, if false it means that
-			/// that direction was reversed</param>
-			/// <returns></returns>
-			private bool TryConstructCurrent(ITwoTerminal element, bool voltageBA)
-			{
-				// Try to get voltage drop across the element
-				if (_VoltageDrops.TryGet(element, out var voltageDrop, voltageBA))
-				{
-					// If successful, create a new current signal based on it, cache it
-					CacheCurrent(IoC.Resolve<IPhasorDomainSignal>(
-							GetPassiveTwoTerminalDCCurrent(voltageDrop, element),
-							GetPassiveTwoTerminalACCurrentPhasors(voltageDrop, element)),
-						element, voltageBA);
-
-					// And return success
-					return true;
-				}
-				else
-				{
-					// Return failure					
-					return false;
-				}
-			}
-
-			/// <summary>
-			/// Checks if current through <paramref name="element"/> can be obtained from cache (<see cref="_Cache"/>), if not performs
-			/// all possible actions to create it and cache it. Returns true if, at the end of the method call, the current may be
-			/// obtained from <see cref="_Cache"/>, false otherwise.
-			/// </summary>
-			/// <param name="element">Element for which the current is considered</param>
-			/// <param name="voltageBA">If true, voltage used to calculate the current is taken from <see cref="ITwoTerminal.TerminalA"/>
-			/// (reference node) to <see cref="ITwoTerminal.TerminalB"/>, if false the direction is reversed</param>
-			/// <returns></returns>
-			private bool TryEnableCurrent(ITwoTerminal element, bool voltageBA) =>
-				// If there was a cached entry already return it
-				_Cache.ContainsKey(new Tuple<ITwoTerminal, bool>(element, voltageBA)) || TryConstructCurrent(element, voltageBA);
 
 			/// <summary>
 			/// Attempts to obtain a current for some <see cref="ITwoTerminal"/> <paramref name="component"/>
@@ -224,6 +133,46 @@ namespace ECAT.Simulation
 					return null;
 				}
 			}
+
+			#endregion
+
+			#region Protected methods
+
+			/// <summary>
+			/// Tries to construct a current for <paramref name="element"/>, returns true on success
+			/// </summary>
+			/// <param name="element"></param>
+			/// <param name="voltageBA">If true, it means that current was calculated for voltage drop from
+			/// <see cref="ITwoTerminal.TerminalA"/> (reference) to <see cref="ITwoTerminal.TerminalB"/>, if false it means that
+			/// that direction was reversed</param>
+			/// <returns></returns>
+			protected override bool TryConstructCurrent(ITwoTerminal element, bool voltageBA)
+			{
+				// Try to get voltage drop across the element
+				if (_VoltageDrops.TryGet(element, out var voltageDrop, voltageBA))
+				{
+					// If successful, create a new current signal based on it, cache it
+					CacheCurrent(IoC.Resolve<IPhasorDomainSignal>(
+							GetPassiveTwoTerminalDCCurrent(voltageDrop, element),
+							GetPassiveTwoTerminalACCurrentPhasors(voltageDrop, element)),
+						element, voltageBA);
+
+					// And return success
+					return true;
+				}
+				else
+				{
+					// Return failure					
+					return false;
+				}
+			}
+
+			/// <summary>
+			/// Copies and negates <paramref name="signal"/>
+			/// </summary>
+			/// <param name="signal"></param>
+			/// <returns></returns>
+			protected override IPhasorDomainSignal CopyAndNegate(IPhasorDomainSignal signal) => signal.CopyAndNegate();
 
 			#endregion
 
