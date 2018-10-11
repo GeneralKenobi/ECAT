@@ -5,19 +5,18 @@ using System;
 namespace ECAT.Simulation
 {
 	/// <summary>
-	/// Provides functionality connected with storing, calculating and exposing currents and information about them in
-	/// form of <see cref="IPhasorDomainSignal"/>s and <see cref="ISignalInformation"/>
+	/// Base class that may be used when implementing <see cref="ICurrentDB"/>, provides means of storing
+	/// current signal datas along with an <see cref="ISignalInformation"/> constructed based on them.
 	/// </summary>
+	/// <typeparam name="TSignal"></typeparam>
 	internal abstract class CurrentCache<TSignal> : SignalCache<Tuple<ITwoTerminal, bool>, TSignal>
 		where TSignal : ISignalData
 	{
 		#region Constructors
 
 		/// <summary>
-		/// Default constructor, requires two parameters, if either is null, an exception will be thrown
+		/// Default constructor
 		/// </summary>
-		/// <param name="voltageDrops">Object contain information about voltage drops calculated in simulation, can't be null</param>
-		/// <param name="activeComponentCurrents">Currents produced by active components, can't be null</param>
 		public CurrentCache() : base(new CustomEqualityComparer<Tuple<ITwoTerminal, bool>>(
 				// Compare the elements of the Tuples, not tuples themselves
 				(x, y) => x.Item1 == y.Item1 && x.Item2 == y.Item2)) { }
@@ -27,7 +26,7 @@ namespace ECAT.Simulation
 		#region Private methods
 
 		/// <summary>
-		/// If <see cref="_PassiveCurrentsCache"/> does not contain an entry with key given by <paramref name="component"/> and
+		/// If cache does not contain an entry with key given by <paramref name="component"/> and
 		/// <paramref name="voltageBA"/>, caches <paramref name="signal"/>, otherwise doesn't do anything
 		/// </summary>
 		/// <param name="signal"></param>
@@ -46,8 +45,12 @@ namespace ECAT.Simulation
 			}
 		}
 
+		#endregion
+
+		#region Protected methods
+
 		/// <summary>
-		/// Caches the <paramref name="signal"/> as well as its negated copy (with inverted indexes) into <see cref="_PassiveCurrentsCache"/>
+		/// Caches the <paramref name="signal"/> as well as its negated copy (with inverted indexes)
 		/// </summary>
 		/// <param name="signal"></param>
 		/// <param name="component"></param>
@@ -63,14 +66,15 @@ namespace ECAT.Simulation
 			CacheHelper(CopyAndNegate(signal), component, !voltageBA);
 		}
 
-		/// Tries to construct a current for <paramref name="element"/>, returns true on success
+		/// <summary>
+		/// Tries to construct a current for <paramref name="component"/>, returns true on success
 		/// </summary>
-		/// <param name="element"></param>
+		/// <param name="component"></param>
 		/// <param name="voltageBA">If true, it means that current was calculated for voltage drop from
 		/// <see cref="ITwoTerminal.TerminalA"/> (reference) to <see cref="ITwoTerminal.TerminalB"/>, if false it means that
 		/// that direction was reversed</param>
 		/// <returns></returns>
-		protected abstract bool TryConstructCurrent(ITwoTerminal element, bool voltageBA);
+		protected abstract bool TryConstructCurrent(ITwoTerminal component, bool voltageBA);
 
 		/// <summary>
 		/// Returns a negated (voltage drop direction is reversed) copy of <paramref name="signal"/>
@@ -80,7 +84,7 @@ namespace ECAT.Simulation
 		protected abstract TSignal CopyAndNegate(TSignal signal);
 
 		/// <summary>
-		/// Checks if current through <paramref name="element"/> can be obtained from cache (<see cref="_PassiveCurrentsCache"/>), if not performs
+		/// Checks if current through <paramref name="element"/> can be obtained from cache, if not performs
 		/// all possible actions to create it and cache it. Returns true if, at the end of the method call, the current may be
 		/// obtained from <see cref="_PassiveCurrentsCache"/>, false otherwise.
 		/// </summary>
