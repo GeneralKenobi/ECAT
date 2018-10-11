@@ -4,13 +4,14 @@ using System;
 namespace ECAT.Simulation
 {
 	/// <summary>
-	/// Provides functionality connected with storing, calculating and exposing power information in
-	/// form of <see cref="ISignalInformation"/>
+	/// Base class that may be used when implementing <see cref="IPowerDB"/>, provides means of storing
+	/// power signal datas along with an <see cref="ISignalInformation"/> constructed based on them.
 	/// </summary>
+	/// <typeparam name="TSignal"></typeparam>
 	internal abstract class PowerCache<TSignal> : SignalCache<IBaseComponent, TSignal>
 		where TSignal : ISignalData
 	{
-		#region Private methods
+		#region Protected methods
 
 		/// <summary>
 		/// Caches the <paramref name="power"/> in <see cref="_Cache"/>
