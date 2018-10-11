@@ -145,17 +145,17 @@ namespace ECAT.Simulation
 			/// <param name="voltageBA">If true, it means that current was calculated for voltage drop from
 			/// <see cref="ITwoTerminal.TerminalA"/> (reference) to <see cref="ITwoTerminal.TerminalB"/>, if false it means that
 			/// that direction was reversed</param>
+			/// <param name="current">Current constructed if successful, null otherwise</param>
 			/// <returns></returns>
-			protected override bool TryConstructCurrent(ITwoTerminal element, bool voltageBA)
+			protected override bool TryConstructCurrent(ITwoTerminal element, bool voltageBA, out IPhasorDomainSignal current)
 			{
 				// Try to get voltage drop across the element
 				if (_VoltageDrops.TryGet(element, out var voltageDrop, voltageBA))
 				{
 					// If successful, create a new current signal based on it, cache it
-					CacheCurrent(IoC.Resolve<IPhasorDomainSignal>(
+					current = IoC.Resolve<IPhasorDomainSignal>(
 							GetPassiveTwoTerminalDCCurrent(voltageDrop, element),
-							GetPassiveTwoTerminalACCurrentPhasors(voltageDrop, element)),
-						element, voltageBA);
+							GetPassiveTwoTerminalACCurrentPhasors(voltageDrop, element));
 
 					// And return success
 					return true;
@@ -163,6 +163,7 @@ namespace ECAT.Simulation
 				else
 				{
 					// Return failure					
+					current = null;
 					return false;
 				}
 			}
