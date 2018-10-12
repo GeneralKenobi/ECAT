@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace ECAT.Simulation
 {
-	public partial class SimulationResultsBias : ISimulationResults
+	partial class SimulationResultsTime
 	{
 		/// <summary>
 		/// Provides functionality connected with storing, calculating and exposing currents and information about them in
