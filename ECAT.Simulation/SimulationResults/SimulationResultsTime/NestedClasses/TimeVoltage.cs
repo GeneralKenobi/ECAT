@@ -9,7 +9,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Manages voltage-related results
 		/// </summary>
-		private class TimeVoltage : VoltageCache<ITimeDomainSignal, ITimeDomainSignal>, IVoltageDB
+		private class TimeVoltage : VoltageCache<ITimeDomainSignal, ITimeDomainSignal>, IVoltageDB, IVoltageSignalDB<ITimeDomainSignal>
 		{
 			#region Constructors
 
@@ -85,6 +85,55 @@ namespace ECAT.Simulation
 
 			#region Public methods
 
+			#region IVoltageSignalDB
+
+			/// <summary>
+			/// Gets voltage drop of a node with respect to ground or null if unsuccessful and assigns it to <paramref name="voltage"/>.
+			/// Returns true on success, false otherwise.
+			/// </summary>
+			/// <param name="nodeIndex"></param>
+			/// <param name="voltage"></param>
+			/// <param name="nodeToGround">If true, voltage drop is calculated from ground to node given by
+			/// <paramref name="nodeIndex"/>, if false it is calculated from node given by <paramref name="nodeIndex"/> to ground</param>
+			/// <returns></returns>
+			public bool TryGet(int nodeIndex, out ITimeDomainSignal voltage, bool nodeToGround = true)
+			{
+				voltage = null;
+				return false;
+			}
+
+			/// <summary>
+			/// Gets voltage drop between two nodes (with node A being treated as the reference node) or null if unsuccessful and
+			/// assigns it to <paramref name="voltage"/>. Returns true on success, false otherwise.
+			/// </summary>
+			/// <param name="nodeAIndex"></param>
+			/// <param name="nodeBIndex"></param>
+			/// <param name="voltage"></param>
+			/// <returns></returns>
+			public bool TryGet(int nodeAIndex, int nodeBIndex, out ITimeDomainSignal voltage)
+			{
+				voltage = null;
+				return false;
+			}
+
+			/// <summary>
+			/// Gets voltage drop across a <see cref="ITwoTerminal"/> component or null if unsuccessful and assigns it to
+			/// <paramref name="voltage"/>. Returns true on success, false otherwise.
+			/// </summary>
+			/// <param name="component"></param>
+			/// <param name="voltageBA">If true, voltage drop is calculated from <see cref="ITwoTerminal.TerminalB"/> to
+			/// <param name="voltage"></param>
+			/// <returns></returns>
+			public bool TryGet(ITwoTerminal component, out ITimeDomainSignal voltage, bool voltageBA = true)
+			{
+				voltage = null;
+				return false;
+			}
+
+			#endregion
+
+			#region IVoltageDB
+
 			/// <summary>
 			/// Gets a voltage drop of a node with respect to ground or returns null if unsuccessful
 			/// </summary>
@@ -119,6 +168,8 @@ namespace ECAT.Simulation
 			{
 				return null;
 			}
+
+			#endregion
 
 			#endregion
 		}
