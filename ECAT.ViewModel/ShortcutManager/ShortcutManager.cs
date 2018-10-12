@@ -110,7 +110,10 @@ namespace ECAT.ViewModel
 
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
 				"Run ACDC Bias", new KeyArgument("U"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.Bias(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic, SimulationType.ACDC)));
-			
+
+			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
+				"Run Full Cycle ACDC", new KeyArgument("U", KeyModifiers.Shift), () => AppViewModel.Singleton.SimulationVM.SimulationManager.ACFullCycle(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic)));
+
 			// TODO: Change the ShortcutKeys to ShortcutKey.Empty and load the saved combinations from a local file
 		}
 
