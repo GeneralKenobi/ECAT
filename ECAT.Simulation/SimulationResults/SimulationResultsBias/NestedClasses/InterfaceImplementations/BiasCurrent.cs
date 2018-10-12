@@ -13,7 +13,7 @@ namespace ECAT.Simulation
 		/// Provides functionality connected with storing, calculating and exposing currents and information about them in
 		/// form of <see cref="IPhasorDomainSignal"/>s and <see cref="ISignalInformation"/>
 		/// </summary>
-		private class BiasCurrent : CurrentCache<IPhasorDomainSignal>, ICurrentDB, IBiasCurrent
+		private class BiasCurrent : CurrentCache<IPhasorDomainSignal>, ICurrentDB, ICurrentSignalDB<IPhasorDomainSignal>
 		{
 			#region Constructors
 
@@ -22,7 +22,8 @@ namespace ECAT.Simulation
 			/// </summary>
 			/// <param name="voltageDrops">Object contain information about voltage drops calculated in simulation, can't be null</param>
 			/// <param name="activeComponentCurrents">Currents produced by active components, can't be null</param>
-			public BiasCurrent(IBiasVoltage voltageDrops, IEnumerable<KeyValuePair<int, IPhasorDomainSignal>> activeComponentCurrents)
+			public BiasCurrent(IVoltageSignalDB<IPhasorDomainSignal> voltageDrops,
+				IEnumerable<KeyValuePair<int, IPhasorDomainSignal>> activeComponentCurrents)
 			{
 				_VoltageDrops = voltageDrops ?? throw new ArgumentNullException(nameof(voltageDrops));
 
@@ -53,7 +54,7 @@ namespace ECAT.Simulation
 			/// <summary>
 			/// Contains information about voltage drops calculated in simulation
 			/// </summary>
-			private IBiasVoltage _VoltageDrops { get; }
+			private IVoltageSignalDB<IPhasorDomainSignal> _VoltageDrops { get; }
 
 			/// <summary>
 			/// Cache with currents produced by <see cref="IVoltageSource"/>s, <see cref="IACVoltageSource"/>s and <see cref="IOpAmp"/>s

@@ -22,7 +22,7 @@ namespace ECAT.Simulation
 			/// <param name="voltageDrops"></param>
 			/// <param name="currents"></param>
 			/// <exception cref="ArgumentNullException"></exception>
-			public BiasPower(IBiasVoltage voltageDrops, IBiasCurrent currents)
+			public BiasPower(IVoltageSignalDB<IPhasorDomainSignal> voltageDrops, ICurrentSignalDB<IPhasorDomainSignal> currents)
 			{
 				_VoltageDrops = voltageDrops ?? throw new ArgumentNullException(nameof(voltageDrops));
 				_Currents = currents ?? throw new ArgumentNullException(nameof(currents));
@@ -35,12 +35,12 @@ namespace ECAT.Simulation
 			/// <summary>
 			/// Contains information about voltage drops calculated in simulation
 			/// </summary>
-			private IBiasVoltage _VoltageDrops { get; }
+			private IVoltageSignalDB<IPhasorDomainSignal> _VoltageDrops { get; }
 
 			/// <summary>
 			/// Contains information about currents calculated in simulation
 			/// </summary>
-			private IBiasCurrent _Currents { get; }
+			private ICurrentSignalDB<IPhasorDomainSignal> _Currents { get; }
 
 			/// <summary>
 			/// Contains already computed <see cref="ISignalInformation"/>s
