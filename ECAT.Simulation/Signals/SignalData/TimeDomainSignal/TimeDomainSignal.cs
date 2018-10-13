@@ -17,7 +17,10 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public TimeDomainSignal() { }
+		public TimeDomainSignal()
+		{
+			 Interpreter = new TimeDomainSignalInterpreter(this);
+		}
 
 		/// <summary>
 		/// Constructor with parameters, start time is considered 0
@@ -35,7 +38,7 @@ namespace ECAT.Simulation
 		/// <param name="timeStep">Time step between two subsequent values</param>
 		/// <param name="startTime">Start time of the signal</param>
 		/// <exception cref="ArgumentNullException"></exception>
-		public TimeDomainSignal(IEnumerable<double> instantenousValues, double timeStep, double startTime)
+		public TimeDomainSignal(IEnumerable<double> instantenousValues, double timeStep, double startTime) : this()
 		{
 			InstantenousValues = instantenousValues ?? throw new ArgumentNullException(nameof(instantenousValues));
 			TimeStep = timeStep;
@@ -46,7 +49,7 @@ namespace ECAT.Simulation
 		/// Copy constructor
 		/// </summary>
 		/// <exception cref="ArgumentNullException"></exception>
-		public TimeDomainSignal(ITimeDomainSignal signal)
+		public TimeDomainSignal(ITimeDomainSignal signal) : this()
 		{
 			Copy(signal ?? throw new ArgumentNullException(nameof(signal)));
 		}
