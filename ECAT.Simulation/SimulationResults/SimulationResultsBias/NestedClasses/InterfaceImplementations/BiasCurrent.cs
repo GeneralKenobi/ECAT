@@ -1,5 +1,4 @@
-﻿using CSharpEnhanced.CoreClasses;
-using ECAT.Core;
+﻿using ECAT.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,30 +20,12 @@ namespace ECAT.Simulation
 			/// Default constructor, requires two parameters, if either is null, an exception will be thrown
 			/// </summary>
 			/// <param name="voltageDrops">Object contain information about voltage drops calculated in simulation, can't be null</param>
-			/// <param name="activeComponentCurrents">Currents produced by active components, can't be null</param>
+			/// <param name="activeComponentsCurrents">Currents produced by active components, can't be null</param>
 			public BiasCurrent(IVoltageSignalDB<IPhasorDomainSignal> voltageDrops,
-				IEnumerable<KeyValuePair<int, IPhasorDomainSignal>> activeComponentCurrents)
+				IEnumerable<KeyValuePair<int, IPhasorDomainSignal>> activeComponentsCurrents) :
+				base(activeComponentsCurrents)
 			{
 				_VoltageDrops = voltageDrops ?? throw new ArgumentNullException(nameof(voltageDrops));
-
-				// Create a new dictionary
-				_ActiveComponentsCache = new Dictionary<Tuple<int, bool>, Tuple<IPhasorDomainSignal, ISignalInformation>>(
-					// Check if parameter is not null
-					activeComponentCurrents?.
-					// Project it to a tuple with the int key and bool (false, indicating no direction change) and the value
-					Select((x) => new KeyValuePair<Tuple<int, bool>, IPhasorDomainSignal>(new Tuple<int, bool>(x.Key, false), x.Value)).
-					// Concat it with the same currents, this time
-					Concat(activeComponentCurrents.
-					// Project them to a tuple with the int key and bool (true, indicating direction was reversed) and the value negated
-					Select((x) => new KeyValuePair<Tuple<int, bool>, IPhasorDomainSignal>(new Tuple<int, bool>(x.Key, true), x.Value.CopyAndNegate()))).
-					// Finally transform it to a dictionary of required types
-					ToDictionary(
-					// Key stays the same
-					(x) => x.Key,
-					// Value is the signal and information based on it
-					(x) => Tuple.Create(x.Value, IoC.Resolve<ISignalInformation>(x.Value, IoC.Resolve<ICommonSignalDescriptions>().Current)))
-					// If the null check above caught a null value, this operator will result in the exception being thrown
-					?? throw new ArgumentNullException(nameof(activeComponentCurrents)));				
 			}
 
 			#endregion
@@ -55,13 +36,6 @@ namespace ECAT.Simulation
 			/// Contains information about voltage drops calculated in simulation
 			/// </summary>
 			private IVoltageSignalDB<IPhasorDomainSignal> _VoltageDrops { get; }
-
-			/// <summary>
-			/// Cache with currents produced by <see cref="IVoltageSource"/>s, <see cref="IACVoltageSource"/>s and <see cref="IOpAmp"/>s
-			/// For key Item1 is the index of the <see cref="IActiveComponent"/>, Item2 determines whether direction was reversed.
-			/// For value Item1 is the data on which the signal is based, Item2 is information about the signal data.
-			/// </summary>
-			private Dictionary<Tuple<int, bool>, Tuple<IPhasorDomainSignal, ISignalInformation>> _ActiveComponentsCache { get; }
 
 			#endregion
 
@@ -215,24 +189,8 @@ namespace ECAT.Simulation
 			/// <param name="reverseDirection">If true, the direction of the current will be reversed (with the respect to
 			/// the normal direction obtained in simulation)</param>
 			/// <returns></returns>
-			public bool TryGet(int activeComponentIndex, out IPhasorDomainSignal current, bool reverseDirection = false)
-			{
-				// Check if the current is in the cache (If it was not provided during object construction, it's not possible to
-				// calculate it now)
-				if(_ActiveComponentsCache.TryGetValue(
-					new Tuple<int, bool>(activeComponentIndex, reverseDirection) , out var currentPackage))
-				{
-					// If so, assign it and return success
-					current = currentPackage.Item1;
-					return true;
-				}
-				else
-				{
-					// Otherwise assign null and return false
-					current = null;
-					return false;
-				}
-			}
+			public bool TryGet(int activeComponentIndex, out IPhasorDomainSignal current, bool reverseDirection = false) =>
+				TryGetActiveComponentCurrent(activeComponentIndex, out current, reverseDirection);			
 
 			#endregion
 
@@ -266,22 +224,8 @@ namespace ECAT.Simulation
 			/// <param name="reverseDirection">True if the direction of current should be reversed with respect to the one given
 			/// by convention for the specific element (obtained during simulation)</param>
 			/// <returns></returns>
-			public ISignalInformation Get(int activeComponentIndex, bool reverseDirection)
-			{				
-				// Check if the current is in the cache (If it was not provided during object construction, it's not possible to
-				// calculate it now)
-				if (_ActiveComponentsCache.TryGetValue(
-					new Tuple<int, bool>(activeComponentIndex, reverseDirection), out var currentPackage))
-				{
-					// If so, return it
-					return currentPackage.Item2;
-				}
-				else
-				{
-					// Otherwise return null
-					return null;
-				}
-			}
+			public ISignalInformation Get(int activeComponentIndex, bool reverseDirection) =>
+				TryGetActiveComponentCurrent(activeComponentIndex, out ISignalInformation info, reverseDirection) ? info : null;			
 
 			#endregion
 
