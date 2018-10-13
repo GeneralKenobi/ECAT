@@ -11,6 +11,19 @@ namespace ECAT.Simulation
 		/// </summary>
 		private class TimeDomainSignalInterpreter : ISignalDataInterpreter
 		{
+			#region Constructors
+
+			/// <summary>
+			/// Default constructor
+			/// </summary>
+			/// <param name="Signal"></param>
+			public TimeDomainSignalInterpreter(ITimeDomainSignal Signal)
+			{
+				_Signal = Signal ?? throw new ArgumentNullException(nameof(Signal));
+			}
+
+			#endregion
+
 			#region Private properties
 
 			/// <summary>
