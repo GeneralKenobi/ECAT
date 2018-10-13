@@ -1,4 +1,5 @@
 ﻿using ECAT.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -59,16 +60,18 @@ namespace ECAT.Simulation
 				var nodeA = _Data.First((node) => node.Key.Index == nodeAIndex);
 				var nodeB = _Data.First((node) => node.Key.Index == nodeBIndex);
 
+				// Get enumerators of both sequences
 				var nodeAEnum = nodeA.Value.InstantenousValues.GetEnumerator();
 				var nodeBEnum = nodeB.Value.InstantenousValues.GetEnumerator();
-
+				
 				List<double> voltageDropValues = new List<double>();
 
+				// Go through each pair
 				while(nodeAEnum.MoveNext() && nodeBEnum.MoveNext())
 				{
+					// The instantenous voltage drop is a difference between those two potentials
 					voltageDropValues.Add(nodeBEnum.Current - nodeAEnum.Current);
 				}
-
 
 				// Construct the result
 				return IoC.Resolve<ITimeDomainSignal>(voltageDropValues, _TimeStep, _StartTime);					
@@ -96,11 +99,9 @@ namespace ECAT.Simulation
 			/// <param name="nodeToGround">If true, voltage drop is calculated from ground to node given by
 			/// <paramref name="nodeIndex"/>, if false it is calculated from node given by <paramref name="nodeIndex"/> to ground</param>
 			/// <returns></returns>
-			public bool TryGet(int nodeIndex, out ITimeDomainSignal voltage, bool nodeToGround = true)
-			{
-				voltage = null;
-				return false;
-			}
+			public bool TryGet(int nodeIndex, out ITimeDomainSignal voltage, bool nodeToGround = true) => nodeToGround ?
+				TryGet(SimulationManager.GroundNodeIndex, nodeIndex, out voltage) :
+				TryGet(nodeIndex, SimulationManager.GroundNodeIndex, out voltage);
 
 			/// <summary>
 			/// Gets voltage drop between two nodes (with node A being treated as the reference node) or null if unsuccessful and
@@ -112,8 +113,21 @@ namespace ECAT.Simulation
 			/// <returns></returns>
 			public bool TryGet(int nodeAIndex, int nodeBIndex, out ITimeDomainSignal voltage)
 			{
-				voltage = null;
-				return false;
+				// Check if it's possible to get the voltage drop from cache
+				if (TryEnableVoltageDrop(nodeAIndex, nodeBIndex) &&
+					// If the first condition returned true, the element should be in cache but check so as not to crash by accident
+					_Cache.TryGetValue(new Tuple<int, int>(nodeAIndex, nodeBIndex), out var voltagePackage))
+				{
+					// Return the result
+					voltage = voltagePackage.Item1;
+					return true;
+				}
+				// If not return null
+				else
+				{
+					voltage = null;
+					return false;
+				}
 			}
 
 			/// <summary>
@@ -124,11 +138,9 @@ namespace ECAT.Simulation
 			/// <param name="voltageBA">If true, voltage drop is calculated from <see cref="ITwoTerminal.TerminalB"/> to
 			/// <param name="voltage"></param>
 			/// <returns></returns>
-			public bool TryGet(ITwoTerminal component, out ITimeDomainSignal voltage, bool voltageBA = true)
-			{
-				voltage = null;
-				return false;
-			}
+			public bool TryGet(ITwoTerminal component, out ITimeDomainSignal voltage, bool voltageBA = true) => voltageBA ?
+				TryGet(component.TerminalA.NodeIndex, component.TerminalB.NodeIndex, out voltage) :
+				TryGet(component.TerminalB.NodeIndex, component.TerminalA.NodeIndex, out voltage);
 
 			#endregion
 
@@ -141,11 +153,9 @@ namespace ECAT.Simulation
 			/// <param name="nodeToGround">If true, voltage drop is calculated from ground to node given by
 			/// <paramref name="nodeIndex"/>, if false it is calculated from node given by <paramref name="nodeIndex"/> to ground</param>
 			/// <returns></returns>
-			public ISignalInformation Get(int nodeIndex, bool nodeToGround = true)
-			{
-				return null;
-			}
-
+			public ISignalInformation Get(int nodeIndex, bool nodeToGround = true) => nodeToGround ?
+				Get(SimulationManager.GroundNodeIndex, nodeIndex) : Get(nodeIndex, SimulationManager.GroundNodeIndex);
+			
 			/// <summary>
 			/// Gets information on voltage drop between two nodes (with node A being treated as the reference node) or returns null
 			/// if unsuccessful
@@ -155,7 +165,19 @@ namespace ECAT.Simulation
 			/// <returns></returns>
 			public ISignalInformation Get(int nodeAIndex, int nodeBIndex)
 			{
-				return null;
+				// Check if it's possible to get the voltage drop from cache
+				if (TryEnableVoltageDrop(nodeAIndex, nodeBIndex) &&
+					// If the first condition returned true, the element should be in cache but check so as not to crash by accident
+					_Cache.TryGetValue(new Tuple<int, int>(nodeAIndex, nodeBIndex), out var voltagePackage))
+				{
+					// Return the result
+					return voltagePackage.Item2;
+				}
+				// If not return null
+				else
+				{
+					return null;
+				}
 			}
 
 			/// <summary>
@@ -164,10 +186,9 @@ namespace ECAT.Simulation
 			/// <param name="component"></param>
 			/// <param name="voltageBA">If true, voltage drop is calculated from <see cref="ITwoTerminal.TerminalB"/> to
 			/// <returns></returns>
-			public ISignalInformation Get(ITwoTerminal component, bool voltageBA = true)
-			{
-				return null;
-			}
+			public ISignalInformation Get(ITwoTerminal component, bool voltageBA = true) => voltageBA ?
+				Get(component.TerminalA.NodeIndex, component.TerminalB.NodeIndex) :
+				Get(component.TerminalB.NodeIndex, component.TerminalA.NodeIndex);
 
 			#endregion
 
