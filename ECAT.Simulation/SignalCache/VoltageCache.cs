@@ -9,9 +9,8 @@ namespace ECAT.Simulation
 	/// <summary>
 	/// Base class that may be used when implementing <see cref="IVoltageDB"/> that allows for easy caching of voltage drops.
 	/// </summary>
-	/// <typeparam name="TPotential">Type node potential data</typeparam>
 	/// <typeparam name="TSignal">Type of signal that is created</typeparam>
-	internal abstract class VoltageCache<TPotential, TSignal> : SignalCache<Tuple<int, int>, TSignal> where TSignal : ISignalData
+	internal abstract class VoltageCache<TSignal> : SignalCache<Tuple<int, int>, TSignal> where TSignal : ISignalData
 	{
 		#region Constructors
 
@@ -20,7 +19,7 @@ namespace ECAT.Simulation
 		/// </summary>
 		/// <param name="data">Data obtained during simulation; potentials at nodes</param>
 		/// <exception cref="ArgumentNullException"></exception>
-		protected VoltageCache(IEnumerable<KeyValuePair<INode, TPotential>> data)
+		protected VoltageCache(IEnumerable<KeyValuePair<INode, TSignal>> data)
 			// Compare the elements of the Tuples, not tuples themselves
 			: base (new CustomEqualityComparer<Tuple<int, int>>((x, y) => x.Item1 == y.Item1 && x.Item2 == y.Item2))
 		{
@@ -29,7 +28,7 @@ namespace ECAT.Simulation
 				throw new ArgumentNullException(nameof(data));
 			}
 
-			_Data = new Dictionary<INode, TPotential>(data.ToDictionary((x) => x.Key, (x) => x.Value));
+			_Data = new Dictionary<INode, TSignal>(data.ToDictionary((x) => x.Key, (x) => x.Value));
 		}
 
 		#endregion
@@ -39,7 +38,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Data obtained during simulation
 		/// </summary>
-		protected Dictionary<INode, TPotential> _Data { get; }
+		protected Dictionary<INode, TSignal> _Data { get; }
 
 		#endregion
 

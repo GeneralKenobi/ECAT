@@ -11,7 +11,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Manages voltage-related results
 		/// </summary>
-		private class TimeVoltage : VoltageCache<ITimeDomainSignal, ITimeDomainSignal>, IVoltageDB, IVoltageSignalDB<ITimeDomainSignal>
+		private class TimeVoltage : VoltageCache<ITimeDomainSignal>, IVoltageDB, IVoltageSignalDB<ITimeDomainSignal>
 		{
 			#region Constructors
 

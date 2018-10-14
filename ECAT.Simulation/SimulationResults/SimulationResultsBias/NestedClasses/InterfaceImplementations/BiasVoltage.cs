@@ -12,7 +12,7 @@ namespace ECAT.Simulation
 		/// Provides functionality connected with storing, calculating and exposing voltage drops and information about them in
 		/// form of <see cref="IPhasorDomainSignal"/>s and <see cref="ISignalInformation"/>
 		/// </summary>
-		private class BiasVoltage : VoltageCache<IPhasorDomainSignal, IPhasorDomainSignal>, IVoltageDB, IVoltageSignalDB<IPhasorDomainSignal>
+		private class BiasVoltage : VoltageCache<IPhasorDomainSignal>, IVoltageDB, IVoltageSignalDB<IPhasorDomainSignal>
 		{
 			#region Constructors
 
