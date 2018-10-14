@@ -1,4 +1,5 @@
-﻿using ECAT.Core;
+﻿using CSharpEnhanced.Helpers;
+using ECAT.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,25 +23,7 @@ namespace ECAT.Simulation
 			/// <param name="startTime">Start time of the simulation</param>
 			/// <param name="timeStep">Time step of the simulation - difference between two subsequent simulation points</param>
 			/// <exception cref="ArgumentNullException"></exception>
-			public TimeVoltage(IEnumerable<KeyValuePair<INode, ITimeDomainSignal>> data, double timeStep, double startTime) : base(data)
-			{
-				_TimeStep = timeStep;
-				_StartTime = startTime;
-			}
-
-			#endregion
-
-			#region Private properties
-
-			/// <summary>
-			/// Time step of the simulation - difference between two subsequent simulation points
-			/// </summary>
-			private double _TimeStep { get; }
-
-			/// <summary>
-			/// Start time of the simulation
-			/// </summary>
-			private double _StartTime { get; }
+			public TimeVoltage(IEnumerable<KeyValuePair<INode, ITimeDomainSignal>> data) : base(data) { }
 
 			#endregion
 
@@ -57,24 +40,32 @@ namespace ECAT.Simulation
 			protected override ITimeDomainSignal ConstructVoltageDrop(int nodeAIndex, int nodeBIndex)
 			{
 				// Get the nodes
-				var nodeA = _Data.First((node) => node.Key.Index == nodeAIndex);
-				var nodeB = _Data.First((node) => node.Key.Index == nodeBIndex);
+				var nodeA = _Data.First((node) => node.Key.Index == nodeAIndex).Value;
+				var nodeB = _Data.First((node) => node.Key.Index == nodeBIndex).Value;
 
-				// Get enumerators of both sequences
-				var nodeAEnum = nodeA.Value.InstantenousValues.GetEnumerator();
-				var nodeBEnum = nodeB.Value.InstantenousValues.GetEnumerator();
+				// Construct a result
+				var result = IoC.Resolve<ITimeDomainSignalMutable>(nodeA.Samples, nodeA.TimeStep, nodeA.StartTime);
 				
-				List<double> voltageDropValues = new List<double>();
-
-				// Go through each pair
-				while(nodeAEnum.MoveNext() && nodeBEnum.MoveNext())
+				// Add waveforms of frequencies only appearing on node B (unlikely any will appear but it can't be neglected)
+				foreach(var nodeBPotential in nodeB.ComposingWaveforms.Keys.Except(nodeA.ComposingWaveforms.Keys))
 				{
-					// The instantenous voltage drop is a difference between those two potentials
-					voltageDropValues.Add(nodeBEnum.Current - nodeAEnum.Current);
+					result.AddWaveform(nodeBPotential, nodeB.ComposingWaveforms[nodeBPotential]);
 				}
 
-				// Construct the result
-				return IoC.Resolve<ITimeDomainSignal>(voltageDropValues, _TimeStep, _StartTime);					
+				// Add waveforms of frequencies only appearing on node A (unlikely any will appear but it can't be neglected)
+				foreach (var nodeAPotential in nodeA.ComposingWaveforms.Keys.Except(nodeB.ComposingWaveforms.Keys))
+				{
+					// Negate each waveform (potentials from node A should be subtracted from the voltage drop)
+					result.AddWaveform(nodeAPotential, nodeA.ComposingWaveforms[nodeAPotential].Select((x) => -x));
+				}
+
+				// Finally take care of waveforms that appear on both nodes
+				nodeA.ComposingWaveforms.Keys.Intersect(nodeB.ComposingWaveforms.Keys).
+					// For each waveform, add it to result by subtracting instantenous values of each composing waveform (nodeB - nodeA)
+					ForEach((freq) => result.AddWaveform(freq, nodeB.ComposingWaveforms[freq].
+						MergeSelect(nodeA.ComposingWaveforms[freq], (x, y) => y - x)));
+				
+				return result;
 			}
 
 			/// <summary>
