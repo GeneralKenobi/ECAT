@@ -1,8 +1,10 @@
-﻿using ECAT.Core;
+﻿using CSharpEnhanced.Helpers;
+using ECAT.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 
 namespace ECAT.Simulation
 {
@@ -75,8 +77,25 @@ namespace ECAT.Simulation
 		public void ACFullCycle(ISchematic schematic)
 		{
 			// Mock results for now
+
+			var n1signal = IoC.Resolve<ITimeDomainSignalMutable>(100, 1d);
+			var n2signal = IoC.Resolve<ITimeDomainSignalMutable>(100, 1d);
+			n1signal.AddWaveform(5, (100).ToSequence().Select((x) => 0d));
+			n2signal.AddWaveform(5, (100).ToSequence().Select((x) => Math.Sin(Math.PI * x / 10)));
+
+			var mockResults = new KeyValuePair<INode, ITimeDomainSignal>[]
+			{				
+				new KeyValuePair<INode, ITimeDomainSignal>(new Node(){Index = 0 }, n1signal),
+				new KeyValuePair<INode, ITimeDomainSignal>(new Node(){Index = 1 }, n2signal),
+			} as IEnumerable<KeyValuePair<INode, ITimeDomainSignal>>;
+
 			IoC.Resolve<SimulationResultsProvider>().Value =
-				new SimulationResultsTime();
+				new SimulationResultsTime(mockResults,
+				Enumerable.Empty<KeyValuePair<int, ITimeDomainSignal>>(), 1d, 0d);
+
+			(schematic.Components.First((x) => x is IResistor) as IResistor).TerminalA.NodeIndex = 1;
+
+			SimulationCompleted?.Invoke(this, new SimulationCompletedEventArgs(SimulationType.ACDC));
 		}
 
 		#endregion
