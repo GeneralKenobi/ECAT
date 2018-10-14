@@ -10,11 +10,16 @@ namespace ECAT.Core
 	[NecessaryService]
 	[ConstructorDeclaration]
 	[ConstructorDeclaration(typeof(ITimeDomainSignal), "Copy constructor")]
-	[ConstructorDeclaration(new Type[] { typeof(IEnumerable<double>), typeof(double)}, "Instantenous Values", "Time step", "Start time is equal to 0")]
-	[ConstructorDeclaration(new Type[] { typeof(IEnumerable<double>), typeof(double), typeof(double)}, "Instantenous Values", "Time step", "Start time")]
+	[ConstructorDeclaration(new Type[] { typeof(int), typeof(double)}, "Samples", "Time step", "Start time is equal to 0")]
+	[ConstructorDeclaration(new Type[] { typeof(int), typeof(double), typeof(double)}, "Samples", "Time step", "Start time")]
 	public interface ITimeDomainSignal : ISignalData, IShallowCopy<ITimeDomainSignal>
 	{
 		#region Properties
+
+		/// <summary>
+		/// Number of samples in this signal
+		/// </summary>
+		int Samples { get; }
 
 		/// <summary>
 		/// Start time of the simulation, in seconds
@@ -29,7 +34,12 @@ namespace ECAT.Core
 		/// <summary>
 		/// List with calculated instantenous values
 		/// </summary>
-		IEnumerable<double> InstantenousValues { get; }
+		IEnumerable<double> FinalWaveform { get; }
+
+		/// <summary>
+		/// Dictionary of instantenous values of waveforms that compose this signal; key is the frequency of the wave
+		/// </summary>
+		IReadOnlyDictionary<double, IEnumerable<double>> ComposingWaveforms { get; }
 
 		#endregion
 
