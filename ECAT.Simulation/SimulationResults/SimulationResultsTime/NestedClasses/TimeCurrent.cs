@@ -1,6 +1,7 @@
 ﻿using ECAT.Core;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ECAT.Simulation
 {
@@ -105,7 +106,16 @@ namespace ECAT.Simulation
 				if (_VoltageDrops.TryGet(element, out var voltageDrop, voltageBA))
 				{
 					// If successful, create a new current signal based on it, cache it
-					current = IoC.Resolve<ITimeDomainSignal>();
+					var result = IoC.Resolve<ITimeDomainSignalMutable>(voltageDrop.Samples, voltageDrop.TimeStep, voltageDrop.StartTime);
+
+					// Current is composed of each voltage waveform times admittanceo of the element
+					foreach(var waveform in voltageDrop.ComposingWaveforms)
+					{
+						result.AddWaveform(
+							waveform.Key, waveform.Value.Select((x) => x * element.GetAdmittance(waveform.Key).Magnitude));
+					}
+
+					current = result;
 
 					// And return success
 					return true;
