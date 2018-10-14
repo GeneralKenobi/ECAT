@@ -129,7 +129,7 @@ namespace ECAT.Simulation
 		/// </summary>
 		/// <param name="frequency"></param>
 		/// <param name="values"></param>
-		protected void AddWaveform(double frequency, IEnumerable<double> values)
+		protected void AddWaveformToComposingWaveforms(double frequency, IEnumerable<double> values)
 		{
 			if(values.Count() != Samples)
 			{
@@ -178,7 +178,7 @@ namespace ECAT.Simulation
 			Samples = obj.Samples;
 
 			ClearWaveforms();
-			obj.ComposingWaveforms.ForEach((x) => AddWaveform(x.Key, x.Value));
+			obj.ComposingWaveforms.ForEach((x) => AddWaveformToComposingWaveforms(x.Key, x.Value));
 		}
 
 		/// <summary>
@@ -195,7 +195,7 @@ namespace ECAT.Simulation
 		{
 			var result = new TimeDomainSignal(Samples, TimeStep, StartTime);
 
-			ComposingWaveforms.ForEach((x) => result.AddWaveform(x.Key, x.Value));
+			ComposingWaveforms.ForEach((x) => result.AddWaveformToComposingWaveforms(x.Key, x.Value));
 
 			return result;
 		}
