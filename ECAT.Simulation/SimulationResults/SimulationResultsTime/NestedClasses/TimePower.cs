@@ -69,10 +69,20 @@ namespace ECAT.Simulation
 					// If both voltage and current were obtained
 					if(current != null)
 					{
-						power = IoC.Resolve<ITimeDomainSignal>(
-							voltage.InstantenousValues.MergeSelect(current.InstantenousValues, (x, y) => x * y),
-							voltage.TimeStep,
-							current.StartTime);
+						var result = IoC.Resolve<ITimeDomainSignalMutable>(voltage.Samples, voltage.TimeStep, voltage.StartTime);
+
+						// The result is a product of voltage and current waveforms
+						voltage.ComposingWaveforms.
+							// First merge the data
+							MergeSelect(current.ComposingWaveforms, (v,i) => Tuple.Create(
+								// Key is the frequency of the waveform
+								v.Key,
+								// Value is a sequence of instantenous values of signal (product of voltage and current)
+								v.Value.MergeSelect(i.Value, (x,y) => x*y))).
+							// Add each waveform to the result
+							ForEach((x) => result.AddWaveform(x.Item1, x.Item2));
+
+						power = result;
 					}
 				}
 
