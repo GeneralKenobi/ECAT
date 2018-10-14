@@ -6,7 +6,7 @@ using System.Numerics;
 namespace ECAT.Simulation
 {
 	/// <summary>
-	/// Extension of <see cref="INodePotentialBias"/> that allows for adding/modifying values of public properties of the inherited
+	/// Extension of <see cref="IPhasorDomainSignal"/> that allows for adding/modifying values of public properties of the inherited
 	/// interface
 	/// </summary>
 	[NecessaryService]
