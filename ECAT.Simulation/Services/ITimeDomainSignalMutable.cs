@@ -11,8 +11,8 @@ namespace ECAT.Simulation
 	[NecessaryService]
 	[ConstructorDeclaration]
 	[ConstructorDeclaration(typeof(ITimeDomainSignal), "Copy constructor")]
-	[ConstructorDeclaration(new Type[] { typeof(int), typeof(double) },"Samples", "Instantenous Values", "Time step", "Start time is equal to 0")]
-	[ConstructorDeclaration(new Type[] { typeof(int), typeof(double), typeof(double) }, "Samples", "Instantenous Values", "Time step", "Start time")]
+	[ConstructorDeclaration(new Type[] { typeof(int), typeof(double) },"Samples", "Time step", "Start time is equal to 0")]
+	[ConstructorDeclaration(new Type[] { typeof(int), typeof(double), typeof(double) }, "Samples", "Time step", "Start time")]
 	public interface ITimeDomainSignalMutable : ITimeDomainSignal
     {
 		#region Methods
