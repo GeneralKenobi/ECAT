@@ -39,25 +39,25 @@ namespace ECAT.Simulation
 			/// Calculates and returns the maximum instantenous value of the signal
 			/// </summary>
 			/// <returns></returns>
-			public double Maximum() => _Signal.InstantenousValues.Max();
+			public double Maximum() => _Signal.FinalWaveform.Max();
 
 			/// <summary>
 			/// Calculates and returns the minimum instantenous value of the signal
 			/// </summary>
 			/// <returns></returns>
-			public double Minimum() => _Signal.InstantenousValues.Min();
+			public double Minimum() => _Signal.FinalWaveform.Min();
 
 			/// <summary>
 			/// Calculates and returns the root-mean-square value of the signal
 			/// </summary>
 			/// <returns></returns>
-			public double RMS() => Math.Sqrt(_Signal.InstantenousValues.Sum((x) => Math.Pow(x, 2)) / _Signal.InstantenousValues.Count());
+			public double RMS() => Math.Sqrt(_Signal.FinalWaveform.Sum((x) => Math.Pow(x, 2)) / _Signal.FinalWaveform.Count());
 
 			/// <summary>
 			/// Returns the average value of the signal
 			/// </summary>
 			/// <returns></returns>
-			public double Average() => _Signal.InstantenousValues.Average();
+			public double Average() => _Signal.FinalWaveform.Average();
 
 			#endregion
 		}
