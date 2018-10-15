@@ -22,7 +22,7 @@ namespace ECAT.Simulation
 		public SimulationResultsTime(IEnumerable<KeyValuePair<INode, ITimeDomainSignal>> nodes,
 			IEnumerable<KeyValuePair<int, ITimeDomainSignal>> activeComponentsCurrents, double timeStep, double startTime)
 		{
-			var biasVoltage = new TimeVoltage(nodes ?? throw new ArgumentNullException(nameof(nodes)), timeStep, startTime);
+			var biasVoltage = new TimeVoltage(nodes ?? throw new ArgumentNullException(nameof(nodes)));
 			var biasCurrent = new TimeCurrent(
 				biasVoltage, activeComponentsCurrents ?? throw new ArgumentNullException(nameof(activeComponentsCurrents)));
 
