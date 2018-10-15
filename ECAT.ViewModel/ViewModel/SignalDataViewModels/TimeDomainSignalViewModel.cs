@@ -25,7 +25,7 @@ namespace ECAT.ViewModel
 				throw new ArgumentNullException(nameof(signal));
 			}
 
-			Data = signal.InstantenousValues.
+			Data = signal.FinalWaveform.
 				Select((value, counter) => new KeyValuePair<double, double>(signal.StartTime + counter * signal.TimeStep, value));
 
 			YUnit = unit ?? throw new ArgumentNullException(nameof(unit));
