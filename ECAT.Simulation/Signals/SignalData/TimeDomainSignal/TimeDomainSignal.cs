@@ -148,7 +148,17 @@ namespace ECAT.Simulation
 				_ComposingWaveforms.Add(frequency, values);
 			}
 
-			values.ForEach((x, i) => _FinalWaveform[i] += x);
+			// If there are no entries in the final waveform collection
+			if(_FinalWaveform.Count() == 0)
+			{
+				// Add the new waveform to the final waveform
+				values.ForEach((x) => _FinalWaveform.Add(x));
+			}
+			else
+			{
+				// Otherwise add values to the existing ones
+				values.ForEach((x, i) => _FinalWaveform[i] += x);
+			}
 		}
 
 		#endregion
