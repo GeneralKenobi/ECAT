@@ -7,7 +7,7 @@ namespace ECAT.Simulation
 	/// <summary>
 	/// Extension of <see cref="TimeDomainSignal"/> (and <see cref="Core.ITimeDomainSignal"/>) that allows for mutating values
 	/// </summary>
-	[RegisterAsType(typeof(IPhasorDomainSignalMutable))]
+	[RegisterAsType(typeof(ITimeDomainSignalMutable))]
 	public class TimeDomainSignalMutable : TimeDomainSignal, ITimeDomainSignalMutable
     {
 		#region Constructors
