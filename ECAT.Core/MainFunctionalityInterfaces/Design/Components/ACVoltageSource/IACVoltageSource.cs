@@ -3,9 +3,14 @@
 	/// <summary>
 	/// Interface for alternating voltage sources
 	/// </summary>
-	public interface IACVoltageSource : IVoltageSource
-    {
+	public interface IACVoltageSource : ITwoTerminal, IActiveComponent
+	{
 		#region Properties
+
+		/// <summary>
+		/// DC voltage produced by this <see cref="IVoltageSource"/>
+		/// </summary>
+		double ProducedDCVoltage { get; set; }
 
 		/// <summary>
 		/// Frequency of the AC voltage produced by this <see cref="IACVoltageSource"/>
