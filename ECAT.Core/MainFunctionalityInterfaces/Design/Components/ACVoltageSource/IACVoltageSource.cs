@@ -8,7 +8,7 @@
 		#region Properties
 
 		/// <summary>
-		/// DC voltage produced by this <see cref="IVoltageSource"/>
+		/// DC voltage produced by this <see cref="IACVoltageSource"/>
 		/// </summary>
 		double ProducedDCVoltage { get; set; }
 
