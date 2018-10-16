@@ -68,7 +68,7 @@ namespace ECAT.Simulation
 		public double DefaultCurrentSourceProducedCurrent { get; } = 1e-3;
 
 		/// <summary>
-		/// Default value for <see cref="IVoltageSource"/>'s produced voltage
+		/// Default value for <see cref="IDCVoltageSource"/>'s produced voltage
 		/// </summary>
 		public double DefaultVoltageSourceProducedVoltage { get; } = 5;
 

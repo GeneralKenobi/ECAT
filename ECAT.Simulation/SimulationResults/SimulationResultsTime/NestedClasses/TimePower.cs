@@ -139,12 +139,12 @@ namespace ECAT.Simulation
 				TryEnablePower(currentSource) && _Cache.TryGetValue(currentSource, out var power) ? power.Item2 : null;
 
 			/// <summary>
-			/// Gets information about power on an <see cref="IVoltageSource"/>
+			/// Gets information about power on an <see cref="IDCVoltageSource"/>
 			/// </summary>
 			/// <param name="current"></param>
 			/// <param name="voltageSource"></param>
 			/// <returns></returns>
-			public ISignalInformation Get(IVoltageSource voltageSource) =>
+			public ISignalInformation Get(IDCVoltageSource voltageSource) =>
 				// Check if power can be enabled and if it can be fetched, if so return it, otherwise return null
 				TryEnablePower(voltageSource) && _Cache.TryGetValue(voltageSource, out var power) ? power.Item2 : null;
 

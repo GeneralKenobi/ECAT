@@ -102,7 +102,7 @@ namespace ECAT.Simulation
 			/// </summary>
 			/// <param name="voltageSource"></param>
 			/// <returns></returns>
-			private bool TryEnablePower(IVoltageSource voltageSource) =>
+			private bool TryEnablePower(IDCVoltageSource voltageSource) =>
 				// Check if the cache already contains an entry, otherwise try to construct it
 				_Cache.ContainsKey(voltageSource) || TryConstructPower(voltageSource);
 
@@ -111,7 +111,7 @@ namespace ECAT.Simulation
 			/// </summary>
 			/// <param name="element"></param>
 			/// <returns></returns>
-			private bool TryConstructPower(IVoltageSource voltageSource)
+			private bool TryConstructPower(IDCVoltageSource voltageSource)
 			{
 				// Try to get voltage drop across the element
 				if (_Currents.TryGet(voltageSource.ActiveComponentIndex, out var current))
@@ -240,12 +240,12 @@ namespace ECAT.Simulation
 				TryEnablePower(currentSource) && _Cache.TryGetValue(currentSource, out var power) ? power : null;
 
 			/// <summary>
-			/// Gets information about power on an <see cref="IVoltageSource"/>
+			/// Gets information about power on an <see cref="IDCVoltageSource"/>
 			/// </summary>
 			/// <param name="current"></param>
 			/// <param name="voltageSource"></param>
 			/// <returns></returns>
-			public ISignalInformation Get(IVoltageSource voltageSource) =>
+			public ISignalInformation Get(IDCVoltageSource voltageSource) =>
 				// Check if power can be enabled and if it can be fetched, if so return it, otherwise return null
 				TryEnablePower(voltageSource) && _Cache.TryGetValue(voltageSource, out var power) ? power : null;
 

@@ -24,12 +24,12 @@
 		ISignalInformation Get(ICurrentSource currentSource);
 
 		/// <summary>
-		/// Gets information about power on an <see cref="IVoltageSource"/>
+		/// Gets information about power on an <see cref="IDCVoltageSource"/>
 		/// </summary>
 		/// <param name="current"></param>
 		/// <param name="voltageSource"></param>
 		/// <returns></returns>
-		ISignalInformation Get(IVoltageSource voltageSource);
+		ISignalInformation Get(IDCVoltageSource voltageSource);
 
 		/// <summary>
 		/// Gets information about power on an <see cref="IACVoltageSource"/>. If the <paramref name="current"/> is composed of

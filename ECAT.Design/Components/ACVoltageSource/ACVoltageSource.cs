@@ -7,7 +7,7 @@ namespace ECAT.Design
 	/// </summary>
 	[DisplayCurrentInfo(sectionIndex: 1)]
 	[DisplayPowerInfo(sectionIndex: 2)]
-	public class ACVoltageSource : VoltageSource, IACVoltageSource
+	public class ACVoltageSource : DCVoltageSource, IACVoltageSource
 	{
 		#region Constructor
 

@@ -55,7 +55,7 @@ namespace ECAT.Design
 		private Dictionary<ComponentIDEnumeration, Type> _AssociatedInterfaces { get; } = new Dictionary<ComponentIDEnumeration, Type>()
 		{
 			{ ComponentIDEnumeration.Resistor, typeof(IResistor) },
-			{ ComponentIDEnumeration.VoltageSource, typeof(IVoltageSource) },
+			{ ComponentIDEnumeration.VoltageSource, typeof(IDCVoltageSource) },
 			{ ComponentIDEnumeration.CurrentSource, typeof(ICurrentSource) },
 			{ ComponentIDEnumeration.Ground, typeof(IGround) },
 			{ ComponentIDEnumeration.OpAmp, typeof(IOpAmp) },
@@ -76,7 +76,7 @@ namespace ECAT.Design
 		private Dictionary<Type, Type> _AssociatedTypes { get; } = new Dictionary<Type, Type>()
 		{
 			{ typeof(IResistor), typeof(Resistor) },
-			{ typeof(IVoltageSource), typeof(VoltageSource) },
+			{ typeof(IDCVoltageSource), typeof(DCVoltageSource) },
 			{ typeof(ICurrentSource), typeof(CurrentSource) },
 			{ typeof(IGround), typeof(Ground) },
 			{ typeof(IOpAmp), typeof(OpAmp) },

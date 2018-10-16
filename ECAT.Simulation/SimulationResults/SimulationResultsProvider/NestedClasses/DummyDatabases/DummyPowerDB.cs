@@ -33,7 +33,7 @@ namespace ECAT.Simulation
 			/// <param name="current"></param>
 			/// <param name="voltageSource"></param>
 			/// <returns></returns>
-			public ISignalInformation Get(IVoltageSource voltageSource) => null;
+			public ISignalInformation Get(IDCVoltageSource voltageSource) => null;
 
 			/// <summary>
 			/// Returns null

@@ -50,7 +50,7 @@ namespace ECAT.Simulation
 		#region Protected properties
 
 		/// <summary>
-		/// Cache with currents produced by <see cref="IVoltageSource"/>s, <see cref="IACVoltageSource"/>s and <see cref="IOpAmp"/>s
+		/// Cache with currents produced by <see cref="IDCVoltageSource"/>s, <see cref="IACVoltageSource"/>s and <see cref="IOpAmp"/>s
 		/// For key Item1 is the index of the <see cref="IActiveComponent"/>, Item2 determines whether direction was reversed.
 		/// For value Item1 is the data on which the signal is based, Item2 is information about the signal data.
 		/// </summary>

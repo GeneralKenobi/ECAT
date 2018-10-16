@@ -66,7 +66,7 @@ namespace ECAT.Core
 		double DefaultCurrentSourceProducedCurrent { get; }
 
 		/// <summary>
-		/// Default value for <see cref="IVoltageSource"/>'s produced voltage
+		/// Default value for <see cref="IDCVoltageSource"/>'s produced voltage
 		/// </summary>
 		double DefaultVoltageSourceProducedVoltage { get; }
 

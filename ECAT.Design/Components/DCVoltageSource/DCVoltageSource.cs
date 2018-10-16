@@ -10,14 +10,14 @@ namespace ECAT.Design
 	/// </summary>
 	[DisplayCurrentInfo(sectionIndex: 1)]
 	[DisplayPowerInfo(sectionIndex: 2)]
-	public class VoltageSource : TwoTerminal, IVoltageSource
+	public class DCVoltageSource : TwoTerminal, IDCVoltageSource
 	{
 		#region Constructors
 
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public VoltageSource()
+		public DCVoltageSource()
 		{
 			// Reverse directions by default - voltage source usually produces current that flows in the same direction as is the
 			// direction of the produced voltage drop
@@ -34,11 +34,11 @@ namespace ECAT.Design
 		private Complex _Admittance { get; } = IoC.Resolve<IDefaultValues>().VoltageSourceAdmittance;
 
 		#endregion
-		
+
 		#region Public properties		
 
 		/// <summary>
-		/// DC voltage produced by this <see cref="IVoltageSource"/>
+		/// DC voltage produced by this <see cref="IDCVoltageSource"/>
 		/// </summary>
 		public double ProducedDCVoltage { get; set; } = IoC.Resolve<IDefaultValues>().DefaultVoltageSourceProducedVoltage;
 
@@ -52,7 +52,7 @@ namespace ECAT.Design
 		#region Protected methods
 
 		/// <summary>
-		/// Returns the admittance of an <see cref="IVoltageSource"/>
+		/// Returns the admittance of an <see cref="IDCVoltageSource"/>
 		/// </summary>
 		/// <param name="frequency"></param>
 		/// <returns></returns>

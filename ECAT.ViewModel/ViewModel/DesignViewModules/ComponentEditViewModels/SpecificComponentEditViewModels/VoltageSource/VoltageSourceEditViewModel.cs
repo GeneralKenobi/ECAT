@@ -5,7 +5,7 @@ namespace ECAT.ViewModel
 	/// <summary>
 	/// View model for edits specific to <see cref="IVoltageSource"/>
 	/// </summary>
-	public class VoltageSourceEditViewModel : SpecificComponentEditViewModel<IVoltageSource>
+	public class VoltageSourceEditViewModel : SpecificComponentEditViewModel<IDCVoltageSource>
     {
 		#region Constructor
 
