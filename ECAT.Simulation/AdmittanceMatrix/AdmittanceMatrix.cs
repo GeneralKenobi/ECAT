@@ -92,6 +92,20 @@ namespace ECAT.Simulation
 		}
 
 		/// <summary>
+		/// Solve the system for the current configuration
+		/// </summary>
+		private IEnumerable<Complex[]> SolveTimeDomain(double timeStep, double finalTime)
+		{
+			// Keep calculating results and adjusting op-amps into saturation until all op-amps are within their supply voltages
+
+			for (double time = 0; time <= finalTime; time += timeStep)
+			{
+				SetACVoltageSourcesForTime(time);
+				yield return LinearEquations.SimplifiedGaussJordanElimination(ComputeCoefficientMatrix(), ComputeFreeTermsMatrix(), true);
+			}
+		}
+
+		/// <summary>
 		/// Checks if <see cref="IOpAmp"/>s operate in the proper region (if they didn't exceed their supply voltages.) If they don't,
 		/// adjusts the <see cref="_B"/>, <see cref="_C"/> and <see cref="_E"/> matrices so that, instead of being variable voltage
 		/// sources, they are independent voltage sources capped at their supply voltage value. Returns true if an <see cref="IOpAmp"/>
@@ -149,18 +163,7 @@ namespace ECAT.Simulation
 		#endregion
 
 		#region Public methods
-
-		private void AssignDCResultsA(IEnumerable<KeyValuePair<INode, IPhasorDomainSignalMutable>> nodePotentials,
-			IEnumerable<KeyValuePair<int, IPhasorDomainSignalMutable>> activeComponentsCurrents, Complex[] results)
-		{
-			_Results.ForEach((x, i) => x.Value.SetDC(results[i].Real));
-		}
-
-		private void AssignACResultsA(double frequency, Complex[] results)
-		{
-			_Results.ForEach((x, i) => x.Value.AddPhasor(frequency, results[i]));
-		}
-
+		
 		/// <summary>
 		/// Performs a bias simulation of the schematic - calculates symbolical, time-independent voltages and currents produced by
 		/// voltage sources.
@@ -209,18 +212,20 @@ namespace ECAT.Simulation
 					ConfigureForFrequency(_FrequenciesInCircuit[i]);
 
 					// Get a subresult
-					AssignACResultsA(_FrequenciesInCircuit[i], Solve(false));
 					var result = Solve(false);
 
 					for (int j = 0; j < result.Length; ++j)
 					{
-						if (j < potentials.Count)
+						// -1 because result does not contain value for reference node (which is always 0)
+						if (j < potentials.Count - 1)
 						{
-							potentials.ElementAt(j).Value.AddPhasor(_FrequenciesInCircuit[i], result[j]);
+							// +1 to skip the reference node
+							potentials.ElementAt(j + 1).Value.AddPhasor(_FrequenciesInCircuit[i], result[j]);
 						}
 						else
 						{
-							activeCurrents.ElementAt(j - potentials.Count).Value.AddPhasor(_FrequenciesInCircuit[i], result[j]);
+							// -1 adjusts the indexing for reference node which is not included in result array
+							activeCurrents.ElementAt(j - (potentials.Count - 1)).Value.AddPhasor(_FrequenciesInCircuit[i], result[j]);
 						}
 					}
 				}
@@ -230,8 +235,83 @@ namespace ECAT.Simulation
 			activeComponentsCurrents = activeCurrents.ToDictionary((x) => x.Key, (x) => (IPhasorDomainSignal)x.Value);
 		}
 
+		/// <summary>
+		/// Performs a bias simulation of the schematic - calculates symbolical, time-independent voltages and currents produced by
+		/// voltage sources.
+		/// </summary>
+		/// <param name="simulationType"></param>
+		public void ACCycle(out IEnumerable<KeyValuePair<INode, ITimeDomainSignal>> nodePotentials,
+			out IEnumerable<KeyValuePair<int, ITimeDomainSignal>> activeComponentsCurrents)
+		{
+			var timeStep =  1d / (20d*GetHighestFrequencyOfVoltageSource());
+			var finalTime = 1 / GetLowestFrequencyOfVoltageSource();
+
+			var potentials = new Dictionary<INode, ITimeDomainSignalMutable>(GetNodes().
+				ToDictionary((x) => x, (x) => IoC.Resolve<ITimeDomainSignalMutable>(
+					(int)Math.Round(finalTime/timeStep), timeStep)));
+
+			var activeCurrents = new Dictionary<int, ITimeDomainSignalMutable>(_ActiveComponentsCount.ToSequence().
+				ToDictionary((x) => x, (x) => IoC.Resolve<ITimeDomainSignalMutable>(
+					(int)Math.Round(finalTime / timeStep), timeStep)));
+
+			// Configure for DC and assign result to combinedResult
+			ConfigureForFrequency(0);
+
+			var results = SolveTimeDomain(timeStep, finalTime);
+			var dim = results.First().Length;
+
+			for(int i=0; i<dim; ++i)
+			{
+				var index = i;
+				var waveform = results.Select((x) => x[index]);
+
+				// -1 because result does not contain value for reference node (which is always 0)
+				if (i < potentials.Count - 1)
+				{
+					// +1 to skip the reference node
+					potentials.ElementAt(i + 1).Value.AddWaveform(0, waveform.Select((x) => x.Real));
+				}
+				else
+				{
+					// -1 adjusts the indexing for reference node which is not included in result array
+					activeCurrents.ElementAt(i - (potentials.Count - 1)).Value.AddWaveform(0, waveform.Select((x) => x.Real));					
+				}
+			}
+			
+			// For each frequency in the circuit
+			for (int i = 0; i < _FrequenciesInCircuit.Count; ++i)
+			{
+				// Configure the matrix for that frequency
+				ConfigureForFrequency(_FrequenciesInCircuit[i]);
+
+				// Get a subresult
+				results = SolveTimeDomain(timeStep, finalTime);
+
+				for (int j = 0; j < dim; ++j)
+				{
+					var index = j;
+					var waveform = results.Select((x) => x[index]);
+
+					// -1 because result does not contain value for reference node (which is always 0)
+					if (j < potentials.Count - 1)
+					{
+						// +1 to skip the reference node
+						potentials.ElementAt(j + 1).Value.AddWaveform(0, waveform.Select((x) => x.Magnitude));
+					}
+					else
+					{
+						// -1 adjusts the indexing for reference node which is not included in result array
+						activeCurrents.ElementAt(j - (potentials.Count - 1)).Value.AddWaveform(0, waveform.Select((x) => x.Magnitude));
+					}
+				}
+			}			
+
+			nodePotentials = potentials.ToDictionary((x) => x.Key, (x) => (ITimeDomainSignal)x.Value);
+			activeComponentsCurrents = activeCurrents.ToDictionary((x) => x.Key, (x) => (ITimeDomainSignal)x.Value);
+		}
+
 		#endregion
-		
+
 		#region Public static methods
 
 		/// <summary>

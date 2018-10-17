@@ -76,6 +76,40 @@ namespace ECAT.Simulation
 		/// <param name="schematic"></param>
 		public void ACFullCycle(ISchematic schematic)
 		{
+			// Create a stopwatch to measure the duration of procedures 
+			Stopwatch watch = new Stopwatch();
+
+			// Start it for admittance matrix creation
+			watch.Start();
+
+			// Create an admittance matrix
+			if (!AdmittanceMatrix.Construct(schematic, out var admittanceMatrix, out var error))
+			{
+				IoC.Log(error, InfoLoggerMessageDuration.Short);
+				return;
+			}
+
+			try
+			{
+				// Solve it (for now try-catch for debugging)
+				admittanceMatrix.ACCycle(out var nodePotentials, out var activeComponentsCurrents);
+
+				IoC.Log($"Calcualted AC Cycle simulation in {watch.ElapsedMilliseconds}ms",
+					InfoLoggerMessageDuration.Short);
+
+				IoC.Resolve<SimulationResultsProvider>().Value =
+					new SimulationResultsTime(nodePotentials, activeComponentsCurrents, 5e-3, 0);
+			}
+			catch (Exception e)
+			{
+				Debug.WriteLine(e.Message);
+			}
+
+			watch.Reset();
+
+			SimulationCompleted?.Invoke(this, new SimulationCompletedEventArgs(SimulationType.ACDC));
+
+			return;
 			// Mock results for now
 
 			var n1signal = IoC.Resolve<ITimeDomainSignalMutable>(100, 1d);
