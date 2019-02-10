@@ -1,4 +1,5 @@
 ﻿using ECAT.Core;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 
@@ -57,7 +58,13 @@ namespace ECAT.Simulation
 		/// Adds a new constant offset to the waveform (it does not overwrite or otherwise invalidate previous offsets)
 		/// </summary>
 		/// <param name="value"></param>
-		public void AddConstantOffset(double value) => AddConstantOffsetAndUpdateFinalWaveform(value);		
+		public void AddConstantOffset(double value) => AddConstantOffsetAndUpdateFinalWaveform(value);
+
+		/// <summary>
+		/// Shifts the wave by (approximately) phase.
+		/// </summary>
+		/// <param name="phase">Phase to shift by, in radiansn, has to be greatet than 0 and smaller than 2pi</param>
+		public void Shift(double phase) => ShiftWaveform(phase);
 
 		#endregion
 	}
