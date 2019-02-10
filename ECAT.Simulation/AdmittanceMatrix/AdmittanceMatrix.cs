@@ -1,340 +1,313 @@
-﻿using CSharpEnhanced.Helpers;
-using CSharpEnhanced.Maths;
-using ECAT.Core;
+﻿using CSharpEnhanced.Maths;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Linq;
 using System.Numerics;
 
 namespace ECAT.Simulation
 {
 	/// <summary>
-	/// Interface between the admittance matrix constructor (<see cref="AdmittanceMatrixCore"/>) and users
+	/// Admittance matrix that describes linearly dependences between node potentials, currents and admittances in a circuit. It can be solved
+	/// as a system of linear equations in order to obtain complete information on the circuit.
 	/// </summary>
-	public class AdmittanceMatrix : AdmittanceMatrixCore
-    {
+	public class AdmittanceMatrix
+	{
 		#region Constructor
 
 		/// <summary>
 		/// Default Constructor
 		/// </summary>
-		private AdmittanceMatrix(ISchematic schematic) : base(schematic)
+		/// <param name="bigDimension">Dimension of A sub-matrix</param>
+		/// <param name="smallDimension">Dimension of D sub-matrix</param>
+		public AdmittanceMatrix(int bigDimension, int smallDimension)
 		{
-			
+			_BigDimension = bigDimension > 0 ? bigDimension : throw new ArgumentException(nameof(bigDimension) + " can't be smaller than 1");
+			_SmallDimension = smallDimension > 0 ? smallDimension : throw new ArgumentException(nameof(smallDimension) + " can't be smaller than 1");
 		}
 
 		#endregion
 
-		#region Private properties
+		#region Private members
 
 		/// <summary>
-		/// Used to store op-amps that were determined to be saturated
+		/// Backing store for <see cref="_A"/>
 		/// </summary>
-		private List<int> _SaturatedOpAmps { get; set; } = new List<int>();
+		private Complex[,] mA;
 
 		/// <summary>
-		/// Used to store tested combinations of opamps when searching for false-positives
+		/// Backing store for <see cref="_B"/>
 		/// </summary>
-		private BitArray _TestedCombinations { get; set; }
-		
-		private Dictionary<INode, IPhasorDomainSignalMutable> _Results { get; set; }
+		private Complex[,] mB;
+
+		/// <summary>
+		/// Backing store for <see cref="_C"/>
+		/// </summary>
+		private Complex[,] mC;
+
+		/// <summary>
+		/// Backing store for <see cref="_D"/>
+		/// </summary>
+		private Complex[,] mD;
+
+		/// <summary>
+		/// Backing store for <see cref="_I"/>
+		/// </summary>
+		private Complex[] mI;
+
+		/// <summary>
+		/// Backing store for <see cref="_E"/>
+		/// </summary>
+		private Complex[] mE;
 
 		#endregion
 
-		#region Private methods
+		#region Public properties
+
+		#region Dimension
 
 		/// <summary>
-		/// Solve the system for the current configuration
+		/// Size of A part of the admittance matrix (dependent on nodes)
 		/// </summary>
-		private Complex[] Solve(bool adjustOpAmps)
+		public int _BigDimension { get; }
+
+		/// <summary>
+		/// Size of D part of admittance matrix (depends on the number of independent voltage sources, with op-amp outputs included)
+		/// </summary>
+		public int _SmallDimension { get; }
+
+		/// <summary>
+		/// Size of the whole admittance matrix
+		/// </summary>
+		public int _Size => _BigDimension + _SmallDimension;
+
+		#endregion
+
+		#region Submatrices
+
+		/// <summary>
+		/// Part of admittance matrix located in the top left corner, built based on nodes and admittances connected to them.
+		/// Should be <see cref="_BigDimension"/> by <see cref="_BigDimension"/>.
+		/// </summary>
+		public Complex[,] _A
 		{
-			Complex[] result = null;
-
-			// Keep calculating results and adjusting op-amps into saturation until all op-amps are within their supply voltages
-			do
+			get => mA;
+			set
 			{
-				try
+				if(value.GetLength(0) == _BigDimension && value.GetLength(1) == _BigDimension)
 				{
-					result = LinearEquations.SimplifiedGaussJordanElimination(ComputeCoefficientMatrix(), ComputeFreeTermsMatrix(), true);
-					if(!adjustOpAmps)
-					{
-						return result;
-					}
+					mA = value;
 				}
-				catch (Exception)
+				else
 				{
-					return ArrayHelpers.CreateAndInitialize<Complex>(0, _Size);
+					throw new ArgumentException("Incompatible dimensions");
 				}
+			}
+		}
 
-			} while (CheckOpAmpOperation(result));
-
-			_TestedCombinations = new BitArray(_SaturatedOpAmps.Count, true);
-			
-			do
+		/// <summary>
+		/// Part of admittance matrix located in the top right corner - based on independent voltage sources (including op-amp outputs).
+		/// Should be <see cref="_BigDimension"/> by <see cref="_SmallDimension"/>.
+		/// </summary>
+		public Complex[,] _B
+		{
+			get => mB;
+			set
 			{
-				CheckOpAmpOperationFalsePositives(result);
-
-				try
+				if (value.GetLength(0) == _BigDimension && value.GetLength(1) == _SmallDimension)
 				{
-					result = LinearEquations.SimplifiedGaussJordanElimination(ComputeCoefficientMatrix(), ComputeFreeTermsMatrix(), true);
+					mB = value;
 				}
-				catch (Exception)
+				else
 				{
-					return ArrayHelpers.CreateAndInitialize<Complex>(0, _Size);
+					throw new ArgumentException("Incompatible dimensions");
 				}
+			}
+		}
 
-			} while (CheckOpAmpOperation(result));
+		/// <summary>
+		/// Part of admittance matrix located in the bottom left corner - based on independent voltage sources (excluding op-amp outputs)
+		/// and inputs of op-amps.
+		/// Should be <see cref="_SmallDimension"/> by <see cref="_BigDimension"/>.
+		/// </summary>
+		public Complex[,] _C
+		{
+			get => mC;
+			set
+			{
+				if (value.GetLength(0) == _SmallDimension && value.GetLength(1) == _BigDimension)
+				{
+					mC = value;
+				}
+				else
+				{
+					throw new ArgumentException("Incompatible dimensions");
+				}
+			}
+		}
+
+		/// <summary>
+		/// Part of admittance matrix located in the bottom right corner - based on dependent sources
+		/// Should be <see cref="_SmallDimension"/> by <see cref="_SmallDimension"/>.
+		/// </summary>
+		public Complex[,] _D
+		{
+			get => mD;
+			set
+			{
+				if (value.GetLength(0) == _SmallDimension && value.GetLength(1) == _SmallDimension)
+				{
+					mD = value;
+				}
+				else
+				{
+					throw new ArgumentException("Incompatible dimensions");
+				}
+			}
+		}
+
+		/// <summary>
+		/// Top part of the vector of free terms, based on current sources.
+		/// Should be <see cref="_BigDimension"/> long.
+		/// </summary>
+		public Complex[] _I
+		{
+			get => mI;
+			set
+			{
+				if (value.GetLength(0) == _BigDimension)
+				{
+					mI = value;
+				}
+				else
+				{
+					throw new ArgumentException("Incompatible dimensions");
+				}
+			}
+		}
+
+		/// <summary>
+		/// Bottom part of the vector of free terms, based on voltage sources (including op-amp outputs)
+		/// Should be <see cref="_SmallDimension"/> long.
+		/// </summary>
+		public Complex[] _E
+		{
+			get => mE;
+			set
+			{
+				if (value.GetLength(0) == _SmallDimension)
+				{
+					mE = value;
+				}
+				else
+				{
+					throw new ArgumentException("Incompatible dimensions");
+				}
+			}
+		}
+
+		#endregion
+
+		#endregion
+
+		#region Protected methods
+
+		/// <summary>
+		/// Combines matrices <see cref="_A"/>, <see cref="_B"/>, <see cref="_C"/>, <see cref="_D"/> to create admittance matrix
+		/// </summary>
+		protected Complex[,] ComputeCoefficientMatrix()
+		{
+			var result = new Complex[_Size, _Size];
+
+			// _A
+			for (int rowIndex = 0; rowIndex < _BigDimension; ++rowIndex)
+			{
+				for (int columnIndex = 0; columnIndex < _BigDimension; ++columnIndex)
+				{
+					result[rowIndex, columnIndex] = _A[rowIndex, columnIndex];
+				}
+			}
+
+			// _B
+			for (int rowIndex = 0; rowIndex < _BigDimension; ++rowIndex)
+			{
+				for (int columnIndex = 0; columnIndex < _SmallDimension; ++columnIndex)
+				{
+					result[rowIndex, columnIndex + _BigDimension] = _B[rowIndex, columnIndex];
+				}
+			}
+
+			// _C
+			for (int rowIndex = 0; rowIndex < _SmallDimension; ++rowIndex)
+			{
+				for (int columnIndex = 0; columnIndex < _BigDimension; ++columnIndex)
+				{
+					result[rowIndex + _BigDimension, columnIndex] = _C[rowIndex, columnIndex];
+				}
+			}
+
+			// _D
+			for (int rowIndex = 0; rowIndex < _SmallDimension; ++rowIndex)
+			{
+				for (int columnIndex = 0; columnIndex < _SmallDimension; ++columnIndex)
+				{
+					result[rowIndex + _BigDimension, columnIndex + _BigDimension] = _D[rowIndex, columnIndex];
+				}
+			}
 
 			return result;
 		}
 
 		/// <summary>
-		/// Solve the system for the current configuration
+		/// Combines matrices <see cref="_I"/> and <see cref="_E"/> to create a vector of free terms for the admittance matrix
 		/// </summary>
-		private IEnumerable<Complex[]> SolveTimeDomain(double timeStep, double finalTime)
-		{
-			// Keep calculating results and adjusting op-amps into saturation until all op-amps are within their supply voltages
-
-			for (double time = 0; time <= finalTime; time += timeStep)
-			{
-				SetACVoltageSourcesForTime(time);
-				yield return LinearEquations.SimplifiedGaussJordanElimination(ComputeCoefficientMatrix(), ComputeFreeTermsMatrix(), true);
-			}
-		}
-
-		/// <summary>
-		/// Checks if <see cref="IOpAmp"/>s operate in the proper region (if they didn't exceed their supply voltages.) If they don't,
-		/// adjusts the <see cref="_B"/>, <see cref="_C"/> and <see cref="_E"/> matrices so that, instead of being variable voltage
-		/// sources, they are independent voltage sources capped at their supply voltage value. Returns true if an <see cref="IOpAmp"/>
-		/// was adjusted and calculations need to be redone, false otherwise
-		/// </summary>
-		/// <param name="result"></param>
 		/// <returns></returns>
-		private bool CheckOpAmpOperation(Complex[] result)
+		protected Complex[] ComputeFreeTermsMatrix()
 		{
-			for (int i = 0; i < OpAmpsCount; ++i)
-			{
-				// The considered op-amp
-				var opAmpInfo = _OpAmpOutputs[i];
+			var result = new Complex[_BigDimension + _SmallDimension];
 
-				// If the output is not grounded TODO: remove the check then the rule that voltage source outputs are not allowed to be
-				// grounded is enforced
-				if (opAmpInfo.Item1 != -1 && (result[opAmpInfo.Item1].Real < opAmpInfo.Item2 ||
-					result[opAmpInfo.Item1].Real > opAmpInfo.Item3))
-				{
-					// Op-amp needs adjusting, it's output will now be modeled as an independent voltage source now
-					ConfigureForSaturation(i, result[opAmpInfo.Item1].Real > opAmpInfo.Item2);
-					_SaturatedOpAmps.Add(i);
-					return true;
-				}
+			// _I
+			for (int i = 0; i < _BigDimension; ++i)
+			{
+				result[i] = _I[i];
 			}
 
-			return false;
-		}
-
-		/// <summary>
-		/// Checks if <see cref="IOpAmp"/>s operate in the proper region (if they didn't exceed their supply voltages.) If they don't,
-		/// adjusts the <see cref="_B"/>, <see cref="_C"/> and <see cref="_E"/> matrices so that, instead of being variable voltage
-		/// sources, they are independent voltage sources capped at their supply voltage value. Returns true if an <see cref="IOpAmp"/>
-		/// was adjusted and calculations need to be redone, false otherwise
-		/// </summary>
-		/// <param name="result"></param>
-		/// <returns></returns>
-		private void CheckOpAmpOperationFalsePositives(Complex[] result)
-		{
-			// TODO: Start checking by disabling all op-amps and selectively enabling them
-			for (int i = 0; i < _TestedCombinations.Count; i++)
+			// _E
+			for (int i = 0; i < _SmallDimension; ++i)
 			{
-				bool previous = _TestedCombinations[i];
-				_TestedCombinations[i] = !previous;
-				if (previous)
-				{
-					// Found a clear bit - now that we've set it, we're done
-					ConfigureForActiveOperation(_SaturatedOpAmps[i]);
-					return;
-				}
-
+				result[i + _BigDimension] = _E[i];
 			}
+
+			return result;
 		}
 
 		#endregion
 
 		#region Public methods
-		
-		/// <summary>
-		/// Performs a bias simulation of the schematic - calculates symbolical, time-independent voltages and currents produced by
-		/// voltage sources.
-		/// </summary>
-		/// <param name="simulationType"></param>
-		public void Bias(SimulationType simulationType, out IEnumerable<KeyValuePair<INode, IPhasorDomainSignal>> nodePotentials,
-			out IEnumerable<KeyValuePair<int, IPhasorDomainSignal>> activeComponentsCurrents)
-		{
-			var potentials = new Dictionary<INode, IPhasorDomainSignalMutable>(GetNodes().
-				ToDictionary((x) => x, (x) => IoC.Resolve<IPhasorDomainSignalMutable>()));
-
-			var activeCurrents = new Dictionary<int, IPhasorDomainSignalMutable>(_ActiveComponentsCount.ToSequence().
-				ToDictionary((x) => x, (x) => IoC.Resolve<IPhasorDomainSignalMutable>()));
-
-			// If DC bias is specified
-			if (simulationType.HasFlag(SimulationType.DC))
-			{
-				// Configure for DC and assign result to combinedResult
-				ConfigureForFrequency(0);
-
-				var result = Solve(!simulationType.HasFlag(SimulationType.AC));
-
-				for(int i=0; i< result.Length; ++i)
-				{
-					// -1 because result does not contain value for reference node (which is always 0)
-					if(i < potentials.Count - 1)
-					{
-						// +1 to skip the reference node
-						potentials.ElementAt(i + 1).Value.SetDC(result[i].Real);
-					}
-					else
-					{
-						// -1 adjusts the indexing for reference node which is not included in result array
-						activeCurrents.ElementAt(i - (potentials.Count - 1)).Value.SetDC(result[i].Real);
-					}
-				}
-			}
-
-			// If AC is specified
-			if (simulationType.HasFlag(SimulationType.AC))
-			{
-				// For each frequency in the circuit
-				for (int i = 0; i < _FrequenciesInCircuit.Count; ++i)
-				{
-					// Configure the matrix for that frequency
-					ConfigureForFrequency(_FrequenciesInCircuit[i]);
-
-					// Get a subresult
-					var result = Solve(false);
-
-					for (int j = 0; j < result.Length; ++j)
-					{
-						// -1 because result does not contain value for reference node (which is always 0)
-						if (j < potentials.Count - 1)
-						{
-							// +1 to skip the reference node
-							potentials.ElementAt(j + 1).Value.AddPhasor(_FrequenciesInCircuit[i], result[j]);
-						}
-						else
-						{
-							// -1 adjusts the indexing for reference node which is not included in result array
-							activeCurrents.ElementAt(j - (potentials.Count - 1)).Value.AddPhasor(_FrequenciesInCircuit[i], result[j]);
-						}
-					}
-				}
-			}
-
-			nodePotentials = potentials.ToDictionary((x) => x.Key, (x) => (IPhasorDomainSignal)x.Value);
-			activeComponentsCurrents = activeCurrents.ToDictionary((x) => x.Key, (x) => (IPhasorDomainSignal)x.Value);
-		}
 
 		/// <summary>
-		/// Performs a bias simulation of the schematic - calculates symbolical, time-independent voltages and currents produced by
-		/// voltage sources.
+		/// Returns the solution of this admittance matrix
 		/// </summary>
-		/// <param name="simulationType"></param>
-		public void ACCycle(out IEnumerable<KeyValuePair<INode, ITimeDomainSignal>> nodePotentials,
-			out IEnumerable<KeyValuePair<int, ITimeDomainSignal>> activeComponentsCurrents)
-		{
-			var timeStep =  1d / (20d*GetHighestFrequencyOfVoltageSource());
-			var finalTime = 1 / GetLowestFrequencyOfVoltageSource();
-
-			var potentials = new Dictionary<INode, ITimeDomainSignalMutable>(GetNodes().
-				ToDictionary((x) => x, (x) => IoC.Resolve<ITimeDomainSignalMutable>(
-					(int)Math.Round(finalTime/timeStep), timeStep)));
-
-			var activeCurrents = new Dictionary<int, ITimeDomainSignalMutable>(_ActiveComponentsCount.ToSequence().
-				ToDictionary((x) => x, (x) => IoC.Resolve<ITimeDomainSignalMutable>(
-					(int)Math.Round(finalTime / timeStep), timeStep)));
-
-			// Configure for DC and assign result to combinedResult
-			ConfigureForFrequency(0);
-
-			var results = SolveTimeDomain(timeStep, finalTime);
-			var dim = results.First().Length;
-
-			for(int i=0; i<dim; ++i)
-			{
-				var index = i;
-				var waveform = results.Select((x) => x[index]);
-
-				// -1 because result does not contain value for reference node (which is always 0)
-				if (i < potentials.Count - 1)
-				{
-					// +1 to skip the reference node
-					potentials.ElementAt(i + 1).Value.AddWaveform(0, waveform.Select((x) => x.Real));
-				}
-				else
-				{
-					// -1 adjusts the indexing for reference node which is not included in result array
-					activeCurrents.ElementAt(i - (potentials.Count - 1)).Value.AddWaveform(0, waveform.Select((x) => x.Real));					
-				}
-			}
-			
-			// For each frequency in the circuit
-			for (int i = 0; i < _FrequenciesInCircuit.Count; ++i)
-			{
-				// Configure the matrix for that frequency
-				ConfigureForFrequency(_FrequenciesInCircuit[i]);
-
-				// Get a subresult
-				results = SolveTimeDomain(timeStep, finalTime);
-
-				for (int j = 0; j < dim; ++j)
-				{
-					var index = j;
-					var waveform = results.Select((x) => x[index]);
-
-					// -1 because result does not contain value for reference node (which is always 0)
-					if (j < potentials.Count - 1)
-					{
-						// +1 to skip the reference node
-						potentials.ElementAt(j + 1).Value.AddWaveform(0, waveform.Select((x) => x.Magnitude));
-					}
-					else
-					{
-						// -1 adjusts the indexing for reference node which is not included in result array
-						activeCurrents.ElementAt(j - (potentials.Count - 1)).Value.AddWaveform(0, waveform.Select((x) => x.Magnitude));
-					}
-				}
-			}			
-
-			nodePotentials = potentials.ToDictionary((x) => x.Key, (x) => (ITimeDomainSignal)x.Value);
-			activeComponentsCurrents = activeCurrents.ToDictionary((x) => x.Key, (x) => (ITimeDomainSignal)x.Value);
-		}
-
-		#endregion
-
-		#region Public static methods
-
-		/// <summary>
-		/// Constructs and returns an admittance matrix
-		/// </summary>
-		/// <param name="schematic"></param>
 		/// <returns></returns>
-		public static bool Construct(ISchematic schematic, out AdmittanceMatrix matrix, out string errorMessage)
+		public void Solve(out Complex[] nodePotentials, out Complex[] activeComponentsCurrents)
 		{
-			matrix = new AdmittanceMatrix(schematic);
+			// TODO: Add error handling (not all matrices are solvable)
 
-			try
+			// Calculate the solution
+			var solution = LinearEquations.SimplifiedGaussJordanElimination(ComputeCoefficientMatrix(), ComputeFreeTermsMatrix(), true);
+
+			// Initialize the arrays
+			nodePotentials = new Complex[_BigDimension];
+			activeComponentsCurrents = new Complex[_SmallDimension];
+
+			// The first _BigDimension entries correspond to node potentials
+			for(int i=0; i<_BigDimension; ++i)
 			{
-				matrix.Build();
-			} catch(Exception e)
-			{
-				matrix = null;
-				errorMessage = e.Message;
-				return false;
+				nodePotentials[i] = solution[i];
 			}
 
-			errorMessage = string.Empty;
-			return true;
+			// The remaining (last _SmallDimension) entries correspond to active components currents
+			for (int i = 0; i < _SmallDimension; ++i)
+			{
+				activeComponentsCurrents[i] = solution[i + _BigDimension];
+			}
 		}
 
 		#endregion
