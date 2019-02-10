@@ -41,10 +41,15 @@ namespace ECAT.Core
 		/// </summary>
 		IReadOnlyDictionary<double, IEnumerable<double>> ComposingWaveforms { get; }
 
+		/// <summary>
+		/// Enumeration containing all constant offsets
+		/// </summary>
+		IEnumerable<double> ConstantOffsets { get; }
+
 		#endregion
 
 		#region Methods
-		
+
 		/// <summary>
 		/// Creates a copy of the signal in reversed direction (values change their signs)
 		/// </summary>

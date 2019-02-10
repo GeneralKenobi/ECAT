@@ -51,7 +51,13 @@ namespace ECAT.Simulation
 		/// <exception cref="ArgumentNullException"></exception>
 		/// <exception cref="ArgumentException"></exception>
 		public void AddWaveform(double frequency, IEnumerable<double> instantenousValues) =>
-			AddWaveformToComposingWaveforms(frequency, instantenousValues);
+			AddWaveformAndUpdateFinalWaveform(frequency, instantenousValues);
+
+		/// <summary>
+		/// Adds a new constant offset to the waveform (it does not overwrite or otherwise invalidate previous offsets)
+		/// </summary>
+		/// <param name="value"></param>
+		public void AddConstantOffset(double value) => AddConstantOffsetAndUpdateFinalWaveform(value);		
 
 		#endregion
 	}

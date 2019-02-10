@@ -26,6 +26,12 @@ namespace ECAT.Simulation
 		/// <exception cref="ArgumentException"></exception>
 		void AddWaveform(double frequency, IEnumerable<double> instantenousValues);
 
+		/// <summary>
+		/// Adds a new constant offset to the waveform (it does not overwrite or otherwise invalidate previous offsets)
+		/// </summary>
+		/// <param name="value"></param>
+		void AddConstantOffset(double value);
+
 		#endregion
 	}
 }

@@ -17,6 +17,27 @@ namespace ECAT.Simulation
 		#region Constructors
 
 		/// <summary>
+		/// Constructor which initializes <see cref="_FinalWaveform"/>
+		/// </summary>
+		/// <param name="samples"></param>
+		private TimeDomainSignal(int samples) : this()
+		{
+			// Check if value is correct
+			if(samples < 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(samples));
+			}
+
+			Samples = samples;
+
+			// Add samples to _FinalWaveform
+			for (int i = 0; i < samples; ++i)
+			{
+				_FinalWaveform.Add(0);
+			}
+		}
+
+		/// <summary>
 		/// Default constructor
 		/// </summary>
 		public TimeDomainSignal()
@@ -39,9 +60,13 @@ namespace ECAT.Simulation
 		/// <param name="instantenousValues">Values occuring at specific time moments, can'be be null</param>
 		/// <param name="timeStep">Time step between two subsequent values</param>
 		/// <param name="startTime">Start time of the signal</param>
-		public TimeDomainSignal(int samples, double timeStep, double startTime) : this()
+		public TimeDomainSignal(int samples, double timeStep, double startTime) : this(samples)
 		{
-			Samples = samples;
+			if(timeStep < 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(timeStep));
+			}
+
 			TimeStep = timeStep;
 			StartTime = startTime;
 		}
@@ -68,6 +93,11 @@ namespace ECAT.Simulation
 		/// Backing store for <see cref="FinalWaveform"/>
 		/// </summary>
 		private IList<double> _FinalWaveform { get; } = new List<double>();
+
+		/// <summary>
+		/// List containing all constant offsets
+		/// </summary>
+		private IList<double> _ConstantOffsets { get; } = new List<double>();
 
 		#endregion
 
@@ -99,6 +129,11 @@ namespace ECAT.Simulation
 		public IReadOnlyDictionary<double, IEnumerable<double>> ComposingWaveforms { get; }
 
 		/// <summary>
+		/// Enumeration containing all constant offsets
+		/// </summary>
+		public IEnumerable<double> ConstantOffsets => _ConstantOffsets;
+
+		/// <summary>
 		/// Object capable of calculating characteristic values for this <see cref="ISignalData"/>
 		/// </summary>
 		public ISignalDataInterpreter Interpreter { get; }
@@ -108,13 +143,14 @@ namespace ECAT.Simulation
 		#region Private methods
 
 		/// <summary>
-		/// Clears the waveforms in <see cref="_ComposingWaveforms"/>, resets <see cref="_FinalWaveform"/>
+		/// Clears composing waveforms, constant offsets and resets <see cref="_FinalWaveform"/>
 		/// </summary>
-		private void ClearWaveforms()
+		private void Clear()
 		{
 			_ComposingWaveforms.Clear();
+			_ConstantOffsets.Clear();
 
-			for(int i=0; i<Samples; ++i)
+			for(int i = 0; i < Samples; ++i)
 			{
 				_FinalWaveform[i] = 0;
 			}
@@ -129,7 +165,7 @@ namespace ECAT.Simulation
 		/// </summary>
 		/// <param name="frequency"></param>
 		/// <param name="values"></param>
-		protected void AddWaveformToComposingWaveforms(double frequency, IEnumerable<double> values)
+		protected void AddWaveformAndUpdateFinalWaveform(double frequency, IEnumerable<double> values)
 		{
 			if(values.Count() != Samples)
 			{
@@ -145,19 +181,26 @@ namespace ECAT.Simulation
 			else
 			{
 				// Otherwise add a new entry to the dictionary
-				_ComposingWaveforms.Add(frequency, values);
+				_ComposingWaveforms.Add(frequency, new List<double>(values));
 			}
 
-			// If there are no entries in the final waveform collection
-			if(_FinalWaveform.Count() == 0)
+			// Add values to the final waveform
+			values.ForEach((x, i) => _FinalWaveform[i] += x);			
+		}
+
+		/// <summary>
+		/// Adds a new constant offset to the waveform (it does not overwrite or otherwise invalidate previous offsets)
+		/// </summary>
+		/// <param name="value"></param>
+		protected void AddConstantOffsetAndUpdateFinalWaveform(double value)
+		{
+			// Add it to the collection
+			_ConstantOffsets.Add(value);
+
+			// Add the new value of offset to each data point
+			for(int i = 0; i < Samples; ++i)
 			{
-				// Add the new waveform to the final waveform
-				values.ForEach((x) => _FinalWaveform.Add(x));
-			}
-			else
-			{
-				// Otherwise add values to the existing ones
-				values.ForEach((x, i) => _FinalWaveform[i] += x);
+				_FinalWaveform[i] += value;
 			}
 		}
 
@@ -183,12 +226,23 @@ namespace ECAT.Simulation
 				throw new ArgumentNullException(nameof(obj));
 			}
 
+			// Clear old waveforms
+			Clear();
+
+			// Copy properties
 			StartTime = obj.StartTime;
 			TimeStep = obj.TimeStep;
 			Samples = obj.Samples;
 
-			ClearWaveforms();
-			obj.ComposingWaveforms.ForEach((x) => AddWaveformToComposingWaveforms(x.Key, x.Value));
+			// Add new data points to _FinalWaveform
+			for(int i = 0; i < Samples; ++i)
+			{
+				_FinalWaveform.Add(0);
+			}
+
+			// Copy composing waveforms and constant offsets
+			obj.ComposingWaveforms.ForEach((x) => AddWaveformAndUpdateFinalWaveform(x.Key, x.Value));
+			obj.ConstantOffsets.ForEach((x) => AddConstantOffsetAndUpdateFinalWaveform(x));
 		}
 
 		/// <summary>
@@ -203,9 +257,12 @@ namespace ECAT.Simulation
 		/// <returns></returns>
 		public TimeDomainSignal CopyAndNegate()
 		{
+			// Create result based on internal properties
 			var result = new TimeDomainSignal(Samples, TimeStep, StartTime);
 
-			ComposingWaveforms.ForEach((x) => result.AddWaveformToComposingWaveforms(x.Key, x.Value));
+			// Copy waveforms and constant offsets with switched sign
+			ComposingWaveforms.ForEach((x) => result.AddWaveformAndUpdateFinalWaveform(x.Key, x.Value.Select((y) => -y)));
+			ConstantOffsets.ForEach((x) => result.AddConstantOffsetAndUpdateFinalWaveform(-x));
 
 			return result;
 		}
