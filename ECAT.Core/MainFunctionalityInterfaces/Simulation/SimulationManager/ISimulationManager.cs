@@ -21,16 +21,22 @@ namespace ECAT.Core
 		#region Methods
 
 		/// <summary>
-		/// Constructs an appropriate admittance matrix for the given schematic and preforms a bias simulation
+		/// Performs a DC bias simulation of the circuit.
 		/// </summary>
 		/// <param name="schematic"></param>
-		void Bias(ISchematic schematic, SimulationType simulationType);
+		void DCBias(ISchematic schematic);
 
 		/// <summary>
 		/// Performs a full cycle AC simulation
 		/// </summary>
 		/// <param name="schematic"></param>
 		void ACFullCycle(ISchematic schematic);
+
+		/// <summary>
+		/// Performs a full ACDC simulation
+		/// </summary>
+		/// <param name="schematic"></param>
+		void ACDCFullCycle(ISchematic schematic);
 
 		#endregion
 	}
