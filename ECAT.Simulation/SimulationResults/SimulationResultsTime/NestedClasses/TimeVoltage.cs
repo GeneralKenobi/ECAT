@@ -64,7 +64,11 @@ namespace ECAT.Simulation
 					// For each waveform, add it to result by subtracting instantenous values of each composing waveform (nodeB - nodeA)
 					ForEach((freq) => result.AddWaveform(freq, nodeB.ComposingWaveforms[freq].
 						MergeSelect(nodeA.ComposingWaveforms[freq], (x, y) => y - x)));
-				
+
+				// And add/subtract constant offsets from the nodes
+				nodeB.ConstantOffsets.ForEach((x) => result.AddConstantOffset(x));
+				nodeA.ConstantOffsets.ForEach((x) => result.AddConstantOffset(-x));
+
 				return result;
 			}
 

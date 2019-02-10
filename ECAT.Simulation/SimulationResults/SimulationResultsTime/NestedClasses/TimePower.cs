@@ -2,6 +2,7 @@
 using CSharpEnhanced.Helpers;
 using ECAT.Core;
 using System;
+using System.Linq;
 
 namespace ECAT.Simulation
 {
@@ -81,6 +82,9 @@ namespace ECAT.Simulation
 								v.Value.MergeSelect(i.Value, (x,y) => x*y))).
 							// Add each waveform to the result
 							ForEach((x) => result.AddWaveform(x.Item1, x.Item2));
+
+						// Calculate power as the total DC voltage times total DC current
+						result.AddConstantOffset(voltage.ConstantOffsets.Sum() * current.ConstantOffsets.Sum());
 
 						power = result;
 					}

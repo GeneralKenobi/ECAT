@@ -108,11 +108,24 @@ namespace ECAT.Simulation
 					// If successful, create a new current signal based on it, cache it
 					var result = IoC.Resolve<ITimeDomainSignalMutable>(voltageDrop.Samples, voltageDrop.TimeStep, voltageDrop.StartTime);
 
-					// Current is composed of each voltage waveform times admittanceo of the element
+					// Current is composed of each voltage waveform times admittance of the element
 					foreach(var waveform in voltageDrop.ComposingWaveforms)
 					{
 						result.AddWaveform(
 							waveform.Key, waveform.Value.Select((x) => x * element.GetAdmittance(waveform.Key).Magnitude));
+					}
+					
+					// Similarly for constant offset
+					foreach(var constantOffset in voltageDrop.ConstantOffsets)
+					{
+						// TODO: Account for inductor's infinite admittance
+						result.AddConstantOffset(constantOffset * element.GetAdmittance(0).Magnitude);
+					}
+
+					// Capacitor's current leads voltage by pi/2
+					if (element is ICapacitor capacitor)
+					{
+						result.Shift(3 * Math.PI / 2);
 					}
 
 					current = result;
