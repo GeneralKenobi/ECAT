@@ -120,7 +120,9 @@ namespace ECAT.DataDisplay
 					var terminalAValue = (ITerminal)_TerminalA.GetValue(target);
 
 					// Get the results from provider and return its return value
-					return IoC.Resolve<ISimulationResultsProvider>().Value.Voltage.Get(terminalAValue.NodeIndex, terminalBValue.NodeIndex);
+					return IoC.Resolve<ISimulationResultsProvider>().Value.Voltage.Get(
+						target.ChangeVIDirections ?	terminalBValue.NodeIndex : terminalAValue.NodeIndex,
+						target.ChangeVIDirections ? terminalAValue.NodeIndex : terminalBValue.NodeIndex);
 				}
 			}
 

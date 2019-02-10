@@ -67,6 +67,20 @@ namespace ECAT.DataDisplay
 		#region Private methods
 
 		/// <summary>
+		/// Callback for property changed event on currently focused component - if it's the ChangeVIDirections property then <see cref="_Value"/>
+		/// is updated.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void FocusedComponentPropertyChangedCallback(object sender, PropertyChangedEventArgs e)
+		{
+			if(sender is IBaseComponent component && e.PropertyName == nameof(IBaseComponent.ChangeVIDirections))
+			{
+				_Value.Update(component);
+			}
+		}
+
+		/// <summary>
 		/// Callback for when simulation finishes, if there is a focused element updates <see cref="_Value"/>
 		/// </summary>
 		/// <param name="sender"></param>
@@ -94,6 +108,18 @@ namespace ECAT.DataDisplay
 			{
 				// Don't do anything
 				return;
+			}
+
+			// Unsubscribe from the component that lost focus
+			if(e.LostFocus != null)
+			{
+				e.LostFocus.PropertyChanged -= FocusedComponentPropertyChangedCallback;
+			}
+
+			// Subscribe to the newly focused component
+			if (e.GotFocus != null)
+			{
+				e.GotFocus.PropertyChanged += FocusedComponentPropertyChangedCallback;
 			}
 
 			// If both the old and new component aren't null, they have the same type and _Info is already constructed

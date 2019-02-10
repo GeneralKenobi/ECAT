@@ -40,9 +40,9 @@ namespace ECAT.DataDisplay
 
 				// Get the results from provider and return its return value (lazy cases because we operate on interfaces)
 				TypeSwitch.Construct().
-					LazyCase<IResistor>((x) => info = results.Get(x, false)).
-					LazyCase<ICapacitor>((x) => info = results.Get(x, false)).
-					LazyCase<IActiveComponent>((x) => info = results.Get(x.ActiveComponentIndex, false)).
+					LazyCase<IResistor>((x) => info = results.Get(x, target.ChangeVIDirections)).
+					LazyCase<ICapacitor>((x) => info = results.Get(x, target.ChangeVIDirections)).
+					LazyCase<IActiveComponent>((x) => info = results.Get(x.ActiveComponentIndex, target.ChangeVIDirections)).
 					Switch(target);
 
 				return info;
