@@ -117,7 +117,7 @@ namespace ECAT.Simulation
 		/// </summary>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		protected bool NodeExists(int index) => _Data.Keys.First((node) => node.Index == index) != null;
+		protected bool NodeExists(int index) => _Data.Keys.FirstOrDefault((node) => node.Index == index) != null;
 
 		/// <summary>
 		/// Returns a negated (voltage drop direction is reversed) copy of <paramref name="signal"/>
