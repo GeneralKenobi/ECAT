@@ -50,7 +50,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Default frequency of an <see cref="IACVoltageSource"/>
 		/// </summary>
-		public double DefaultACVoltageSourceFrequency { get; } = 1e3;
+		public double DefaultACVoltageSourceFrequency { get; } = 1e1;
 
 		/// <summary>
 		/// Default peak voltage produced by an <see cref="IACVoltageSource"/>
@@ -60,7 +60,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Devault DC offset of an <see cref="IACVoltageSource"/>
 		/// </summary>
-		public double DefaultACVoltageSourceDCOffset { get; } = 0;
+		public double DefaultACVoltageSourceDCOffset { get; } = 5;
 
 		/// <summary>
 		/// Default value for <see cref="ICurrentSource"/>'s produced current

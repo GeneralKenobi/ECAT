@@ -103,16 +103,13 @@ namespace ECAT.ViewModel
 				"Place Capacitor", new KeyArgument("C", KeyModifiers.Shift), () => PlacePartHelper(ComponentIDEnumeration.Capacitor)));
 
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
-				"Run DC Bias", new KeyArgument("T"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.Bias(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic, SimulationType.DC)));
+				"Run DC Bias", new KeyArgument("T"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.DCBias(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic)));
+			
+			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
+				"Run Full Cycle ACDC", new KeyArgument("Z"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.ACDCFullCycle(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic)));
 
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
-				"Run AC Bias", new KeyArgument("Y"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.Bias(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic, SimulationType.AC)));
-
-			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
-				"Run ACDC Bias", new KeyArgument("U"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.Bias(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic, SimulationType.ACDC)));
-
-			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
-				"Run Full Cycle ACDC", new KeyArgument("U", KeyModifiers.Shift), () => AppViewModel.Singleton.SimulationVM.SimulationManager.ACFullCycle(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic)));
+				"Run Full Cycle AC", new KeyArgument("Z", KeyModifiers.Shift), () => AppViewModel.Singleton.SimulationVM.SimulationManager.ACFullCycle(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic)));
 
 			// TODO: Change the ShortcutKeys to ShortcutKey.Empty and load the saved combinations from a local file
 		}
