@@ -244,7 +244,7 @@ namespace ECAT.Simulation
 				shiftedComposingWaveforms.Add(waveform.Key, waveform.Value.
 					Skip(splittingPoint).
 					Take(Samples - splittingPoint).
-					Concat(_FinalWaveform.Take(splittingPoint)));
+					Concat(waveform.Value.Take(splittingPoint)));
 			}
 
 			// Clear the old composing waveforms
