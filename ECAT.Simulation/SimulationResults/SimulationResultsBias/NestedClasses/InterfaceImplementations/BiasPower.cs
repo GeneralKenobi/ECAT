@@ -224,7 +224,7 @@ namespace ECAT.Simulation
 			/// <param name="voltageDrop"></param>
 			/// <param name="resistor"></param>
 			/// <returns></returns>
-			public ISignalInformation Get(IResistor resistor) =>
+			public ISignalInformation Get(IResistor resistor, bool voltageBA) =>
 				// Check if power can be enabled and if it can be fetched, if so return it, otherwise return null
 				TryEnablePower(resistor) && _Cache.TryGetValue(resistor, out var power) ? power : null;
 
@@ -233,7 +233,7 @@ namespace ECAT.Simulation
 			/// </summary>
 			/// <param name="capacitor"></param>
 			/// <returns></returns>
-			public ISignalInformation Get(ICapacitor capacitor) => throw new NotImplementedException();				
+			public ISignalInformation Get(ICapacitor capacitor, bool voltageBA) => throw new NotImplementedException();				
 
 			/// <summary>
 			/// Gets information about power on an <see cref="ICurrentSource"/>
@@ -241,7 +241,7 @@ namespace ECAT.Simulation
 			/// <param name="voltageDrop"></param>
 			/// <param name="currentSource"></param>
 			/// <returns></returns>
-			public ISignalInformation Get(ICurrentSource currentSource) =>
+			public ISignalInformation Get(ICurrentSource currentSource, bool voltageBA) =>
 				// Check if power can be enabled and if it can be fetched, if so return it, otherwise return null
 				TryEnablePower(currentSource) && _Cache.TryGetValue(currentSource, out var power) ? power : null;
 
@@ -251,7 +251,7 @@ namespace ECAT.Simulation
 			/// <param name="current"></param>
 			/// <param name="voltageSource"></param>
 			/// <returns></returns>
-			public ISignalInformation Get(IDCVoltageSource voltageSource) =>
+			public ISignalInformation Get(IDCVoltageSource voltageSource, bool voltageBA) =>
 				// Check if power can be enabled and if it can be fetched, if so return it, otherwise return null
 				TryEnablePower(voltageSource) && _Cache.TryGetValue(voltageSource, out var power) ? power : null;
 
@@ -264,7 +264,7 @@ namespace ECAT.Simulation
 			/// <param name="current"></param>
 			/// <param name="voltageSource"></param>
 			/// <returns></returns>
-			public ISignalInformation Get(IACVoltageSource voltageSource) =>
+			public ISignalInformation Get(IACVoltageSource voltageSource, bool voltageBA) =>
 				// Check if power can be enabled and if it can be fetched, if so return it, otherwise return null
 				TryEnablePower(voltageSource) && _Cache.TryGetValue(voltageSource, out var power) ? power : null;
 

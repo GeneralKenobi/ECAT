@@ -40,12 +40,13 @@ namespace ECAT.DataDisplay
 
 				// Get the results from provider and return its return value (lazy cases because we operate on interfaces)
 				TypeSwitch.Construct().
-					LazyCase<IResistor>((x) => info = results.Get(x)).
-					LazyCase<ICapacitor>((x) => info = results.Get(x)).
-					LazyCase<ICurrentSource>((x) => info = results.Get(x)).
+					LazyCase<IResistor>((x) => info = results.Get(x, target.ChangeVIDirections)).
+					LazyCase<ICapacitor>((x) => info = results.Get(x, target.ChangeVIDirections)).
+					LazyCase<ICurrentSource>((x) => info = results.Get(x, target.ChangeVIDirections)).
 					// Because IACVoltageSource extens IVoltageSource the check for that needs to be done manually so as not to
 					// fetch the result twice (first only for IVoltageSource then for IACVoltageSource)
-					LazyCase<IDCVoltageSource>((x) => info = x is IACVoltageSource xAC ? results.Get(xAC) : results.Get(x)).
+					LazyCase<IDCVoltageSource>((x) => info = x is IACVoltageSource xAC ?
+						results.Get(xAC, target.ChangeVIDirections) : results.Get(x, target.ChangeVIDirections)).
 					Switch(target);
 
 				return info;

@@ -52,11 +52,11 @@ namespace ECAT.Simulation
 			/// <param name="twoTerminal"></param>
 			/// <param name="power"></param>
 			/// <returns></returns>
-			private bool TryConstructPower(ITwoTerminal twoTerminal, out ITimeDomainSignal power)
+			private bool TryConstructPower(ITwoTerminal twoTerminal, out ITimeDomainSignal power, bool voltageBA)
 			{
 				power = null;
 
-				if (_VoltageDrops.TryGet(twoTerminal, out var voltage))
+				if (_VoltageDrops.TryGet(twoTerminal, out var voltage, voltageBA))
 				{
 					ITimeDomainSignal current = null;
 
@@ -99,18 +99,25 @@ namespace ECAT.Simulation
 			#region Protected methods
 
 			/// <summary>
+			/// Returns a negated (voltage drop direction is reversed) copy of <paramref name="signal"/>
+			/// </summary>
+			/// <param name="signal"></param>
+			/// <returns></returns>
+			protected override ITimeDomainSignal CopyAndNegate(ITimeDomainSignal signal) => signal.CopyAndNegate();
+
+			/// <summary>
 			/// Tries to construct power for <paramref name="component"/>, on success assigns it to <paramref name="power"/> and
 			/// true, on failure assigns null to <paramref name="power"/> and returns false.
 			/// </summary>
 			/// <param name="component"></param>
 			/// <param name="power"></param>
 			/// <returns></returns>
-			protected override bool TryConstructPower(IBaseComponent component, out ITimeDomainSignal power)
+			protected override bool TryConstructPower(IBaseComponent component, out ITimeDomainSignal power, bool voltageBA)
 			{
 				ITimeDomainSignal constructedPower = null;
 
 				TypeSwitch.Construct().
-					LazyCase<ITwoTerminal>((x) => TryConstructPower(x, out constructedPower)).
+					LazyCase<ITwoTerminal>((x) => TryConstructPower(x, out constructedPower, voltageBA)).
 					Switch(component);
 
 				power = constructedPower;
@@ -127,18 +134,20 @@ namespace ECAT.Simulation
 			/// <param name="voltageDrop"></param>
 			/// <param name="resistor"></param>
 			/// <returns></returns>
-			public ISignalInformation Get(IResistor resistor) =>
+			public ISignalInformation Get(IResistor resistor, bool voltageBA) =>
 				// Check if power can be enabled and if it can be fetched, if so return it, otherwise return null
-				TryEnablePower(resistor) && _Cache.TryGetValue(resistor, out var power) ? power.Item2 : null;
+				TryEnablePower(resistor, voltageBA) &&
+				_Cache.TryGetValue(Tuple.Create<IBaseComponent, bool>(resistor, voltageBA), out var power) ? power.Item2 : null;
 
 			/// <summary>
 			/// Gets information about power dissipated on an <see cref="ICapacitor"/>
 			/// </summary>
 			/// <param name="capacitor"></param>
 			/// <returns></returns>
-			public ISignalInformation Get(ICapacitor capacitor) =>
+			public ISignalInformation Get(ICapacitor capacitor, bool voltageBA) =>
 				// Check if power can be enabled and if it can be fetched, if so return it, otherwise return null
-				TryEnablePower(capacitor) && _Cache.TryGetValue(capacitor, out var power) ? power.Item2 : null;
+				TryEnablePower(capacitor, voltageBA) &&
+				_Cache.TryGetValue(Tuple.Create<IBaseComponent, bool>(capacitor, voltageBA), out var power) ? power.Item2 : null;
 
 
 			/// <summary>
@@ -147,9 +156,10 @@ namespace ECAT.Simulation
 			/// <param name="voltageDrop"></param>
 			/// <param name="currentSource"></param>
 			/// <returns></returns>
-			public ISignalInformation Get(ICurrentSource currentSource) =>
+			public ISignalInformation Get(ICurrentSource currentSource, bool voltageBA) =>
 				// Check if power can be enabled and if it can be fetched, if so return it, otherwise return null
-				TryEnablePower(currentSource) && _Cache.TryGetValue(currentSource, out var power) ? power.Item2 : null;
+				TryEnablePower(currentSource, voltageBA) &&
+				_Cache.TryGetValue(Tuple.Create<IBaseComponent, bool>(currentSource, voltageBA), out var power) ? power.Item2 : null;
 
 			/// <summary>
 			/// Gets information about power on an <see cref="IDCVoltageSource"/>
@@ -157,9 +167,10 @@ namespace ECAT.Simulation
 			/// <param name="current"></param>
 			/// <param name="voltageSource"></param>
 			/// <returns></returns>
-			public ISignalInformation Get(IDCVoltageSource voltageSource) =>
+			public ISignalInformation Get(IDCVoltageSource voltageSource, bool voltageBA) =>
 				// Check if power can be enabled and if it can be fetched, if so return it, otherwise return null
-				TryEnablePower(voltageSource) && _Cache.TryGetValue(voltageSource, out var power) ? power.Item2 : null;
+				TryEnablePower(voltageSource, voltageBA) &&
+				_Cache.TryGetValue(Tuple.Create<IBaseComponent, bool>(voltageSource, voltageBA), out var power) ? power.Item2 : null;
 
 			/// <summary>
 			/// Gets information about power on an <see cref="IACVoltageSource"/>. If the <paramref name="current"/> is composed of
@@ -170,9 +181,10 @@ namespace ECAT.Simulation
 			/// <param name="current"></param>
 			/// <param name="voltageSource"></param>
 			/// <returns></returns>
-			public ISignalInformation Get(IACVoltageSource voltageSource) =>
+			public ISignalInformation Get(IACVoltageSource voltageSource, bool voltageBA) =>
 				// Check if power can be enabled and if it can be fetched, if so return it, otherwise return null
-				TryEnablePower(voltageSource) && _Cache.TryGetValue(voltageSource, out var power) ? power.Item2 : null;
+				TryEnablePower(voltageSource, voltageBA) &&
+				_Cache.TryGetValue(Tuple.Create<IBaseComponent, bool>(voltageSource, voltageBA), out var power) ? power.Item2 : null;
 
 			#endregion
 		}

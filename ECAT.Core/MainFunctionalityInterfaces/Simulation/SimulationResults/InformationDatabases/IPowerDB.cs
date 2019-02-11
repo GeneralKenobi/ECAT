@@ -12,28 +12,28 @@
 		/// </summary>
 		/// <param name="resistor"></param>
 		/// <returns></returns>
-		ISignalInformation Get(IResistor resistor);
+		ISignalInformation Get(IResistor resistor, bool voltageBA);
 
 		/// <summary>
 		/// Gets information about power dissipated on an <see cref="ICapacitor"/>
 		/// </summary>
 		/// <param name="capacitor"></param>
 		/// <returns></returns>
-		ISignalInformation Get(ICapacitor capacitor);
+		ISignalInformation Get(ICapacitor capacitor, bool voltageBA);
 
 		/// <summary>
 		/// Gets information about power on an <see cref="ICurrentSource"/>
 		/// </summary>
 		/// <param name="currentSource"></param>
 		/// <returns></returns>
-		ISignalInformation Get(ICurrentSource currentSource);
+		ISignalInformation Get(ICurrentSource currentSource, bool voltageBA);
 
 		/// <summary>
 		/// Gets information about power on an <see cref="IDCVoltageSource"/>
 		/// </summary>
 		/// <param name="voltageSource"></param>
 		/// <returns></returns>
-		ISignalInformation Get(IDCVoltageSource voltageSource);
+		ISignalInformation Get(IDCVoltageSource voltageSource, bool voltageBA);
 
 		/// <summary>
 		/// Gets information about power on an <see cref="IACVoltageSource"/>. If the <paramref name="current"/> is composed of
@@ -43,7 +43,7 @@
 		/// </summary>
 		/// <param name="voltageSource"></param>
 		/// <returns></returns>
-		ISignalInformation Get(IACVoltageSource voltageSource);
+		ISignalInformation Get(IACVoltageSource voltageSource, bool voltageBA);
 
 		#endregion
 	}

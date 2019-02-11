@@ -17,7 +17,7 @@ namespace ECAT.Simulation
 			/// <param name="voltageDrop"></param>
 			/// <param name="resistor"></param>
 			/// <returns></returns>
-			public ISignalInformation Get(IResistor resistor) => null;
+			public ISignalInformation Get(IResistor resistor, bool voltageBA) => null;
 
 			/// <summary>
 			/// Returns null
@@ -25,7 +25,7 @@ namespace ECAT.Simulation
 			/// <param name="voltageDrop"></param>
 			/// <param name="resistor"></param>
 			/// <returns></returns>
-			public ISignalInformation Get(ICapacitor capacitor) => null;
+			public ISignalInformation Get(ICapacitor capacitor, bool voltageBA) => null;
 
 			/// <summary>
 			/// Returns null
@@ -33,7 +33,7 @@ namespace ECAT.Simulation
 			/// <param name="voltageDrop"></param>
 			/// <param name="currentSource"></param>
 			/// <returns></returns>
-			public ISignalInformation Get(ICurrentSource currentSource) => null;
+			public ISignalInformation Get(ICurrentSource currentSource, bool voltageBA) => null;
 
 			/// <summary>
 			/// Returns null
@@ -41,7 +41,7 @@ namespace ECAT.Simulation
 			/// <param name="current"></param>
 			/// <param name="voltageSource"></param>
 			/// <returns></returns>
-			public ISignalInformation Get(IDCVoltageSource voltageSource) => null;
+			public ISignalInformation Get(IDCVoltageSource voltageSource, bool voltageBA) => null;
 
 			/// <summary>
 			/// Returns null
@@ -49,7 +49,7 @@ namespace ECAT.Simulation
 			/// <param name="current"></param>
 			/// <param name="voltageSource"></param>
 			/// <returns></returns>
-			public ISignalInformation Get(IACVoltageSource voltageSource) => null;
+			public ISignalInformation Get(IACVoltageSource voltageSource, bool voltageBA) => null;
 
 			#endregion
 		}
