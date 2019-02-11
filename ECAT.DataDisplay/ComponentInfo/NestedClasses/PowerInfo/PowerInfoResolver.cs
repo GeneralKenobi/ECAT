@@ -45,8 +45,8 @@ namespace ECAT.DataDisplay
 					LazyCase<ICurrentSource>((x) => info = results.Get(x, target.ChangeVIDirections)).
 					// Because IACVoltageSource extens IVoltageSource the check for that needs to be done manually so as not to
 					// fetch the result twice (first only for IVoltageSource then for IACVoltageSource)
-					LazyCase<IDCVoltageSource>((x) => info = x is IACVoltageSource xAC ?
-						results.Get(xAC, target.ChangeVIDirections) : results.Get(x, target.ChangeVIDirections)).
+					LazyCase<IDCVoltageSource>((x) => info = results.Get(x, target.ChangeVIDirections)).
+					LazyCase<IACVoltageSource>((x) => info = results.Get(x, target.ChangeVIDirections)).
 					Switch(target);
 
 				return info;
