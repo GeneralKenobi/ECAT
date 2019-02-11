@@ -10,15 +10,20 @@
 		/// <summary>
 		/// Gets information about power dissipated on an <see cref="IResistor"/>
 		/// </summary>
-		/// <param name="voltageDrop"></param>
 		/// <param name="resistor"></param>
 		/// <returns></returns>
 		ISignalInformation Get(IResistor resistor);
 
 		/// <summary>
+		/// Gets information about power dissipated on an <see cref="ICapacitor"/>
+		/// </summary>
+		/// <param name="capacitor"></param>
+		/// <returns></returns>
+		ISignalInformation Get(ICapacitor capacitor);
+
+		/// <summary>
 		/// Gets information about power on an <see cref="ICurrentSource"/>
 		/// </summary>
-		/// <param name="voltageDrop"></param>
 		/// <param name="currentSource"></param>
 		/// <returns></returns>
 		ISignalInformation Get(ICurrentSource currentSource);
@@ -26,7 +31,6 @@
 		/// <summary>
 		/// Gets information about power on an <see cref="IDCVoltageSource"/>
 		/// </summary>
-		/// <param name="current"></param>
 		/// <param name="voltageSource"></param>
 		/// <returns></returns>
 		ISignalInformation Get(IDCVoltageSource voltageSource);
@@ -37,7 +41,6 @@
 		/// <see cref="Double.NaN"/> (it's impossible to calculate it using only phasors). Doesn't compute maximum/minimum
 		/// instantenous power.
 		/// </summary>
-		/// <param name="current"></param>
 		/// <param name="voltageSource"></param>
 		/// <returns></returns>
 		ISignalInformation Get(IACVoltageSource voltageSource);

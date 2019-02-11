@@ -23,6 +23,14 @@ namespace ECAT.Simulation
 			/// Returns null
 			/// </summary>
 			/// <param name="voltageDrop"></param>
+			/// <param name="resistor"></param>
+			/// <returns></returns>
+			public ISignalInformation Get(ICapacitor capacitor) => null;
+
+			/// <summary>
+			/// Returns null
+			/// </summary>
+			/// <param name="voltageDrop"></param>
 			/// <param name="currentSource"></param>
 			/// <returns></returns>
 			public ISignalInformation Get(ICurrentSource currentSource) => null;

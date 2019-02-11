@@ -227,7 +227,13 @@ namespace ECAT.Simulation
 			public ISignalInformation Get(IResistor resistor) =>
 				// Check if power can be enabled and if it can be fetched, if so return it, otherwise return null
 				TryEnablePower(resistor) && _Cache.TryGetValue(resistor, out var power) ? power : null;
-			
+
+			/// <summary>
+			/// Gets information about power dissipated on an <see cref="ICapacitor"/>
+			/// </summary>
+			/// <param name="capacitor"></param>
+			/// <returns></returns>
+			public ISignalInformation Get(ICapacitor capacitor) => throw new NotImplementedException();				
 
 			/// <summary>
 			/// Gets information about power on an <see cref="ICurrentSource"/>
