@@ -239,8 +239,11 @@ namespace ECAT.Simulation
 				totalActiveComponentsCurrents.Add(i, IoC.Resolve<ITimeDomainSignalMutable>(timeVectorPointsCount, timeStep));
 			}
 
-			// Add zero wave to reference node
-			totalPotentials[nodes.First()].AddWaveform(0, BuildZeroWave(timeVectorPointsCount));
+			// Add zero wave to reference node for each frequency in the circuit
+			foreach (var frequency in factory.FrequenciesInCircuit)
+			{
+				totalPotentials[nodes.First()].AddWaveform(frequency, BuildZeroWave(timeVectorPointsCount));
+			}
 
 			// Get all transfer functions
 			GetAllACTransferFunctions(factory, out var nodePotentials, out var activeComponentsCurrents);
