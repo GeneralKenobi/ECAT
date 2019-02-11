@@ -870,9 +870,9 @@ namespace ECAT.Simulation
 
 			// Fill A matrix, which is dependent on admittances between nodes
 			FillAMatrix(0, matrix);
-
-			// Fill B matrix based on OpAmp nodes
-			FillBMatrixOpAmpOutputNodes(matrix);
+	
+			// Initialize op-amp settings - active operation
+			InitialOpAmpSettings(matrix);
 
 			// Turn on DC voltage sources (in admittance matrix it is represented by Ua = Ub)
 			ConfigureDCVoltageSources(matrix, true);
@@ -903,8 +903,8 @@ namespace ECAT.Simulation
 			// Fill A matrix, which is dependent on admittances between nodes
 			FillAMatrix(_ACVoltageSources[voltageSourceIndex].Frequency, matrix);
 
-			// Fill B matrix based on OpAmp nodes
-			FillBMatrixOpAmpOutputNodes(matrix);
+			// Initialize op-amp settings - active operation
+			InitialOpAmpSettings(matrix);
 
 			// Configure DC voltage sources to be off (in admittance matrix it is represented by Ua = Ub; two node potentials are equal)
 			ConfigureDCVoltageSources(matrix, false);
