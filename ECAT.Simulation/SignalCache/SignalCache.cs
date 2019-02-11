@@ -42,5 +42,17 @@ namespace ECAT.Simulation
 		protected Dictionary<TKey, Tuple<TSignal, ISignalInformation>> _Cache { get; }
 
 		#endregion
+
+		#region Protected methods
+		
+		/// <summary>
+		/// Returns a negated (voltage drop direction is reversed) copy of <paramref name="signal"/>
+		/// </summary>
+		/// <param name="signal"></param>
+		/// <returns></returns>
+		protected abstract TSignal CopyAndNegate(TSignal signal);
+
+		#endregion
+
 	}
 }

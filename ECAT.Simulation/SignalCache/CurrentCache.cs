@@ -167,13 +167,6 @@ namespace ECAT.Simulation
 		protected abstract bool TryConstructCurrent(ITwoTerminal component, bool voltageBA, out TSignal current);
 
 		/// <summary>
-		/// Returns a negated (voltage drop direction is reversed) copy of <paramref name="signal"/>
-		/// </summary>
-		/// <param name="signal"></param>
-		/// <returns></returns>
-		protected abstract TSignal CopyAndNegate(TSignal signal);
-
-		/// <summary>
 		/// Checks if current through <paramref name="component"/> can be obtained from cache, if not performs
 		/// all possible actions to create it and cache it. Returns true if, at the end of the method call, the current may be
 		/// obtained from <see cref="_PassiveCurrentsCache"/>, false otherwise.

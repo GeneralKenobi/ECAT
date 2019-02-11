@@ -120,13 +120,6 @@ namespace ECAT.Simulation
 		protected bool NodeExists(int index) => _Data.Keys.FirstOrDefault((node) => node.Index == index) != null;
 
 		/// <summary>
-		/// Returns a negated (voltage drop direction is reversed) copy of <paramref name="signal"/>
-		/// </summary>
-		/// <param name="signal"></param>
-		/// <returns></returns>
-		protected abstract TSignal CopyAndNegate(TSignal signal);
-
-		/// <summary>
 		/// Constructs a new <see cref="PhasorDomainSignal"/> based on voltage drop between two nodes (with <paramref name="nodeA"/>
 		/// being the reference node). Node indexes are assumed to have been checked that
 		/// corresponding to them nodes exist in <see cref="_Nodes"/>, if not an exception may be thrown.
