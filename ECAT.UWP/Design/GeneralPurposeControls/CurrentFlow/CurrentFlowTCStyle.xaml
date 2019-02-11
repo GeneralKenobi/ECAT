@@ -15,7 +15,7 @@
 
 						<!-- Triangle acting as an arrowhead forcurrents flowing to the left -->
 						<Polygon Grid.Column="0"
-							Visibility="{Binding Component.InvertedVoltageCurrentDirections, Converter={converters:BoolToVisibilityMEC InvertConvesion=True}}"
+							Visibility="{Binding Component.ChangeVIDirections, Converter={converters:BoolToVisibilityMEC InvertConvesion=True}}"
 							Points="20,0 20,28 0,14"
 							HorizontalAlignment="Left"
 							Stroke="{StaticResource BlackBrush}"
@@ -24,7 +24,7 @@
 
 						<!-- Triangle acting as an arrowhead forcurrents flowing to the right -->
 						<Polygon Points="0,0 0,28 20,14"
-							Visibility="{Binding Component.InvertedVoltageCurrentDirections, Converter={converters:BoolToVisibilityMEC}}"
+							Visibility="{Binding Component.ChangeVIDirections, Converter={converters:BoolToVisibilityMEC}}"
 							HorizontalAlignment="Right"
 							Stroke="{StaticResource BlackBrush}"
 							Fill="{StaticResource BlackBrush}"
