@@ -34,6 +34,16 @@ namespace ECAT.Simulation
 
 		#region Wave building
 
+		/// <summary>
+		/// Returns instantenous value of a sine wave
+		/// </summary>
+		/// <param name="amplitude"></param>
+		/// <param name="frequency"></param>
+		/// <param name="phaseShift"></param>
+		/// <param name="pointIndex"></param>
+		/// <param name="argumentStep"></param>
+		/// <param name="constantOffset"></param>
+		/// <returns></returns>
 		private double GetSineWaveInstantenousValue(double amplitude, double frequency, double phaseShift, int pointIndex,
 			double argumentStep, double constantOffset = 0)
 		{
