@@ -6,7 +6,7 @@ namespace ECAT.Design
 	/// <summary>
 	/// Class implementing AC voltage sources, standard implementation of <see cref="IACVoltageSource"/>
 	/// </summary>
-	[DisplayVoltageInfo(nameof(TerminalA), nameof(TerminalB), "Voltage drop", sectionIndex:0)]
+	[DisplayVoltageInfo(nameof(TerminalA), nameof(TerminalB), 0, "Voltage drop")]
 	[DisplayCurrentInfo(sectionIndex: 1)]
 	[DisplayPowerInfo(sectionIndex: 2)]
 	public class ACVoltageSource : TwoTerminal, IACVoltageSource

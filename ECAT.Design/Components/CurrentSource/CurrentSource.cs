@@ -8,7 +8,7 @@ namespace ECAT.Design
 	/// (<see cref="TwoTerminal.TerminalA"/> corresponds to the negative terminal and
 	/// <see cref="TwoTerminal.TerminalB"/> corresponds to the positive terminal)
 	/// </summary>
-	[DisplayVoltageInfo(nameof(TerminalA), nameof(TerminalB), "Voltage", 0)]
+	[DisplayVoltageInfo(nameof(TerminalA), nameof(TerminalB), 0, "Voltage")]
 	[DisplayPowerInfo(sectionIndex:1)]
 	public class CurrentSource : TwoTerminal, ICurrentSource
 	{

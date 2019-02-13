@@ -6,7 +6,7 @@ namespace ECAT.Design
 	/// <summary>
 	/// Resistor is a passive component that is characterized by resistance - a real component of impedance
 	/// </summary>
-	[DisplayVoltageInfo(nameof(TerminalA), nameof(TerminalB), "Voltage", 0)]
+	[DisplayVoltageInfo(nameof(TerminalA), nameof(TerminalB), 0, "Voltage")]
 	[DisplayCurrentInfo(sectionIndex:1)]
 	[DisplayPowerInfo(sectionIndex:2)]
 	public class Resistor : TwoTerminal, IResistor
