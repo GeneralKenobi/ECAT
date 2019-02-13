@@ -106,10 +106,20 @@ namespace ECAT.ViewModel
 				"Run DC Bias", new KeyArgument("T"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.DCBias(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic)));
 			
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
-				"Run Full Cycle ACDC", new KeyArgument("Z"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.ACDCFullCycle(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic)));
+				"Run Full Cycle AC Without Op-Amp Adjustment",
+				new KeyArgument("Z"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.ACFullCycleWithoutOpAmpAdjustment(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic)));
 
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
-				"Run Full Cycle AC", new KeyArgument("Z", KeyModifiers.Shift), () => AppViewModel.Singleton.SimulationVM.SimulationManager.ACFullCycle(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic)));
+				"Run Full Cycle ACDC Without Op-Amp Adjustment",
+				new KeyArgument("X"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.ACDCFullCycleWithoutOpAmpAdjustment(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic)));
+
+			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
+				"Run Full Cycle AC With Op-Amp Adjustment",
+				new KeyArgument("Z", KeyModifiers.Shift), () => AppViewModel.Singleton.SimulationVM.SimulationManager.ACFullCycleWithOpAmpAdjustment(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic)));
+
+			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
+				"Run Full Cycle ACDC With Op-Amp Adjustment",
+				new KeyArgument("X", KeyModifiers.Shift), () => AppViewModel.Singleton.SimulationVM.SimulationManager.ACDCFullCycleWithOpAmpAdjustment(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic)));
 
 			// TODO: Change the ShortcutKeys to ShortcutKey.Empty and load the saved combinations from a local file
 		}
