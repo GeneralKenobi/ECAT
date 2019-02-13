@@ -1,6 +1,7 @@
 ﻿using CSharpEnhanced.Helpers;
 using ECAT.Core;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -183,8 +184,18 @@ namespace ECAT.Simulation
 		/// </summary>
 		private int _ActiveComponentsCount => _ActiveComponents.Count;
 
-		#endregion
+		/// <summary>
+		/// Number of <see cref="IOpAmp"/>s detected in the <see cref="_Schematic"/>
+		/// </summary>
+		private int _OpAmpsCount => _OpAmps.Count;
 
+		/// <summary>
+		/// Contains currently configured <see cref="IOpAmp"/> operation modes - false for active operation, true for saturation
+		/// </summary>
+		private IList<OpAmpOperationMode> _OpAmpOperation { get; } = new List<OpAmpOperationMode>();
+
+		#endregion
+		
 		#endregion
 
 		#region Public properties
@@ -208,6 +219,11 @@ namespace ECAT.Simulation
 		/// Number of nodes created on basis of <see cref="ISchematic"/> passed to constructor
 		/// </summary>
 		public int NodesCount => _Nodes.Count;
+
+		/// <summary>
+		/// Number of <see cref="IOpAmp"/>s in the circuit
+		/// </summary>
+		public int OpAmpsCount => _OpAmps.Count;
 
 		#endregion
 
@@ -324,11 +340,48 @@ namespace ECAT.Simulation
 		#region Op-amp operation mode switching
 
 		/// <summary>
+		/// Configures <see cref="IOpAmp"/> with index <paramref name="opAmpIndex"/> for operation in <paramref name="operationMode"/> in
+		/// <paramref name="matrix"/>.
+		/// </summary>
+		/// <param name="matrix"></param>
+		/// <param name="opAmpIndex"></param>
+		/// <param name="operationMode"></param>
+		private void ConfigureOpAmpOperation(AdmittanceMatrix matrix, int opAmpIndex, OpAmpOperationMode operationMode, bool ac)
+		{
+			// Call appropriate method based on operation mode
+			switch (_OpAmpOperation[opAmpIndex])
+			{
+				case OpAmpOperationMode.Active:
+					{
+						ConfigureOpAmpForActiveOperation(matrix, opAmpIndex);
+					}
+					break;
+
+				case OpAmpOperationMode.PositiveSaturation:
+					{
+						ConfigureOpAmpForSaturation(matrix, opAmpIndex, true, ac);
+					}
+					break;
+
+				case OpAmpOperationMode.NegativeSaturation:
+					{
+						ConfigureOpAmpForSaturation(matrix, opAmpIndex, false, ac);
+					}
+					break;
+
+				default:
+					{
+						throw new Exception("Unhandled case");
+					}
+			}
+		}
+
+		/// <summary>
 		/// Configures submatrices so that <paramref name="opAmp"/> is considered to work in active operation (output is between
 		/// supply voltages)
 		/// </summary>
 		/// <param name="opAmp"></param>
-		private void ConfigureForActiveOperation(AdmittanceMatrix matrix, int opAmpIndex)
+		private void ConfigureOpAmpForActiveOperation(AdmittanceMatrix matrix, int opAmpIndex)
 		{
 			// Get the index of the op-amp
 			var opAmp = _OpAmps[opAmpIndex];
@@ -387,7 +440,7 @@ namespace ECAT.Simulation
 		/// <param name="opAmp"></param>
 		/// <param name="positiveSaturation">If true, the output is set to positive supply voltage, if false to the negative
 		/// supply</param>
-		private void ConfigureForSaturation(AdmittanceMatrix matrix, int opAmpIndex, bool positiveSaturation)
+		private void ConfigureOpAmpForSaturation(AdmittanceMatrix matrix, int opAmpIndex, bool positiveSaturation, bool ac)
 		{
 			// Get the index of the op-amp
 			var opAmp = _OpAmps[opAmpIndex];
@@ -417,7 +470,10 @@ namespace ECAT.Simulation
 
 			// Finally, depending on which supply was exceeded, set the value of the source to either positive or negative
 			// supply voltage
-			matrix._E[_TotalVoltageSourcesCount + opAmpIndex] = positiveSaturation ? opAmp.PositiveSupplyVoltage : opAmp.NegativeSupplyVoltage;
+			if (!ac)
+			{
+				matrix._E[_TotalVoltageSourcesCount + opAmpIndex] = positiveSaturation ? opAmp.PositiveSupplyVoltage : opAmp.NegativeSupplyVoltage;
+			}
 		}
 
 		#endregion
@@ -563,7 +619,7 @@ namespace ECAT.Simulation
 				// and column corresponding to the node with -1 (negative terminal)
 				matrix._C[sourceIndex + _DCVoltageSources.Count, nodes.Item1] = -1;
 			}
-			
+						
 			matrix._E[sourceIndex + _DCVoltageSources.Count] = state ? 1 : 0;
 		}
 
@@ -622,6 +678,8 @@ namespace ECAT.Simulation
 			CheckOpAmpOutputs();
 
 			GenerateOpAmpOutputInformation();
+
+			InitializeOpAmpOperationCollection();
 		}
 
 		#endregion
@@ -811,6 +869,17 @@ namespace ECAT.Simulation
 			_OpAmpOutputs = new List<Tuple<int, double, double>>(_OpAmps.Select((opAmp) => new Tuple<int, double, double>(
 			_OpAmpNodes[opAmp].Item3, opAmp.NegativeSupplyVoltage, opAmp.PositiveSupplyVoltage)));
 
+		/// <summary>
+		/// Initializes <see cref="BitArray"/> with default values - all false - all <see cref="IOpAmp"/>s in active operation
+		/// </summary>
+		private void InitializeOpAmpOperationCollection()
+		{
+			for(int i = 0; i < _OpAmpsCount; ++i)
+			{
+				_OpAmpOperation.Add(OpAmpOperationMode.Active);
+			}
+		}
+
 		#endregion
 
 		#region Initial OpAmp configuration
@@ -819,14 +888,14 @@ namespace ECAT.Simulation
 		/// Constructs the intial version of the admittance matrix (which is valid if all <see cref="IOpAmp"/>s are operating within
 		/// their supply voltage)
 		/// </summary>
-		private void InitialOpAmpSettings(AdmittanceMatrix matrix)
+		private void OpAmpSettings(AdmittanceMatrix matrix, bool ac)
 		{
 			FillBMatrixOpAmpOutputNodes(matrix);
 
 			// Configure each op-amp for active operation (by default)
 			for (int i = 0; i < _OpAmps.Count; ++i)
 			{
-				ConfigureForActiveOperation(matrix, i);
+				ConfigureOpAmpOperation(matrix, i, _OpAmpOperation[i], ac);
 			}
 		}
 		
@@ -851,9 +920,101 @@ namespace ECAT.Simulation
 
 		#endregion
 
+		#region OpAmps operation adjustment
+
+		/// <summary>
+		/// Checks if operation modes of all <see cref="IOpAmp"/>s is correct, if <paramref name="adjust"/> is set to true then adjusts the
+		/// <see cref="IOpAmp"/> that did not operate correctly (it does not mean all <see cref="IOpAmp"/>s will operate correctly - iterative
+		/// approach is needed).
+		/// </summary>
+		/// <param name="nodePotentials">Potentials at nodes</param>
+		/// <param name="adjust">True if <see cref="_OpAmpOperation"/> should be adjusted to try and find correct operation modes</param>
+		/// <returns></returns>
+		private bool CheckOpAmpOperation(IEnumerable<KeyValuePair<INode, double>> nodePotentials, bool adjust)
+		{
+			// Cast the potentials to a dictionary for an easier lookup
+			var lookupPotentials = nodePotentials.ToDictionary((x) => x.Key, (x) => x.Value);
+
+			// For each op-amp
+			for (int i = 0; i < _OpAmpsCount; ++i)
+			{
+				// Get the op-amp
+				var opAmp = _OpAmps[i];
+
+				// And get its output node potential
+				var outputVoltage = lookupPotentials[_Nodes[_OpAmpNodes[opAmp].Item3]];
+
+				// The operation mode that is expected
+				OpAmpOperationMode expectedOperationMode = OpAmpOperationMode.Active;
+
+				// If output voltage is between supply voltages
+				if (outputVoltage > opAmp.NegativeSupplyVoltage && outputVoltage < opAmp.PositiveSupplyVoltage)
+				{
+					// Active operation mode
+					expectedOperationMode = OpAmpOperationMode.Active;
+				}
+				// Else if it's greater than positive supply voltage
+				else if (outputVoltage >= opAmp.PositiveSupplyVoltage)
+				{
+					// Positive saturation
+					expectedOperationMode = OpAmpOperationMode.PositiveSaturation;
+				}
+				else
+				{
+					// Last possibility - negative saturation
+					expectedOperationMode = OpAmpOperationMode.NegativeSaturation;
+				}
+				
+				// If the expected operation mode differs from the actual on
+				if (expectedOperationMode != _OpAmpOperation[i])
+				{
+					// If adjustment was requested, set the op-amp's operation mode to the expected mode
+					if (adjust)
+					{
+						_OpAmpOperation[i] = expectedOperationMode;
+					}
+
+					// Return incorrect operation
+					return false;
+				}
+			}
+
+			// Return correct operation - neither op-amp operated incorrectly
+			return true;
+		}
+
+		#endregion
+
 		#endregion
 
 		#region Public methods
+
+		/// <summary>
+		/// Resets operation of <see cref="IOpAmp"/>s - every <see cref="IOpAmp"/> is set to active mode
+		/// </summary>
+		public void ResetOpAmpOperation()
+		{
+			for(int i = 0; i < _OpAmpOperation.Count; ++i)
+			{
+				_OpAmpOperation[i] = OpAmpOperationMode.Active;
+			}
+		}
+
+		/// <summary>
+		/// Checks <see cref="IOpAmp"/>s operation and returns true if it's correct or false if it's incorrect.
+		/// </summary>
+		/// <param name="nodePotentials"></param>
+		/// <returns></returns>
+		public bool CheckOpAmpOperation(IEnumerable<KeyValuePair<INode, double>> nodePotentials) => CheckOpAmpOperation(nodePotentials, false);
+
+		/// <summary>
+		/// Checks <see cref="IOpAmp"/> operation, returns true if it's correct and false if it's incorrect. Additionally adjusts the
+		/// <see cref="IOpAmp"/> that triggered incorrect operation.
+		/// </summary>
+		/// <param name="nodePotentials"></param>
+		/// <returns></returns>
+		public bool CheckOpAmpOperationWithSelfAdjustment(IEnumerable<KeyValuePair<INode, double>> nodePotentials) =>
+			CheckOpAmpOperation(nodePotentials, true);
 
 		/// <summary>
 		/// Constructs a DC addmittance matrix. It is constructed for all DC voltage sources, DC current sources and DC offsets of AC voltage sources
@@ -872,7 +1033,7 @@ namespace ECAT.Simulation
 			FillAMatrix(0, matrix);
 	
 			// Initialize op-amp settings - active operation
-			InitialOpAmpSettings(matrix);
+			OpAmpSettings(matrix, false);
 
 			// Turn on DC voltage sources (in admittance matrix it is represented by Ua = Ub)
 			ConfigureDCVoltageSources(matrix, true);
@@ -882,6 +1043,34 @@ namespace ECAT.Simulation
 
 			// Configure AC voltage sources for their DC offset
 			ConfigureACVoltageSourcesForDC(matrix, true);
+
+			return matrix;
+		}
+
+		/// <summary>
+		/// Constructs a DC addmittance matrix for saturated <see cref="IOpAmp"/>s only. It's purpose is to determine influence of saturated
+		/// <see cref="IOpAmp"/>s on AC circuits.
+		/// </summary>
+		/// <returns></returns>
+		public AdmittanceMatrix ConstructDCForSaturatedOpAmpsOnly()
+		{
+			var matrix = new AdmittanceMatrix(_BigDimension, _SmallDimension);
+
+			InitializeSubmatrices(matrix);
+
+			// TODO: Short circuit inductors
+
+			// Fill A matrix, which is dependent on admittances between nodes
+			FillAMatrix(0, matrix);
+
+			// Initialize op-amp settings - active operation
+			OpAmpSettings(matrix, false);
+
+			// Turn on DC voltage sources (in admittance matrix it is represented by Ua = Ub)
+			ConfigureDCVoltageSources(matrix, false);			
+
+			// Configure AC voltage sources for their DC offset
+			ConfigureACVoltageSourcesForDC(matrix, false);
 
 			return matrix;
 		}
@@ -904,7 +1093,7 @@ namespace ECAT.Simulation
 			FillAMatrix(_ACVoltageSources[voltageSourceIndex].Frequency, matrix);
 
 			// Initialize op-amp settings - active operation
-			InitialOpAmpSettings(matrix);
+			OpAmpSettings(matrix, true);
 
 			// Configure DC voltage sources to be off (in admittance matrix it is represented by Ua = Ub; two node potentials are equal)
 			ConfigureDCVoltageSources(matrix, false);
@@ -925,6 +1114,12 @@ namespace ECAT.Simulation
 		public IEnumerable<INode> GetNodes() => _Nodes.ConcatAtBeginning(_ReferenceNode);
 
 		/// <summary>
+		/// Returns all nodes generated for the <see cref="ISchematic"/> passed to constructor without the reference (ground) node
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<INode> GetNodesWithoutReference() => _Nodes;
+
+		/// <summary>
 		/// Returns frequency of AC voltage source given by <paramref name="sourceIndex"/>, throws an exception if the index is equal to or greater
 		/// than the number of AC voltage sources. Indexing starts at 0.
 		/// </summary>
@@ -941,7 +1136,7 @@ namespace ECAT.Simulation
 		/// <returns></returns>
 		public double GetACVoltageSourceAmplitude(int sourceIndex) => sourceIndex < _ACVoltageSourcesCount ?
 			_ACVoltageSources[sourceIndex].PeakProducedVoltage :	throw new ArgumentOutOfRangeException(nameof(sourceIndex));
-
+		
 		#endregion
 	}
 }
