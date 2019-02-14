@@ -32,12 +32,6 @@ namespace ECAT.Simulation
 		/// <param name="value"></param>
 		void AddConstantOffset(double value);
 
-		/// <summary>
-		/// Shifts the wave by (approximately) phase.
-		/// </summary>
-		/// <param name="phase">Phase to shift by, in radiansn, has to be greatet than 0 and smaller than 2pi</param>
-		void Shift(double phase);
-
 		#endregion
 	}
 }

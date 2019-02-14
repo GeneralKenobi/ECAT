@@ -60,12 +60,6 @@ namespace ECAT.Simulation
 		/// <param name="value"></param>
 		public void AddConstantOffset(double value) => AddConstantOffsetAndUpdateFinalWaveform(value);
 
-		/// <summary>
-		/// Shifts the wave by (approximately) phase.
-		/// </summary>
-		/// <param name="phase">Phase to shift by, in radiansn, has to be greatet than 0 and smaller than 2pi</param>
-		public void Shift(double phase) => ShiftWaveform(phase);
-
 		#endregion
 	}
 }

@@ -204,59 +204,6 @@ namespace ECAT.Simulation
 			}
 		}
 
-		/// <summary>
-		/// Shifts the wave by (approximately) phase.
-		/// </summary>
-		/// <param name="phase">Phase to shift by, in radiansn, has to be greatet than 0 and smaller than 2pi</param>
-		protected void ShiftWaveform(double phase)
-		{
-			// Check if given phase is specified range
-			if (phase <= 0 || phase >= 2 * Math.PI)
-			{
-				throw new ArgumentOutOfRangeException(nameof(phase));
-			}
-
-			// Calculate the splitting point
-			int splittingPoint = (int)Math.Round(Samples * phase / (2 * Math.PI));
-
-			// Construct the shifted final waveform:
-			var shiftedFinalWaveform = _FinalWaveform.
-				// Take all points after splitting point
-				Skip(splittingPoint).
-				Take(Samples - splittingPoint).
-				// And concat them with all points before splitting point
-				Concat(_FinalWaveform.Take(splittingPoint)).
-				// Finally cast the result to an array for easier assigning
-				ToArray();
-
-			// Assign the final waveform
-			for (int i = 0; i < Samples; ++i)
-			{
-				_FinalWaveform[i] = shiftedFinalWaveform[i];
-			}
-
-			// Store shifted composing waveforms in this dictionary
-			var shiftedComposingWaveforms = new Dictionary<double, IEnumerable<double>>();
-
-			// Compute composing waveforms similarly to final waveform above
-			foreach (var waveform in _ComposingWaveforms)
-			{
-				shiftedComposingWaveforms.Add(waveform.Key, waveform.Value.
-					Skip(splittingPoint).
-					Take(Samples - splittingPoint).
-					Concat(waveform.Value.Take(splittingPoint)));
-			}
-
-			// Clear the old composing waveforms
-			_ComposingWaveforms.Clear();
-			
-			// And add the shifted ones
-			foreach(var item in shiftedComposingWaveforms)
-			{
-				_ComposingWaveforms.Add(item.Key, item.Value);
-			}
-		}
-
 		#endregion
 
 		#region Public methods
