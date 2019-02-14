@@ -73,15 +73,7 @@ namespace ECAT.Simulation
 						var result = IoC.Resolve<ITimeDomainSignalMutable>(voltage.Samples, voltage.TimeStep, voltage.StartTime);
 
 						// The result is a product of voltage and current waveforms
-						voltage.ComposingWaveforms.
-							// First merge the data
-							MergeSelect(current.ComposingWaveforms, (v,i) => Tuple.Create(
-								// Key is the frequency of the waveform
-								v.Key,
-								// Value is a sequence of instantenous values of signal (product of voltage and current)
-								v.Value.MergeSelect(i.Value, (x,y) => x*y))).
-							// Add each waveform to the result
-							ForEach((x) => result.AddWaveform(x.Item1, x.Item2));
+						result.AddWaveform(-1, voltage.FinalWaveform.MergeSelect(current.FinalWaveform, (x, y) => x * y));
 
 						// Calculate power as the total DC voltage times total DC current
 						result.AddConstantOffset(voltage.ConstantOffsets.Sum() * current.ConstantOffsets.Sum());
