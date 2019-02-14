@@ -125,7 +125,7 @@ namespace ECAT.Simulation
 					// Capacitor's current leads voltage by pi/2
 					if (element is ICapacitor capacitor)
 					{
-						result.Shift(3 * Math.PI / 2);
+						result.Shift(Math.PI / 2);
 					}
 
 					current = result;
