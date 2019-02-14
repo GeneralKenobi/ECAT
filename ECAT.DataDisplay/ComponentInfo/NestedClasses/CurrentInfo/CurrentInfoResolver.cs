@@ -40,9 +40,12 @@ namespace ECAT.DataDisplay
 
 				// Get the results from provider and return its return value (lazy cases because we operate on interfaces)
 				TypeSwitch.Construct().
-					LazyCase<IResistor>((x) => info = results.Get(x, target.ChangeVIDirections)).
-					LazyCase<ICapacitor>((x) => info = results.Get(x, target.ChangeVIDirections)).
-					LazyCase<IActiveComponent>((x) => info = results.Get(x.ActiveComponentIndex, target.ChangeVIDirections)).
+					// For resistors no change in VI directions means that current flow is taken for voltage from node A (reference) to node B
+					LazyCase<IResistor>((x) => info = results.Get(x, !target.ChangeVIDirections)).
+					// For capacitors no change in VI directions means that current flow is taken for voltage from node A (reference) to node B
+					LazyCase<ICapacitor>((x) => info = results.Get(x, !target.ChangeVIDirections)).
+					// For active components no change in VI directions means that current flow is taken for voltage from node A (reference) to node B
+					LazyCase<IActiveComponent>((x) => info = results.Get(x.ActiveComponentIndex, !target.ChangeVIDirections)).
 					Switch(target);
 
 				return info;
