@@ -92,35 +92,6 @@ namespace ECAT.Simulation
 			#region Protected methods
 
 			/// <summary>
-			/// Shifts the wave by (approximately) phase.
-			/// </summary>
-			/// <param name="phase">Phase to shift by, in radiansn, has to be greatet than 0 and smaller than 2pi</param>
-			protected IEnumerable<double> ShiftWaveform(IEnumerable<double> waveform, double phase)
-			{
-				// Check if given phase is specified range
-				if (phase <= 0 || phase >= 2 * Math.PI)
-				{
-					throw new ArgumentOutOfRangeException(nameof(phase));
-				}
-
-				// Number of samples in the wave
-				int samples = waveform.Count();
-
-				// Calculate the splitting point
-				int splittingPoint = (int)Math.Round(samples * phase / (2 * Math.PI));
-
-				// Construct the shifted final waveform:
-				return waveform.
-					// Take all points after splitting point
-					Skip(splittingPoint).
-					Take(samples - splittingPoint).
-					// And concat them with all points before splitting point
-					Concat(waveform.Take(splittingPoint)).
-					// Finally cast the result to an array for easier assigning
-					ToArray();
-			}
-
-			/// <summary>
 			/// Tries to construct a current for <paramref name="element"/>, returns true on success
 			/// </summary>
 			/// <param name="element"></param>
@@ -152,7 +123,7 @@ namespace ECAT.Simulation
 							// Each wave has to be shifted by pi / 2 but only in its period.
 							// For example, a wave with frequency 2 times the lowest frequency has to be shifted by total of pi / 4 - because
 							// there are 2 periods of it in the full waveform. This relation is given by minimum frequency / wave frequency
-							finalWaveform = ShiftWaveform(finalWaveform,
+							finalWaveform = WaveformBuilder.ShiftWaveform(finalWaveform,
 								voltageDrop.ComposingWaveforms.Min((x) => x.Key) / waveform.Key * Math.PI / 2 );
 						}
 
