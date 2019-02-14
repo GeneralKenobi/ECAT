@@ -75,9 +75,6 @@ namespace ECAT.Simulation
 						// The result is a product of voltage and current waveforms
 						result.AddWaveform(-1, voltage.FinalWaveform.MergeSelect(current.FinalWaveform, (x, y) => x * y));
 
-						// Calculate power as the total DC voltage times total DC current
-						result.AddConstantOffset(voltage.ConstantOffsets.Sum() * current.ConstantOffsets.Sum());
-
 						power = result;
 					}
 				}
