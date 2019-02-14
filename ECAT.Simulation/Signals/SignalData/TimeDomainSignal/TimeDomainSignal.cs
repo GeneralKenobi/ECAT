@@ -44,6 +44,7 @@ namespace ECAT.Simulation
 		{
 			Interpreter = new TimeDomainSignalInterpreter(this);
 			ComposingWaveforms = new ReadOnlyDictionary<double, IEnumerable<double>>(_ComposingWaveforms);
+			ComposingDCWaveforms = new ReadOnlyCollection<IEnumerable<double>>(_ComposingDCWaveforms);
 		}
 
 		/// <summary>
@@ -90,6 +91,11 @@ namespace ECAT.Simulation
 		private IDictionary<double, IEnumerable<double>> _ComposingWaveforms { get; } = new Dictionary<double, IEnumerable<double>>();
 
 		/// <summary>
+		/// Backing store for <see cref="ComposingDCWaveforms"/>
+		/// </summary>
+		private IList<IEnumerable<double>> _ComposingDCWaveforms { get; } = new List<IEnumerable<double>>();
+
+		/// <summary>
 		/// Backing store for <see cref="FinalWaveform"/>
 		/// </summary>
 		private IList<double> _FinalWaveform { get; } = new List<double>();
@@ -129,6 +135,11 @@ namespace ECAT.Simulation
 		public IReadOnlyDictionary<double, IEnumerable<double>> ComposingWaveforms { get; }
 
 		/// <summary>
+		/// List of instantenous values of DC waveforms that compose this signal
+		/// </summary>
+		public IReadOnlyList<IEnumerable<double>> ComposingDCWaveforms { get; }
+
+		/// <summary>
 		/// Enumeration containing all constant offsets
 		/// </summary>
 		public IEnumerable<double> ConstantOffsets => _ConstantOffsets;
@@ -163,13 +174,18 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Adds a new waveform to the signal, updates <see cref="FinalWaveform"/>
 		/// </summary>
-		/// <param name="frequency"></param>
+		/// <param name="frequency">Positive value</param>
 		/// <param name="values"></param>
 		protected void AddWaveformAndUpdateFinalWaveform(double frequency, IEnumerable<double> values)
 		{
 			if(values.Count() != Samples)
 			{
 				throw new ArgumentException(nameof(values) + $" must have count equal to {Samples} ({nameof(Samples)})");
+			}
+
+			if(frequency <= 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(frequency) + " has to be positive");
 			}
 
 			// If a waveform for this frequency is already present in this signal
@@ -185,7 +201,25 @@ namespace ECAT.Simulation
 			}
 
 			// Add values to the final waveform
-			values.ForEach((x, i) => _FinalWaveform[i] += x);			
+			values.ForEach((x, i) => _FinalWaveform[i] += x);
+		}
+
+		/// <summary>
+		/// Adds a waveform considered to be DC to the signal
+		/// </summary>
+		/// <param name="values"></param>
+		protected void AddDCWaveformAndUpdateFinalWaveform(IEnumerable<double> values)
+		{
+			if (values.Count() != Samples)
+			{
+				throw new ArgumentException(nameof(values) + $" must have count equal to {Samples} ({nameof(Samples)})");
+			}
+
+			// Add the waveform to appropriate collection
+			_ComposingDCWaveforms.Add(values);
+
+			// Add values to the final waveform
+			values.ForEach((x, i) => _FinalWaveform[i] += x);
 		}
 
 		/// <summary>

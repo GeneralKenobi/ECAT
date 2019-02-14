@@ -60,6 +60,12 @@ namespace ECAT.Simulation
 		/// <param name="value"></param>
 		public void AddConstantOffset(double value) => AddConstantOffsetAndUpdateFinalWaveform(value);
 
+		/// <summary>
+		/// Adds a waveform considered to be DC to the signal
+		/// </summary>
+		/// <param name="values"></param>
+		public void AddDCWaveform(IEnumerable<double> values) => AddDCWaveformAndUpdateFinalWaveform(values);
+		
 		#endregion
 	}
 }
