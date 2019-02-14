@@ -26,7 +26,7 @@
 						</Grid.ColumnDefinitions>
 
 
-						<!-- Minus sign -->
+						<!-- Sign on the left -->
 						<Grid>
 
 							<!-- Horizontal element -->
@@ -39,7 +39,7 @@
 									Visibility="{Binding Component.ChangeVIDirections, Converter={converters:BoolToVisibilityMEC}}"/>
 						</Grid>
 
-						<!-- Plus sign -->
+						<!-- Sign on the right -->
 						<Grid Grid.Column="2">
 
 							<!-- Horizontal element-->
