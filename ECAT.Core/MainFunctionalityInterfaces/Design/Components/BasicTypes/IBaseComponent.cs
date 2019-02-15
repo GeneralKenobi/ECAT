@@ -13,6 +13,11 @@ namespace ECAT.Core
 		#region Properties
 
 		/// <summary>
+		/// Unique label assigned to the component
+		/// </summary>
+		IIDLabel Label { get; }
+
+		/// <summary>
 		/// If true, voltage drop is calculated in reverse
 		/// </summary>
 		bool ChangeVIDirections { get; set; }
