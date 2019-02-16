@@ -59,6 +59,18 @@ namespace ECAT.Simulation
 					result.AddWaveform(nodeAPotential, nodeA.ComposingWaveforms[nodeAPotential].Select((x) => -x));
 				}
 
+				// Add all DC waveforms from node B
+				foreach (var dcWaveform in nodeB.ComposingDCWaveforms)
+				{
+					result.AddDCWaveform(dcWaveform);
+				}
+
+				// Subtract all DC waveforms from node A
+				foreach (var dcWaveform in nodeA.ComposingDCWaveforms)
+				{
+					result.AddDCWaveform(dcWaveform.Select((x) => -x));
+				}
+
 				// Finally take care of waveforms that appear on both nodes
 				nodeA.ComposingWaveforms.Keys.Intersect(nodeB.ComposingWaveforms.Keys).
 					// For each waveform, add it to result by subtracting instantenous values of each composing waveform (nodeB - nodeA)
