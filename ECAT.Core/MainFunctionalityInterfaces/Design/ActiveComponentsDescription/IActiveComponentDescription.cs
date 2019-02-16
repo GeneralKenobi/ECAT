@@ -17,6 +17,21 @@
 		/// </summary>
 		int Index { get; }
 
+		/// <summary>
+		/// Frequency of the described <see cref="IActiveComponent"/>
+		/// </summary>
+		double Frequency { get; }
+
+		/// <summary>
+		/// Peak value (voltage or current) produced by the described <see cref="IActiveComponent"/>
+		/// </summary>
+		double PeakProducedValue { get; }
+
+		/// <summary>
+		/// Type of the <see cref="IActiveComponent"/>
+		/// </summary>
+		ActiveComponentType ComponentType { get; }
+
 		#endregion
 	}
 }
