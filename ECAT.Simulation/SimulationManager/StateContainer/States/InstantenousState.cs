@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CSharpEnhanced.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -38,8 +39,7 @@ namespace ECAT.Simulation
 		public void AddState(InstantenousState other)
 		{
 			// Check if keys of the other instance match internal keys, if not throw an exception
-			if(Potentials.Keys.Intersect(other.Potentials.Keys).Count() != Potentials.Count ||
-				Currents.Keys.Intersect(other.Currents.Keys).Count() != Currents.Count)
+			if(!(Potentials.Keys.IsSequenceEqual(other.Potentials.Keys) && Currents.Keys.IsSequenceEqual(other.Currents.Keys)))
 			{
 				throw new ArgumentException(nameof(other) + " has incompatible internal collections (keys don't match)");
 			}
