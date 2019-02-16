@@ -698,7 +698,7 @@ namespace ECAT.Simulation
 			// Find, assign and remove the reference (ground) nodes
 			ProcessReferenceNodes();
 
-			// Assign indexes to nodes
+			// Assign indices to nodes
 			for (int i = 0; i < _Nodes.Count; ++i)
 			{
 				// Node indexing starts at ground node index + 1
@@ -726,6 +726,9 @@ namespace ECAT.Simulation
 
 			// Create a new reference node
 			_ReferenceNode = new Node();
+
+			// Assign ground node index to it
+			_ReferenceNode.Index = SimulationManager.GroundNodeIndex;
 
 			// Merge every node that was determined to be a reference node with it
 			referenceNodes.ForEach((node) => _ReferenceNode.Merge(node));
@@ -927,12 +930,12 @@ namespace ECAT.Simulation
 		/// <see cref="IOpAmp"/> that did not operate correctly (it does not mean all <see cref="IOpAmp"/>s will operate correctly - iterative
 		/// approach is needed).
 		/// </summary>
-		/// <param name="nodePotentials">Potentials at nodes</param>
+		/// <param name="nodePotentials">Potentials at nodes, keys are simulation node indices</param>
 		/// <param name="adjust">True if <see cref="_OpAmpOperation"/> should be adjusted to try and find correct operation modes</param>
 		/// <returns></returns>
-		private bool CheckOpAmpOperation(IEnumerable<KeyValuePair<INode, double>> nodePotentials, bool adjust)
+		private bool CheckOpAmpOperation(IEnumerable<KeyValuePair<int, double>> nodePotentials, bool adjust)
 		{
-			// Cast the potentials to a dictionary for an easier lookup
+			// Cast the potentials to a dictionary for an easier lookup, add 1 to keys because op-amp nodes are stored with regular indices
 			var lookupPotentials = nodePotentials.ToDictionary((x) => x.Key, (x) => x.Value);
 
 			// For each op-amp
@@ -942,7 +945,7 @@ namespace ECAT.Simulation
 				var opAmp = _OpAmps[i];
 
 				// And get its output node potential
-				var outputVoltage = lookupPotentials[_Nodes[_OpAmpNodes[opAmp].Item3]];
+				var outputVoltage = lookupPotentials[_OpAmpNodes[opAmp].Item3];
 
 				// The operation mode that is expected
 				OpAmpOperationMode expectedOperationMode = OpAmpOperationMode.Active;
@@ -1003,17 +1006,17 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Checks <see cref="IOpAmp"/>s operation and returns true if it's correct or false if it's incorrect.
 		/// </summary>
-		/// <param name="nodePotentials"></param>
+		/// <param name="nodePotentials">Keys are simulation node indices</param>
 		/// <returns></returns>
-		public bool CheckOpAmpOperation(IEnumerable<KeyValuePair<INode, double>> nodePotentials) => CheckOpAmpOperation(nodePotentials, false);
+		public bool CheckOpAmpOperation(IEnumerable<KeyValuePair<int, double>> nodePotentials) => CheckOpAmpOperation(nodePotentials, false);
 
 		/// <summary>
 		/// Checks <see cref="IOpAmp"/> operation, returns true if it's correct and false if it's incorrect. Additionally adjusts the
 		/// <see cref="IOpAmp"/> that triggered incorrect operation.
 		/// </summary>
-		/// <param name="nodePotentials"></param>
+		/// <param name="nodePotentials">Keys are simulation node indices</param>
 		/// <returns></returns>
-		public bool CheckOpAmpOperationWithSelfAdjustment(IEnumerable<KeyValuePair<INode, double>> nodePotentials) =>
+		public bool CheckOpAmpOperationWithSelfAdjustment(IEnumerable<KeyValuePair<int, double>> nodePotentials) =>
 			CheckOpAmpOperation(nodePotentials, true);
 
 		/// <summary>
@@ -1118,6 +1121,20 @@ namespace ECAT.Simulation
 		/// </summary>
 		/// <returns></returns>
 		public IEnumerable<INode> GetNodesWithoutReference() => _Nodes;
+
+		/// <summary>
+		/// Returns indices of all nodes generated for the <see cref="ISchematic"/> passed to constructor
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<int> GetNodeIndices() => GetNodes().Select((x) => x.Index);
+
+		/// <summary>
+		/// Returns indices of all nodes generated for the <see cref="ISchematic"/> passed to constructor without the reference (ground) node.
+		/// Indices for simulation are reduced by 1 - normally ground node is indexed at 0 but it's omitted in simulation as its potential is always
+		/// 0 and it would only increase size of matrices by 1 resulting in longer computations.
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<int> GetSimulationNodeIndices() => GetNodesWithoutReference().Select((x) => x.Index);
 
 		/// <summary>
 		/// Returns frequency of AC voltage source given by <paramref name="sourceIndex"/>, throws an exception if the index is equal to or greater
