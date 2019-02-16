@@ -6,7 +6,7 @@ namespace ECAT.Simulation
 	/// <summary>
 	/// Container for instantenous state of a system
 	/// </summary>
-	public class InstantenousPartialStates
+	public class InstantenousPartialStates : GenericPartialStates<InstantenousState, double>
 	{
 		#region Constructor
 
@@ -16,25 +16,9 @@ namespace ECAT.Simulation
 		/// <param name="acSourcesCount">Number of AC sources expected in this state</param>
 		/// <param name="nodeIndices">Indices of nodes present in this instance</param>
 		/// <param name="activeComponentsIndices">Active components indices present in this instance</param>
-		public InstantenousPartialStates(int acSourcesCount, IEnumerable<int> nodeIndices, IEnumerable<int> activeComponentsIndices)
-		{
-			// Create container for DC state
-			DCState = new InstantenousState(nodeIndices, activeComponentsIndices);
-
-			// Create array for AC states
-			ACStates = new InstantenousState[acSourcesCount];
-
-			// And initialize each entry in the array
-			for(int i = 0; i < acSourcesCount; ++i)
-			{
-				ACStates[i] = new InstantenousState(nodeIndices, activeComponentsIndices);
-			}
-
-			// Assign the collections to private properties for future use
-			_NodeIndices = nodeIndices;
-			_ActiveComponentsIndices = activeComponentsIndices;
-		}
-
+		public InstantenousPartialStates(int acSourcesCount, IEnumerable<int> nodeIndices, IEnumerable<int> activeComponentsIndices) :
+			base(acSourcesCount, nodeIndices, activeComponentsIndices, (x, y) => new InstantenousState(x, y)) { }
+		
 		/// <summary>
 		/// Constructor with parameters
 		/// </summary>
@@ -65,34 +49,6 @@ namespace ECAT.Simulation
 		/// <param name="activeComponentsIndices">Active components indices present in this instance</param>
 		public InstantenousPartialStates(int acSourcesCount, int nodesCount, IEnumerable<int> activeComponentsIndices) :
 			this(acSourcesCount, Enumerable.Range(0, nodesCount), activeComponentsIndices) { }
-
-		#endregion
-
-		#region Private properties
-
-		/// <summary>
-		/// Indices of nodes present in this instance
-		/// </summary>
-		private IEnumerable<int> _NodeIndices { get; }
-
-		/// <summary>
-		/// Active components indices present in this instance
-		/// </summary>
-		private IEnumerable<int> _ActiveComponentsIndices { get; }
-
-		#endregion
-
-		#region Public properties
-
-		/// <summary>
-		/// Array holding AC instantenous potentials for each source
-		/// </summary>
-		public InstantenousState[] ACStates { get; }
-
-		/// <summary>
-		/// DC instantenous state of the system
-		/// </summary>
-		public InstantenousState DCState { get; }
 
 		#endregion
 

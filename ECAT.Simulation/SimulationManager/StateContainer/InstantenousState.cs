@@ -7,52 +7,25 @@ namespace ECAT.Simulation
 	/// <summary>
 	/// Container for instantenous state of a circuit with respect to one source
 	/// </summary>
-	public class InstantenousState
+	public class InstantenousState : GenericState<double>
 	{
 		#region Constructor
 
 		/// <summary>
 		/// Constructor with parameters
 		/// </summary>
-		/// <param name="nodes">Nodes present in this instance</param>
+		/// <param name="nodeIndices">Nodes present in this instance</param>
 		/// <param name="activeComponentsIndices">Active components indices present in this instance</param>
-		public InstantenousState(IEnumerable<int> nodeIndices, IEnumerable<int> activeComponentsIndices)
-		{
-			// Make an entry for each node
-			foreach(var node in nodeIndices)
-			{
-				Potentials.Add(node, 0);
-			}
-
-			// Make an entry for each index
-			foreach(var index in activeComponentsIndices)
-			{
-				Currents.Add(index, 0);
-			}
-		}
+		public InstantenousState(IEnumerable<int> nodeIndices, IEnumerable<int> activeComponentsIndices) : base(nodeIndices, activeComponentsIndices) { }
 
 		/// <summary>
 		/// Constructor with parameters
 		/// </summary>
-		/// <param name="nodes">Nodes present in this instance</param>
+		/// <param name="nodeIndices">Nodes present in this instance</param>
 		/// <param name="activeComponentsCount">Number of active components, indices available in this instance will are given by a
 		/// range: 0 to <paramref name="activeComponentsCount"/> - 1</param>
 		public InstantenousState(IEnumerable<int> nodeIndices, int activeComponentsCount) :
 			this(nodeIndices, Enumerable.Range(0, activeComponentsCount)) { }
-
-		#endregion
-
-		#region Private properties
-
-		/// <summary>
-		/// Contains nodes and their potentials
-		/// </summary>
-		public IDictionary<int, double> Potentials { get; } = new Dictionary<int, double>();
-
-		/// <summary>
-		/// Contains indices of active components and their currents
-		/// </summary>
-		public IDictionary<int, double> Currents { get; } = new Dictionary<int, double>();
 
 		#endregion
 
