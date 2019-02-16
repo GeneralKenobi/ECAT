@@ -276,6 +276,7 @@ namespace ECAT.Simulation
 
 			// Copy composing waveforms and constant offsets
 			obj.ComposingWaveforms.ForEach((x) => AddWaveformAndUpdateFinalWaveform(x.Key, x.Value));
+			obj.ComposingDCWaveforms.ForEach((x) => AddDCWaveformAndUpdateFinalWaveform(x));
 			obj.ConstantOffsets.ForEach((x) => AddConstantOffsetAndUpdateFinalWaveform(x));
 		}
 
@@ -296,6 +297,7 @@ namespace ECAT.Simulation
 
 			// Copy waveforms and constant offsets with switched sign
 			ComposingWaveforms.ForEach((x) => result.AddWaveformAndUpdateFinalWaveform(x.Key, x.Value.Select((y) => -y)));
+			ComposingDCWaveforms.ForEach((x) => result.AddDCWaveformAndUpdateFinalWaveform(x.Select((y) => -y)));
 			ConstantOffsets.ForEach((x) => result.AddConstantOffsetAndUpdateFinalWaveform(-x));
 
 			return result;
