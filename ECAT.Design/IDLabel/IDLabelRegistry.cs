@@ -14,7 +14,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Contains all currently registered labels
 		/// </summary>
-		private HashSet<string> _ReservedLabels { get; }
+		private HashSet<string> _ReservedLabels { get; } = new HashSet<string>();
 
 		/// <summary>
 		/// Counter used for determining default labels
