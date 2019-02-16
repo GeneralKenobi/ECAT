@@ -47,7 +47,7 @@ namespace ECAT.Simulation
 
 		#endregion
 
-		#region Private properties
+		#region Public properties
 
 		/// <summary>
 		/// Contains nodes and their potentials
