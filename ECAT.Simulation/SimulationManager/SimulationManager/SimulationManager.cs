@@ -297,14 +297,14 @@ namespace ECAT.Simulation
 		/// <param name="timeStep">Time step between two calculational points</param>
 		/// <param name="includeDCBias">If true DC bias will be performed and added to results, if false only saturated <see cref="IOpAmp"/>s
 		/// will be considered for DC part of simulation</param>
-		private PartialInstantenousStates FullCycleInstantenousValuesHelper(AdmittanceMatrixFactory factory, int pointIndex, double timeStep,
+		private InstantenousPartialStates FullCycleInstantenousValuesHelper(AdmittanceMatrixFactory factory, int pointIndex, double timeStep,
 			bool includeDCBias = false)
 		{
 			// Get indices of nodes, without the reference node, and group them into a list for easier access
 			var nodeIndices = factory.GetSimulationNodeIndices().ToList();
 
 			// Result container that will be returned
-			var result = new PartialInstantenousStates(factory.ACVoltageSourcesCount, nodeIndices, factory.ActiveComponentsCount);
+			var result = new InstantenousPartialStates(factory.ACVoltageSourcesCount, nodeIndices, factory.ActiveComponentsCount);
 			
 			// Get all transfer functions
 			GetAllACTransferFunctions(factory, out var nodePotentials, out var activeComponentsCurrents);
