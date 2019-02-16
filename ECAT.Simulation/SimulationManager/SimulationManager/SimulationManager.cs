@@ -88,8 +88,8 @@ namespace ECAT.Simulation
 				DCBiasHelper(factory, out nodePotentials, out activeComponentsCurrents);
 
 				// Assign node potentials to nodes
-				var keyedNodePotentials = factory.GetNodesWithoutReference().MergeSelect(
-					nodePotentials, (x, y) => new KeyValuePair<INode, double>(x, y));
+				var keyedNodePotentials = factory.GetSimulationNodeIndices().MergeSelect(
+					nodePotentials, (x, y) => new KeyValuePair<int, double>(x, y));
 
 				// Check if op-amps operate correctly with self-adjustment
 				opAmpOperationCorrect = factory.CheckOpAmpOperationWithSelfAdjustment(keyedNodePotentials);
@@ -285,69 +285,44 @@ namespace ECAT.Simulation
 				totalActiveComponentsCurrents[i].AddConstantOffset(dcCurrents[i].Real);
 			}
 		}
-
+		
 		/// <summary>
 		/// Performs an AC cycle simulation - simulation is running for one full period of lowest frequency source in the <paramref name="factory"/>.
 		/// After determining the transfer functions calculates only one set of instantenous values for point described by
-		/// <paramref name="pointIndex"/> and <paramref name="timeStep"/>.
+		/// <paramref name="pointIndex"/> and <paramref name="timeStep"/>. Returns an array, each entry corresponds to one
+		/// <see cref="IACVoltageSource"/>.
 		/// </summary>
 		/// <param name="factory"></param>
-		/// <param name="totalPotentials">Calculated instantenous values of potentials at nodes</param>
-		/// <param name="totalActiveComponentsCurrents">Calculated instantenous values of active components' currents</param>
 		/// <param name="pointIndex">Index of the point for which to calculate instantenous values</param>
 		/// <param name="timeStep">Time step between two calculational points</param>
 		/// <param name="includeDCBias">If true DC bias will be performed and added to results, if false only saturated <see cref="IOpAmp"/>s
 		/// will be considered for DC part of simulation</param>
-		private void FullCycleInstantenousValuesHelper(AdmittanceMatrixFactory factory, out Dictionary<INode, double> totalPotentials,
-			out Dictionary<int, double> totalActiveComponentsCurrents, int pointIndex, double timeStep, bool includeDCBias = false)
+		private PartialInstantenousStates FullCycleInstantenousValuesHelper(AdmittanceMatrixFactory factory, int pointIndex, double timeStep,
+			bool includeDCBias = false)
 		{
-			// Create dictionary holding final values of instantenous potentials at nodes
-			totalPotentials = new Dictionary<INode, double>();
+			// Get indices of nodes, without the reference node, and group them into a list for easier access
+			var nodeIndices = factory.GetSimulationNodeIndices().ToList();
 
-			// Create dictionary holding final values of instantenous active components' currents
-			totalActiveComponentsCurrents = new Dictionary<int, double>();
-
-			// Get nodes constructed on the basis of the circuit
-			var nodes = factory.GetNodes();
-			// Get nodes without the reference node and group them into a list for easier access with indexes
-			var nodesWithoutReference = factory.GetNodesWithoutReference().ToList();
-
-			// Create entry for potential at each node
-			foreach (var node in nodes)
-			{
-				totalPotentials.Add(node, 0);
-			}
-
-			// Create entry for each active component current
-			for (int i = 0; i < factory.ActiveComponentsCount; ++i)
-			{
-				totalActiveComponentsCurrents.Add(i, 0);
-			}
-
+			// Result container that will be returned
+			var result = new PartialInstantenousStates(factory.ACVoltageSourcesCount, nodeIndices, factory.ActiveComponentsCount);
+			
 			// Get all transfer functions
 			GetAllACTransferFunctions(factory, out var nodePotentials, out var activeComponentsCurrents);
-
-			// Get DC transfer function - if DC biasing was specified construct a full DC admittance matrix, if not construct DC matrix only for
-			// saturated op-amps, then solve the constructed matrix
-			(includeDCBias ? factory.ConstructDC() : factory.ConstructDCForSaturatedOpAmpsOnly()).Solve(out var dcPotentials, out var dcCurrents);
 
 			// For each function for i-th voltage source
 			for (int i = 0; i < factory.ACVoltageSourcesCount; ++i)
 			{
 				// Transfer functions for node potentials
-				for (int j = 0; j < nodePotentials.GetLength(1); ++j)
+				foreach(var index in nodeIndices)
 				{
-					// Get j-th node
-					var currentNode = nodesWithoutReference[j];
-
 					// Add to appropriate node's instantenous potential calculated for i-th voltage source
-					totalPotentials[currentNode] += WaveformBuilder.SineWaveInstantenousValue(
+					result.ACStates[i].Potentials[index] += WaveformBuilder.SineWaveInstantenousValue(
 						// Amplitude is the amplitude of the source times magnitude of transfer function
-						factory.GetACVoltageSourceAmplitude(i) * nodePotentials[i, j].Magnitude,
+						factory.GetACVoltageSourceAmplitude(i) * nodePotentials[i, index].Magnitude,
 						// Frequency of the i-th voltage source
 						factory.GetACVoltageSourceFrequency(i),
 						// Phase introduced by transfer function
-						nodePotentials[i, j].Phase,
+						nodePotentials[i, index].Phase,
 						// Index specified by caller
 						pointIndex,
 						// Time step specified by caller
@@ -358,7 +333,7 @@ namespace ECAT.Simulation
 				for (int j = 0; j < factory.ActiveComponentsCount; ++j)
 				{
 					// Add to appropriate current's instantenous value
-					totalActiveComponentsCurrents[j] += WaveformBuilder.SineWaveInstantenousValue(
+					result.ACStates[i].Currents[j] += WaveformBuilder.SineWaveInstantenousValue(
 						// Amplitude is the amplitude of the source times magnitude of transfer function
 						factory.GetACVoltageSourceAmplitude(i) * activeComponentsCurrents[i, j].Magnitude,
 						// Frequency of the i-th voltage source
@@ -372,22 +347,27 @@ namespace ECAT.Simulation
 				}
 			}
 
-			// Add the calculated DC potential at each node to corresponding nodes' waveforms, as constant value 
-			for (int i = 0; i < nodes.Count() - 1; ++i)
-			{
-				// Get i-th node
-				var currentNode = nodesWithoutReference[i];
+			// Get DC transfer function - if DC biasing was specified construct a full DC admittance matrix, if not construct DC matrix only for
+			// saturated op-amps, then solve the constructed matrix
+			(includeDCBias ?
+				factory.ConstructDC() : factory.ConstructDCForSaturatedOpAmpsOnly()).Solve(out var dcBiasPotentials, out var dcBiasCurrents);
 
-				// Add the DC potential as constant value - take the real part because for DC bias results can only be purely real
-				totalPotentials[currentNode] += dcPotentials[i].Real;
+			// Cast the results to their real parts only - DC biasing can't produce complex values.
+			// Transfer functions for node potentials
+			foreach(var index in nodeIndices)
+			{
+				// Add to appropriate node's instantenous potential calculated for i-th voltage source
+				result.DCState.Potentials[index] += dcBiasPotentials[index].Real;
 			}
 
-			// Add the calculated DC active component currents to corresponding active components currents, as constant value
+			// Transfer functions for active components currents
 			for (int i = 0; i < factory.ActiveComponentsCount; ++i)
 			{
-				// Take the real part only because for DC bias results can only be purely real
-				totalActiveComponentsCurrents[i] += dcCurrents[i].Real;
+				// Add to appropriate node's instantenous potential calculated for i-th voltage source
+				result.DCState.Currents[i] += dcBiasCurrents[i].Real;
 			}
+
+			return result;
 		}
 
 		#endregion
@@ -461,52 +441,93 @@ namespace ECAT.Simulation
 			double timeStep = GetTimeStep(pointsCount, lowestFrequency);
 
 			// Get nodes constructed on the basis of the circuit
-			var nodes = factory.GetNodes().ToList();
+			var nodeIndices = factory.GetSimulationNodeIndices().ToList();
 
 			// Potentials as waveforms with values adjusted for proper op-amp operation at each point
-			var adjustedWaveforms = new Dictionary<INode, IList<double>>();
+			var adjustedWaveforms = new Dictionary<int, IList<double>>[factory.ACVoltageSourcesCount];
 
 			// Active components currents with values adjusted for proper op-amp operation at each point
-			var adjustedActiveComponentsCurrents = new Dictionary<int, IList<double>>();
+			var adjustedActiveComponentsCurrents = new Dictionary<int, IList<double>>[factory.ACVoltageSourcesCount];
 
-			// Create time domain signal for each node
-			foreach (var node in nodes)
+			// Waveforms of DC offset that are result of adjusted op-amp operation
+			var adjustedDCOffsets = new Dictionary<int, IList<double>>();
+
+			// Waveforms of DC active component currents that are results of adjusted op-amp operation
+			var adjustedDCActiveComponentsCurrents = new Dictionary<int, IList<double>>();
+
+			// Make an entry for each adjusted DC offset
+			foreach(var index in nodeIndices)
 			{
-				adjustedWaveforms.Add(node, new List<double>());
+				adjustedDCOffsets.Add(index, new List<double>());
 			}
 
-			// Create time domain signals for each active component current
-			for (int i = 0; i < factory.ActiveComponentsCount; ++i)
+			// Make an entry for each adjusted DC active component current
+			for(int i = 0; i < factory.ActiveComponentsCount; ++i)
 			{
-				adjustedActiveComponentsCurrents.Add(i, new List<double>());
+				adjustedDCActiveComponentsCurrents.Add(i, new List<double>());
+			}
+
+			// For each AC voltage source
+			for(int i = 0; i < factory.ACVoltageSourcesCount; ++i)
+			{
+				// Make entries in i-th entry in arrays
+				adjustedWaveforms[i] = new Dictionary<int, IList<double>>();
+				adjustedActiveComponentsCurrents[i] = new Dictionary<int, IList<double>>();
+
+				// Create time domain signal for each node
+				foreach (var index in nodeIndices)
+				{
+					adjustedWaveforms[i].Add(index, new List<double>());
+				}
+
+				// Create time domain signals for each active component current
+				for (int j = 0; j < factory.ActiveComponentsCount; ++j)
+				{
+					adjustedActiveComponentsCurrents[i].Add(j, new List<double>());
+				}
 			}
 
 			// Go through each simulation point separately - it is necessary in order to correctly determine op-amp operation at each specific point
 			for (int i = 0; i < pointsCount; ++i)
 			{
 				// Use the helper to obtain instantenous potentials
-				FullCycleInstantenousValuesHelper(factory, out var potentials, out var activeComponentsCurrents, i, timeStep, includeDCBias);
-				
+				var instantenousValues = FullCycleInstantenousValuesHelper(factory, i, timeStep, includeDCBias);
+
 				// Loop until correct op-amp operation is found
-				while (!factory.CheckOpAmpOperationWithSelfAdjustment(potentials.ToDictionary((x) => x.Key, (x) => x.Value)))
+				while (!factory.CheckOpAmpOperationWithSelfAdjustment(instantenousValues.Combine().Potentials))
 				{
 					// If the op-amp operation was adjusted, recalculate the waveforms
-					FullCycleInstantenousValuesHelper(factory, out potentials, out activeComponentsCurrents, i, timeStep, includeDCBias);
+					instantenousValues = FullCycleInstantenousValuesHelper(factory, i, timeStep, includeDCBias);
 				}
 
 				// At this point op-amp operation is correct - assign the instantenous potentials and currents to the final waveform
-				for (int j = 1; j < nodes.Count; ++j)
+				for (int j = 0; j < factory.ACVoltageSourcesCount; ++j)
 				{
-					var currentNode = nodes[j];
+					foreach(var index in nodeIndices)
+					{
+						// Lists are empty - points should just be added to them to form a full waveform
+						adjustedWaveforms[j][index].Add(instantenousValues.ACStates[j].Potentials[index]);
+					}
 
-					// Lists are empty - points should just be added to them to form a full waveform
-					adjustedWaveforms[currentNode].Add(potentials[currentNode]);
+					// Add the instantenous values of active components currents to the waveforms
+					for (int k = 0; k < factory.ActiveComponentsCount; ++k)
+					{
+						adjustedActiveComponentsCurrents[j][k].Add(instantenousValues.ACStates[j].Currents[k]);
+					}
 				}
 
-				// Add the instantenous values of active components currents to the waveforms
-				for (int j = 0; j < factory.ActiveComponentsCount; ++j)
+				// For each node
+				foreach(var index in nodeIndices)
 				{
-					adjustedActiveComponentsCurrents[j].Add(activeComponentsCurrents[j]);
+					// Assign DC potential to adjusted DC waveform
+					adjustedDCOffsets[index].Add(instantenousValues.DCState.Potentials[index]);
+				}
+
+				// For each active component
+				for(int j = 0; j < factory.ActiveComponentsCount; ++j)
+				{
+					// Assign its current
+					adjustedDCActiveComponentsCurrents[j].Add(instantenousValues.DCState.Currents[j]);
 				}
 
 				// Finally reset the op-amp operation for next iteration
@@ -514,42 +535,63 @@ namespace ECAT.Simulation
 			}
 
 			// Dictionary holding final values of potentials at nodes that will be passed to simulation results
-			var finalPotentials = new Dictionary<INode, ITimeDomainSignalMutable>
+			var finalPotentials = new Dictionary<INode, ITimeDomainSignalMutable>()
 			{
-				// Add potential for the reference node
-				{ nodes[0], IoC.Resolve<ITimeDomainSignalMutable>(pointsCount, timeStep) }
+				// Add entry for reference node
+				{ factory.GetNodes().First(), IoC.Resolve<ITimeDomainSignalMutable>(pointsCount, timeStep) },
 			};
-
-			// Full waveforms were determined - assign them to final signals
-			for (int i = 1; i < nodes.Count; ++i)
-			{
-				// Get the i-th node
-				var currentNode = nodes[i];
-
-				// Create time domain signal
-				var signal = IoC.Resolve<ITimeDomainSignalMutable>(pointsCount, timeStep);
-
-				// Add the calculated waveform to it
-				signal.AddWaveform(lowestFrequency, adjustedWaveforms[currentNode]);
-
-				// Add the signal with its node to the dictionary
-				finalPotentials.Add(currentNode, signal);
-			}
 
 			// Dictionary for final active components currents
 			var finalActiveComponentsCurrents = new Dictionary<int, ITimeDomainSignalMutable>();
 
+			// Get nodes in order to construct ITimeDomainSignals for them and pass those as pairs to simulation results
+			var nodes = factory.GetNodesWithoutReference().ToList();
+
+			// For each node index
+			foreach(var index in nodeIndices)
+			{
+				// Create an ITimeDomainSignal
+				finalPotentials.Add(nodes[index], IoC.Resolve<ITimeDomainSignalMutable>(pointsCount, timeStep));
+			}
+
 			// For each active component
+			for (int i = 0; i < factory.ActiveComponentsCount; ++i)
+			{
+				// Create an ITimeDomainSignal
+				finalActiveComponentsCurrents.Add(i, IoC.Resolve<ITimeDomainSignalMutable>(pointsCount, timeStep));
+			}
+
+			// Full waveforms were determined - assign them to final signals, go through each AC voltage source
+			for (int i = 0; i < factory.ACVoltageSourcesCount; ++i)
+			{
+				// For each node
+				for (int j = 0; j < nodes.Count; ++j)
+				{
+					// Fetch it
+					var currentNode = nodes[j];
+
+					// And add a waveform generated by i-th AC voltage source on that node
+					finalPotentials[currentNode].AddWaveform(factory.GetACVoltageSourceFrequency(i), adjustedWaveforms[i][currentNode.Index]);
+				}
+
+				// For each active component
+				for (int j = 0; j < factory.ActiveComponentsCount; ++j)
+				{
+					// Add a waveform generated by i-th AC voltage source in this current
+					finalActiveComponentsCurrents[j].AddWaveform(factory.GetACVoltageSourceFrequency(i), adjustedActiveComponentsCurrents[i][j]);
+				}
+			}
+						
+			// Finally add DC waveforms to each node
+			foreach(var index in nodeIndices)
+			{
+				finalPotentials[nodes[index]].AddDCWaveform(adjustedDCOffsets[index]);
+			}
+
+			// And DC currents to active components
 			for(int i = 0; i < factory.ActiveComponentsCount; ++i)
 			{
-				// Create a signal
-				var signal = IoC.Resolve<ITimeDomainSignalMutable>(pointsCount, timeStep);
-
-				// Add the calculated wave to it
-				signal.AddWaveform(lowestFrequency, adjustedActiveComponentsCurrents[i]);
-
-				// Add the signal with its index to the dictionary
-				finalActiveComponentsCurrents.Add(i, signal);
+				finalActiveComponentsCurrents[i].AddDCWaveform(adjustedDCActiveComponentsCurrents[i]);
 			}
 
 			// Create simulation results
@@ -644,7 +686,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// The index assumed for ground nodes
 		/// </summary>
-		public static int GroundNodeIndex { get; } = 0;
+		public static int GroundNodeIndex { get; } = -1;
 
 		#endregion
 	}
