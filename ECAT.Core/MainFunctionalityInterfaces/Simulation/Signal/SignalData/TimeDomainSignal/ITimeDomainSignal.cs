@@ -42,6 +42,11 @@ namespace ECAT.Core
 		IReadOnlyDictionary<double, IEnumerable<double>> ComposingWaveforms { get; }
 
 		/// <summary>
+		/// List of instantenous values of DC waveforms that compose this signal
+		/// </summary>
+		IReadOnlyList<IEnumerable<double>> ComposingDCWaveforms { get; }
+
+		/// <summary>
 		/// Enumeration containing all constant offsets
 		/// </summary>
 		IEnumerable<double> ConstantOffsets { get; }
