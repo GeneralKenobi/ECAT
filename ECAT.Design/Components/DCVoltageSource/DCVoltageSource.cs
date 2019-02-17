@@ -19,9 +19,14 @@ namespace ECAT.Design
 		/// </summary>
 		public DCVoltageSource()
 		{
-			// Reverse directions by default - voltage source usually produces current that flows in the same direction as is the
-			// direction of the produced voltage drop
-			ChangeVIDirections = true;
+			// Create a description
+			_Description = new ActiveComponentDescription()
+			{
+				Label = this.Label,
+				Index = ActiveComponentIndex,
+				Frequency = 0,
+				ComponentType = ActiveComponentType.DCVoltageSource,
+			};
 		}
 
 		#endregion
@@ -32,6 +37,20 @@ namespace ECAT.Design
 		/// The admittance of a voltage source (constant value)
 		/// </summary>
 		private Complex _Admittance { get; } = IoC.Resolve<IDefaultValues>().VoltageSourceAdmittance;
+
+		/// <summary>
+		/// Backing store for <see cref="Description"/>
+		/// </summary>
+		private ActiveComponentDescription _Description { get; }
+
+		#endregion
+
+		#region Private members
+
+		/// <summary>
+		/// Backing store for <see cref="ActiveComponentIndex"/>
+		/// </summary>
+		private int mActiveComponentIndex;
 
 		#endregion
 
@@ -45,7 +64,21 @@ namespace ECAT.Design
 		/// <summary>
 		/// Index used to query <see cref="ISimulationResults"/> for produced current
 		/// </summary>
-		public int ActiveComponentIndex { get; set; }
+		public int ActiveComponentIndex
+		{
+			get => mActiveComponentIndex;
+			set
+			{
+				// Update the backing store and value in description
+				mActiveComponentIndex = value;
+				_Description.Index = value;
+			}
+		}
+
+		/// <summary>
+		/// Description of this <see cref="IActiveComponent"/>
+		/// </summary>
+		public IActiveComponentDescription Description => _Description;
 
 		#endregion
 
@@ -57,7 +90,7 @@ namespace ECAT.Design
 		/// <param name="frequency"></param>
 		/// <returns></returns>
 		protected override Complex CalculateAdmittance(double frequency) => _Admittance;
-		
+
 		#endregion
 	}
 }
