@@ -21,13 +21,8 @@
 		DCOffsetOfACVoltageSource = 2,
 
 		/// <summary>
-		/// DC current source
-		/// </summary>
-		DCCurrentSource = 3,
-
-		/// <summary>
 		/// Operational Amplifier
 		/// </summary>
-		OpAmp = 4,
+		OpAmp = 3,
 	}
 }
