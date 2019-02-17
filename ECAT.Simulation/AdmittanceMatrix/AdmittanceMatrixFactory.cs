@@ -1153,6 +1153,12 @@ namespace ECAT.Simulation
 		/// <returns></returns>
 		public double GetACVoltageSourceAmplitude(int sourceIndex) => sourceIndex < _ACVoltageSourcesCount ?
 			_ACVoltageSources[sourceIndex].PeakProducedVoltage :	throw new ArgumentOutOfRangeException(nameof(sourceIndex));
+
+		/// <summary>
+		/// Returns descriptions of AC voltage sources
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<IActiveComponentDescription> GetACVoltageSourcesDescriptions() => _ACVoltageSources.Select((x) => x.Description);
 		
 		#endregion
 	}
