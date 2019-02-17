@@ -13,6 +13,43 @@ namespace ECAT.Design
 	[DisplayCurrentInfo(sectionIndex: 2)]
 	public class OpAmp : ThreeTerminal, IOpAmp
 	{
+		#region Constructor
+
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		public OpAmp()
+		{
+			// Create a description
+			_Description = new ActiveComponentDescription()
+			{
+				Label = this.Label,
+				Index = ActiveComponentIndex,
+				Frequency = 0,
+				ComponentType = ActiveComponentType.OpAmp,
+			};
+		}
+
+		#endregion
+
+		#region Private members
+
+		/// <summary>
+		/// Backing store for <see cref="ActiveComponentIndex"/>
+		/// </summary>
+		private int mActiveComponentIndex;
+
+		#endregion
+
+		#region Private properties
+
+		/// <summary>
+		/// Backing store for <see cref="Description"/>
+		/// </summary>
+		private ActiveComponentDescription _Description { get; }
+
+		#endregion
+
 		#region Protected properties
 
 		/// <summary>
@@ -62,7 +99,21 @@ namespace ECAT.Design
 		/// <summary>
 		/// Index used to query <see cref="ISimulationResults"/> for produced current
 		/// </summary>
-		public int ActiveComponentIndex { get; set; }
+		public int ActiveComponentIndex
+		{
+			get => mActiveComponentIndex;
+			set
+			{
+				// Update the backing store and value in description
+				mActiveComponentIndex = value;
+				_Description.Index = value;
+			}
+		}
+
+		/// <summary>
+		/// Description of this <see cref="IActiveComponent"/>
+		/// </summary>
+		public IActiveComponentDescription Description => _Description;
 
 		#endregion
 	}

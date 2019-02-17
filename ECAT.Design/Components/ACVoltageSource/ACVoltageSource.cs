@@ -19,7 +19,30 @@ namespace ECAT.Design
 		public ACVoltageSource()
 		{
 			ProducedDCVoltage = IoC.Resolve<IDefaultValues>().DefaultACVoltageSourceDCOffset;
+
+			// Create a description
+			_Description = new ActiveComponentDescription()
+			{
+				Label = this.Label,
+				Index = ActiveComponentIndex,
+				Frequency = this.Frequency,
+				ComponentType = ActiveComponentType.ACVoltageSource,
+			};
 		}
+
+		#endregion
+
+		#region Private members
+
+		/// <summary>
+		/// Backing store for <see cref="ActiveComponentIndex"/>
+		/// </summary>
+		private int mActiveComponentIndex;
+
+		/// <summary>
+		/// Backing store for <see cref="Frequency"/>
+		/// </summary>
+		private double mFrequency = IoC.Resolve<IDefaultValues>().DefaultACVoltageSourceFrequency;
 
 		#endregion
 
@@ -29,6 +52,11 @@ namespace ECAT.Design
 		/// The admittance of a voltage source (constant value)
 		/// </summary>
 		private Complex _Admittance { get; } = IoC.Resolve<IDefaultValues>().VoltageSourceAdmittance;
+
+		/// <summary>
+		/// Backing store for <see cref="Description"/>
+		/// </summary>
+		private ActiveComponentDescription _Description { get; }
 
 		#endregion
 
@@ -42,12 +70,35 @@ namespace ECAT.Design
 		/// <summary>
 		/// Index used to query <see cref="ISimulationResults"/> for produced current
 		/// </summary>
-		public int ActiveComponentIndex { get; set; }
+		public int ActiveComponentIndex
+		{
+			get => mActiveComponentIndex;
+			set
+			{
+				// Update the backing store and value in description
+				mActiveComponentIndex = value;
+				_Description.Index = value;
+			}
+		}
+
+		/// <summary>
+		/// Description of this <see cref="IActiveComponent"/>
+		/// </summary>
+		public IActiveComponentDescription Description => _Description;
 
 		/// <summary>
 		/// Frequency of the AC voltage produced by this <see cref="ACVoltageSource"/>
 		/// </summary>
-		public double Frequency { get; set; } = IoC.Resolve<IDefaultValues>().DefaultACVoltageSourceFrequency;
+		public double Frequency
+		{
+			get => mFrequency;
+			set
+			{
+				// Update the backing store and the description
+				mFrequency = value;
+				_Description.Frequency = value;
+			}
+		}
 
 		/// <summary>
 		/// The positive peak value of the produced voltage sine wave

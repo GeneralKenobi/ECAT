@@ -13,6 +13,11 @@
 		/// </summary>
 		int ActiveComponentIndex { get; set; }
 
+		/// <summary>
+		/// Description of this <see cref="IActiveComponent"/>
+		/// </summary>
+		IActiveComponentDescription Description { get; }
+
 		#endregion
 	}
 }
