@@ -10,7 +10,7 @@
 		/// <summary>
 		/// Unique label assigned to the <see cref="IActiveComponent"/> that is described by this instance
 		/// </summary>
-		string Label { get; }
+		IIDLabel Label { get; }
 
 		/// <summary>
 		/// Active component index assigned to the <see cref="IActiveComponent"/> that is described by this instance
@@ -21,11 +21,6 @@
 		/// Frequency of the described <see cref="IActiveComponent"/>
 		/// </summary>
 		double Frequency { get; }
-
-		/// <summary>
-		/// Peak value (voltage or current) produced by the described <see cref="IActiveComponent"/>
-		/// </summary>
-		double PeakProducedValue { get; }
 
 		/// <summary>
 		/// Type of the <see cref="IActiveComponent"/>
