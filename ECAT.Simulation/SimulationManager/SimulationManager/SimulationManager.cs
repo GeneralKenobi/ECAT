@@ -187,37 +187,17 @@ namespace ECAT.Simulation
 		/// <param name="timeStep">Time step between two calculational points</param>
 		/// <param name="includeDCBias">If true DC bias will be performed and added to results, if false only saturated <see cref="IOpAmp"/>s
 		/// will be considered for DC part of simulation</param>
-		private void FullCycleHelper(AdmittanceMatrixFactory factory, out Dictionary<INode, ITimeDomainSignalMutable> totalPotentials,
-			out Dictionary<int, ITimeDomainSignalMutable> totalActiveComponentsCurrents, int pointsCount, double timeStep, bool includeDCBias = false)
+		private WaveformPartialState FullCycleHelper(AdmittanceMatrixFactory factory, int pointsCount, double timeStep, bool includeDCBias = false)
 		{
-			// Create dictionary holding final values of potentials at nodes
-			totalPotentials = new Dictionary<INode, ITimeDomainSignalMutable>();
-
-			// Create dictionary holding final values of potentials at nodes
-			totalActiveComponentsCurrents = new Dictionary<int, ITimeDomainSignalMutable>();
+			// Container for calculated states
+			// TODO: Provide DC voltage sources descriptions
+			var result = new WaveformPartialState(factory.ACVoltageSourcesCount, factory.NodesCount, factory.ActiveComponentsCount,
+				factory.GetACVoltageSourcesDescriptions(), factory.GetACVoltageSourcesDescriptions());
 
 			// Get nodes constructed on the basis of the circuit
 			var nodes = factory.GetNodes();
 			// Get nodes without the reference node and group them into a list for easier access with indexes
 			var nodesWithoutReference = factory.GetNodesWithoutReference().ToList();
-
-			// Create time domain signal for each node
-			foreach (var node in nodes)
-			{
-				totalPotentials.Add(node, IoC.Resolve<ITimeDomainSignalMutable>(pointsCount, timeStep));
-			}
-
-			// Create time domain signals for each active component current
-			for (int i = 0; i < factory.ActiveComponentsCount; ++i)
-			{
-				totalActiveComponentsCurrents.Add(i, IoC.Resolve<ITimeDomainSignalMutable>(pointsCount, timeStep));
-			}
-
-			// Add zero wave to reference node for each frequency in the circuit
-			foreach (var frequency in factory.FrequenciesInCircuit)
-			{
-				totalPotentials[nodes.First()].AddWaveform(frequency, WaveformBuilder.ZeroWave(pointsCount));
-			}
 
 			// Get all transfer functions
 			GetAllACTransferFunctions(factory, out var nodePotentials, out var activeComponentsCurrents);
@@ -236,7 +216,7 @@ namespace ECAT.Simulation
 					var currentNode = nodesWithoutReference[j];
 
 					// Add to appropriate node's potentials calculated for i-th voltage source
-					totalPotentials[currentNode].AddWaveform(factory.GetACVoltageSourceFrequency(i), WaveformBuilder.SineWave(
+					result.ACStates[i].Potentials[j] = WaveformBuilder.SineWave(
 						// Amplitude is the amplitude of the source times magnitude of transfer function
 						factory.GetACVoltageSourceAmplitude(i) * nodePotentials[i, j].Magnitude,
 						// Frequency of the i-th voltage source
@@ -246,14 +226,14 @@ namespace ECAT.Simulation
 						// Number of points specified by caller
 						pointsCount,
 						// Time step specified by caller
-						timeStep));
+						timeStep);
 				}
 
 				// For each active component current transfer function for i-th source
 				for (int j = 0; j < factory.ActiveComponentsCount; ++j)
 				{
 					// Add to appropriate active component's current's calculated current for i-th voltage source
-					totalActiveComponentsCurrents[j].AddWaveform(factory.GetACVoltageSourceFrequency(i), WaveformBuilder.SineWave(
+					result.ACStates[i].Currents[j] = WaveformBuilder.SineWave(
 						// Amplitude is the amplitude of the source times magnitude of transfer function
 						factory.GetACVoltageSourceAmplitude(i) * activeComponentsCurrents[i, j].Magnitude,
 						// Frequency of the i-th voltage source
@@ -263,7 +243,7 @@ namespace ECAT.Simulation
 						// Number of points specified by caller
 						pointsCount,
 						// Time step specified by caller
-						timeStep));
+						timeStep);
 				}
 
 			}
@@ -275,17 +255,20 @@ namespace ECAT.Simulation
 				var currentNode = nodesWithoutReference[i];
 
 				// Add the DC potential as constant value - take the real part because for DC bias results can only be purely real
-				totalPotentials[currentNode].AddConstantOffset(dcPotentials[i].Real);
+				// TODO: Add support for one single constant value storage and do it like that
+				result.DCState.Potentials[i] = Enumerable.Repeat(dcPotentials[i].Real, pointsCount);
 			}
 
 			// Add the calculated DC active component currents to corresponding active components currents, as constant value
 			for (int i = 0; i < factory.ActiveComponentsCount; ++i)
 			{
 				// Take the real part only because for DC bias results can only be purely real
-				totalActiveComponentsCurrents[i].AddConstantOffset(dcCurrents[i].Real);
+				result.DCState.Currents[i] = Enumerable.Repeat(dcCurrents[i].Real, pointsCount);
 			}
+
+			return result;
 		}
-		
+
 		/// <summary>
 		/// Performs an AC cycle simulation - simulation is running for one full period of lowest frequency source in the <paramref name="factory"/>.
 		/// After determining the transfer functions calculates only one set of instantenous values for point described by
@@ -304,7 +287,9 @@ namespace ECAT.Simulation
 			var nodeIndices = factory.GetSimulationNodeIndices().ToList();
 
 			// Result container that will be returned
-			var result = new InstantenousPartialStates(factory.ACVoltageSourcesCount, nodeIndices, factory.ActiveComponentsCount);
+			// TODO: Provide DC voltage sources descriptions
+			var result = new InstantenousPartialStates(factory.ACVoltageSourcesCount, nodeIndices, factory.ActiveComponentsCount,
+				factory.GetACVoltageSourcesDescriptions(), factory.GetACVoltageSourcesDescriptions());
 			
 			// Get all transfer functions
 			GetAllACTransferFunctions(factory, out var nodePotentials, out var activeComponentsCurrents);
@@ -407,12 +392,23 @@ namespace ECAT.Simulation
 			// Time step between two subsequent points in time vector
 			double timeStep = GetTimeStep(pointsCount, lowestFrequency);
 
-			FullCycleHelper(factory, out var totalPotentials, out var totalActiveComponentsCurrents, pointsCount, timeStep, includeDCBias);
+			// Use helper to get the state of the system
+			var state = FullCycleHelper(factory, pointsCount, timeStep, includeDCBias);
 
+			var nodes = factory.GetNodes().ToList();
+
+			//// Create simulation results
+			//IoC.Resolve<SimulationResultsProvider>().Value = new SimulationResultsTime(
+			//	totalPotentials.ToDictionary((x) => x.Key, (x) => (ITimeDomainSignal)x.Value),
+			//	totalActiveComponentsCurrents.ToDictionary((x) => x.Key, (x) => (ITimeDomainSignal)x.Value),
+			//	timeStep,
+			//	0);
 			// Create simulation results
 			IoC.Resolve<SimulationResultsProvider>().Value = new SimulationResultsTime(
-				totalPotentials.ToDictionary((x) => x.Key, (x) => (ITimeDomainSignal)x.Value),
-				totalActiveComponentsCurrents.ToDictionary((x) => x.Key, (x) => (ITimeDomainSignal)x.Value),
+				state.PotentialsToTimeDomainSignals(timeStep).
+				Concat(new KeyValuePair<int, ITimeDomainSignal>(GroundNodeIndex, IoC.Resolve<ITimeDomainSignal>(pointsCount, timeStep))).
+				ToDictionary((x) => nodes.Find((node) => node.Index == x.Key), (x) => x.Value),				
+				state.CurrentsToTimeDomainSignals(timeStep),
 				timeStep,
 				0);
 		}
