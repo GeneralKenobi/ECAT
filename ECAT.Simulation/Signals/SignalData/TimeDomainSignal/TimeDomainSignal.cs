@@ -43,8 +43,8 @@ namespace ECAT.Simulation
 		public TimeDomainSignal()
 		{
 			Interpreter = new TimeDomainSignalInterpreter(this);
-			ComposingWaveforms = new ReadOnlyDictionary<double, IEnumerable<double>>(_ComposingWaveforms);
-			ComposingDCWaveforms = new ReadOnlyCollection<IEnumerable<double>>(_ComposingDCWaveforms);
+			ACWaveforms = new ReadOnlyDictionary<IActiveComponentDescription, IEnumerable<double>>(_ACWaveforms);
+			DCWaveforms = new ReadOnlyDictionary<IActiveComponentDescription, IEnumerable<double>>(_DCWaveforms);
 		}
 
 		/// <summary>
@@ -86,24 +86,21 @@ namespace ECAT.Simulation
 		#region Private properties
 
 		/// <summary>
-		/// Backing store for <see cref="ComposingWaveforms"/>
+		/// Backing store for <see cref="ACWaveforms"/>
 		/// </summary>
-		private IDictionary<double, IEnumerable<double>> _ComposingWaveforms { get; } = new Dictionary<double, IEnumerable<double>>();
+		private IDictionary<IActiveComponentDescription, IEnumerable<double>> _ACWaveforms { get; } =
+			new Dictionary<IActiveComponentDescription, IEnumerable<double>>();
 
 		/// <summary>
-		/// Backing store for <see cref="ComposingDCWaveforms"/>
+		/// Backing store for <see cref="DCWaveforms"/>
 		/// </summary>
-		private IList<IEnumerable<double>> _ComposingDCWaveforms { get; } = new List<IEnumerable<double>>();
+		private IDictionary<IActiveComponentDescription, IEnumerable<double>> _DCWaveforms { get; } =
+			new Dictionary<IActiveComponentDescription, IEnumerable<double>>();
 
 		/// <summary>
 		/// Backing store for <see cref="FinalWaveform"/>
 		/// </summary>
 		private IList<double> _FinalWaveform { get; } = new List<double>();
-
-		/// <summary>
-		/// List containing all constant offsets
-		/// </summary>
-		private IList<double> _ConstantOffsets { get; } = new List<double>();
 
 		#endregion
 
@@ -130,19 +127,14 @@ namespace ECAT.Simulation
 		public IEnumerable<double> FinalWaveform => _FinalWaveform;
 
 		/// <summary>
-		/// Dictionary of instantenous values of waveforms that compose this signal; key is the frequency of the wave
+		/// Dictionary of instantenous values of DC waveforms that compose this signal. Key is the source that produced the wave.
 		/// </summary>
-		public IReadOnlyDictionary<double, IEnumerable<double>> ComposingWaveforms { get; }
+		public IReadOnlyDictionary<IActiveComponentDescription, IEnumerable<double>> DCWaveforms { get; }
 
 		/// <summary>
-		/// List of instantenous values of DC waveforms that compose this signal
+		/// Dictionary of instantenous values of AC waveforms that compose this signal. Key is the source that produced the wave.
 		/// </summary>
-		public IReadOnlyList<IEnumerable<double>> ComposingDCWaveforms { get; }
-
-		/// <summary>
-		/// Enumeration containing all constant offsets
-		/// </summary>
-		public IEnumerable<double> ConstantOffsets => _ConstantOffsets;
+		public IReadOnlyDictionary<IActiveComponentDescription, IEnumerable<double>> ACWaveforms { get; }
 
 		/// <summary>
 		/// Object capable of calculating characteristic values for this <see cref="ISignalData"/>
@@ -158,8 +150,8 @@ namespace ECAT.Simulation
 		/// </summary>
 		private void Clear()
 		{
-			_ComposingWaveforms.Clear();
-			_ConstantOffsets.Clear();
+			_ACWaveforms.Clear();
+			_DCWaveforms.Clear();
 
 			for(int i = 0; i < Samples; ++i)
 			{
@@ -174,68 +166,39 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Adds a new waveform to the signal, updates <see cref="FinalWaveform"/>
 		/// </summary>
-		/// <param name="frequency">Positive value</param>
+		/// <param name="description">Positive value</param>
 		/// <param name="values"></param>
-		protected void AddWaveformAndUpdateFinalWaveform(double frequency, IEnumerable<double> values)
+		protected void AddWaveformHelper(IActiveComponentDescription description, IEnumerable<double> values)
 		{
+			// Null check
+			if(description == null || values == null)
+			{
+				throw new ArgumentNullException();
+			}
+
+			// Check if number of samples in the waveform matches this time domain signal
 			if(values.Count() != Samples)
 			{
 				throw new ArgumentException(nameof(values) + $" must have count equal to {Samples} ({nameof(Samples)})");
 			}
 
-			if(frequency <= 0)
+			// Add the waveform to appropraite collection
+			switch(description.ComponentType)
 			{
-				throw new ArgumentOutOfRangeException(nameof(frequency) + " has to be positive");
-			}
+				case ActiveComponentType.ACVoltageSource:
+					{
+						_ACWaveforms.Add(description, values);
+					} break;
 
-			// If a waveform for this frequency is already present in this signal
-			if(_ComposingWaveforms.ContainsKey(frequency))
-			{
-				// Add the new values to the entry in the dictionary
-				_ComposingWaveforms[frequency] = _ComposingWaveforms[frequency].MergeSelect(values, (x, y) => x + y);
-			}
-			else
-			{
-				// Otherwise add a new entry to the dictionary
-				_ComposingWaveforms.Add(frequency, new List<double>(values));
-			}
+				case ActiveComponentType.DCVoltageSource:
+				case ActiveComponentType.OpAmp:
+					{
+						_DCWaveforms.Add(description, values);
+					} break;
+			}			
 
-			// Add values to the final waveform
+			// And finally add values to the final waveform
 			values.ForEach((x, i) => _FinalWaveform[i] += x);
-		}
-
-		/// <summary>
-		/// Adds a waveform considered to be DC to the signal
-		/// </summary>
-		/// <param name="values"></param>
-		protected void AddDCWaveformAndUpdateFinalWaveform(IEnumerable<double> values)
-		{
-			if (values.Count() != Samples)
-			{
-				throw new ArgumentException(nameof(values) + $" must have count equal to {Samples} ({nameof(Samples)})");
-			}
-
-			// Add the waveform to appropriate collection
-			_ComposingDCWaveforms.Add(values);
-
-			// Add values to the final waveform
-			values.ForEach((x, i) => _FinalWaveform[i] += x);
-		}
-
-		/// <summary>
-		/// Adds a new constant offset to the waveform (it does not overwrite or otherwise invalidate previous offsets)
-		/// </summary>
-		/// <param name="value"></param>
-		protected void AddConstantOffsetAndUpdateFinalWaveform(double value)
-		{
-			// Add it to the collection
-			_ConstantOffsets.Add(value);
-
-			// Add the new value of offset to each data point
-			for(int i = 0; i < Samples; ++i)
-			{
-				_FinalWaveform[i] += value;
-			}
 		}
 
 		#endregion
@@ -275,9 +238,8 @@ namespace ECAT.Simulation
 			}
 
 			// Copy composing waveforms and constant offsets
-			obj.ComposingWaveforms.ForEach((x) => AddWaveformAndUpdateFinalWaveform(x.Key, x.Value));
-			obj.ComposingDCWaveforms.ForEach((x) => AddDCWaveformAndUpdateFinalWaveform(x));
-			obj.ConstantOffsets.ForEach((x) => AddConstantOffsetAndUpdateFinalWaveform(x));
+			obj.DCWaveforms.ForEach((x) => AddWaveformHelper(x.Key, x.Value));
+			obj.ACWaveforms.ForEach((x) => AddWaveformHelper(x.Key, x.Value));
 		}
 
 		/// <summary>
@@ -296,9 +258,8 @@ namespace ECAT.Simulation
 			var result = new TimeDomainSignal(Samples, TimeStep, StartTime);
 
 			// Copy waveforms and constant offsets with switched sign
-			ComposingWaveforms.ForEach((x) => result.AddWaveformAndUpdateFinalWaveform(x.Key, x.Value.Select((y) => -y)));
-			ComposingDCWaveforms.ForEach((x) => result.AddDCWaveformAndUpdateFinalWaveform(x.Select((y) => -y)));
-			ConstantOffsets.ForEach((x) => result.AddConstantOffsetAndUpdateFinalWaveform(-x));
+			_DCWaveforms.ForEach((x) => result.AddWaveformHelper(x.Key, x.Value.Select((y) => -y)));
+			_ACWaveforms.ForEach((x) => result.AddWaveformHelper(x.Key, x.Value.Select((y) => -y)));
 
 			return result;
 		}

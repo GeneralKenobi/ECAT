@@ -45,27 +45,27 @@ namespace ECAT.Simulation
 		#region Public methods
 
 		/// <summary>
-		/// Used to add <see cref="KeyValuePair{TKey, TValue}"/> to <see cref="INodePotentialBias.Phasors"/>
+		/// Adds a new waveform to the signal. If one already exists for source described by <paramref name="description"/>, adds them together,
+		/// otherwise makes a new entry in <see cref="ITimeDomainSignal.ACWaveforms"/> or <see cref="ITimeDomainSignal.DCWaveforms"/>
 		/// </summary>
-		/// <param name="frequency"></param>
+		/// <param name="description"></param>
 		/// <param name="value"></param>
 		/// <exception cref="ArgumentNullException"></exception>
 		/// <exception cref="ArgumentException"></exception>
-		public void AddWaveform(double frequency, IEnumerable<double> instantenousValues) =>
-			AddWaveformAndUpdateFinalWaveform(frequency, instantenousValues);
+		public void AddWaveform(IActiveComponentDescription description, IEnumerable<double> values) =>	AddWaveformHelper(description, values);
 
 		/// <summary>
-		/// Adds a new constant offset to the waveform (it does not overwrite or otherwise invalidate previous offsets)
+		/// Adds a new waveform to the signal. If one already exists for source described by <paramref name="description"/>, adds them together,
+		/// otherwise makes a new entry in <see cref="ITimeDomainSignal.ACWaveforms"/>. or <see cref="ITimeDomainSignal.DCWaveforms"/>.
+		/// The waveform is given by a constant value - full
+		/// waveform will be constructed from it.
 		/// </summary>
+		/// <param name="description"></param>
 		/// <param name="value"></param>
-		public void AddConstantOffset(double value) => AddConstantOffsetAndUpdateFinalWaveform(value);
+		/// <exception cref="ArgumentNullException"></exception>
+		public void AddWaveform(IActiveComponentDescription description, double value) =>
+			AddWaveform(description, WaveformBuilder.ConstantWaveform(value, Samples));
 
-		/// <summary>
-		/// Adds a waveform considered to be DC to the signal
-		/// </summary>
-		/// <param name="values"></param>
-		public void AddDCWaveform(IEnumerable<double> values) => AddDCWaveformAndUpdateFinalWaveform(values);
-		
 		#endregion
 	}
 }

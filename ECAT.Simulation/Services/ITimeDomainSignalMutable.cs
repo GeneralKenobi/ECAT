@@ -18,25 +18,25 @@ namespace ECAT.Simulation
 		#region Methods
 
 		/// <summary>
-		/// Used to add <see cref="KeyValuePair{TKey, TValue}"/> to <see cref="INodePotentialBias.Phasors"/>
+		/// Adds a new waveform to the signal. If one already exists for source described by <paramref name="description"/>, adds them together,
+		/// otherwise makes a new entry in <see cref="ITimeDomainSignal.ACWaveforms"/> or <see cref="ITimeDomainSignal.DCWaveforms"/>
 		/// </summary>
-		/// <param name="frequency"></param>
+		/// <param name="description"></param>
 		/// <param name="value"></param>
 		/// <exception cref="ArgumentNullException"></exception>
 		/// <exception cref="ArgumentException"></exception>
-		void AddWaveform(double frequency, IEnumerable<double> instantenousValues);
+		void AddWaveform(IActiveComponentDescription description, IEnumerable<double> instantenousValues);
 
 		/// <summary>
-		/// Adds a new constant offset to the waveform (it does not overwrite or otherwise invalidate previous offsets)
+		/// Adds a new waveform to the signal. If one already exists for source described by <paramref name="description"/>, adds them together,
+		/// otherwise makes a new entry in <see cref="ITimeDomainSignal.ACWaveforms"/>. or <see cref="ITimeDomainSignal.DCWaveforms"/>.
+		/// The waveform is given by a constant value - full
+		/// waveform will be constructed from it.
 		/// </summary>
+		/// <param name="description"></param>
 		/// <param name="value"></param>
-		void AddConstantOffset(double value);
-
-		/// <summary>
-		/// Adds a waveform considered to be DC to the signal
-		/// </summary>
-		/// <param name="values"></param>
-		void AddDCWaveform(IEnumerable<double> values);
+		/// <exception cref="ArgumentNullException"></exception>
+		void AddWaveform(IActiveComponentDescription description, double value);
 
 		#endregion
 	}

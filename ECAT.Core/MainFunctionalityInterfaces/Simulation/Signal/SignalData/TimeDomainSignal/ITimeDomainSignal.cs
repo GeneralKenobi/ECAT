@@ -29,7 +29,7 @@ namespace ECAT.Core
 		/// <summary>
 		/// Time elapsed between two calculated values, in seconds
 		/// </summary>
-		double TimeStep { get; }		
+		double TimeStep { get; }
 
 		/// <summary>
 		/// List with calculated instantenous values
@@ -37,19 +37,14 @@ namespace ECAT.Core
 		IEnumerable<double> FinalWaveform { get; }
 
 		/// <summary>
-		/// Dictionary of instantenous values of waveforms that compose this signal; key is the frequency of the wave
+		/// Dictionary of instantenous values of DC waveforms that compose this signal. Key is the source that produced the wave.
 		/// </summary>
-		IReadOnlyDictionary<double, IEnumerable<double>> ComposingWaveforms { get; }
+		IReadOnlyDictionary<IActiveComponentDescription, IEnumerable<double>> DCWaveforms { get; }
 
 		/// <summary>
-		/// List of instantenous values of DC waveforms that compose this signal
+		/// Dictionary of instantenous values of AC waveforms that compose this signal. Key is the source that produced the wave.
 		/// </summary>
-		IReadOnlyList<IEnumerable<double>> ComposingDCWaveforms { get; }
-
-		/// <summary>
-		/// Enumeration containing all constant offsets
-		/// </summary>
-		IEnumerable<double> ConstantOffsets { get; }
+		IReadOnlyDictionary<IActiveComponentDescription, IEnumerable<double>> ACWaveforms { get; }
 
 		#endregion
 
