@@ -16,13 +16,8 @@
 		ACVoltageSource = 1,
 
 		/// <summary>
-		/// DC offset produces by AC voltage source
-		/// </summary>
-		DCOffsetOfACVoltageSource = 2,
-
-		/// <summary>
 		/// Operational Amplifier
 		/// </summary>
-		OpAmp = 3,
+		OpAmp = 2,
 	}
 }
