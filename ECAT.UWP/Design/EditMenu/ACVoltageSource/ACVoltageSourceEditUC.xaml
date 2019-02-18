@@ -38,17 +38,6 @@
 			Text="{Binding PeakProducedVoltage, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"
 			Grid.ColumnSpan="2"/>
 
-		<!-- DC Offset header -->
-		<TextBlock Style="{StaticResource WhiteTextBlockStyle}"
-			FontSize="{StaticResource FontSizeBig}"
-			Text="{Binding DCOffsetEditHeader, Mode=OneTime}"
-			Margin="0 20 0 10"/>
-
-		<!-- TextBox with the DC Offset settings -->
-		<TextBox Style="{StaticResource SideMenuTextBoxStyleUnder8}"
-			Text="{Binding DCOffset, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"
-			Grid.ColumnSpan="2"/>		
-
 	</StackPanel>
 
 </UserControl>

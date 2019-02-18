@@ -56,11 +56,6 @@ namespace ECAT.Core
 		double DefaultACVoltageSourceProducedACVoltage { get; }
 
 		/// <summary>
-		/// Devault DC offset of an <see cref="IACVoltageSource"/>
-		/// </summary>
-		double DefaultACVoltageSourceDCOffset { get; }
-
-		/// <summary>
 		/// Default value for <see cref="ICurrentSource"/>'s produced current
 		/// </summary>
 		double DefaultCurrentSourceProducedCurrent { get; }

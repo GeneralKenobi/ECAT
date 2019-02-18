@@ -55,12 +55,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Default peak voltage produced by an <see cref="IACVoltageSource"/>
 		/// </summary>
-		public double DefaultACVoltageSourceProducedACVoltage { get; } = 5;
-
-		/// <summary>
-		/// Devault DC offset of an <see cref="IACVoltageSource"/>
-		/// </summary>
-		public double DefaultACVoltageSourceDCOffset { get; } = 5;
+		public double DefaultACVoltageSourceProducedACVoltage { get; } = 8;
 
 		/// <summary>
 		/// Default value for <see cref="ICurrentSource"/>'s produced current

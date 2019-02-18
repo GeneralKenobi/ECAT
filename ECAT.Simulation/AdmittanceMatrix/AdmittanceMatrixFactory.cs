@@ -492,17 +492,6 @@ namespace ECAT.Simulation
 		}
 
 		/// <summary>
-		/// Activates all DC voltage sources
-		/// </summary>
-		private void ConfigureACVoltageSourcesForDC(AdmittanceMatrix matrix, bool state)
-		{
-			for (int i = 0; i < ACVoltageSourcesCount; ++i)
-			{
-				ActivateACVoltageSourceForDC(matrix, i, state);
-			}
-		}
-
-		/// <summary>
 		/// Activates the DC voltage sources given by the index
 		/// </summary>
 		/// <param name="sourceIndex"></param>
@@ -539,46 +528,6 @@ namespace ECAT.Simulation
 			if (state)
 			{
 				matrix._E[sourceIndex] = _DCVoltageSources[sourceIndex].ProducedDCVoltage;
-			}
-		}
-
-		/// <summary>
-		/// Activates the DC voltage sources given by the index
-		/// </summary>
-		/// <param name="sourceIndex"></param>
-		/// <param name="state">True if the source is active, false if not (it is considered as short-circuit)</param>
-		private void ActivateACVoltageSourceForDC(AdmittanceMatrix matrix, int sourceIndex, bool state)
-		{
-			// Get the voltage source's nodes
-			var nodes = _ACVoltageSourcesNodes[_ACVoltageSources[sourceIndex]];
-
-			// If the positive terminal is not grounded
-			if (nodes.Item2 != -1)
-			{
-				// Fill the entry in the row corresponding to the node and column corresponding to the source (plus start column)
-				// with 1 (positive terminal)
-				matrix._B[nodes.Item2, sourceIndex + _DCVoltageSources.Count] = 1;
-
-				// Fill the entry in the row corresponding to the source (plus starting row)
-				// and column corresponding to the node with 1 (positive terminal)
-				matrix._C[sourceIndex + _DCVoltageSources.Count, nodes.Item2] = 1;
-			}
-
-			// If the negative terminal is not grounded
-			if (nodes.Item1 != -1)
-			{
-				// Fill the entry in the row corresponding to the node and column corresponding to the source (plus start column)
-				// with -1 (negative terminal)
-				matrix._B[nodes.Item1, sourceIndex + _DCVoltageSources.Count] = -1;
-
-				// Fill the entry in the row corresponding to the source (plus starting row)
-				// and column corresponding to the node with -1 (negative terminal)
-				matrix._C[sourceIndex + _DCVoltageSources.Count, nodes.Item1] = -1;
-			}
-
-			if (state)
-			{
-				matrix._E[sourceIndex + _DCVoltageSources.Count] = _ACVoltageSources[sourceIndex].ProducedDCVoltage;
 			}
 		}
 
@@ -1044,9 +993,6 @@ namespace ECAT.Simulation
 			// Turn on DC current sources
 			ActivateCurrentSources(matrix);
 
-			// Configure AC voltage sources for their DC offset
-			ConfigureACVoltageSourcesForDC(matrix, true);
-
 			return matrix;
 		}
 
@@ -1071,9 +1017,6 @@ namespace ECAT.Simulation
 
 			// Turn on DC voltage sources (in admittance matrix it is represented by Ua = Ub)
 			ConfigureDCVoltageSources(matrix, false);			
-
-			// Configure AC voltage sources for their DC offset
-			ConfigureACVoltageSourcesForDC(matrix, false);
 
 			return matrix;
 		}

@@ -22,20 +22,11 @@
 
 						<StackPanel HorizontalAlignment="Center"
 							VerticalAlignment="Bottom"
-							Margin="0 0 0 -75">
+							Margin="0 0 0 -50">
 
 							<StackPanel.RenderTransform>
 								<RotateTransform Angle="{Binding Component.Center.RotationAngle, Converter={StaticResource TextPositionFixConverter}}"/>
 							</StackPanel.RenderTransform>
-
-							<!-- Presents a parameter associated with the component -->
-							<controls:ValueUnitDisplay Foreground="{StaticResource BlackBrush}"
-								FontSize="{StaticResource FontSizeXLarge}"								
-								Value="{Binding Component.ProducedDCVoltage}"
-								RoundToDigit="4"
-								Unit="V DC"
-								RenderTransformOrigin="0.5 0.5"
-								HorizontalAlignment="Left"/>
 
 							<!-- Presents a parameter associated with the component -->
 							<controls:ValueUnitDisplay Foreground="{StaticResource BlackBrush}"

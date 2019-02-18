@@ -48,15 +48,6 @@ namespace ECAT.ViewModel
 		public string FrequencyEditHeader { get; } = "Frequency [Hz]";
 
 		/// <summary>
-		/// Accessor to the DC offset
-		/// </summary>
-		public double DCOffset
-		{
-			get => _EditedComponent.ProducedDCVoltage;
-			set => _EditedComponent.ProducedDCVoltage = value;
-		}
-
-		/// <summary>
 		/// Capacitance edit field header
 		/// </summary>
 		public string DCOffsetEditHeader { get; } = "DC Offset [V]";

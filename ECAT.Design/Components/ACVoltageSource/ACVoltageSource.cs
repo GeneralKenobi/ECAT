@@ -18,8 +18,6 @@ namespace ECAT.Design
 		/// </summary>
 		public ACVoltageSource()
 		{
-			ProducedDCVoltage = IoC.Resolve<IDefaultValues>().DefaultACVoltageSourceDCOffset;
-
 			// Create a description
 			_Description = new ActiveComponentDescription()
 			{
@@ -61,11 +59,6 @@ namespace ECAT.Design
 		#endregion
 
 		#region Public properties
-
-		/// <summary>
-		/// DC voltage produced by this <see cref="IACVoltageSource"/>
-		/// </summary>
-		public double ProducedDCVoltage { get; set; } = IoC.Resolve<IDefaultValues>().DefaultVoltageSourceProducedVoltage;
 
 		/// <summary>
 		/// Index used to query <see cref="ISimulationResults"/> for produced current

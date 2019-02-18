@@ -159,8 +159,7 @@ namespace ECAT.Simulation
 						double.NaN,
 						// If there is only one phasor then average can be calculated, otherwise not
 						current.Phasors.Count() != 1 ? double.NaN :
-						current.Interpreter.RMS() * Math.Sqrt(Math.Pow(voltageSource.ProducedDCVoltage, 2) +
-						Math.Pow(voltageSource.PeakProducedVoltage, 2) / 2) * Math.Cos(current.Phasors.First().Value.Phase)));
+						current.Interpreter.RMS() * voltageSource.PeakProducedVoltage / Math.Sqrt(2) * Math.Cos(current.Phasors.First().Value.Phase)));
 					
 					// And return success
 					return true;

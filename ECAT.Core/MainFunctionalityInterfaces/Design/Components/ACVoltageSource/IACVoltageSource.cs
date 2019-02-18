@@ -8,11 +8,6 @@
 		#region Properties
 
 		/// <summary>
-		/// DC voltage produced by this <see cref="IACVoltageSource"/>
-		/// </summary>
-		double ProducedDCVoltage { get; set; }
-
-		/// <summary>
 		/// Frequency of the AC voltage produced by this <see cref="IACVoltageSource"/>
 		/// </summary>
 		double Frequency { get; set; }
