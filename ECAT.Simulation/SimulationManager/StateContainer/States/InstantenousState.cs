@@ -1,4 +1,5 @@
 ﻿using CSharpEnhanced.Helpers;
+using ECAT.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,10 @@ namespace ECAT.Simulation
 		/// </summary>
 		/// <param name="nodeIndices">Nodes present in this instance</param>
 		/// <param name="activeComponentsIndices">Active components indices present in this instance</param>
-		public InstantenousState(IEnumerable<int> nodeIndices, IEnumerable<int> activeComponentsIndices) : base(nodeIndices, activeComponentsIndices) { }
+		/// <param name="sourceDescription">Description of source that produced this state. Can be null - it means that it's indetermined or
+		/// many sources produced this state</param>
+		public InstantenousState(IEnumerable<int> nodeIndices, IEnumerable<int> activeComponentsIndices, IActiveComponentDescription sourceDescription) :
+			base(nodeIndices, activeComponentsIndices, sourceDescription) { }
 
 		/// <summary>
 		/// Constructor with parameters
@@ -25,8 +29,10 @@ namespace ECAT.Simulation
 		/// <param name="nodeIndices">Nodes present in this instance</param>
 		/// <param name="activeComponentsCount">Number of active components, indices available in this instance will are given by a
 		/// range: 0 to <paramref name="activeComponentsCount"/> - 1</param>
-		public InstantenousState(IEnumerable<int> nodeIndices, int activeComponentsCount) :
-			this(nodeIndices, Enumerable.Range(0, activeComponentsCount)) { }
+		/// <param name="sourceDescription">Description of source that produced this state. Can be null - it means that it's indetermined or
+		/// many sources produced this state</param>
+		public InstantenousState(IEnumerable<int> nodeIndices, int activeComponentsCount, IActiveComponentDescription sourceDescription) :
+			this(nodeIndices, Enumerable.Range(0, activeComponentsCount), sourceDescription) { }
 
 		#endregion
 
@@ -36,7 +42,8 @@ namespace ECAT.Simulation
 		/// Adds the <paramref name="other"/> state to this instance.
 		/// </summary>
 		/// <param name="other">Object to add to this instance, internal collections' keys have to match, otherwise an exception is thrown</param>
-		public void AddState(InstantenousState other)
+		/// <param name="invalidateSource">If true, <see cref="GenericState{T}.SourceDescription"/> is invalidated (set to null)</param>
+		public void AddState(InstantenousState other, bool invalidateSource = true)
 		{
 			// Check if keys of the other instance match internal keys, if not throw an exception
 			if(!(Potentials.Keys.IsSequenceEqual(other.Potentials.Keys) && Currents.Keys.IsSequenceEqual(other.Currents.Keys)))
@@ -54,6 +61,11 @@ namespace ECAT.Simulation
 			foreach (var key in Currents.Keys.ToList())
 			{
 				Currents[key] += other.Currents[key];
+			}
+
+			if(invalidateSource)
+			{
+				SourceDescription = null;
 			}
 		}
 

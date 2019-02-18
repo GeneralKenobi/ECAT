@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ECAT.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,8 +20,22 @@ namespace ECAT.Simulation
 		/// <param name="activeComponentsIndices">Active components indices present in this instance</param>
 		/// <param name="defaultValueFactory">Func used for generating initial values in <see cref="Potentials"/> and <see cref="Currents"/>,
 		/// if null (which is the default value) <see cref="default(T)"/> will be used</param>
-		public GenericState(IEnumerable<int> nodeIndices, IEnumerable<int> activeComponentsIndices, Func<T> defaultValueFactory = null)
+		/// <param name="sourceDescription">Description of source that produced this state. Can be null - it means that it's indetermined or
+		/// many sources produced this state</param>
+		public GenericState(IEnumerable<int> nodeIndices, IEnumerable<int> activeComponentsIndices, IActiveComponentDescription sourceDescription,
+			Func<T> defaultValueFactory = null)
 		{
+			// Null checks
+			if(nodeIndices == null)
+			{
+				throw new ArgumentNullException(nameof(nodeIndices));
+			}
+
+			if (activeComponentsIndices == null)
+			{
+				throw new ArgumentNullException(nameof(activeComponentsIndices));
+			}
+
 			// Make an entry for each node
 			foreach (var node in nodeIndices)
 			{
@@ -32,6 +47,9 @@ namespace ECAT.Simulation
 			{
 				Currents.Add(index, defaultValueFactory == null ? default(T) : defaultValueFactory());
 			}
+
+			// Assign source description
+			SourceDescription = sourceDescription;
 		}
 
 		/// <summary>
@@ -42,8 +60,11 @@ namespace ECAT.Simulation
 		/// range: 0 to <paramref name="activeComponentsCount"/> - 1</param>
 		/// <param name="defaultValueFactory">Func used for generating initial values in <see cref="Potentials"/> and <see cref="Currents"/>,
 		/// if null (which is the default value) <see cref="default(T)"/> will be used</param>
-		public GenericState(IEnumerable<int> nodeIndices, int activeComponentsCount, Func<T> defaultValueFactory = null) :
-			this(nodeIndices, Enumerable.Range(0, activeComponentsCount), defaultValueFactory) { }
+		/// <param name="sourceDescription">Description of source that produced this state. Can be null - it means that it's indetermined or
+		/// many sources produced this state</param>
+		public GenericState(IEnumerable<int> nodeIndices, int activeComponentsCount, IActiveComponentDescription sourceDescription,
+			Func<T> defaultValueFactory = null) :
+			this(nodeIndices, Enumerable.Range(0, activeComponentsCount), sourceDescription, defaultValueFactory) { }
 
 		#endregion
 
@@ -58,6 +79,11 @@ namespace ECAT.Simulation
 		/// Contains indices of active components and their currents
 		/// </summary>
 		public IDictionary<int, T> Currents { get; } = new Dictionary<int, T>();
+
+		/// <summary>
+		/// Description of source that produced this state
+		/// </summary>
+		public IActiveComponentDescription SourceDescription { get; protected set; }
 
 		#endregion
 	}
