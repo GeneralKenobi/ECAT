@@ -1,13 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ECAT.Simulation
 {
 	public static class WaveformBuilder
 	{
 		#region Public static methods
+
+		/// <summary>
+		/// Returns a waveform equal to a constant value
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="pointsCount"></param>
+		/// <returns></returns>
+		public static IEnumerable<double> ConstantWaveform(double value, int pointsCount) => Enumerable.Repeat(value, pointsCount);
 
 		/// <summary>
 		/// Returns instantenous value of a sine wave
@@ -32,15 +39,15 @@ namespace ECAT.Simulation
 		/// <param name="amplitude">Amplitude of the wave (A)</param>
 		/// <param name="frequency">Frequency of the wave (f)</param>
 		/// <param name="phaseShift">Phase shift of the wave (phi)</param>
-		/// <param name="numberOfPoints">Number of points constructed</param>
+		/// <param name="pointsCount">Number of points constructed</param>
 		/// <param name="argumentStep">Step with which argument (time) is increased with each point</param>
 		/// <returns></returns>
-		public static IEnumerable<double> SineWave(double amplitude, double frequency, double phaseShift, int numberOfPoints, double argumentStep,
+		public static IEnumerable<double> SineWave(double amplitude, double frequency, double phaseShift, int pointsCount, double argumentStep,
 			double constantOffset = 0)
 		{
 			double argument = 0;
 
-			for (int i = 0; i < numberOfPoints; ++i)
+			for (int i = 0; i < pointsCount; ++i)
 			{
 				// Return A * sin(2pi*f*t + phi) + B
 				yield return amplitude * Math.Sin(2 * Math.PI * frequency * argument + phaseShift) + constantOffset;
@@ -51,11 +58,11 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Returns a constant wave equal to 0.
 		/// </summary>
-		/// <param name="numberOfPoints">Number of points constructed</param>
+		/// <param name="pointsCount">Number of points constructed</param>
 		/// <returns></returns>
-		public static IEnumerable<double> ZeroWave(int numberOfPoints)
+		public static IEnumerable<double> ZeroWave(int pointsCount)
 		{
-			for (int i = 0; i < numberOfPoints; ++i)
+			for (int i = 0; i < pointsCount; ++i)
 			{
 				yield return 0;
 			}
