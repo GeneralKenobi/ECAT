@@ -49,7 +49,7 @@ namespace ECAT.Core
 		/// <summary>
 		/// All waveforms composing this <see cref="ITimeDomainSignal"/> (AC and DC).
 		/// </summary>
-		IEnumerable<KeyValuePair<IActiveComponentDescription, IEnumerable<double>>> AllWaveforms;
+		IEnumerable<KeyValuePair<IActiveComponentDescription, IEnumerable<double>>> AllWaveforms { get; }
 
 		#endregion
 
