@@ -16,38 +16,44 @@ namespace ECAT.Simulation
 		/// Constructor with parameters
 		/// </summary>
 		/// <param name="acSourcesCount">Number of AC sources expected in this state</param>
+		/// <param name="dcSourcesCount">Number of DC sources expected in this state</param>
 		/// <param name="nodeIndices">Indices of nodes present in this instance</param>
 		/// <param name="activeComponentsIndices">Active components indices present in this instance</param>
 		/// <param name="acVoltageSourcesDescriptions">Descriptions of AC voltage sources that will produce the partial states</param>
 		/// <param name="dcVoltageSourcesDescriptions">Descriptions of DC voltage sources that will produce the partial states</param>
-		public WaveformPartialState(int acSourcesCount, IEnumerable<int> nodeIndices, IEnumerable<int> activeComponentsIndices,
+		public WaveformPartialState(int acSourcesCount,
+			int dcSourcesCount,
+			IEnumerable<int> nodeIndices,
+			IEnumerable<int> activeComponentsIndices,
 			IEnumerable<IActiveComponentDescription> acVoltageSourcesDescriptions,
 			IEnumerable<IActiveComponentDescription> dcVoltageSourcesDescriptions) :
-			base(acSourcesCount, nodeIndices, activeComponentsIndices, acVoltageSourcesDescriptions, dcVoltageSourcesDescriptions,
-				(x, y, z) => new WaveformState(x, y, z))
-		{
-			
-		}
+			base(acSourcesCount, dcSourcesCount, nodeIndices, activeComponentsIndices, acVoltageSourcesDescriptions, dcVoltageSourcesDescriptions,
+				(x, y, z) => new WaveformState(x, y, z)) { }
 
 		/// <summary>
 		/// Constructor with parameters
 		/// </summary>
 		/// <param name="acSourcesCount">Number of AC sources expected in this state</param>
+		/// <param name="dcSourcesCount">Number of DC sources expected in this state</param>
 		/// <param name="nodeIndices">Indices of nodes present in this instance</param>
 		/// <param name="activeComponentsCount">Number of active components, indices available in this instance are given by a
 		/// range: 0 to <paramref name="activeComponentsCount"/> - 1</param>
 		/// <param name="acVoltageSourcesDescriptions">Descriptions of AC voltage sources that will produce the partial states</param>
 		/// <param name="dcVoltageSourcesDescriptions">Descriptions of DC voltage sources that will produce the partial states</param>
-		public WaveformPartialState(int acSourcesCount, IEnumerable<int> nodeIndices, int activeComponentsCount,
+		public WaveformPartialState(int acSourcesCount,
+			int dcSourcesCount,
+			IEnumerable<int> nodeIndices,
+			int activeComponentsCount,
 			IEnumerable<IActiveComponentDescription> acVoltageSourcesDescriptions,
 			IEnumerable<IActiveComponentDescription> dcVoltageSourcesDescriptions) :
-			this(acSourcesCount, nodeIndices, Enumerable.Range(0, activeComponentsCount), acVoltageSourcesDescriptions,
+			this(acSourcesCount, dcSourcesCount, nodeIndices, Enumerable.Range(0, activeComponentsCount), acVoltageSourcesDescriptions,
 				dcVoltageSourcesDescriptions) { }
 
 		/// <summary>
 		/// Constructor with parameters
 		/// </summary>
 		/// <param name="acSourcesCount">Number of AC sources expected in this state</param>
+		/// <param name="dcSourcesCount">Number of DC sources expected in this state</param>
 		/// <param name="nodesCount">Number of nodes, indices available in this instance are given by a
 		/// range: 0 to <paramref name="nodesCount"/> - 1</param>
 		/// <param name="activeComponentsCount">Number of active components, indices available in this instance are given by a
@@ -55,26 +61,34 @@ namespace ECAT.Simulation
 		/// <param name="acVoltageSourcesDescriptions">Descriptions of AC voltage sources that will produce the partial states</param>
 		/// <param name="pointsCount">Number of points in each waveform, nonnegative</param>
 		/// <param name="dcVoltageSourcesDescriptions">Descriptions of DC voltage sources that will produce the partial states</param>
-		public WaveformPartialState(int acSourcesCount, int nodesCount, int activeComponentsCount,
+		public WaveformPartialState(int acSourcesCount,
+			int dcSourcesCount,
+			int nodesCount,
+			int activeComponentsCount,
 			IEnumerable<IActiveComponentDescription> acVoltageSourcesDescriptions,
 			IEnumerable<IActiveComponentDescription> dcVoltageSourcesDescriptions) :
-			this(acSourcesCount, Enumerable.Range(0, nodesCount), Enumerable.Range(0, activeComponentsCount), acVoltageSourcesDescriptions,
-				dcVoltageSourcesDescriptions) { }
+			this(acSourcesCount, dcSourcesCount, Enumerable.Range(0, nodesCount), Enumerable.Range(0, activeComponentsCount),
+				acVoltageSourcesDescriptions, dcVoltageSourcesDescriptions) { }
 
 		/// <summary>
 		/// Constructor with parameters
 		/// </summary>
 		/// <param name="acSourcesCount">Number of AC sources expected in this state</param>
+		/// <param name="dcSourcesCount">Number of DC sources expected in this state</param>
 		/// <param name="nodesCount">Number of nodes, indices available in this instance are given by a
 		/// range: 0 to <paramref name="nodesCount"/> - 1</param>
 		/// <param name="activeComponentsIndices">Active components indices present in this instance</param>
 		/// <param name="acVoltageSourcesDescriptions">Descriptions of AC voltage sources that will produce the partial states</param>
 		/// <param name="pointsCount">Number of points in each waveform, nonnegative</param>
 		/// <param name="dcVoltageSourcesDescriptions">Descriptions of DC voltage sources that will produce the partial states</param>
-		public WaveformPartialState(int acSourcesCount, int nodesCount, IEnumerable<int> activeComponentsIndices,
+		public WaveformPartialState(int acSourcesCount,
+			int dcSourcesCount,
+			int nodesCount,
+			IEnumerable<int> activeComponentsIndices,
 			IEnumerable<IActiveComponentDescription> acVoltageSourcesDescriptions,
 			IEnumerable<IActiveComponentDescription> dcVoltageSourcesDescriptions) :
-			this(acSourcesCount, Enumerable.Range(0, nodesCount), activeComponentsIndices, acVoltageSourcesDescriptions, dcVoltageSourcesDescriptions) { }
+			this(acSourcesCount, dcSourcesCount, Enumerable.Range(0, nodesCount), activeComponentsIndices, acVoltageSourcesDescriptions,
+				dcVoltageSourcesDescriptions) { }
 
 		#endregion
 
@@ -132,10 +146,13 @@ namespace ECAT.Simulation
 				}
 			}
 
-			// Check DC state
-			if (!CheckWaveformsCorrectness(DCState.Potentials.Values, targetPointsCount))
+			// Check every DC state
+			foreach (var dcState in DCStates)
 			{
-				return false;
+				if (!CheckWaveformsCorrectness(dcState.Potentials.Values, targetPointsCount))
+				{
+					return false;
+				}
 			}
 
 			// All waveforms had equal points count - assign it to out variable
@@ -175,10 +192,13 @@ namespace ECAT.Simulation
 				}
 			}
 
-			// Check DC state
-			if (!CheckWaveformsCorrectness(DCState.Currents.Values, targetPointsCount))
+			// Check every DC state
+			foreach (var dcState in DCStates)
 			{
-				return false;
+				if (!CheckWaveformsCorrectness(dcState.Currents.Values, targetPointsCount))
+				{
+					return false;
+				}
 			}
 
 			// All waveforms had equal points count - assign it to out variable
@@ -218,8 +238,11 @@ namespace ECAT.Simulation
 				state.AddPotentialsTo(result);
 			}
 
-			// Add the DC state
-			DCState.AddPotentialsTo(result);
+			// Add the DC states
+			foreach (var state in DCStates)
+			{
+				state.AddPotentialsTo(result);
+			}
 
 			// Cast the mutable time domain signal to standard ITimeDomainSignal
 			return result.ToDictionary((x) => x.Key, ((x) => (ITimeDomainSignal)x.Value));
@@ -252,8 +275,11 @@ namespace ECAT.Simulation
 				state.AddCurrentsTo(result);
 			}
 
-			// Add the DC state
-			DCState.AddCurrentsTo(result);
+			// Add the DC states
+			foreach (var state in DCStates)
+			{
+				state.AddCurrentsTo(result);
+			}
 
 			// Cast the mutable time domain signal to standard ITimeDomainSignal
 			return result.ToDictionary((x) => x.Key, ((x) => (ITimeDomainSignal)x.Value));
