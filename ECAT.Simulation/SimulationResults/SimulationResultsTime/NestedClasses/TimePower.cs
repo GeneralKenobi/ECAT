@@ -73,7 +73,9 @@ namespace ECAT.Simulation
 						var result = IoC.Resolve<ITimeDomainSignalMutable>(voltage.Samples, voltage.TimeStep, voltage.StartTime);
 
 						// The result is a product of voltage and current waveforms
-						result.AddWaveform(-1, voltage.FinalWaveform.MergeSelect(current.FinalWaveform, (x, y) => x * y));
+						// TODO: Think if power can be calculated as a sum of powers for each source, in any case null cannot be passed
+						// as source description - replace it with some kind of default value.
+						result.AddWaveform(null, voltage.FinalWaveform.MergeSelect(current.FinalWaveform, (x, y) => x * y));
 
 						power = result;
 					}

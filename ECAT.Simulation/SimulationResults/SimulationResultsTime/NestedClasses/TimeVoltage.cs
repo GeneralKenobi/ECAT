@@ -43,43 +43,33 @@ namespace ECAT.Simulation
 				var nodeA = _Data.First((node) => node.Key.Index == nodeAIndex).Value;
 				var nodeB = _Data.First((node) => node.Key.Index == nodeBIndex).Value;
 
+				//var nodeAWaveforms = nodeA.AllWaveforms.ToDictionary((x) => x.Key, (x) => x.Value);
+				//var nodeBWaveforms = nodeB.AllWaveforms.ToDictionary((x) => x.Key, (x) => x.Value);
+
 				// Construct a result
 				var result = IoC.Resolve<ITimeDomainSignalMutable>(nodeA.Samples, nodeA.TimeStep, nodeA.StartTime);
-				
-				// Add waveforms of frequencies only appearing on node B (unlikely any will appear but it can't be neglected)
-				foreach(var nodeBPotential in nodeB.ComposingWaveforms.Keys.Except(nodeA.ComposingWaveforms.Keys))
-				{
-					result.AddWaveform(nodeBPotential, nodeB.ComposingWaveforms[nodeBPotential]);
-				}
 
-				// Add waveforms of frequencies only appearing on node A (unlikely any will appear but it can't be neglected)
-				foreach (var nodeAPotential in nodeA.ComposingWaveforms.Keys.Except(nodeB.ComposingWaveforms.Keys))
-				{
-					// Negate each waveform (potentials from node A should be subtracted from the voltage drop)
-					result.AddWaveform(nodeAPotential, nodeA.ComposingWaveforms[nodeAPotential].Select((x) => -x));
-				}
+				// Add waveforms from node B
+				nodeB.AllWaveforms.ForEach((x) => result.AddWaveform(x.Key, x.Value));
 
-				// Add all DC waveforms from node B
-				foreach (var dcWaveform in nodeB.ComposingDCWaveforms)
-				{
-					result.AddDCWaveform(dcWaveform);
-				}
+				// And subtract waveforms from node A
+				nodeA.AllWaveforms.ForEach((x) => result.AddWaveform(x.Key, x.Value.Select((y) => -y)));
 
-				// Subtract all DC waveforms from node A
-				foreach (var dcWaveform in nodeA.ComposingDCWaveforms)
-				{
-					result.AddDCWaveform(dcWaveform.Select((x) => -x));
-				}
+				//// Add waveforms of sources only appearing on node B (unlikely any will appear but it can't be neglected)
+				//foreach (var key in nodeBWaveforms.Keys.Except(nodeAWaveforms.Keys))
+				//{
+				//	result.AddWaveform(key, nodeBWaveforms[key]);
+				//}
 
-				// Finally take care of waveforms that appear on both nodes
-				nodeA.ComposingWaveforms.Keys.Intersect(nodeB.ComposingWaveforms.Keys).
-					// For each waveform, add it to result by subtracting instantenous values of each composing waveform (nodeB - nodeA)
-					ForEach((freq) => result.AddWaveform(freq, nodeB.ComposingWaveforms[freq].
-						MergeSelect(nodeA.ComposingWaveforms[freq], (x, y) => x - y)));
+				//// Subtract waveforms of sources only appearing on node B (unlikely any will appear but it can't be neglected)
+				//foreach (var key in nodeAWaveforms.Keys.Except(nodeBWaveforms.Keys))
+				//{
+				//	result.AddWaveform(key, nodeAWaveforms[key].Select((x) => -x));
+				//}
 
-				// And add/subtract constant offsets from the nodes
-				nodeB.ConstantOffsets.ForEach((x) => result.AddConstantOffset(x));
-				nodeA.ConstantOffsets.ForEach((x) => result.AddConstantOffset(-x));
+				//// Add waveforms for souces appearing on both nodes - add values from node B and subtract values from node A
+				//nodeAWaveforms.Keys.Intersect(nodeBWaveforms.Keys).
+				//	ForEach((source) => result.AddWaveform(source, nodeBWaveforms[source].MergeSelect(nodeAWaveforms[source], (x, y) => x - y)));
 
 				return result;
 			}

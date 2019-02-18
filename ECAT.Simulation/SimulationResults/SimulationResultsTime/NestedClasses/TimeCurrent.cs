@@ -108,42 +108,32 @@ namespace ECAT.Simulation
 					// If successful, create a new current signal based on it, cache it
 					var result = IoC.Resolve<ITimeDomainSignalMutable>(voltageDrop.Samples, voltageDrop.TimeStep, voltageDrop.StartTime);
 
+					// Get the minimum frequency - it is needed for capacitor waveform shifting
+					var minACFrequency = voltageDrop.ACWaveforms.Count > 0 ? voltageDrop.ACWaveforms.Min((x) => x.Key.Frequency) : -1;
+
 					// Current is composed of each voltage waveform times admittance of the element
-					foreach(var waveform in voltageDrop.ComposingWaveforms)
+					foreach (var waveform in voltageDrop.AllWaveforms)
 					{
 						// Get magnitude of element's admittance
-						var admittanceMagnitude = element.GetAdmittance(waveform.Key).Magnitude;
+						var admittanceMagnitude = element.GetAdmittance(waveform.Key.Frequency).Magnitude;
 
 						// Current waveform is the product of voltage waveforrm and magnitude
 						var finalWaveform = waveform.Value.Select((x) => x * admittanceMagnitude);
 
-						// Introduce phase shift for capacitors
-						if (element is ICapacitor)
+						// Introduce phase shift for capacitors - but only if minimum AC frequency is greater than 0, if it's not then there were
+						// no AC voltage sources and so no current will flow through any capacitor
+						if (minACFrequency > 0 && element is ICapacitor)
 						{
 							// Each wave has to be shifted by pi / 2 but only in its period.
 							// For example, a wave with frequency 2 times the lowest frequency has to be shifted by total of pi / 4 - because
 							// there are 2 periods of it in the full waveform. This relation is given by minimum frequency / wave frequency
-							finalWaveform = WaveformBuilder.ShiftWaveform(finalWaveform,
-								voltageDrop.ComposingWaveforms.Min((x) => x.Key) / waveform.Key * Math.PI / 2 );
+							finalWaveform = WaveformBuilder.ShiftWaveform(finalWaveform, minACFrequency / waveform.Key.Frequency * Math.PI / 2 );
 						}
 
 						// Add the waveform to the final waveform
 						result.AddWaveform(waveform.Key, finalWaveform);
 					}
 					
-					// Similarly for constant offset
-					foreach(var constantOffset in voltageDrop.ConstantOffsets)
-					{
-						// TODO: Account for inductor's infinite admittance
-						result.AddConstantOffset(constantOffset * element.GetAdmittance(0).Magnitude);
-					}
-
-					// Capacitor's current leads voltage by pi/2
-					if (element is ICapacitor capacitor)
-					{
-						//result.Shift(Math.PI / 2);
-					}
-
 					current = result;
 
 					// And return success
