@@ -42,19 +42,14 @@ namespace ECAT.Simulation
 		/// Adds this instance (passed dictionary) to <paramref name="signal"/>
 		/// </summary>
 		/// <param name="signal">Signal to add to</param>
-		/// <param name="source">Source dictionary to add from (<see cref="GenericState{T}.Potentials"/> or <see cref="GenericState{T}.Currents"/>
+		/// <param name="sourceCollection">Source dictionary to add from (<see cref="GenericState{T}.Potentials"/> or <see cref="GenericState{T}.Currents"/>
 		/// </param>
-		private void AddToSignalHelper(IDictionary<int, ITimeDomainSignalMutable> signal, IDictionary<int, IEnumerable<double>> source)
+		private void AddToSignalHelper(IDictionary<int, ITimeDomainSignalMutable> signal, IDictionary<int, IEnumerable<double>> sourceCollection)
 		{
 			// Perform necessary null checks
-			if(signal == null)
+			if(signal == null || sourceCollection == null)
 			{
-				throw new ArgumentNullException(nameof(signal));
-			}
-
-			if(source == null)
-			{
-				throw new ArgumentNullException(nameof(source));
+				throw new ArgumentNullException();
 			}
 
 			if(SourceDescription == null)
@@ -64,37 +59,16 @@ namespace ECAT.Simulation
 			}
 
 			// Check if key collections match - it's necessary, otherwise the signal is not compatible with this instance
-			if (!source.Keys.IsSequenceEqual(signal.Keys))
+			if (!sourceCollection.Keys.IsSequenceEqual(signal.Keys))
 			{
 				throw new ArgumentException(nameof(signal) + " has incompatible key collection");
 			}
 
-			// Depending on type of the source that generated this state
-			switch (SourceDescription.ComponentType)
+			// For each key in the dictionary
+			foreach(var key in sourceCollection.Keys)
 			{
-				// For AC sources
-				case ActiveComponentType.ACVoltageSource:
-					{
-						foreach (var key in source.Keys)
-						{
-							// Add every element's value to AC collection
-							signal[key].AddWaveform(SourceDescription.Frequency, source[key]);
-						}
-					}
-					break;
-
-				// For DC sources
-				case ActiveComponentType.DCVoltageSource:
-				case ActiveComponentType.DCOffsetOfACVoltageSource:
-				case ActiveComponentType.OpAmp:
-					{
-						foreach (var key in source.Keys)
-						{
-							// Add every element's value to DC collection
-							signal[key].AddDCWaveform(source[key]);
-						}
-					}
-					break;
+				// Add that entry's value to appropriate signal
+				signal[key].AddWaveform(SourceDescription, sourceCollection[key]);
 			}
 		}
 
