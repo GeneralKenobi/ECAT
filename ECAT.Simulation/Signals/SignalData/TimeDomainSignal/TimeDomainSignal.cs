@@ -137,6 +137,11 @@ namespace ECAT.Simulation
 		public IReadOnlyDictionary<IActiveComponentDescription, IEnumerable<double>> ACWaveforms { get; }
 
 		/// <summary>
+		/// All waveforms composing this <see cref="ITimeDomainSignal"/> (AC and DC).
+		/// </summary>
+		public IEnumerable<KeyValuePair<IActiveComponentDescription, IEnumerable<double>>> AllWaveforms => ACWaveforms.Concat(DCWaveforms);
+
+		/// <summary>
 		/// Object capable of calculating characteristic values for this <see cref="ISignalData"/>
 		/// </summary>
 		public ISignalDataInterpreter Interpreter { get; }

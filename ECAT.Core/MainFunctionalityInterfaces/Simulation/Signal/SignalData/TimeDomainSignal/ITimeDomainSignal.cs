@@ -46,6 +46,11 @@ namespace ECAT.Core
 		/// </summary>
 		IReadOnlyDictionary<IActiveComponentDescription, IEnumerable<double>> ACWaveforms { get; }
 
+		/// <summary>
+		/// All waveforms composing this <see cref="ITimeDomainSignal"/> (AC and DC).
+		/// </summary>
+		IEnumerable<KeyValuePair<IActiveComponentDescription, IEnumerable<double>>> AllWaveforms;
+
 		#endregion
 
 		#region Methods
