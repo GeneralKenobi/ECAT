@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using ECAT.Core;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ECAT.Simulation
@@ -16,8 +17,13 @@ namespace ECAT.Simulation
 		/// <param name="acSourcesCount">Number of AC sources expected in this state</param>
 		/// <param name="nodeIndices">Indices of nodes present in this instance</param>
 		/// <param name="activeComponentsIndices">Active components indices present in this instance</param>
-		public InstantenousPartialStates(int acSourcesCount, IEnumerable<int> nodeIndices, IEnumerable<int> activeComponentsIndices) :
-			base(acSourcesCount, nodeIndices, activeComponentsIndices, (x, y) => new InstantenousState(x, y)) { }
+		/// <param name="acVoltageSourcesDescriptions">Descriptions of AC voltage sources that will produce the partial states</param>
+		/// <param name="dcVoltageSourcesDescriptions">Descriptions of DC voltage sources that will produce the partial states</param>
+		public InstantenousPartialStates(int acSourcesCount, IEnumerable<int> nodeIndices, IEnumerable<int> activeComponentsIndices,
+			IEnumerable<IActiveComponentDescription> acVoltageSourcesDescriptions,
+			IEnumerable<IActiveComponentDescription> dcVoltageSourcesDescriptions) :
+			base(acSourcesCount, nodeIndices, activeComponentsIndices, acVoltageSourcesDescriptions, dcVoltageSourcesDescriptions,
+				(x, y, z) => new InstantenousState(x, y, z)) { }
 		
 		/// <summary>
 		/// Constructor with parameters
@@ -26,8 +32,13 @@ namespace ECAT.Simulation
 		/// <param name="nodeIndices">Indices of nodes present in this instance</param>
 		/// <param name="activeComponentsCount">Number of active components, indices available in this instance are given by a
 		/// range: 0 to <paramref name="activeComponentsCount"/> - 1</param>
-		public InstantenousPartialStates(int acSourcesCount, IEnumerable<int> nodeIndices, int activeComponentsCount) :
-			this(acSourcesCount, nodeIndices, Enumerable.Range(0, activeComponentsCount)) { }
+		/// <param name="acVoltageSourcesDescriptions">Descriptions of AC voltage sources that will produce the partial states</param>
+		/// <param name="dcVoltageSourcesDescriptions">Descriptions of DC voltage sources that will produce the partial states</param>
+		public InstantenousPartialStates(int acSourcesCount, IEnumerable<int> nodeIndices, int activeComponentsCount,
+			IEnumerable<IActiveComponentDescription> acVoltageSourcesDescriptions,
+			IEnumerable<IActiveComponentDescription> dcVoltageSourcesDescriptions) :
+			this(acSourcesCount, nodeIndices, Enumerable.Range(0, activeComponentsCount), acVoltageSourcesDescriptions, dcVoltageSourcesDescriptions)
+		{ }
 
 		/// <summary>
 		/// Constructor with parameters
@@ -37,8 +48,13 @@ namespace ECAT.Simulation
 		/// range: 0 to <paramref name="nodesCount"/> - 1</param>
 		/// <param name="activeComponentsCount">Number of active components, indices available in this instance are given by a
 		/// range: 0 to <paramref name="activeComponentsCount"/> - 1</param>
-		public InstantenousPartialStates(int acSourcesCount, int nodesCount, int activeComponentsCount) :
-			this(acSourcesCount, Enumerable.Range(0, nodesCount), Enumerable.Range(0, activeComponentsCount)) { }
+		/// <param name="acVoltageSourcesDescriptions">Descriptions of AC voltage sources that will produce the partial states</param>
+		/// <param name="dcVoltageSourcesDescriptions">Descriptions of DC voltage sources that will produce the partial states</param>
+		public InstantenousPartialStates(int acSourcesCount, int nodesCount, int activeComponentsCount,
+			IEnumerable<IActiveComponentDescription> acVoltageSourcesDescriptions,
+			IEnumerable<IActiveComponentDescription> dcVoltageSourcesDescriptions) :
+			this(acSourcesCount, Enumerable.Range(0, nodesCount), Enumerable.Range(0, activeComponentsCount), acVoltageSourcesDescriptions,
+				dcVoltageSourcesDescriptions) { }
 
 		/// <summary>
 		/// Constructor with parameters
@@ -47,8 +63,13 @@ namespace ECAT.Simulation
 		/// <param name="nodesCount">Number of nodes, indices available in this instance are given by a
 		/// range: 0 to <paramref name="nodesCount"/> - 1</param>
 		/// <param name="activeComponentsIndices">Active components indices present in this instance</param>
-		public InstantenousPartialStates(int acSourcesCount, int nodesCount, IEnumerable<int> activeComponentsIndices) :
-			this(acSourcesCount, Enumerable.Range(0, nodesCount), activeComponentsIndices) { }
+		/// <param name="acVoltageSourcesDescriptions">Descriptions of AC voltage sources that will produce the partial states</param>
+		/// <param name="dcVoltageSourcesDescriptions">Descriptions of DC voltage sources that will produce the partial states</param>
+		public InstantenousPartialStates(int acSourcesCount, int nodesCount, IEnumerable<int> activeComponentsIndices,
+			IEnumerable<IActiveComponentDescription> acVoltageSourcesDescriptions,
+			IEnumerable<IActiveComponentDescription> dcVoltageSourcesDescriptions) :
+			this(acSourcesCount, Enumerable.Range(0, nodesCount), activeComponentsIndices, acVoltageSourcesDescriptions,
+				dcVoltageSourcesDescriptions) { }
 
 		#endregion
 
@@ -61,7 +82,7 @@ namespace ECAT.Simulation
 		public InstantenousState Combine()
 		{
 			// Create result
-			var result = new InstantenousState(_NodeIndices, _ActiveComponentsIndices);
+			var result = new InstantenousState(_NodeIndices, _ActiveComponentsIndices, null);
 
 			// Add every AC state
 			for(int i = 0; i < ACStates.Length; ++i)
