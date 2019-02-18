@@ -187,20 +187,21 @@ namespace ECAT.Simulation
 				throw new ArgumentException(nameof(values) + $" must have count equal to {Samples} ({nameof(Samples)})");
 			}
 
-			// Add the waveform to appropraite collection
-			switch(description.ComponentType)
-			{
-				case ActiveComponentType.ACVoltageSource:
-					{
-						_ACWaveforms.Add(description, values);
-					} break;
+			// Determine the target collection for the waveform - it depends on the type of the source.
+			// _ACWaveforms is only for AC voltage sources
+			var targetCollection = description.ComponentType == ActiveComponentType.ACVoltageSource ? _ACWaveforms : _DCWaveforms;
 
-				case ActiveComponentType.DCVoltageSource:
-				case ActiveComponentType.OpAmp:
-					{
-						_DCWaveforms.Add(description, values);
-					} break;
-			}			
+			// If the source description is already present in the collection
+			if(targetCollection.ContainsKey(description))
+			{
+				// Add the new values to those already present
+				targetCollection[description] = targetCollection[description].MergeSelect(values, (x, y) => x + y);
+			}
+			else
+			{
+				// Otherwise make a new entry
+				targetCollection.Add(description, values);
+			}
 
 			// And finally add values to the final waveform
 			values.ForEach((x, i) => _FinalWaveform[i] += x);
