@@ -10,7 +10,7 @@
 		/// <summary>
 		/// Index used to query <see cref="ISimulationResults"/> for produced current
 		/// </summary>
-		int ActiveComponentIndex { get; set; }
+		int SourceIndex { get; set; }
 
 		/// <summary>
 		/// Description of this <see cref="ISource"/>
