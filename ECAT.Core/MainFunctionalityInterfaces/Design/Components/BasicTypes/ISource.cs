@@ -8,11 +8,6 @@
 		#region Properties
 
 		/// <summary>
-		/// Index used to query <see cref="ISimulationResults"/> for produced current
-		/// </summary>
-		int SourceIndex { get; set; }
-
-		/// <summary>
 		/// Description of this <see cref="ISource"/>
 		/// </summary>
 		IActiveComponentDescription Description { get; }
