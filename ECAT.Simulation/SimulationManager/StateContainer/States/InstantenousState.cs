@@ -20,7 +20,7 @@ namespace ECAT.Simulation
 		/// <param name="activeComponentsIndices">Active components indices present in this instance</param>
 		/// <param name="sourceDescription">Description of source that produced this state. Can be null - it means that it's indetermined or
 		/// many sources produced this state</param>
-		public InstantenousState(IEnumerable<int> nodeIndices, IEnumerable<int> activeComponentsIndices, IActiveComponentDescription sourceDescription) :
+		public InstantenousState(IEnumerable<int> nodeIndices, IEnumerable<int> activeComponentsIndices, ISourceDescription sourceDescription) :
 			base(nodeIndices, activeComponentsIndices, sourceDescription) { }
 
 		/// <summary>
@@ -31,7 +31,7 @@ namespace ECAT.Simulation
 		/// range: 0 to <paramref name="activeComponentsCount"/> - 1</param>
 		/// <param name="sourceDescription">Description of source that produced this state. Can be null - it means that it's indetermined or
 		/// many sources produced this state</param>
-		public InstantenousState(IEnumerable<int> nodeIndices, int activeComponentsCount, IActiveComponentDescription sourceDescription) :
+		public InstantenousState(IEnumerable<int> nodeIndices, int activeComponentsCount, ISourceDescription sourceDescription) :
 			this(nodeIndices, Enumerable.Range(0, activeComponentsCount), sourceDescription) { }
 
 		#endregion

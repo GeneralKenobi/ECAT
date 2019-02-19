@@ -52,7 +52,7 @@ namespace ECAT.Simulation
 		/// <param name="value"></param>
 		/// <exception cref="ArgumentNullException"></exception>
 		/// <exception cref="ArgumentException"></exception>
-		public void AddWaveform(IActiveComponentDescription description, IEnumerable<double> values) =>	AddWaveformHelper(description, values);
+		public void AddWaveform(ISourceDescription description, IEnumerable<double> values) =>	AddWaveformHelper(description, values);
 
 		/// <summary>
 		/// Adds a new waveform to the signal. If one already exists for source described by <paramref name="description"/>, adds them together,
@@ -63,7 +63,7 @@ namespace ECAT.Simulation
 		/// <param name="description"></param>
 		/// <param name="value"></param>
 		/// <exception cref="ArgumentNullException"></exception>
-		public void AddWaveform(IActiveComponentDescription description, double value) =>
+		public void AddWaveform(ISourceDescription description, double value) =>
 			AddWaveform(description, WaveformBuilder.ConstantWaveform(value, Samples));
 
 		#endregion

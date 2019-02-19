@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Enumerates possible types of <see cref="IActiveComponent"/>s
 	/// </summary>
-	public enum ActiveComponentType
+	public enum SourceType
 	{
 		/// <summary>
 		/// DC voltage source

@@ -19,12 +19,12 @@ namespace ECAT.Design
 		public ACVoltageSource()
 		{
 			// Create a description
-			_Description = new ActiveComponentDescription()
+			_Description = new SourceDescription()
 			{
 				Label = this.Label,
 				Index = ActiveComponentIndex,
 				Frequency = this.Frequency,
-				ComponentType = ActiveComponentType.ACVoltageSource,
+				ComponentType = SourceType.ACVoltageSource,
 			};
 		}
 
@@ -54,7 +54,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Backing store for <see cref="Description"/>
 		/// </summary>
-		private ActiveComponentDescription _Description { get; }
+		private SourceDescription _Description { get; }
 
 		#endregion
 
@@ -77,7 +77,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Description of this <see cref="IActiveComponent"/>
 		/// </summary>
-		public IActiveComponentDescription Description => _Description;
+		public ISourceDescription Description => _Description;
 
 		/// <summary>
 		/// Frequency of the AC voltage produced by this <see cref="ACVoltageSource"/>

@@ -30,9 +30,9 @@ namespace ECAT.Simulation
 			int dcSourcesCount,
 			IEnumerable<int> nodeIndices,
 			IEnumerable<int> activeComponentsIndices,
-			IEnumerable<IActiveComponentDescription> acVoltageSourcesDescriptions,
-			IEnumerable<IActiveComponentDescription> dcVoltageSourcesDescriptions,
-			Func<IEnumerable<int>, IEnumerable<int>, IActiveComponentDescription, TState> stateFactory = null)
+			IEnumerable<ISourceDescription> acVoltageSourcesDescriptions,
+			IEnumerable<ISourceDescription> dcVoltageSourcesDescriptions,
+			Func<IEnumerable<int>, IEnumerable<int>, ISourceDescription, TState> stateFactory = null)
 		{
 			// If no state factory was provided
 			if (stateFactory == null)
@@ -60,14 +60,14 @@ namespace ECAT.Simulation
 			DCStates = new TState[dcSourcesCount];
 
 			// Make a list of ac voltage sources descriptions
-			IList<IActiveComponentDescription> acVoltageSourcesDescriptionsList =
+			IList<ISourceDescription> acVoltageSourcesDescriptionsList =
 				// If the enumeration is null create a sequnce of nulls matching the number of ac voltage sources)
-				(acVoltageSourcesDescriptions ?? Enumerable.Repeat<IActiveComponentDescription>(null, acSourcesCount)).ToList();
+				(acVoltageSourcesDescriptions ?? Enumerable.Repeat<ISourceDescription>(null, acSourcesCount)).ToList();
 
 			// Make a list of dc voltage sources descriptions
-			IList<IActiveComponentDescription> dcVoltageSourcesDescriptionsList =
+			IList<ISourceDescription> dcVoltageSourcesDescriptionsList =
 				// If the enumeration is null create a sequnce of nulls matching the number of ac voltage sources)
-				(dcVoltageSourcesDescriptions ?? Enumerable.Repeat<IActiveComponentDescription>(null, dcSourcesCount)).ToList();
+				(dcVoltageSourcesDescriptions ?? Enumerable.Repeat<ISourceDescription>(null, dcSourcesCount)).ToList();
 
 			// Initialize each entry in the AC array
 			for (int i = 0; i < acSourcesCount; ++i)
@@ -102,9 +102,9 @@ namespace ECAT.Simulation
 		public GenericPartialStates(int acSourcesCount,
 			int dcSourcesCount,
 			IEnumerable<int> nodeIndices, int activeComponentsCount,
-			IEnumerable<IActiveComponentDescription> acVoltageSourcesDescriptions,
-			IEnumerable<IActiveComponentDescription> dcVoltageSourcesDescriptions,
-			Func<IEnumerable<int>, IEnumerable<int>, IActiveComponentDescription, TState> stateFactory = null) :
+			IEnumerable<ISourceDescription> acVoltageSourcesDescriptions,
+			IEnumerable<ISourceDescription> dcVoltageSourcesDescriptions,
+			Func<IEnumerable<int>, IEnumerable<int>, ISourceDescription, TState> stateFactory = null) :
 			this(acSourcesCount, dcSourcesCount, nodeIndices, Enumerable.Range(0, activeComponentsCount), acVoltageSourcesDescriptions,
 				dcVoltageSourcesDescriptions, stateFactory) { }
 
@@ -126,9 +126,9 @@ namespace ECAT.Simulation
 			int dcSourcesCount,
 			int nodesCount,
 			int activeComponentsCount,
-			IEnumerable<IActiveComponentDescription> acVoltageSourcesDescriptions,
-			IEnumerable<IActiveComponentDescription> dcVoltageSourcesDescriptions,
-			Func<IEnumerable<int>, IEnumerable<int>, IActiveComponentDescription, TState> stateFactory = null) :
+			IEnumerable<ISourceDescription> acVoltageSourcesDescriptions,
+			IEnumerable<ISourceDescription> dcVoltageSourcesDescriptions,
+			Func<IEnumerable<int>, IEnumerable<int>, ISourceDescription, TState> stateFactory = null) :
 			this(acSourcesCount, dcSourcesCount, Enumerable.Range(0, nodesCount), Enumerable.Range(0, activeComponentsCount),
 				acVoltageSourcesDescriptions, dcVoltageSourcesDescriptions, stateFactory) { }
 
@@ -149,9 +149,9 @@ namespace ECAT.Simulation
 			int dcSourcesCount,
 			int nodesCount,
 			IEnumerable<int> activeComponentsIndices,
-			IEnumerable<IActiveComponentDescription> acVoltageSourcesDescriptions,
-			IEnumerable<IActiveComponentDescription> dcVoltageSourcesDescriptions,
-			Func<IEnumerable<int>, IEnumerable<int>, IActiveComponentDescription, TState> stateFactory = null) :
+			IEnumerable<ISourceDescription> acVoltageSourcesDescriptions,
+			IEnumerable<ISourceDescription> dcVoltageSourcesDescriptions,
+			Func<IEnumerable<int>, IEnumerable<int>, ISourceDescription, TState> stateFactory = null) :
 			this(acSourcesCount, dcSourcesCount, Enumerable.Range(0, nodesCount), activeComponentsIndices,acVoltageSourcesDescriptions,
 				dcVoltageSourcesDescriptions, stateFactory) { }
 

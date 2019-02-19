@@ -43,8 +43,8 @@ namespace ECAT.Simulation
 		public TimeDomainSignal()
 		{
 			Interpreter = new TimeDomainSignalInterpreter(this);
-			ACWaveforms = new ReadOnlyDictionary<IActiveComponentDescription, IEnumerable<double>>(_ACWaveforms);
-			DCWaveforms = new ReadOnlyDictionary<IActiveComponentDescription, IEnumerable<double>>(_DCWaveforms);
+			ACWaveforms = new ReadOnlyDictionary<ISourceDescription, IEnumerable<double>>(_ACWaveforms);
+			DCWaveforms = new ReadOnlyDictionary<ISourceDescription, IEnumerable<double>>(_DCWaveforms);
 		}
 
 		/// <summary>
@@ -88,14 +88,14 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Backing store for <see cref="ACWaveforms"/>
 		/// </summary>
-		private IDictionary<IActiveComponentDescription, IEnumerable<double>> _ACWaveforms { get; } =
-			new Dictionary<IActiveComponentDescription, IEnumerable<double>>();
+		private IDictionary<ISourceDescription, IEnumerable<double>> _ACWaveforms { get; } =
+			new Dictionary<ISourceDescription, IEnumerable<double>>();
 
 		/// <summary>
 		/// Backing store for <see cref="DCWaveforms"/>
 		/// </summary>
-		private IDictionary<IActiveComponentDescription, IEnumerable<double>> _DCWaveforms { get; } =
-			new Dictionary<IActiveComponentDescription, IEnumerable<double>>();
+		private IDictionary<ISourceDescription, IEnumerable<double>> _DCWaveforms { get; } =
+			new Dictionary<ISourceDescription, IEnumerable<double>>();
 
 		/// <summary>
 		/// Backing store for <see cref="FinalWaveform"/>
@@ -129,17 +129,17 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Dictionary of instantenous values of DC waveforms that compose this signal. Key is the source that produced the wave.
 		/// </summary>
-		public IReadOnlyDictionary<IActiveComponentDescription, IEnumerable<double>> DCWaveforms { get; }
+		public IReadOnlyDictionary<ISourceDescription, IEnumerable<double>> DCWaveforms { get; }
 
 		/// <summary>
 		/// Dictionary of instantenous values of AC waveforms that compose this signal. Key is the source that produced the wave.
 		/// </summary>
-		public IReadOnlyDictionary<IActiveComponentDescription, IEnumerable<double>> ACWaveforms { get; }
+		public IReadOnlyDictionary<ISourceDescription, IEnumerable<double>> ACWaveforms { get; }
 
 		/// <summary>
 		/// All waveforms composing this <see cref="ITimeDomainSignal"/> (AC and DC).
 		/// </summary>
-		public IEnumerable<KeyValuePair<IActiveComponentDescription, IEnumerable<double>>> AllWaveforms => ACWaveforms.Concat(DCWaveforms);
+		public IEnumerable<KeyValuePair<ISourceDescription, IEnumerable<double>>> AllWaveforms => ACWaveforms.Concat(DCWaveforms);
 
 		/// <summary>
 		/// Object capable of calculating characteristic values for this <see cref="ISignalData"/>
@@ -173,7 +173,7 @@ namespace ECAT.Simulation
 		/// </summary>
 		/// <param name="description">Positive value</param>
 		/// <param name="values"></param>
-		protected void AddWaveformHelper(IActiveComponentDescription description, IEnumerable<double> values)
+		protected void AddWaveformHelper(ISourceDescription description, IEnumerable<double> values)
 		{
 			// Null check
 			if(description == null || values == null)
@@ -189,7 +189,7 @@ namespace ECAT.Simulation
 
 			// Determine the target collection for the waveform - it depends on the type of the source.
 			// _ACWaveforms is only for AC voltage sources
-			var targetCollection = description.ComponentType == ActiveComponentType.ACVoltageSource ? _ACWaveforms : _DCWaveforms;
+			var targetCollection = description.ComponentType == SourceType.ACVoltageSource ? _ACWaveforms : _DCWaveforms;
 
 			// If the source description is already present in the collection
 			if(targetCollection.ContainsKey(description))

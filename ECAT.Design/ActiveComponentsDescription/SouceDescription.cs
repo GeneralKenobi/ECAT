@@ -1,31 +1,33 @@
-﻿namespace ECAT.Core
+﻿using ECAT.Core;
+
+namespace ECAT.Design
 {
 	/// <summary>
-	/// Interface for classes used to describe <see cref="IActiveComponent"/>s
+	/// Standard implementation of <see cref="ISourceDescription"/> - this class describes <see cref="IActiveComponent"/>s.
 	/// </summary>
-	public interface IActiveComponentDescription
+	public class SourceDescription : ISourceDescription
 	{
-		#region Properties
+		#region Public Properties
 
 		/// <summary>
 		/// Unique label assigned to the <see cref="IActiveComponent"/> that is described by this instance
 		/// </summary>
-		IIDLabel Label { get; }
+		public IIDLabel Label { get; set; }
 
 		/// <summary>
 		/// Active component index assigned to the <see cref="IActiveComponent"/> that is described by this instance
 		/// </summary>
-		int Index { get; }
+		public int Index { get; set; }
 
 		/// <summary>
 		/// Frequency of the described <see cref="IActiveComponent"/>
 		/// </summary>
-		double Frequency { get; }
+		public double Frequency { get; set; }
 
 		/// <summary>
 		/// Type of the <see cref="IActiveComponent"/>
 		/// </summary>
-		ActiveComponentType ComponentType { get; }
+		public SourceType ComponentType { get; set; }
 
 		#endregion
 	}

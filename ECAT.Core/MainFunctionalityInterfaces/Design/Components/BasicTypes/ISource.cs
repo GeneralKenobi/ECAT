@@ -10,7 +10,7 @@
 		/// <summary>
 		/// Description of this <see cref="ISource"/>
 		/// </summary>
-		IActiveComponentDescription Description { get; }
+		ISourceDescription Description { get; }
 
 		#endregion
 	}

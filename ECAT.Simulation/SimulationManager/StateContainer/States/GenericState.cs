@@ -22,7 +22,7 @@ namespace ECAT.Simulation
 		/// if null (which is the default value) <see cref="default(T)"/> will be used</param>
 		/// <param name="sourceDescription">Description of source that produced this state. Can be null - it means that it's indetermined or
 		/// many sources produced this state</param>
-		public GenericState(IEnumerable<int> nodeIndices, IEnumerable<int> activeComponentsIndices, IActiveComponentDescription sourceDescription,
+		public GenericState(IEnumerable<int> nodeIndices, IEnumerable<int> activeComponentsIndices, ISourceDescription sourceDescription,
 			Func<T> defaultValueFactory = null)
 		{
 			// Null checks
@@ -62,7 +62,7 @@ namespace ECAT.Simulation
 		/// if null (which is the default value) <see cref="default(T)"/> will be used</param>
 		/// <param name="sourceDescription">Description of source that produced this state. Can be null - it means that it's indetermined or
 		/// many sources produced this state</param>
-		public GenericState(IEnumerable<int> nodeIndices, int activeComponentsCount, IActiveComponentDescription sourceDescription,
+		public GenericState(IEnumerable<int> nodeIndices, int activeComponentsCount, ISourceDescription sourceDescription,
 			Func<T> defaultValueFactory = null) :
 			this(nodeIndices, Enumerable.Range(0, activeComponentsCount), sourceDescription, defaultValueFactory) { }
 
@@ -83,7 +83,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Description of source that produced this state
 		/// </summary>
-		public IActiveComponentDescription SourceDescription { get; protected set; }
+		public ISourceDescription SourceDescription { get; protected set; }
 
 		#endregion
 	}

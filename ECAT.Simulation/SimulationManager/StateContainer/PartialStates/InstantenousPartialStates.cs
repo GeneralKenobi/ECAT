@@ -24,8 +24,8 @@ namespace ECAT.Simulation
 			int dcSourcesCount,
 			IEnumerable<int> nodeIndices,
 			IEnumerable<int> activeComponentsIndices,
-			IEnumerable<IActiveComponentDescription> acVoltageSourcesDescriptions,
-			IEnumerable<IActiveComponentDescription> dcVoltageSourcesDescriptions) :
+			IEnumerable<ISourceDescription> acVoltageSourcesDescriptions,
+			IEnumerable<ISourceDescription> dcVoltageSourcesDescriptions) :
 			base(acSourcesCount, dcSourcesCount, nodeIndices, activeComponentsIndices, acVoltageSourcesDescriptions, dcVoltageSourcesDescriptions,
 				(x, y, z) => new InstantenousState(x, y, z)) { }
 
@@ -43,8 +43,8 @@ namespace ECAT.Simulation
 			int dcSourcesCount,
 			IEnumerable<int> nodeIndices,
 			int activeComponentsCount,
-			IEnumerable<IActiveComponentDescription> acVoltageSourcesDescriptions,
-			IEnumerable<IActiveComponentDescription> dcVoltageSourcesDescriptions) :
+			IEnumerable<ISourceDescription> acVoltageSourcesDescriptions,
+			IEnumerable<ISourceDescription> dcVoltageSourcesDescriptions) :
 			this(acSourcesCount, dcSourcesCount, nodeIndices, Enumerable.Range(0, activeComponentsCount), acVoltageSourcesDescriptions,
 				dcVoltageSourcesDescriptions) { }
 
@@ -63,8 +63,8 @@ namespace ECAT.Simulation
 			int dcSourcesCount,
 			int nodesCount,
 			int activeComponentsCount,
-			IEnumerable<IActiveComponentDescription> acVoltageSourcesDescriptions,
-			IEnumerable<IActiveComponentDescription> dcVoltageSourcesDescriptions) :
+			IEnumerable<ISourceDescription> acVoltageSourcesDescriptions,
+			IEnumerable<ISourceDescription> dcVoltageSourcesDescriptions) :
 			this(acSourcesCount, dcSourcesCount, Enumerable.Range(0, nodesCount), Enumerable.Range(0, activeComponentsCount),
 				acVoltageSourcesDescriptions, dcVoltageSourcesDescriptions) { }
 
@@ -82,8 +82,8 @@ namespace ECAT.Simulation
 			int dcSourcesCount,
 			int nodesCount,
 			IEnumerable<int> activeComponentsIndices,
-			IEnumerable<IActiveComponentDescription> acVoltageSourcesDescriptions,
-			IEnumerable<IActiveComponentDescription> dcVoltageSourcesDescriptions) :
+			IEnumerable<ISourceDescription> acVoltageSourcesDescriptions,
+			IEnumerable<ISourceDescription> dcVoltageSourcesDescriptions) :
 			this(acSourcesCount, dcSourcesCount, Enumerable.Range(0, nodesCount), activeComponentsIndices, acVoltageSourcesDescriptions,
 				dcVoltageSourcesDescriptions) { }
 

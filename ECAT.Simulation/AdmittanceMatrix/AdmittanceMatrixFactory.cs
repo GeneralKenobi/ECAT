@@ -1144,7 +1144,7 @@ namespace ECAT.Simulation
 		/// </summary>
 		/// <param name="sourceIndex"></param>
 		/// <returns></returns>
-		public IActiveComponentDescription GetACVoltageSourceDescription(int sourceIndex) => sourceIndex < _ACVoltageSourcesCount ?
+		public ISourceDescription GetACVoltageSourceDescription(int sourceIndex) => sourceIndex < _ACVoltageSourcesCount ?
 			_ACVoltageSources[sourceIndex].Description : throw new ArgumentOutOfRangeException(nameof(sourceIndex));
 
 		/// <summary>
@@ -1160,13 +1160,13 @@ namespace ECAT.Simulation
 		/// Returns descriptions of AC voltage sources
 		/// </summary>
 		/// <returns></returns>
-		public IEnumerable<IActiveComponentDescription> GetACVoltageSourcesDescriptions() => _ACVoltageSources.Select((x) => x.Description);
+		public IEnumerable<ISourceDescription> GetACVoltageSourcesDescriptions() => _ACVoltageSources.Select((x) => x.Description);
 
 		/// <summary>
 		/// Returns descriptions of DC sources
 		/// </summary>
 		/// <returns></returns>
-		public IEnumerable<IActiveComponentDescription> GetDCSourcesDescriptions() =>
+		public IEnumerable<ISourceDescription> GetDCSourcesDescriptions() =>
 			_DCVoltageSources.Select((x) => x.Description).Concat(_CurrentSources.Select((x) => x.Description));
 
 		#endregion

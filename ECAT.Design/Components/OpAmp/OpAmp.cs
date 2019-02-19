@@ -21,12 +21,12 @@ namespace ECAT.Design
 		public OpAmp()
 		{
 			// Create a description
-			_Description = new ActiveComponentDescription()
+			_Description = new SourceDescription()
 			{
 				Label = this.Label,
 				Index = ActiveComponentIndex,
 				Frequency = 0,
-				ComponentType = ActiveComponentType.OpAmp,
+				ComponentType = SourceType.OpAmp,
 			};
 		}
 
@@ -46,7 +46,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Backing store for <see cref="Description"/>
 		/// </summary>
-		private ActiveComponentDescription _Description { get; }
+		private SourceDescription _Description { get; }
 
 		#endregion
 
@@ -113,7 +113,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Description of this <see cref="IActiveComponent"/>
 		/// </summary>
-		public IActiveComponentDescription Description => _Description;
+		public ISourceDescription Description => _Description;
 
 		#endregion
 	}

@@ -20,13 +20,13 @@ namespace ECAT.Design
 		public CurrentSource()
 		{
 			// Create a description
-			_Description = new ActiveComponentDescription()
+			_Description = new SourceDescription()
 			{
 				Label = this.Label,
 				Frequency = 0,
 				// Temporary index for now - TODO: change when CurrentSource has an active component index
 				Index = -1,
-				ComponentType = ActiveComponentType.DCCurrentSource,
+				ComponentType = SourceType.DCCurrentSource,
 			};
 		}
 
@@ -42,7 +42,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Backing store for <see cref="Description"/>
 		/// </summary>
-		private ActiveComponentDescription _Description { get; }
+		private SourceDescription _Description { get; }
 
 		#endregion
 
@@ -56,7 +56,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Description of this <see cref="ICurrentSource"/>
 		/// </summary>
-		public IActiveComponentDescription Description => _Description;
+		public ISourceDescription Description => _Description;
 
 		#endregion
 
