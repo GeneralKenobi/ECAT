@@ -211,6 +211,11 @@ namespace ECAT.Simulation
 		public int ACVoltageSourcesCount => _ACVoltageSourcesCount;
 
 		/// <summary>
+		/// Number of DC sources in the circuit (voltage sources and current sources)
+		/// </summary>
+		public int DCSourcesCount => _DCVoltageSourcesCount + _CurrentSourcesCount;
+
+		/// <summary>
 		/// Number of active components in the circuit
 		/// </summary>
 		public int ActiveComponentsCount => _ActiveComponentsCount;
@@ -534,6 +539,17 @@ namespace ECAT.Simulation
 		#endregion
 
 		#region AC voltage source activation
+
+		/// <summary>
+		/// Configures all AC voltage sources for specific operation
+		/// </summary>
+		private void ConfigureACVoltageSources(AdmittanceMatrix matrix, bool state)
+		{
+			for (int i = 0; i < _ACVoltageSourcesCount; ++i)
+			{
+				ConfigureACVoltageSource(matrix, i, state);
+			}
+		}
 
 		/// <summary>
 		/// Activates the AC voltage source given by the index
@@ -997,6 +1013,40 @@ namespace ECAT.Simulation
 		}
 
 		/// <summary>
+		/// Constructs a DC addmittance matrix. It is constructed for all DC voltage sources, DC current sources and DC offsets of AC voltage sources
+		/// turned on. Each potential resulting from the solution of this matrix is the voltage at corresponding node.
+		/// </summary>
+		/// <returns></returns>
+		public AdmittanceMatrix ConstructDC(int voltageSourceIndex)
+		{
+			var matrix = new AdmittanceMatrix(_BigDimension, _SmallDimension);
+
+			InitializeSubmatrices(matrix);
+
+			// TODO: Short circuit inductors
+
+			// Fill A matrix, which is dependent on admittances between nodes
+			FillAMatrix(0, matrix);
+
+			// Initialize op-amp settings - active operation
+			OpAmpSettings(matrix, false);
+
+			// Turn off AC voltage sources (in admittance matrix it is represented by Ua = Ub)
+			ConfigureACVoltageSources(matrix, false);
+
+			// Turn off all DC voltage sources except the chosen one
+			for (int i = 0; i < _DCVoltageSourcesCount; ++i)
+			{
+				ConfigureDCVoltageSource(matrix, i, i == voltageSourceIndex);
+			}
+
+			// Turn on DC current sources
+			ActivateCurrentSources(matrix);
+
+			return matrix;
+		}
+
+		/// <summary>
 		/// Constructs a DC addmittance matrix for saturated <see cref="IOpAmp"/>s only. It's purpose is to determine influence of saturated
 		/// <see cref="IOpAmp"/>s on AC circuits.
 		/// </summary>
@@ -1089,6 +1139,15 @@ namespace ECAT.Simulation
 			throw new ArgumentOutOfRangeException(nameof(sourceIndex));
 
 		/// <summary>
+		/// Returns description of AC voltage source given by <paramref name="sourceIndex"/>, throws an exception if the index is equal to or greater
+		/// than the number of AC voltage sources. Indexing starts at 0.
+		/// </summary>
+		/// <param name="sourceIndex"></param>
+		/// <returns></returns>
+		public IActiveComponentDescription GetACVoltageSourceDescription(int sourceIndex) => sourceIndex < _ACVoltageSourcesCount ?
+			_ACVoltageSources[sourceIndex].Description : throw new ArgumentOutOfRangeException(nameof(sourceIndex));
+
+		/// <summary>
 		/// Returns amplitude of AC voltage source given by <paramref name="sourceIndex"/>, throws an exception if the index is equal to or greater
 		/// than the number of AC voltage sources. Indexing starts at 0.
 		/// </summary>
@@ -1102,7 +1161,14 @@ namespace ECAT.Simulation
 		/// </summary>
 		/// <returns></returns>
 		public IEnumerable<IActiveComponentDescription> GetACVoltageSourcesDescriptions() => _ACVoltageSources.Select((x) => x.Description);
-		
+
+		/// <summary>
+		/// Returns descriptions of DC sources
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<IActiveComponentDescription> GetDCSourcesDescriptions() =>
+			_DCVoltageSources.Select((x) => x.Description).Concat(_CurrentSources.Select((x) => x.Description));
+
 		#endregion
 	}
 }
