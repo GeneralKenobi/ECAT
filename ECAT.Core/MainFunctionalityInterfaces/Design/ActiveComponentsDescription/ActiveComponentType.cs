@@ -19,5 +19,10 @@
 		/// Operational Amplifier
 		/// </summary>
 		OpAmp = 2,
+
+		/// <summary>
+		/// DC current source
+		/// </summary>
+		DCCurrentSource = 3,
 	}
 }
