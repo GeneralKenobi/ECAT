@@ -13,6 +13,11 @@
 		/// </summary>
 		double ProducedCurrent { get; set; }
 
+		/// <summary>
+		/// Description of this <see cref="ICurrentSource"/>
+		/// </summary>
+		IActiveComponentDescription Description { get; }
+
 		#endregion
 	}
 }

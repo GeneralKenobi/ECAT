@@ -12,12 +12,37 @@ namespace ECAT.Design
 	[DisplayPowerInfo(sectionIndex:1)]
 	public class CurrentSource : TwoTerminal, ICurrentSource
 	{
+		#region Constructor
+
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		public CurrentSource()
+		{
+			// Create a description
+			_Description = new ActiveComponentDescription()
+			{
+				Label = this.Label,
+				Frequency = 0,
+				// Temporary index for now - TODO: change when CurrentSource has an active component index
+				Index = -1,
+				ComponentType = ActiveComponentType.DCCurrentSource,
+			};
+		}
+
+		#endregion
+
 		#region Private properties
 
 		/// <summary>
 		/// Admittance of this <see cref="ICurrentSource"/> (constant value)
 		/// </summary>
 		private Complex _Admittance { get; } = IoC.Resolve<IDefaultValues>().CurrentSourceAdmittance;
+
+		/// <summary>
+		/// Backing store for <see cref="Description"/>
+		/// </summary>
+		private ActiveComponentDescription _Description { get; }
 
 		#endregion
 
@@ -27,6 +52,11 @@ namespace ECAT.Design
 		/// Accessor to the current supplied by this <see cref="ICurrentSource"/>
 		/// </summary>
 		public double ProducedCurrent { get; set; } = IoC.Resolve<IDefaultValues>().DefaultCurrentSourceProducedCurrent;
+
+		/// <summary>
+		/// Description of this <see cref="ICurrentSource"/>
+		/// </summary>
+		public IActiveComponentDescription Description => _Description;
 
 		#endregion
 
