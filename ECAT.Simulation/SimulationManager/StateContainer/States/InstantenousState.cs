@@ -27,7 +27,7 @@ namespace ECAT.Simulation
 		/// Constructor with parameters
 		/// </summary>
 		/// <param name="nodeIndices">Nodes present in this instance</param>
-		/// <param name="activeComponentsCount">Number of active components, indices available in this instance will are given by a
+		/// <param name="activeComponentsCount">Number of active components, indices available in this instance will be given by a
 		/// range: 0 to <paramref name="activeComponentsCount"/> - 1</param>
 		/// <param name="sourceDescription">Description of source that produced this state. Can be null - it means that it's indetermined or
 		/// many sources produced this state</param>

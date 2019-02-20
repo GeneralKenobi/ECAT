@@ -56,7 +56,7 @@ namespace ECAT.Simulation
 		/// Constructor with parameters
 		/// </summary>
 		/// <param name="nodeIndices">Nodes present in this instance</param>
-		/// <param name="activeComponentsCount">Number of active components, indices available in this instance will are given by a
+		/// <param name="activeComponentsCount">Number of active components, indices available in this instance will be given by a
 		/// range: 0 to <paramref name="activeComponentsCount"/> - 1</param>
 		/// <param name="defaultValueFactory">Func used for generating initial values in <see cref="Potentials"/> and <see cref="Currents"/>,
 		/// if null (which is the default value) <see cref="default(T)"/> will be used</param>
