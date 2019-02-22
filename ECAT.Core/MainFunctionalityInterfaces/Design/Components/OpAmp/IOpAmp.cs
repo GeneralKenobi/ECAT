@@ -23,6 +23,11 @@
 		/// </summary>
 		double OpenLoopGain { get; set; }
 
+		/// <summary>
+		/// Description of this <see cref="IOpAmp"/>
+		/// </summary>
+		IOpAmpDescription Description { get; }
+
 		#endregion
 	}
 }

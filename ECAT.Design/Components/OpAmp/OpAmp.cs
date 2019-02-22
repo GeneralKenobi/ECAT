@@ -21,12 +21,12 @@ namespace ECAT.Design
 		public OpAmp()
 		{
 			// Create a description
-			_Description = new SourceDescription()
+			_Description = new OpAmpDescription()
 			{
 				Label = this.Label,
-				Index = ActiveComponentIndex,
-				Frequency = 0,
-				ComponentType = SourceType.OpAmp,
+				PositiveSupplyVoltage = this.PositiveSupplyVoltage,
+				NegativeSupplyVoltage = this.NegativeSupplyVoltage,
+				OpenLoopGain = this.OpenLoopGain,
 			};
 		}
 
@@ -35,9 +35,19 @@ namespace ECAT.Design
 		#region Private members
 
 		/// <summary>
-		/// Backing store for <see cref="ActiveComponentIndex"/>
+		/// Backing store for <see cref="PositiveSupplyVoltage"/>
 		/// </summary>
-		private int mActiveComponentIndex;
+		private double mPositiveSupplyVoltage = IoC.Resolve<IDefaultValues>().DefaultOpAmpPositiveSupplyVoltage;
+
+		/// <summary>
+		/// Backing store for <see cref="NegativeSupplyVoltage"/>
+		/// </summary>
+		private double mNegativeSupplyVoltage = IoC.Resolve<IDefaultValues>().DefaultOpAmpNegativeSupplyVoltage;
+
+		/// <summary>
+		/// Backing store for <see cref="OpenLoopGain"/>
+		/// </summary>
+		private double mOpenLoopGain = IoC.Resolve<IDefaultValues>().DefaultOpAmpOpenLoopGain;
 
 		#endregion
 
@@ -46,7 +56,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Backing store for <see cref="Description"/>
 		/// </summary>
-		private SourceDescription _Description { get; }
+		private OpAmpDescription _Description { get; }
 
 		#endregion
 
@@ -74,17 +84,41 @@ namespace ECAT.Design
 		/// <summary>		
 		/// Positive supply voltage - output cannot be greater than this value
 		/// </summary>
-		public double PositiveSupplyVoltage { get; set; } = IoC.Resolve<IDefaultValues>().DefaultOpAmpPositiveSupplyVoltage;
+		public double PositiveSupplyVoltage
+		{
+			get => mPositiveSupplyVoltage;
+			set
+			{
+				mPositiveSupplyVoltage = value;
+				_Description.PositiveSupplyVoltage = value;
+			}
+		}
 
 		/// <summary>
 		/// Negative supply voltage - output cannot be smaller than this value
 		/// </summary>
-		public double NegativeSupplyVoltage { get; set; } = IoC.Resolve<IDefaultValues>().DefaultOpAmpNegativeSupplyVoltage;
+		public double NegativeSupplyVoltage
+		{
+			get => mNegativeSupplyVoltage;
+			set
+			{
+				mNegativeSupplyVoltage = value;
+				_Description.NegativeSupplyVoltage = value;
+			}
+		}
 
 		/// <summary>
 		/// Open loop gain - voltage gain defined as output voltage divided by differential voltage (U+ - U-)
 		/// </summary>
-		public double OpenLoopGain { get; set; } = IoC.Resolve<IDefaultValues>().DefaultOpAmpOpenLoopGain;
+		public double OpenLoopGain
+		{
+			get => mOpenLoopGain;
+			set
+			{
+				mOpenLoopGain = value;
+				_Description.OpenLoopGain = value;
+			}
+		}
 
 		/// <summary>
 		/// Width of the <see cref="OpAmp"/> in horizontal position
@@ -97,23 +131,9 @@ namespace ECAT.Design
 		public override double Height { get; } = 200;
 
 		/// <summary>
-		/// Index used to query <see cref="ISimulationResults"/> for produced current
+		/// Description of this <see cref="IOpAmp"/>
 		/// </summary>
-		public int ActiveComponentIndex
-		{
-			get => mActiveComponentIndex;
-			set
-			{
-				// Update the backing store and value in description
-				mActiveComponentIndex = value;
-				_Description.Index = value;
-			}
-		}
-
-		/// <summary>
-		/// Description of this <see cref="IActiveComponent"/>
-		/// </summary>
-		public ISourceDescription Description => _Description;
+		public IOpAmpDescription Description { get; }
 
 		#endregion
 	}
