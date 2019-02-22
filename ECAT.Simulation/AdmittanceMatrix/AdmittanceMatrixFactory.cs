@@ -1,7 +1,6 @@
 ﻿using CSharpEnhanced.Helpers;
 using ECAT.Core;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -29,16 +28,16 @@ namespace ECAT.Simulation
 
 		#region Private properties
 
-		#region Schematic, built matrices, nodes and similar
+		#region Schematic and nodes
 
 		/// <summary>
-		/// Schematic on which the matrix is based
+		/// Schematic on which the factory is based
 		/// </summary>
 		private ISchematic _Schematic { get; }
 
 		/// <summary>
-		/// List with all nodes generated for this <see cref="AdmittanceMatrixDeprecated"/>, order is important - position in the list indicates
-		/// the index of the node which directly affects the admittance matrix
+		/// List with all nodes, except reference node, generated for this <see cref="AdmittanceMatrixDeprecated"/>, order is important - position
+		/// in the list indicates the index of the node which directly affects the admittance matrix
 		/// </summary>
 		private List<INode> _Nodes { get; set; }
 
@@ -47,178 +46,71 @@ namespace ECAT.Simulation
 		/// </summary>
 		private INode _ReferenceNode { get; set; }
 
-		/// <summary>
-		/// List with all active components:<see cref="IDCVoltageSource"/>s, <see cref="IACVoltageSource"/>,
-		/// <see cref="IOpAmp"/>s
-		/// </summary>
-		private List<IActiveComponent> _ActiveComponents { get; set; }
-
-		/// <summary>
-		/// Dictionary with currents produced by active components (<see cref="_ActiveComponents"/>)
-		/// </summary>
-		private Dictionary<int, PhasorDomainSignal> _ActiveComponentsCurrents { get; set; }
-
 		#endregion
 
 		#region Collections of components/corresponding nodes
 
 		/// <summary>
-		/// List with all DC voltage sources in the <see cref="_Schematic"/>, order is important - position in the list indicates the
-		/// index of the source which directly affects the admittance matrix. Does not include op amp outputs
+		/// List with descriptions of all DC voltage sources in the <see cref="_Schematic"/>.
 		/// </summary>
-		private List<IDCVoltageSource> _DCVoltageSources { get; set; }
+		private IList<ISourceDescription> _DCVoltageSources { get; set; }
 
 		/// <summary>
-		/// Dictionary with voltage sources and indexes of their nodes (in order: negative, positive). If a node is grounded
-		/// then it is given by -1
+		/// List with descriptions of all AC voltage sources in the <see cref="_Schematic"/>.
 		/// </summary>
-		private Dictionary<IDCVoltageSource, Tuple<int, int>> _DCVoltageSourcesNodes { get; set; } =
-			new Dictionary<IDCVoltageSource, Tuple<int, int>>();
+		private IList<ISourceDescription> _ACVoltageSources { get; set; }
 
 		/// <summary>
-		/// List with all AC voltage sources in the <see cref="_Schematic"/>, order is important - position in the list indicates the
-		/// index of the source which directly affects the admittance matrix. All sources are also found in the
-		/// <see cref="_DCVoltageSources"/> (because an AC voltage source is also always a DC voltage source due to possible DC offset
-		/// present in the produced sine)
+		/// List with descriptions of all DC current sources in the <see cref="_Schematic"/>.
 		/// </summary>
-		private List<IACVoltageSource> _ACVoltageSources { get; set; }
+		private IList<ISourceDescription> _DCCurrentSources { get; set; }
 
 		/// <summary>
-		/// Dictionary with AC voltage sources and indexes of their nodes (in order: negative, positive). If a node is grounded
-		/// then it is given by -1. All nodes are also found in the <see cref="_DCVoltageSourcesNodes"/> (because an AC voltage source
-		/// is also always a DC voltage source due to possible DC offset present in the produced sine)
+		/// List with descriptions of all op-amps in the <see cref="_Schematic"/>
 		/// </summary>
-		private Dictionary<IACVoltageSource, Tuple<int, int>> _ACVoltageSourcesNodes { get; set; } =
-			new Dictionary<IACVoltageSource, Tuple<int, int>>();
+		private IList<IOpAmpDescription> _OpAmps { get; set; }
 
 		/// <summary>
-		/// List with all voltage sources in the <see cref="_Schematic"/>, order is important - position in the list indicates the
-		/// index of the source which directly affects the admittance matrix. Does not include op amp outputs
+		/// Dictionary mapping components (<see cref="IComponentDescription"/>s representing them) to indices.
+		/// Components mapped: <see cref="IDCVoltageSource"/>s, <see cref="IACVoltageSource"/>s, <see cref="ICurrentSource"/>s,
+		/// <see cref="IOpAmp"/>s.
 		/// </summary>
-		private List<ICurrentSource> _CurrentSources { get; set; }
+		private IDictionary<IComponentDescription, int> _IndexedComponentsIndices { get; set; }
+		
+		/// <summary>
+		/// Dictionary with indices of nodes of <see cref="IACVoltageSource"/>s, <see cref="IDCVoltageSource"/>s and <see cref="ICurrentSource"/>s
+		/// </summary>
+		private IDictionary<ISourceDescription, TwoTerminalSourceNodeInfo> _SourcesNodes { get; set; }
 
 		/// <summary>
-		/// Dictionary with current sources and indexes of their nodes (in order: negative, positive). If a node is grounded
-		/// then it is given by -1
+		/// Dictionary with indices of nodes of <see cref="IOpAmp"/>s
 		/// </summary>
-		private Dictionary<ICurrentSource, Tuple<int, int>> _CurrentSourcesNodes { get; set; } =
-			new Dictionary<ICurrentSource, Tuple<int, int>>();
+		private IDictionary<IOpAmpDescription, OpAmpNodeInfo> _OpAmpsNodes { get; set; }
 
 		/// <summary>
-		/// List with all op-amps in the <see cref="_Schematic"/>, order is important - position in the list indicates the
-		/// index of the op-amp which directly affects the admittance matrix
+		/// Dictionary containing operation mode assigned to each op-amp.
 		/// </summary>
-		private List<IOpAmp> _OpAmps { get; set; }
-
-		/// <summary>
-		/// Dictionary with op-amps and indexes of their nodes (in order: non-inverting, inverting and output). If a node is grounded
-		/// then it is given by -1
-		/// </summary>
-		private Dictionary<IOpAmp, Tuple<int, int, int>> _OpAmpNodes { get; set; } = new Dictionary<IOpAmp, Tuple<int, int, int>>();
+		private IDictionary<IOpAmpDescription, OpAmpOperationMode> _OpAmpOperation { get; } = new Dictionary<IOpAmpDescription, OpAmpOperationMode>();
 
 		#endregion
 
-		#region Common accessors to Counts/Nodes/etc.
+		#region Admittance matrix dimensions
 
 		/// <summary>
-		/// List with all AC frequencies present in the circuit (DC is present by default and is not included in this list)
-		/// </summary>
-		private List<double> _FrequenciesInCircuit { get; set; }
-
-		/// <summary>
-		/// List with information regarding op-amp outputs - Item1 is the index of the output node, Item2 is the negative supply
-		/// and Item3 is the positive supply
-		/// </summary>
-		private List<Tuple<int, double, double>> _OpAmpOutputs { get; set; } = new List<Tuple<int, double, double>>();
-
-		/// <summary>
-		/// Size of A part of the admittance matrix (dependent on nodes)
+		/// Size of A part of the admittance matrix (equal to number of nodes)
 		/// </summary>
 		private int _BigDimension => _Nodes.Count;
 
 		/// <summary>
-		/// Size of D part of admittance matrix (depends on the number of independent voltage sources, with op-amp outputs included)
+		/// Size of D part of admittance matrix (equal to number of independent voltage sources, with op-amp outputs included)
 		/// </summary>
-		private int _SmallDimension => _TotalVoltageSourcesCount + _OpAmps.Count;
-
-		/// <summary>
-		/// Size of the whole admittance matrix
-		/// </summary>
-		private int _Size => _BigDimension + _SmallDimension;
-
-		/// <summary>
-		/// The total number of <see cref="IDCVoltageSource"/>s sources in the <see cref="ISchematic"/>
-		/// </summary>
-		private int _DCVoltageSourcesCount => _DCVoltageSources.Count;
-
-		/// <summary>
-		/// The total number of <see cref="IACVoltageSource"/>s in the <see cref="ISchematic"/>
-		/// </summary>
-		private int _ACVoltageSourcesCount => _ACVoltageSources.Count;
-
-		/// <summary>
-		/// The total number of voltage sources in the <see cref="ISchematic"/>
-		/// </summary>
-		private int _TotalVoltageSourcesCount => _DCVoltageSourcesCount + _ACVoltageSourcesCount;
-
-		/// <summary>
-		/// The total number of <see cref="ICurrentSource"/>s in the <see cref="ISchematic"/>
-		/// </summary>
-		private int _CurrentSourcesCount => _CurrentSources.Count;
-
-		/// <summary>
-		/// True if the circuit is DC only (there are no <see cref="IACVoltageSource"/>s)
-		/// </summary>
-		private bool _IsPureDC => !_DCVoltageSources.Exists((source) => source is IACVoltageSource);
-
-		/// <summary>
-		/// True if the circuit is AC only (there are no <see cref="IOpAmp"/>s, no <see cref="ICurrentSource"/>s and
-		/// every <see cref="IDCVoltageSource"/> is an <see cref="IACVoltageSource"/> with <see cref="IDCVoltageSource.ProducedDCVoltage"/>
-		/// equal to 0)
-		/// </summary>
-		private bool _IsPureAC => _OpAmps.Count == 0 && _CurrentSources.Count == 0 &&
-			_DCVoltageSources.All((source) => source is IACVoltageSource && source.ProducedDCVoltage == 0);
-
-		/// <summary>
-		/// Number of <see cref="IActiveComponent"/>s in the schematic
-		/// </summary>
-		private int _ActiveComponentsCount => _ActiveComponents.Count;
-
-		/// <summary>
-		/// Number of <see cref="IOpAmp"/>s detected in the <see cref="_Schematic"/>
-		/// </summary>
-		private int _OpAmpsCount => _OpAmps.Count;
-
-		/// <summary>
-		/// Contains currently configured <see cref="IOpAmp"/> operation modes - false for active operation, true for saturation
-		/// </summary>
-		private IList<OpAmpOperationMode> _OpAmpOperation { get; } = new List<OpAmpOperationMode>();
+		private int _SmallDimension => _SourcesNodes.Count;
 
 		#endregion
-		
+
 		#endregion
 
 		#region Public properties
-
-		/// <summary>
-		/// Enumeration of all frequencies in the circuit
-		/// </summary>
-		public IEnumerable<double> FrequenciesInCircuit => _FrequenciesInCircuit;
-
-		/// <summary>
-		/// Number of AC voltage sources in the circuit
-		/// </summary>
-		public int ACVoltageSourcesCount => _ACVoltageSourcesCount;
-
-		/// <summary>
-		/// Number of DC sources in the circuit (voltage sources and current sources)
-		/// </summary>
-		public int DCSourcesCount => _DCVoltageSourcesCount + _CurrentSourcesCount;
-
-		/// <summary>
-		/// Number of active components in the circuit
-		/// </summary>
-		public int ActiveComponentsCount => _ActiveComponentsCount;
 
 		/// <summary>
 		/// Number of nodes created on basis of <see cref="ISchematic"/> passed to constructor
@@ -226,13 +118,83 @@ namespace ECAT.Simulation
 		public int NodesCount => _Nodes.Count;
 
 		/// <summary>
+		/// Lowest frequency in the circuit
+		/// </summary>
+		public double LowestFrequency { get; private set; }
+
+		/// <summary>
+		/// Highest frequency in the circuit
+		/// </summary>
+		public double HighestFrequency { get; private set; }
+
+		/// <summary>
+		/// Number of <see cref="IACVoltageSource"/>s in the circuit
+		/// </summary>
+		public int ACVoltageSourcesCount => _ACVoltageSources.Count;
+
+		/// <summary>
+		/// Number of <see cref="IDCVoltageSource"/>s in the circuit
+		/// </summary>
+		public int DCVoltageSourcesCount => _DCVoltageSources.Count;
+
+		/// <summary>
+		/// Number of <see cref="ICurrentSource"/>s in the circuit
+		/// </summary>
+		public int DCCurrentSourcesCount => _DCCurrentSources.Count;
+
+		/// <summary>
 		/// Number of <see cref="IOpAmp"/>s in the circuit
 		/// </summary>
 		public int OpAmpsCount => _OpAmps.Count;
 
+		/// <summary>
+		/// Number of active components in the circuit
+		/// </summary>
+		public int ActiveComponentsCount { get; private set; }
+
+		/// <summary>
+		/// Returns descriptions of AC voltage sources
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<ISourceDescription> ACVoltageSources => _ACVoltageSources;
+
+		/// <summary>
+		/// Returns descriptions of DC sources
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<ISourceDescription> DCVoltageSources => _DCVoltageSources;
+
+		/// <summary>
+		/// Returns descriptions of DC sources
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<ISourceDescription> DCCurrentSources => _DCCurrentSources;
+
 		#endregion
 
 		#region Private methods
+
+		#region Initialization
+
+		/// <summary>
+		/// Builds the factory - it's essential to call this method right after constructor
+		/// </summary>
+		private void Build()
+		{
+			ConstructNodes();
+
+			ExtractSpecialComponents();
+
+			FindFrequenciesInCircuit();
+
+			FindImportantNodes();
+
+			CheckOpAmpOutputs();
+
+			InitializeOpAmpOperationCollection();
+		}
+
+		#endregion
 
 		#region Submatrix initialization
 
@@ -259,51 +221,50 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Fills the <see cref="_A"/> Matrix
 		/// </summary>
-		private void FillAMatrix(double frequency, AdmittanceMatrix matrix)
+		private void FillAMatrix(AdmittanceMatrix matrix, double frequency)
 		{
-			FillAMatrixDiagonal(frequency, matrix);
+			FillAMatrixDiagonal(matrix, frequency);
 
-			FillAMatrixNonDiagonal(frequency, matrix);
+			FillAMatrixNonDiagonal(matrix, frequency);
 		}
 
 		/// <summary>
-		/// Fills the diagonal of a DC admittance matrix - for i-th node adds all admittances connected to it to the admittance
-		/// denoted by indexes i,i
+		/// Fills the diagonal of an admittance matrix - for i-th node adds all admittances connected to it, to the cell denoted by indices i,i
 		/// </summary>
-		private void FillAMatrixDiagonal(double frequency, AdmittanceMatrix matrix)
+		private void FillAMatrixDiagonal(AdmittanceMatrix matrix, double frequency)
 		{
 			// For each node
-			for (int i = 0; i < _Nodes.Count; ++i)
+			foreach(var node in _Nodes)
 			{
 				// For each component connected to that node
-				_Nodes[i].ConnectedComponents.ForEach((component) =>
+				node.ConnectedComponents.ForEach((component) =>
 				{
 					// If the component is a two terminal
 					if (component is ITwoTerminal twoTerminal)
 					{
 						// Add its admittance to the matrix
-						matrix._A[i, i] += twoTerminal.GetAdmittance(frequency);
+						matrix._A[node.Index, node.Index] += twoTerminal.GetAdmittance(frequency);
 					}
 				});
 			}
 		}
-
+		
 		/// <summary>
-		/// Fills the non-diagonal entries of a DC admittance matrix - for i,j admittance subtracts from it all admittances located
-		/// between node i and node j
+		/// Fills the non-diagonal entries of an admittance matrix - for entry i,j all admittances located between node i and node j are subtracted
+		/// from that entry
 		/// </summary>
-		private void FillAMatrixNonDiagonal(double frequency, AdmittanceMatrix matrix)
+		private void FillAMatrixNonDiagonal(AdmittanceMatrix matrix, double frequency)
 		{
 			// For each node
-			for (int i = 0; i < _Nodes.Count; ++i)
+			foreach(var node1 in _Nodes)
 			{
-				// For each node it's pair with (because of that matrix A is symmetrical so it's only necessary to fill the
+				// Matrix A is symmetrical along the main diagonal so it's only necessary to fill the
 				// part below main diagonal and copy the operation to the corresponding entry above the main diagonal
-				for (int j = 0; j < i; ++j)
+				foreach(var node2 in _Nodes.FindAll((x) => x.Index < node1.Index))
 				{
 					// Find all components located between node i and node j
 					var admittancesBetweenNodesij =
-						new List<IBaseComponent>(_Nodes[i].ConnectedComponents.Intersect(_Nodes[j].ConnectedComponents));
+						new List<IBaseComponent>(node1.ConnectedComponents.Intersect(node2.ConnectedComponents));
 
 					// For each of them
 					admittancesBetweenNodesij.ForEach((component) =>
@@ -311,12 +272,14 @@ namespace ECAT.Simulation
 						// If the component is a two terminal
 						if (component is ITwoTerminal twoTerminal)
 						{
-							// Subtract its admittance to the matrix
-							matrix._A[i, j] -= twoTerminal.GetAdmittance(frequency);
+							// Get the admittance of the element
+							var admittance = twoTerminal.GetAdmittance(frequency);
 
-							// And do the same to the entry j,i - admittances between node i,j are identical to admittances
-							// between nodes j,i
-							matrix._A[j, i] -= twoTerminal.GetAdmittance(frequency);
+							// Subtract its admittance from the matrix
+							matrix._A[node1.Index, node2.Index] -= admittance;
+
+							// And do the same to the entry j,i - admittances between node i,j are identical to admittances between nodes j,i
+							matrix._A[node2.Index, node1.Index] -= admittance;
 						}
 					});
 				}
@@ -328,49 +291,49 @@ namespace ECAT.Simulation
 		#region Matrix B creation
 
 		/// <summary>
-		/// Helper of <see cref="FillPassiveBMatrix"/>, fills the
-		/// B part of admittance matrix with 0 or 1 based on op-amps present in the circuit
+		/// Fills the B part of admittance matrix with 0 or 1 based on op-amps present in the circuit
 		/// </summary>
 		private void FillBMatrixOpAmpOutputNodes(AdmittanceMatrix matrix)
 		{
-			for (int i = 0; i < _OpAmps.Count; ++i)
+			// For each op-amp
+			foreach(var opAmp in _OpAmps)
 			{
 				// Set the entry in _B corresponding to the output node to 1
-				matrix._B[_OpAmpNodes[_OpAmps[i]].Item3, _TotalVoltageSourcesCount + i] = 1;
+				matrix._B[_OpAmpsNodes[opAmp].Output, _IndexedComponentsIndices[opAmp]] = 1;
 			}
 		}
 
 		#endregion
 
 		#region Op-amp operation mode switching
-
+		
 		/// <summary>
-		/// Configures <see cref="IOpAmp"/> with index <paramref name="opAmpIndex"/> for operation in <paramref name="operationMode"/> in
-		/// <paramref name="matrix"/>.
+		/// Configures <see cref="IOpAmp"/> for operation in <paramref name="operationMode"/> in <paramref name="matrix"/>.
+		/// Saturation mode will generate output voltage only if matrix is built for DC (<paramref name="ac"/> is false).
 		/// </summary>
 		/// <param name="matrix"></param>
 		/// <param name="opAmpIndex"></param>
 		/// <param name="operationMode"></param>
-		private void ConfigureOpAmpOperation(AdmittanceMatrix matrix, int opAmpIndex, OpAmpOperationMode operationMode, bool ac)
+		private void ConfigureOpAmpOperation(AdmittanceMatrix matrix, IOpAmpDescription opAmp, OpAmpOperationMode operationMode, bool ac)
 		{
 			// Call appropriate method based on operation mode
-			switch (_OpAmpOperation[opAmpIndex])
+			switch (_OpAmpOperation[opAmp])
 			{
 				case OpAmpOperationMode.Active:
 					{
-						ConfigureOpAmpForActiveOperation(matrix, opAmpIndex);
+						ConfigureOpAmpForActiveOperation(matrix, opAmp);
 					}
 					break;
 
 				case OpAmpOperationMode.PositiveSaturation:
 					{
-						ConfigureOpAmpForSaturation(matrix, opAmpIndex, true, ac);
+						ConfigureOpAmpForSaturation(matrix, opAmp, true, ac);
 					}
 					break;
 
 				case OpAmpOperationMode.NegativeSaturation:
 					{
-						ConfigureOpAmpForSaturation(matrix, opAmpIndex, false, ac);
+						ConfigureOpAmpForSaturation(matrix, opAmp, false, ac);
 					}
 					break;
 
@@ -385,14 +348,15 @@ namespace ECAT.Simulation
 		/// Configures submatrices so that <paramref name="opAmp"/> is considered to work in active operation (output is between
 		/// supply voltages)
 		/// </summary>
+		/// <param name="matrix"></param>
 		/// <param name="opAmp"></param>
-		private void ConfigureOpAmpForActiveOperation(AdmittanceMatrix matrix, int opAmpIndex)
+		private void ConfigureOpAmpForActiveOperation(AdmittanceMatrix matrix, IOpAmpDescription opAmp)
 		{
-			// Get the index of the op-amp
-			var opAmp = _OpAmps[opAmpIndex];
+			// Get nodes of the op-amp
+			var nodes = _OpAmpsNodes[opAmp];
 
-			// Indexes of its nodes
-			var nodes = _OpAmpNodes[opAmp];
+			// As well as its index
+			var index = _IndexedComponentsIndices[opAmp];
 
 			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			//																													 //
@@ -411,59 +375,60 @@ namespace ECAT.Simulation
 
 			// If there exists a node to which TerminalA (non-inverting input) is connected
 			// (it's possible it may not exist due to removed ground node)
-			if (nodes.Item1 != -1)
+			if (nodes.NonInvertingInput != GroundNodeIndex)
 			{
 				// Fill the entry in the row corresponding to the op-amp (plus starting row)
 				// and column corresponding to the node (positive terminal) with -OpenLoopGain
-				matrix._C[_TotalVoltageSourcesCount + opAmpIndex, nodes.Item1] = -opAmp.OpenLoopGain;
+				matrix._C[index, nodes.NonInvertingInput] = -opAmp.OpenLoopGain;
 			}
 
 			// If there exists a node to which TerminalB (inverting input) is connected
 			// (it's possible it may not exist due to removed ground node)
-			if (nodes.Item2 != -1)
+			if (nodes.InvertingInput != GroundNodeIndex)
 			{
 				// Fill the entry in the row corresponding to the op-amp (plus starting row)
 				// and column corresponding to the node (positive terminal) with OpenLoopGain
-				matrix._C[_TotalVoltageSourcesCount + opAmpIndex, nodes.Item2] = opAmp.OpenLoopGain;
+				matrix._C[index, nodes.InvertingInput] = opAmp.OpenLoopGain;
 			}
 
 			// If the output is not shorted with the inverting input
-			if (nodes.Item3 != nodes.Item2)
+			if (nodes.Output != nodes.InvertingInput)
 			{
-				matrix._C[_TotalVoltageSourcesCount + opAmpIndex, nodes.Item3] = 1;
+				matrix._C[index, nodes.Output] = 1;
 			}
 
 			// Fill the entry in the row corresponding to the op-amp (plus starting row)
 			// and column corresponding to the node (positive terminal) with 1 
-			matrix._E[_TotalVoltageSourcesCount + opAmpIndex] = 0;
+			matrix._E[index] = 0;
 		}
 
 		/// <summary>
-		/// Configures submatrices so that <paramref name="opAmp"/> is considered to work in active operation (output is between
-		/// supply voltages)
+		/// Configures submatrices so that <paramref name="opAmp"/> is considered to work in saturatio (output is either positive or negative
+		/// supply voltage - depending on <paramref name="positiveSaturation"/>)
 		/// </summary>
+		/// <param name="matrix"></param>
 		/// <param name="opAmp"></param>
 		/// <param name="positiveSaturation">If true, the output is set to positive supply voltage, if false to the negative
 		/// supply</param>
-		private void ConfigureOpAmpForSaturation(AdmittanceMatrix matrix, int opAmpIndex, bool positiveSaturation, bool ac)
+		/// <param name="ac"></param>
+		private void ConfigureOpAmpForSaturation(AdmittanceMatrix matrix, IOpAmpDescription opAmp, bool positiveSaturation, bool ac)
 		{
-			// Get the index of the op-amp
-			var opAmp = _OpAmps[opAmpIndex];
-			// Indexes of its nodes
-			var nodes = _OpAmpNodes[opAmp];
+			// Indices of op-amps nodes
+			var nodes = _OpAmpsNodes[opAmp];
 
-			// Op-amp needs adjusting, its output will now be modeled as an independent voltage source now
+			// And its index
+			var index = _IndexedComponentsIndices[opAmp];
 
 			// If the non-inverting input is not grounded, reset its entry in the _C matrix
-			if (nodes.Item1 != -1)
+			if (nodes.NonInvertingInput != GroundNodeIndex)
 			{
-				matrix._C[_TotalVoltageSourcesCount + opAmpIndex, nodes.Item1] = 0;
+				matrix._C[index, nodes.NonInvertingInput] = 0;
 			}
 
 			// If the inverting input is not grounded, reset its entry in the _C matrix
-			if (nodes.Item2 != -1)
+			if (nodes.InvertingInput != GroundNodeIndex)
 			{
-				matrix._C[_TotalVoltageSourcesCount + opAmpIndex, nodes.Item2] = 0;
+				matrix._C[index, nodes.InvertingInput] = 0;
 			}
 
 			// And the entry in _C corresponding to the output node to 1
@@ -471,180 +436,101 @@ namespace ECAT.Simulation
 			// corresponding to that node is 1 (and not 0 like the if above would set it). Because this assigning is done after
 			// the one for non-inverting input no special conditions are necessary however it's very important to remeber about
 			// it if (when) this method is modified
-			matrix._C[_TotalVoltageSourcesCount + opAmpIndex, nodes.Item3] = 1;
+			matrix._C[index, nodes.Output] = 1;
 
 			// Finally, depending on which supply was exceeded, set the value of the source to either positive or negative
 			// supply voltage
 			if (!ac)
 			{
-				matrix._E[_TotalVoltageSourcesCount + opAmpIndex] = positiveSaturation ? opAmp.PositiveSupplyVoltage : opAmp.NegativeSupplyVoltage;
+				matrix._E[index] = positiveSaturation ? opAmp.PositiveSupplyVoltage: opAmp.NegativeSupplyVoltage;
 			}
 		}
 
 		#endregion
 
-		#region DC voltage source activation
+		#region Voltage source activation
 
 		/// <summary>
-		/// Activates all DC voltage sources
+		/// Configures all voltage sources for specific operation. Outputs are set to 1 in order to generate transfer functions.
 		/// </summary>
-		private void ConfigureDCVoltageSources(AdmittanceMatrix matrix, bool state)
+		private void ConfigureVoltageSources(AdmittanceMatrix matrix, bool state)
 		{
-			for (int i = 0; i < _DCVoltageSourcesCount; ++i)
+			// Take all voltage sources (DC + AC)
+			foreach(var source in _DCVoltageSources.Concat(_ACVoltageSources))
 			{
-				ConfigureDCVoltageSource(matrix, i, state);
+				// And configure them for the state
+				ConfigureVoltageSource(matrix, source, state);
 			}
 		}
 
 		/// <summary>
-		/// Activates the DC voltage sources given by the index
+		/// Configures the <paramref name="source"/> for desired <paramref name="state"/>.
+		/// Outputs is set to 1 in order to generate transfer functions.
 		/// </summary>
 		/// <param name="sourceIndex"></param>
 		/// <param name="state">True if the source is active, false if not (it is considered as short-circuit)</param>
-		private void ConfigureDCVoltageSource(AdmittanceMatrix matrix, int sourceIndex, bool state)
+		private void ConfigureVoltageSource(AdmittanceMatrix matrix, ISourceDescription source, bool state)
 		{
 			// Get the voltage source's nodes
-			var nodes = _DCVoltageSourcesNodes[_DCVoltageSources[sourceIndex]];
+			var nodes = _SourcesNodes[source];
+
+			// And its index
+			var sourceIndex = _IndexedComponentsIndices[source];
 
 			// If the positive terminal is not grounded
-			if (nodes.Item2 != -1)
+			if (nodes.Positive != GroundNodeIndex)
 			{
 				// Fill the entry in the row corresponding to the node and column corresponding to the source (plus start column)
 				// with 1 (positive terminal)
-				matrix._B[nodes.Item2, sourceIndex] = 1;
+				matrix._B[nodes.Positive, sourceIndex] = 1;
 
 				// Fill the entry in the row corresponding to the source (plus starting row)
 				// and column corresponding to the node with 1 (positive terminal)
-				matrix._C[sourceIndex, nodes.Item2] = 1;
+				matrix._C[sourceIndex, nodes.Positive] = 1;
 			}
 
 			// If the negative terminal is not grounded
-			if (nodes.Item1 != -1)
+			if (nodes.Negative != GroundNodeIndex)
 			{
 				// Fill the entry in the row corresponding to the node and column corresponding to the source (plus start column)
 				// with -1 (negative terminal)
-				matrix._B[nodes.Item1, sourceIndex] = -1;
+				matrix._B[nodes.Negative, sourceIndex] = -1;
 
 				// Fill the entry in the row corresponding to the source (plus starting row)
 				// and column corresponding to the node with -1 (negative terminal)
-				matrix._C[sourceIndex, nodes.Item1] = -1;
+				matrix._C[sourceIndex, nodes.Negative] = -1;
 			}
 
-			if (state)
-			{
-				matrix._E[sourceIndex] = _DCVoltageSources[sourceIndex].ProducedDCVoltage;
-			}
-		}
-
-		#endregion
-
-		#region AC voltage source activation
-
-		/// <summary>
-		/// Configures all AC voltage sources for specific operation
-		/// </summary>
-		private void ConfigureACVoltageSources(AdmittanceMatrix matrix, bool state)
-		{
-			for (int i = 0; i < _ACVoltageSourcesCount; ++i)
-			{
-				ConfigureACVoltageSource(matrix, i, state);
-			}
-		}
-
-		/// <summary>
-		/// Activates the AC voltage source given by the index
-		/// </summary>
-		/// <param name="sourceIndex"></param>
-		/// <param name="state">True if the source is active, false if not (it is considered as short-circuit)</param>
-		private void ConfigureACVoltageSource(AdmittanceMatrix matrix, int sourceIndex, bool state)
-		{
-			// Get the voltage source's nodes
-			var nodes = _ACVoltageSourcesNodes[_ACVoltageSources[sourceIndex]];
-
-			// If the positive terminal is not grounded
-			if (nodes.Item2 != -1)
-			{
-				// Fill the entry in the row corresponding to the node and column corresponding to the source (plus start column)
-				// with 1 (positive terminal)
-				matrix._B[nodes.Item2, sourceIndex + _DCVoltageSources.Count] = 1;
-
-				// Fill the entry in the row corresponding to the source (plus starting row)
-				// and column corresponding to the node with 1 (positive terminal)
-				matrix._C[sourceIndex + _DCVoltageSources.Count, nodes.Item2] = 1;
-			}
-
-			// If the negative terminal is not grounded
-			if (nodes.Item1 != -1)
-			{
-				// Fill the entry in the row corresponding to the node and column corresponding to the source (plus start column)
-				// with -1 (negative terminal)
-				matrix._B[nodes.Item1, sourceIndex + _DCVoltageSources.Count] = -1;
-
-				// Fill the entry in the row corresponding to the source (plus starting row)
-				// and column corresponding to the node with -1 (negative terminal)
-				matrix._C[sourceIndex + _DCVoltageSources.Count, nodes.Item1] = -1;
-			}
-						
-			matrix._E[sourceIndex + _DCVoltageSources.Count] = state ? 1 : 0;
+			matrix._E[sourceIndex] = state ? 1 : 0;
 		}
 
 		#endregion
 
 		#region Current source activation
-
+		
 		/// <summary>
-		/// Activates all DC voltage sources
-		/// </summary>
-		private void ActivateCurrentSources(AdmittanceMatrix matrix)
-		{
-			for (int i = 0; i < _CurrentSourcesCount; ++i)
-			{
-				ActivateCurrentSource(matrix, i);
-			}
-		}
-
-		/// <summary>
-		/// Activates the current source given by the index
+		/// Activates (all current sources are not active by default) the current source given by the index. Assigns 1 to its output in order to
+		/// generate admittance matrix that produces transfer function.
 		/// </summary>
 		/// <param name="sourceIndex"></param>
-		private void ActivateCurrentSource(AdmittanceMatrix matrix, int sourceIndex)
+		private void ActivateCurrentSource(AdmittanceMatrix matrix, ISourceDescription source)
 		{
 			// Get the nodes
-			var nodes = _CurrentSourcesNodes[_CurrentSources[sourceIndex]];
-
-			// If the negative terminal is not grounded
-			if (nodes.Item1 != -1)
-			{
-				// Subtract source's current from the node
-				matrix._I[nodes.Item1] -= _CurrentSources[sourceIndex].ProducedCurrent;
-			}
-
+			var nodes = _SourcesNodes[source];
+			
 			// If the positive terminal is not grounded
-			if (nodes.Item2 != -1)
+			if (nodes.Positive != GroundNodeIndex)
 			{
 				// Add source's current to the node
-				matrix._I[nodes.Item2] += _CurrentSources[sourceIndex].ProducedCurrent;
+				matrix._I[nodes.Positive] = 1;
 			}
-		}
 
-		/// <summary>
-		/// Builds the matrix - it's essential to call this method right after constructor
-		/// </summary>
-		private void Build()
-		{
-			ConstructNodes();
-
-			ExtractSpecialComponents();
-
-			FindFrequenciesInCircuit();
-
-			FindImportantNodes();
-
-			CheckOpAmpOutputs();
-
-			GenerateOpAmpOutputInformation();
-
-			InitializeOpAmpOperationCollection();
+			// If the negative terminal is not grounded
+			if (nodes.Negative != -1)
+			{
+				// Subtract source's current from the node
+				matrix._I[nodes.Negative] = -1;
+			}
 		}
 
 		#endregion
@@ -652,8 +538,7 @@ namespace ECAT.Simulation
 		#region Node generation
 
 		/// <summary>
-		/// Helper of <see cref="Build"/>, constructs nodes, sets all potentials to 0, finds and removes reference nodes, assigns
-		/// indexes
+		/// Constructs nodes (assigns them to <see cref="_Nodes"/>), finds and removes reference nodes, assigns indices
 		/// </summary>
 		private void ConstructNodes()
 		{
@@ -672,8 +557,8 @@ namespace ECAT.Simulation
 		}
 
 		/// <summary>
-		/// Finds all reference nodes (nodes that contain an <see cref="IGround"/> in their connected terminals), sets their
-		/// potential to 0V, removes them from <paramref name="nodes"/>. If there is no <see cref="IGround"/>, searches through
+		/// Finds all reference nodes (nodes that contain an <see cref="IGround"/> in their connected terminals),
+		/// removes them from <see cref="_Nodes"/>. If there is no <see cref="IGround"/>, searches through
 		/// the nodes and chooses the first node that has a negative terminal of a source connected as the reference node. If there
 		/// are no sources then treats all nodes as reference nodes.
 		/// </summary>
@@ -682,20 +567,18 @@ namespace ECAT.Simulation
 		{
 			// Find all reference nodes
 			var referenceNodes = FindReferenceNodes();
-
-			// Assign the ground index to the node
-			referenceNodes.ForEach((node) => node.Index = SimulationManager.GroundNodeIndex);
-
+						
 			// Remove them from the nodes list
 			_Nodes.RemoveAll((node) => referenceNodes.Contains(node));
 
-			// Create a new reference node
-			_ReferenceNode = new Node();
+			// Create a node which will be the final reference node
+			_ReferenceNode = new Node
+			{
+				// Assign ground node index to it
+				Index = SimulationManager.GroundNodeIndex
+			};
 
-			// Assign ground node index to it
-			_ReferenceNode.Index = SimulationManager.GroundNodeIndex;
-
-			// Merge every node that was determined to be a reference node with it
+			// Merge every node that was determined to be a reference node to the final reference node
 			referenceNodes.ForEach((node) => _ReferenceNode.Merge(node));
 		}
 
@@ -707,11 +590,10 @@ namespace ECAT.Simulation
 		/// </summary>
 		/// <param name="nodes"></param>
 		/// <returns></returns>
-		private List<INode> FindReferenceNodes()
+		private IEnumerable<INode> FindReferenceNodes()
 		{
 			// Filter the nodes, look for all nodes that have na IGround connected to them
-			var referenceNodes = new List<INode>(
-							_Nodes.Where((node) => node.ConnectedComponents.Exists((component) => component is IGround)));
+			var referenceNodes = new List<INode>(_Nodes.FindAll((node) => node.ConnectedComponents.Exists((component) => component is IGround)));
 
 			// If any was found, return the list
 			if (referenceNodes.Count > 0)
@@ -723,13 +605,14 @@ namespace ECAT.Simulation
 			foreach (var node in _Nodes)
 			{
 				// Find all sources connected to the node
-				var sources = new List<ITwoTerminal>(node.ConnectedComponents.Where((component) =>
-					component is IDCVoltageSource || component is ICurrentSource).Select((source) => source as ITwoTerminal));
+				var sources = new List<ITwoTerminal>(node.ConnectedComponents.
+					Where((component) => component is ISource).
+					Select((source) => source as ITwoTerminal));
 
 				// Go through each source
 				foreach (var source in sources)
 				{
-					// If it's negative (A) terminal is connected to the node, return the node as the reference node
+					// If its negative (A) terminal is connected to the node, return the node as the reference node
 					if (node.ConnectedTerminals.Contains(source.TerminalA))
 					{
 						return new List<INode>() { node };
@@ -743,56 +626,108 @@ namespace ECAT.Simulation
 
 		#endregion
 
-		#region Initialization of private collections
+		#region Information extraction from schematic
 
 		/// <summary>
 		/// Extracts all frequencies from the circuit by checking what's the frequency of every <see cref="IACVoltageSource"/>
 		/// </summary>
-		private void FindFrequenciesInCircuit() =>
-			_FrequenciesInCircuit = new List<double>(_ACVoltageSources.Select((source) => source.Frequency).Distinct());
-
-		/// <summary>
-		/// Initializes collections related with <see cref="IActiveComponent"/>s
-		/// </summary>
-		private void InitializeActiveComponents()
+		private void FindFrequenciesInCircuit()
 		{
-			// Create a list with active components
-			_ActiveComponents = new List<IActiveComponent>(
-				_Schematic.Components.Where((component) => component is IActiveComponent).Cast<IActiveComponent>());
-
-			// Create a dictionary for their currents
-			_ActiveComponentsCurrents = new Dictionary<int, PhasorDomainSignal>();
-
-			// Assign index to each active component and add the component to the ActiveComponentsDictionary
-			for (int i = 0; i < _ActiveComponents.Count; ++i)
+			// If there are AC voltage sources
+			if (_ACVoltageSources.Count > 0)
 			{
-				_ActiveComponents[i].ActiveComponentIndex = i;
-				_ActiveComponentsCurrents.Add(i, new PhasorDomainSignal());
+				// Get all frequencies
+				var frequencies = _ACVoltageSources.Select((source) => source.Frequency).Distinct();
+
+				// Take the minimum and maximum and assign them to appropriate properties
+				LowestFrequency = frequencies.Min();
+				HighestFrequency = frequencies.Max();
+			}
+			else
+			{
+				// Otherwise assign 0 to both properties - there are no AC sources
+				LowestFrequency = 0;
+				HighestFrequency = 0;
 			}
 		}
 
 		/// <summary>
-		/// Extracts all components that require special care (<see cref="IDCVoltageSource"/>s, <see cref="ICurrentSource"/>s,
-		/// <see cref="IOpAmp"/>s) to their respective containers
+		/// Finds all active components and assigns their count to <see cref="ActiveComponentsCount"/>
+		/// </summary>
+		private void InitializeActiveComponents() => ActiveComponentsCount = _Schematic.Components.
+			// Find all active components
+			Where((component) => component is IActiveComponent).
+			Cast<IActiveComponent>().
+			Count();
+
+		/// <summary>
+		/// Returns all <see cref="IDCVoltageSource"/>s present in <see cref="ISchematic"/>
+		/// </summary>
+		/// <returns></returns>
+		private IEnumerable<IDCVoltageSource> FindDCVoltageSources() => _Schematic.Components.
+			Where((component) => component is IDCVoltageSource).
+			Cast<IDCVoltageSource>();
+
+		/// <summary>
+		/// Returns all <see cref="IACVoltageSource"/>s present in <see cref="ISchematic"/>
+		/// </summary>
+		/// <returns></returns>
+		private IEnumerable<IACVoltageSource> FindACVoltageSources() => _Schematic.Components.
+			Where((component) => component is IACVoltageSource).
+			Cast<IACVoltageSource>();
+
+		/// <summary>
+		/// Returns all <see cref="ICurrentSource"/>s present in <see cref="ISchematic"/>
+		/// </summary>
+		/// <returns></returns>
+		private IEnumerable<ICurrentSource> FindDCCurrentSources() => _Schematic.Components.
+			Where((component) => component is ICurrentSource).
+			Cast<ICurrentSource>();
+
+		/// <summary>
+		/// Returns all <see cref="IOpAmp"/>s present in <see cref="ISchematic"/>
+		/// </summary>
+		/// <returns></returns>
+		private IEnumerable<IOpAmp> FindOpAmps() => _Schematic.Components.
+			Where((component) => component is IOpAmp).
+			Cast<IOpAmp>();
+
+		#endregion
+
+		#region Initialization of private collections
+
+		/// <summary>
+		/// Extracts all components that require special care (<see cref="IDCVoltageSource"/>s, <see cref="IACVoltageSource"/>s,
+		/// <see cref="ICurrentSource"/>s, <see cref="IOpAmp"/>s) to their respective containers.
 		/// </summary>
 		private void ExtractSpecialComponents()
 		{
 			// Get the voltage sources
-			_DCVoltageSources = new List<IDCVoltageSource>(_Schematic.Components.
-				Where((component) => component is IDCVoltageSource).
-				Cast<IDCVoltageSource>());
+			_DCVoltageSources = new List<ISourceDescription>(FindDCVoltageSources().Select((x) => x.Description));
 
 			// Get the AC voltage sources
-			_ACVoltageSources = new List<IACVoltageSource>(_Schematic.Components.
-				Where((component) => component is IACVoltageSource).
-				Cast<IACVoltageSource>()); ;
+			_ACVoltageSources = new List<ISourceDescription>(FindACVoltageSources().Select((x) => x.Description));
 
 			// Get the current sources
-			_CurrentSources = new List<ICurrentSource>(_Schematic.Components.Where((component) => component is ICurrentSource).
-				Cast<ICurrentSource>());
+			_DCCurrentSources = new List<ISourceDescription>(FindDCCurrentSources().Select((x) => x.Description));
 
 			// Get the op-amps
-			_OpAmps = new List<IOpAmp>(_Schematic.Components.Where((component) => component is IOpAmp).Cast<IOpAmp>());
+			_OpAmps = new List<IOpAmpDescription>(_Schematic.Components.
+				Where((component) => component is IOpAmp).
+				Cast<IOpAmp>().
+				Select((x) => x.Description));
+
+			// Generate source indices collection - DC voltage sources, AC voltage sources and op-amps are generated together - these components are
+			// considered to be the same type in admittance matrix. That's why descriptions of these elements are first concatenated (order matters)
+			// and then indexed, from 0 till the end of the enumeration of descriptions. Finally DC current sources are added to the collection,
+			// those are indexed separately, also starting from 0.
+			_IndexedComponentsIndices = _DCVoltageSources.
+				Concat(_ACVoltageSources).
+				Cast<IComponentDescription>().
+				Concat(_OpAmps).
+				Select((x, i) => new KeyValuePair<IComponentDescription, int>(x, i)).
+				Concat(_DCCurrentSources.Select((x, i) => new KeyValuePair<IComponentDescription, int>(x, i))).
+				ToDictionary((x) => x.Key, (x) => x.Value);
 
 			// Prepare the active components
 			InitializeActiveComponents();
@@ -804,69 +739,62 @@ namespace ECAT.Simulation
 		/// </summary>
 		private void FindImportantNodes()
 		{
-			// Get the nodes of voltage sources
-			_DCVoltageSourcesNodes = new Dictionary<IDCVoltageSource, Tuple<int, int>>(_DCVoltageSources.ToDictionary((source) => source,
-				(source) => new Tuple<int, int>(
-				_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(source.TerminalA))),
-				_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(source.TerminalB))))));
+			// Get nodes with reference node (some terminals are grounded - if ground node is not considered List.Find functions wouldn't
+			// be successful.
+			var nodesWithReference = new List<INode>(GetNodes());
 
-			// Get the nodes of the AC voltage sources
-			_ACVoltageSourcesNodes = new Dictionary<IACVoltageSource, Tuple<int, int>>(_ACVoltageSources.ToDictionary((source) => source,
-				(source) => new Tuple<int, int>(
-				_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(source.TerminalA))),
-				_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(source.TerminalB))))));
-
-			// Get the nodes of current sources
-			_CurrentSourcesNodes = new Dictionary<ICurrentSource, Tuple<int, int>>(_CurrentSources.ToDictionary((source) => source,
-				(source) => new Tuple<int, int>(
-				_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(source.TerminalA))),
-				_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(source.TerminalB))))));
-
-			// Get the nodes of op-amps
-			_OpAmpNodes = new Dictionary<IOpAmp, Tuple<int, int, int>>(_OpAmps.ToDictionary((opAmp) => opAmp,
-				(opAmp) => new Tuple<int, int, int>(
-				_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(opAmp.TerminalA))),
-				_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(opAmp.TerminalB))),
-				_Nodes.IndexOf(_Nodes.Find((node) => node.ConnectedTerminals.Contains(opAmp.TerminalC))))));
+			// Find nodes of all two-terminal sources, to do that make an enumeration of DC voltage sources, AC voltage sources and DC current sources.
+			// Create tuples where first item is the source casted to ITwoTerminal (just its terminals are required) and the second item is the
+			// source's description
+			_SourcesNodes = FindDCVoltageSources().Select((x) => Tuple.Create((ITwoTerminal)x, x.Description)).
+				Concat(FindACVoltageSources().Select((x) => Tuple.Create((ITwoTerminal)x, x.Description))).
+				Concat(FindDCCurrentSources().Select((x) => Tuple.Create((ITwoTerminal)x, x.Description))).
+				// Then make a dictionary out of them
+				ToDictionary(
+					// Keys are descriptions
+					(x) => x.Item2,
+					// Values are TwoTerminalSourceNodeInfos with assigned (found) nodes and output value of the source
+					(x) => new TwoTerminalSourceNodeInfo(
+						nodesWithReference.Find((node) => node.ConnectedTerminals.Contains(x.Item1.TerminalB)).Index,
+						nodesWithReference.Find((node) => node.ConnectedTerminals.Contains(x.Item1.TerminalA)).Index));
+			
+			// Find nodes of all op-amps and put them in a dictionary
+			_OpAmpsNodes = FindOpAmps().ToDictionary(
+				// Keys are descriptions
+				(x) => x.Description,
+				// Values are OpAmpNodeInfos with assigned (found) nodes
+				(x) => new OpAmpNodeInfo(
+					nodesWithReference.Find((node) => node.ConnectedTerminals.Contains(x.TerminalC)).Index,
+					nodesWithReference.Find((node) => node.ConnectedTerminals.Contains(x.TerminalA)).Index,
+					nodesWithReference.Find((node) => node.ConnectedTerminals.Contains(x.TerminalB)).Index));
 		}
 
 		/// <summary>
-		/// Generates information about limitations on op-amp outputs imposed by their supply voltages
+		/// Initializes <see cref="_OpAmpOperation"/> with default values - all <see cref="OpAmpOperationMode.Active"/> - all <see cref="IOpAmp"/>s
+		/// in active operation
 		/// </summary>
-		private void GenerateOpAmpOutputInformation() =>
-			_OpAmpOutputs = new List<Tuple<int, double, double>>(_OpAmps.Select((opAmp) => new Tuple<int, double, double>(
-			_OpAmpNodes[opAmp].Item3, opAmp.NegativeSupplyVoltage, opAmp.PositiveSupplyVoltage)));
-
-		/// <summary>
-		/// Initializes <see cref="BitArray"/> with default values - all false - all <see cref="IOpAmp"/>s in active operation
-		/// </summary>
-		private void InitializeOpAmpOperationCollection()
-		{
-			for(int i = 0; i < _OpAmpsCount; ++i)
-			{
-				_OpAmpOperation.Add(OpAmpOperationMode.Active);
-			}
-		}
+		private void InitializeOpAmpOperationCollection() =>
+			FindOpAmps().ForEach((x) => _OpAmpOperation.Add(x.Description, OpAmpOperationMode.Active));
 
 		#endregion
 
 		#region Initial OpAmp configuration
 
 		/// <summary>
-		/// Constructs the intial version of the admittance matrix (which is valid if all <see cref="IOpAmp"/>s are operating within
-		/// their supply voltage)
+		/// Modifies <paramref name="matrix"/> with initial op-amp settings - op-amps are set in their respective operation modes depending on
+		/// <see cref="_OpAmpOperation"/>.
 		/// </summary>
-		private void OpAmpSettings(AdmittanceMatrix matrix, bool ac)
+		private void InitialOpAmpConfiguration(AdmittanceMatrix matrix, bool ac)
 		{
 			FillBMatrixOpAmpOutputNodes(matrix);
 
-			// Configure each op-amp for active operation (by default)
-			for (int i = 0; i < _OpAmps.Count; ++i)
+			// Configure each op-amp for its operation
+			foreach(var opAmp in _OpAmps)
 			{
-				ConfigureOpAmpOperation(matrix, i, _OpAmpOperation[i], ac);
+				ConfigureOpAmpOperation(matrix, opAmp, _OpAmpOperation[opAmp], ac);
 			}
 		}
-		
+
 		#endregion
 
 		#region Correctness checks
@@ -876,9 +804,9 @@ namespace ECAT.Simulation
 		/// </summary>
 		private void CheckOpAmpOutputs()
 		{
-			foreach (var item in _OpAmpNodes)
+			foreach (var item in _OpAmpsNodes.Values)
 			{
-				if (item.Value.Item3 == -1)
+				if (item.Output == GroundNodeIndex)
 				{
 					throw new Exception("Output of a(n) " + IoC.Resolve<IComponentFactory>().GetDeclaration<IOpAmp>().DisplayName +
 						" cannot be grounded");
@@ -904,13 +832,10 @@ namespace ECAT.Simulation
 			var lookupPotentials = nodePotentials.ToDictionary((x) => x.Key, (x) => x.Value);
 
 			// For each op-amp
-			for (int i = 0; i < _OpAmpsCount; ++i)
+			foreach(var opAmp in _OpAmps)
 			{
-				// Get the op-amp
-				var opAmp = _OpAmps[i];
-
 				// And get its output node potential
-				var outputVoltage = lookupPotentials[_OpAmpNodes[opAmp].Item3];
+				var outputVoltage = lookupPotentials[_OpAmpsNodes[opAmp].Output];
 
 				// The operation mode that is expected
 				OpAmpOperationMode expectedOperationMode = OpAmpOperationMode.Active;
@@ -932,14 +857,14 @@ namespace ECAT.Simulation
 					// Last possibility - negative saturation
 					expectedOperationMode = OpAmpOperationMode.NegativeSaturation;
 				}
-				
+
 				// If the expected operation mode differs from the actual on
-				if (expectedOperationMode != _OpAmpOperation[i])
+				if (expectedOperationMode != _OpAmpOperation[opAmp])
 				{
 					// If adjustment was requested, set the op-amp's operation mode to the expected mode
 					if (adjust)
 					{
-						_OpAmpOperation[i] = expectedOperationMode;
+						_OpAmpOperation[opAmp] = expectedOperationMode;
 					}
 
 					// Return incorrect operation
@@ -953,6 +878,74 @@ namespace ECAT.Simulation
 
 		#endregion
 
+		#region Admittance matrix construction
+
+		/// <summary>
+		/// Constructs and initializes the general version (without any source in mind) of admittance matrix
+		/// </summary>
+		/// <param name="frequency"></param>
+		/// <returns></returns>
+		private AdmittanceMatrix ConstructAndInitialize(double frequency)
+		{
+			// TODO: Short circuit inductors for DC when they're added
+						
+			var matrix = new AdmittanceMatrix(_BigDimension, _SmallDimension);
+
+			// Initialize submatrices (arrays)
+			InitializeSubmatrices(matrix);
+
+			// Fill A matrix - it's only dependent on frequency
+			FillAMatrix(matrix, frequency);
+
+			// Configure voltage sources to be off - the only active voltage source (if any) can then be turned on
+			ConfigureVoltageSources(matrix, false);
+
+			// Initialize op-amp settings - active operation
+			InitialOpAmpConfiguration(matrix, frequency > 0);
+
+			return matrix;
+		}
+
+		/// <summary>
+		/// Returns an admittance matrix for voltage source given by <paramref name="source"/>.
+		/// The source is regarded as a unity source so that any node potential is in fact the transfer function and can be used to determine
+		/// potentials for arbitrary voltage source values (Unode = K(jw) * Usource, for Usource = 1 we have Unode = K(jw) which allows to
+		/// obtain K(jw) which can be then substituted to Unode = K(jw) * Usource to obtain Unode for any Usource).
+		/// </summary>
+		/// <param name="source"></param>
+		/// <returns></returns>
+		private AdmittanceMatrix ConstructForVoltageSource(ISourceDescription source)
+		{
+			// Create initialized matrix
+			var matrix = ConstructAndInitialize(source.Frequency);
+
+			// Turn on the voltage source
+			ConfigureVoltageSource(matrix, source, true);
+
+			return matrix;
+		}
+
+		/// <summary>
+		/// Returns an admittance matrix for current source given by <paramref name="source"/>.
+		/// The source is regarded as a unity source so that any node potential is in fact the transfer function and can be used to determine
+		/// potentials for arbitrary voltage source values (Unode = K(jw) * Usource, for Usource = 1 we have Unode = K(jw) which allows to
+		/// obtain K(jw) which can be then substituted to Unode = K(jw) * Usource to obtain Unode for any Usource).
+		/// </summary>
+		/// <returns></returns>
+		private AdmittanceMatrix ConstructForCurrentSource(ISourceDescription source)
+		{
+			// Create initialized matrix
+			var matrix = ConstructAndInitialize(source.Frequency);
+
+			// Turn on the current source
+			ActivateCurrentSource(matrix, source);
+
+			return matrix;
+		}
+
+
+		#endregion
+
 		#endregion
 
 		#region Public methods
@@ -962,9 +955,9 @@ namespace ECAT.Simulation
 		/// </summary>
 		public void ResetOpAmpOperation()
 		{
-			for(int i = 0; i < _OpAmpOperation.Count; ++i)
+			foreach(var opAmp in _OpAmps)
 			{
-				_OpAmpOperation[i] = OpAmpOperationMode.Active;
+				_OpAmpOperation[opAmp] = OpAmpOperationMode.Active;
 			}
 		}
 
@@ -985,123 +978,39 @@ namespace ECAT.Simulation
 			CheckOpAmpOperation(nodePotentials, true);
 
 		/// <summary>
-		/// Constructs a DC addmittance matrix. It is constructed for all DC voltage sources, DC current sources and DC offsets of AC voltage sources
-		/// turned on. Each potential resulting from the solution of this matrix is the voltage at corresponding node.
+		/// Constructrs an admittance matrix for the given source - the solution of that admittance matrix are transfer functions for node potentials
+		/// and active components currents.
 		/// </summary>
+		/// <param name="source"></param>
 		/// <returns></returns>
-		public AdmittanceMatrix ConstructDC()
+		public AdmittanceMatrix Construct(ISourceDescription source)
 		{
-			var matrix = new AdmittanceMatrix(_BigDimension, _SmallDimension);
-
-			InitializeSubmatrices(matrix);
-
-			// TODO: Short circuit inductors
-
-			// Fill A matrix, which is dependent on admittances between nodes
-			FillAMatrix(0, matrix);
-	
-			// Initialize op-amp settings - active operation
-			OpAmpSettings(matrix, false);
-
-			// Turn on DC voltage sources (in admittance matrix it is represented by Ua = Ub)
-			ConfigureDCVoltageSources(matrix, true);
-
-			// Turn on DC current sources
-			ActivateCurrentSources(matrix);
-
-			return matrix;
-		}
-
-		/// <summary>
-		/// Constructs a DC addmittance matrix. It is constructed for all DC voltage sources, DC current sources and DC offsets of AC voltage sources
-		/// turned on. Each potential resulting from the solution of this matrix is the voltage at corresponding node.
-		/// </summary>
-		/// <returns></returns>
-		public AdmittanceMatrix ConstructDC(int voltageSourceIndex)
-		{
-			var matrix = new AdmittanceMatrix(_BigDimension, _SmallDimension);
-
-			InitializeSubmatrices(matrix);
-
-			// TODO: Short circuit inductors
-
-			// Fill A matrix, which is dependent on admittances between nodes
-			FillAMatrix(0, matrix);
-
-			// Initialize op-amp settings - active operation
-			OpAmpSettings(matrix, false);
-
-			// Turn off AC voltage sources (in admittance matrix it is represented by Ua = Ub)
-			ConfigureACVoltageSources(matrix, false);
-
-			// Turn off all DC voltage sources except the chosen one
-			for (int i = 0; i < _DCVoltageSourcesCount; ++i)
+			switch(source.SourceType)
 			{
-				ConfigureDCVoltageSource(matrix, i, i == voltageSourceIndex);
+				case SourceType.ACVoltageSource:
+				case SourceType.DCVoltageSource:
+					{
+						return ConstructForVoltageSource(source);
+					}
+
+				case SourceType.DCCurrentSource:
+					{
+						return ConstructForCurrentSource(source);
+					}
+
+				default:
+					{
+						throw new Exception($"Unhandled {nameof(SourceType)}");
+					}
 			}
-
-			// Turn on DC current sources
-			ActivateCurrentSources(matrix);
-
-			return matrix;
 		}
 
 		/// <summary>
-		/// Constructs a DC addmittance matrix for saturated <see cref="IOpAmp"/>s only. It's purpose is to determine influence of saturated
+		/// Constructs a DC addmittance matrix for saturated <see cref="IOpAmp"/>s only. Its purpose is to determine influence of saturated
 		/// <see cref="IOpAmp"/>s on AC circuits.
 		/// </summary>
 		/// <returns></returns>
-		public AdmittanceMatrix ConstructDCForSaturatedOpAmpsOnly()
-		{
-			var matrix = new AdmittanceMatrix(_BigDimension, _SmallDimension);
-
-			InitializeSubmatrices(matrix);
-
-			// TODO: Short circuit inductors
-
-			// Fill A matrix, which is dependent on admittances between nodes
-			FillAMatrix(0, matrix);
-
-			// Initialize op-amp settings - active operation
-			OpAmpSettings(matrix, false);
-
-			// Turn on DC voltage sources (in admittance matrix it is represented by Ua = Ub)
-			ConfigureDCVoltageSources(matrix, false);			
-
-			return matrix;
-		}
-
-		/// <summary>
-		/// Returns an AC admittance matrix for voltage source given by <paramref name="voltageSourceIndex"/>.
-		/// The source is regarded as a unity source so that any node potential is in fact the transfer function and can be used to determine
-		/// potentials for arbitrary voltage source values (Unode = K(jw) * Usource, for Usource = 1 we have Unode = K(jw) which allows to
-		/// obtain K(jw) which can be then substituted to Unode = K(jw) * Usource to obtain Unode for any Usource).
-		/// </summary>
-		/// <param name="voltageSourceIndex"></param>
-		/// <returns></returns>
-		public AdmittanceMatrix ConstructAC(int voltageSourceIndex)
-		{
-			var matrix = new AdmittanceMatrix(_BigDimension, _SmallDimension);
-
-			InitializeSubmatrices(matrix);
-							
-			// Fill A matrix, which is dependent on admittances between nodes
-			FillAMatrix(_ACVoltageSources[voltageSourceIndex].Frequency, matrix);
-
-			// Initialize op-amp settings - active operation
-			OpAmpSettings(matrix, true);
-
-			// Configure DC voltage sources to be off (in admittance matrix it is represented by Ua = Ub; two node potentials are equal)
-			ConfigureDCVoltageSources(matrix, false);
-			
-			// Turn off all AC voltage sources except the chosen one
-			for(int i = 0; i < _ACVoltageSourcesCount; ++i)
-			{
-				ConfigureACVoltageSource(matrix, i, i == voltageSourceIndex);
-			}
-
-			return matrix;
-		}
+		public AdmittanceMatrix ConstructDCForSaturatedOpAmpsOnly1() => ConstructAndInitialize(0);
 
 		/// <summary>
 		/// Returns all nodes generated for the <see cref="ISchematic"/> passed to constructor
@@ -1123,51 +1032,18 @@ namespace ECAT.Simulation
 
 		/// <summary>
 		/// Returns indices of all nodes generated for the <see cref="ISchematic"/> passed to constructor without the reference (ground) node.
-		/// Indices for simulation are reduced by 1 - normally ground node is indexed at 0 but it's omitted in simulation as its potential is always
-		/// 0 and it would only increase size of matrices by 1 resulting in longer computations.
 		/// </summary>
 		/// <returns></returns>
-		public IEnumerable<int> GetSimulationNodeIndices() => GetNodesWithoutReference().Select((x) => x.Index);
+		public IEnumerable<int> GetNodeIndicesWithoutReference() => GetNodesWithoutReference().Select((x) => x.Index);
+		
+		#endregion
+
+		#region Public static properties
 
 		/// <summary>
-		/// Returns frequency of AC voltage source given by <paramref name="sourceIndex"/>, throws an exception if the index is equal to or greater
-		/// than the number of AC voltage sources. Indexing starts at 0.
+		/// Index assigned to reference (ground) nodes
 		/// </summary>
-		/// <param name="sourceIndex"></param>
-		/// <returns></returns>
-		public double GetACVoltageSourceFrequency(int sourceIndex) => sourceIndex < _ACVoltageSourcesCount ? _ACVoltageSources[sourceIndex].Frequency :
-			throw new ArgumentOutOfRangeException(nameof(sourceIndex));
-
-		/// <summary>
-		/// Returns description of AC voltage source given by <paramref name="sourceIndex"/>, throws an exception if the index is equal to or greater
-		/// than the number of AC voltage sources. Indexing starts at 0.
-		/// </summary>
-		/// <param name="sourceIndex"></param>
-		/// <returns></returns>
-		public ISourceDescription GetACVoltageSourceDescription(int sourceIndex) => sourceIndex < _ACVoltageSourcesCount ?
-			_ACVoltageSources[sourceIndex].Description : throw new ArgumentOutOfRangeException(nameof(sourceIndex));
-
-		/// <summary>
-		/// Returns amplitude of AC voltage source given by <paramref name="sourceIndex"/>, throws an exception if the index is equal to or greater
-		/// than the number of AC voltage sources. Indexing starts at 0.
-		/// </summary>
-		/// <param name="sourceIndex"></param>
-		/// <returns></returns>
-		public double GetACVoltageSourceAmplitude(int sourceIndex) => sourceIndex < _ACVoltageSourcesCount ?
-			_ACVoltageSources[sourceIndex].PeakProducedVoltage :	throw new ArgumentOutOfRangeException(nameof(sourceIndex));
-
-		/// <summary>
-		/// Returns descriptions of AC voltage sources
-		/// </summary>
-		/// <returns></returns>
-		public IEnumerable<ISourceDescription> GetACVoltageSourcesDescriptions() => _ACVoltageSources.Select((x) => x.Description);
-
-		/// <summary>
-		/// Returns descriptions of DC sources
-		/// </summary>
-		/// <returns></returns>
-		public IEnumerable<ISourceDescription> GetDCSourcesDescriptions() =>
-			_DCVoltageSources.Select((x) => x.Description).Concat(_CurrentSources.Select((x) => x.Description));
+		public static int GroundNodeIndex { get; } = -1;
 
 		#endregion
 	}
