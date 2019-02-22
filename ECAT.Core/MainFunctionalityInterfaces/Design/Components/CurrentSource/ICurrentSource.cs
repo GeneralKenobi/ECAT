@@ -6,13 +6,6 @@
 	/// </summary>
 	public interface ICurrentSource : ITwoTerminal, ISource
     {
-		#region Properties
 
-		/// <summary>
-		/// Current produced by this <see cref="ICurrentSource"/>
-		/// </summary>
-		double ProducedCurrent { get; set; }
-
-		#endregion
 	}
 }
