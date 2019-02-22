@@ -10,7 +10,7 @@ namespace ECAT.Design
 	/// </summary>
 	[DisplayCurrentInfo(sectionIndex: 1)]
 	[DisplayPowerInfo(sectionIndex: 2)]
-	public class DCVoltageSource : TwoTerminal, IDCVoltageSource
+	public class DCVoltageSource : TwoTerminalSource, IDCVoltageSource
 	{
 		#region Constructors
 
@@ -19,14 +19,13 @@ namespace ECAT.Design
 		/// </summary>
 		public DCVoltageSource()
 		{
-			// Create a description
-			_Description = new SourceDescription()
-			{
-				Label = this.Label,
-				Index = ActiveComponentIndex,
-				Frequency = 0,
-				ComponentType = SourceType.DCVoltageSource,
-			};
+			OutputValue = IoC.Resolve<IDefaultValues>().DefaultVoltageSourceProducedVoltage;
+
+			// Initialize description
+			_Description.Label = this.Label;
+			_Description.Frequency = 0;
+			_Description.SourceType = SourceType.DCVoltageSource;
+			_Description.OutputValue = OutputValue;
 		}
 
 		#endregion
@@ -37,48 +36,6 @@ namespace ECAT.Design
 		/// The admittance of a voltage source (constant value)
 		/// </summary>
 		private Complex _Admittance { get; } = IoC.Resolve<IDefaultValues>().VoltageSourceAdmittance;
-
-		/// <summary>
-		/// Backing store for <see cref="Description"/>
-		/// </summary>
-		private SourceDescription _Description { get; }
-
-		#endregion
-
-		#region Private members
-
-		/// <summary>
-		/// Backing store for <see cref="ActiveComponentIndex"/>
-		/// </summary>
-		private int mActiveComponentIndex;
-
-		#endregion
-
-		#region Public properties		
-
-		/// <summary>
-		/// DC voltage produced by this <see cref="IDCVoltageSource"/>
-		/// </summary>
-		public double ProducedDCVoltage { get; set; } = IoC.Resolve<IDefaultValues>().DefaultVoltageSourceProducedVoltage;
-
-		/// <summary>
-		/// Index used to query <see cref="ISimulationResults"/> for produced current
-		/// </summary>
-		public int ActiveComponentIndex
-		{
-			get => mActiveComponentIndex;
-			set
-			{
-				// Update the backing store and value in description
-				mActiveComponentIndex = value;
-				_Description.Index = value;
-			}
-		}
-
-		/// <summary>
-		/// Description of this <see cref="IActiveComponent"/>
-		/// </summary>
-		public ISourceDescription Description => _Description;
 
 		#endregion
 

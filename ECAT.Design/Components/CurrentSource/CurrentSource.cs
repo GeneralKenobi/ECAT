@@ -10,7 +10,7 @@ namespace ECAT.Design
 	/// </summary>
 	[DisplayVoltageInfo(nameof(TerminalA), nameof(TerminalB), 0, "Voltage")]
 	[DisplayPowerInfo(sectionIndex:1)]
-	public class CurrentSource : TwoTerminal, ICurrentSource
+	public class CurrentSource : TwoTerminalSource, ICurrentSource
 	{
 		#region Constructor
 
@@ -19,15 +19,13 @@ namespace ECAT.Design
 		/// </summary>
 		public CurrentSource()
 		{
-			// Create a description
-			_Description = new SourceDescription()
-			{
-				Label = this.Label,
-				Frequency = 0,
-				// Temporary index for now - TODO: change when CurrentSource has an active component index
-				Index = -1,
-				ComponentType = SourceType.DCCurrentSource,
-			};
+			OutputValue = IoC.Resolve<IDefaultValues>().DefaultCurrentSourceProducedCurrent;
+
+			// Initialize description values
+			_Description.Label = this.Label;
+			_Description.Frequency = 0;
+			_Description.SourceType = SourceType.DCCurrentSource;			
+			_Description.OutputValue = OutputValue;
 		}
 
 		#endregion
@@ -39,27 +37,8 @@ namespace ECAT.Design
 		/// </summary>
 		private Complex _Admittance { get; } = IoC.Resolve<IDefaultValues>().CurrentSourceAdmittance;
 
-		/// <summary>
-		/// Backing store for <see cref="Description"/>
-		/// </summary>
-		private SourceDescription _Description { get; }
-
 		#endregion
-
-		#region Public properties
-
-		/// <summary>
-		/// Accessor to the current supplied by this <see cref="ICurrentSource"/>
-		/// </summary>
-		public double ProducedCurrent { get; set; } = IoC.Resolve<IDefaultValues>().DefaultCurrentSourceProducedCurrent;
-
-		/// <summary>
-		/// Description of this <see cref="ICurrentSource"/>
-		/// </summary>
-		public ISourceDescription Description => _Description;
-
-		#endregion
-
+		
 		#region Public methods
 
 		/// <summary>

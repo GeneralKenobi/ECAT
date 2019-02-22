@@ -9,33 +9,27 @@ namespace ECAT.Design
 	[DisplayVoltageInfo(nameof(TerminalA), nameof(TerminalB), 0, "Voltage drop")]
 	[DisplayCurrentInfo(sectionIndex: 1)]
 	[DisplayPowerInfo(sectionIndex: 2)]
-	public class ACVoltageSource : TwoTerminal, IACVoltageSource
+	public class ACVoltageSource : TwoTerminalSource, IACVoltageSource
 	{
 		#region Constructor
 
 		/// <summary>
 		/// Default Constructor
 		/// </summary>
-		public ACVoltageSource()
+		public ACVoltageSource() : base()
 		{
-			// Create a description
-			_Description = new SourceDescription()
-			{
-				Label = this.Label,
-				Index = ActiveComponentIndex,
-				Frequency = this.Frequency,
-				ComponentType = SourceType.ACVoltageSource,
-			};
+			OutputValue = IoC.Resolve<IDefaultValues>().DefaultACVoltageSourceProducedACVoltage;
+
+			// Initialize description values
+			_Description.Label = this.Label;
+			_Description.Frequency = this.Frequency;
+			_Description.SourceType = SourceType.ACVoltageSource;
+			_Description.OutputValue = OutputValue;
 		}
 
 		#endregion
 
 		#region Private members
-
-		/// <summary>
-		/// Backing store for <see cref="ActiveComponentIndex"/>
-		/// </summary>
-		private int mActiveComponentIndex;
 
 		/// <summary>
 		/// Backing store for <see cref="Frequency"/>
@@ -51,33 +45,9 @@ namespace ECAT.Design
 		/// </summary>
 		private Complex _Admittance { get; } = IoC.Resolve<IDefaultValues>().VoltageSourceAdmittance;
 
-		/// <summary>
-		/// Backing store for <see cref="Description"/>
-		/// </summary>
-		private SourceDescription _Description { get; }
-
 		#endregion
 
 		#region Public properties
-
-		/// <summary>
-		/// Index used to query <see cref="ISimulationResults"/> for produced current
-		/// </summary>
-		public int ActiveComponentIndex
-		{
-			get => mActiveComponentIndex;
-			set
-			{
-				// Update the backing store and value in description
-				mActiveComponentIndex = value;
-				_Description.Index = value;
-			}
-		}
-
-		/// <summary>
-		/// Description of this <see cref="IActiveComponent"/>
-		/// </summary>
-		public ISourceDescription Description => _Description;
 
 		/// <summary>
 		/// Frequency of the AC voltage produced by this <see cref="ACVoltageSource"/>
@@ -92,11 +62,6 @@ namespace ECAT.Design
 				_Description.Frequency = value;
 			}
 		}
-
-		/// <summary>
-		/// The positive peak value of the produced voltage sine wave
-		/// </summary>
-		public double PeakProducedVoltage { get; set; } = IoC.Resolve<IDefaultValues>().DefaultACVoltageSourceProducedACVoltage;
 
 		#endregion
 
