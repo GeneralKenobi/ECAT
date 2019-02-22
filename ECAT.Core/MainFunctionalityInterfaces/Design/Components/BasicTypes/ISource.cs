@@ -12,6 +12,11 @@
 		/// </summary>
 		ISourceDescription Description { get; }
 
+		/// <summary>
+		/// Output value of the source (voltage, current, etc.)
+		/// </summary>
+		double OutputValue { get; set; }
+
 		#endregion
 	}
 }
