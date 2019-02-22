@@ -16,13 +16,8 @@
 		ACVoltageSource = 1,
 
 		/// <summary>
-		/// Operational Amplifier
-		/// </summary>
-		OpAmp = 2,
-
-		/// <summary>
 		/// DC current source
 		/// </summary>
-		DCCurrentSource = 3,
+		DCCurrentSource = 2,
 	}
 }
