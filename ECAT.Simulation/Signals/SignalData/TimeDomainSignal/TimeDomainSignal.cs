@@ -189,7 +189,7 @@ namespace ECAT.Simulation
 
 			// Determine the target collection for the waveform - it depends on the type of the source.
 			// _ACWaveforms is only for AC voltage sources
-			var targetCollection = description.ComponentType == SourceType.ACVoltageSource ? _ACWaveforms : _DCWaveforms;
+			var targetCollection = description.SourceType == SourceType.ACVoltageSource ? _ACWaveforms : _DCWaveforms;
 
 			// If the source description is already present in the collection
 			if(targetCollection.ContainsKey(description))
