@@ -3,19 +3,9 @@
 	/// <summary>
 	/// Interface for classes used to describe <see cref="IActiveComponent"/>s
 	/// </summary>
-	public interface ISourceDescription
+	public interface ISourceDescription : IComponentDescription
 	{
 		#region Properties
-
-		/// <summary>
-		/// Unique label assigned to the <see cref="IActiveComponent"/> that is described by this instance
-		/// </summary>
-		IIDLabel Label { get; }
-
-		/// <summary>
-		/// Active component index assigned to the <see cref="IActiveComponent"/> that is described by this instance
-		/// </summary>
-		int Index { get; }
 
 		/// <summary>
 		/// Frequency of the described <see cref="IActiveComponent"/>
@@ -25,7 +15,12 @@
 		/// <summary>
 		/// Type of the <see cref="IActiveComponent"/>
 		/// </summary>
-		SourceType ComponentType { get; }
+		SourceType SourceType { get; }
+
+		/// <summary>
+		/// Output value produced by the source (voltage, current, etc.)
+		/// </summary>
+		double OutputValue { get; }
 
 		#endregion
 	}
