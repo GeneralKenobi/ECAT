@@ -17,21 +17,15 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Constructor with parameters
 		/// </summary>
-		/// <param name="acSourcesCount">Number of AC sources expected in this state</param>
-		/// <param name="dcSourcesCount">Number of DC sources expected in this state</param>
 		/// <param name="nodeIndices">Indices of nodes present in this instance</param>
 		/// <param name="activeComponentsIndices">Active components indices present in this instance</param>
 		/// <param name="stateFactory">Factory method used to generate default values of <see cref="ACStates"/> and <see cref="DCState"/>.
 		/// First argument are indices of nodes, second argument are indices of active components currents, third argument is the description
 		/// of the source that produced the state</param>
-		/// <param name="acVoltageSourcesDescriptions">Descriptions of AC voltage sources that will produce the partial states</param>
-		/// <param name="dcVoltageSourcesDescriptions">Descriptions of DC voltage sources that will produce the partial states</param>
-		public GenericPartialStates(int acSourcesCount,
-			int dcSourcesCount,
-			IEnumerable<int> nodeIndices,
+		/// <param name="sourcesDescriptions">Descriptions of sources that will produce the partial states</param>
+		public GenericPartialStates(IEnumerable<int> nodeIndices,
 			IEnumerable<int> activeComponentsIndices,
-			IEnumerable<ISourceDescription> acVoltageSourcesDescriptions,
-			IEnumerable<ISourceDescription> dcVoltageSourcesDescriptions,
+			IEnumerable<ISourceDescription> sourcesDescriptions,
 			Func<IEnumerable<int>, IEnumerable<int>, ISourceDescription, TState> stateFactory = null)
 		{
 			// If no state factory was provided
@@ -41,44 +35,9 @@ namespace ECAT.Simulation
 				stateFactory = (x, y, z) => default(TState);
 			}
 
-			// Check if number of ac voltage sources descriptions matches the number of ac sources
-			if (acVoltageSourcesDescriptions != null && acVoltageSourcesDescriptions.Count() != acSourcesCount)
+			if(sourcesDescriptions == null)
 			{
-				throw new ArgumentException(nameof(acVoltageSourcesDescriptions) + $" count does not match {acSourcesCount}");
-			}
-
-			// Check if number of ac voltage sources descriptions matches the number of ac sources
-			if (dcVoltageSourcesDescriptions != null && dcVoltageSourcesDescriptions.Count() != dcSourcesCount)
-			{
-				throw new ArgumentException(nameof(acVoltageSourcesDescriptions) + $" count does not match {acSourcesCount}");
-			}
-
-			// Create array for AC states
-			ACStates = new TState[acSourcesCount];
-
-			// Create array for DC states
-			DCStates = new TState[dcSourcesCount];
-
-			// Make a list of ac voltage sources descriptions
-			IList<ISourceDescription> acVoltageSourcesDescriptionsList =
-				// If the enumeration is null create a sequnce of nulls matching the number of ac voltage sources)
-				(acVoltageSourcesDescriptions ?? Enumerable.Repeat<ISourceDescription>(null, acSourcesCount)).ToList();
-
-			// Make a list of dc voltage sources descriptions
-			IList<ISourceDescription> dcVoltageSourcesDescriptionsList =
-				// If the enumeration is null create a sequnce of nulls matching the number of ac voltage sources)
-				(dcVoltageSourcesDescriptions ?? Enumerable.Repeat<ISourceDescription>(null, dcSourcesCount)).ToList();
-
-			// Initialize each entry in the AC array
-			for (int i = 0; i < acSourcesCount; ++i)
-			{
-				ACStates[i] = stateFactory(nodeIndices, activeComponentsIndices, acVoltageSourcesDescriptionsList[i]);
-			}
-
-			// Initialize each entry in the DC array
-			for (int i = 0; i < acSourcesCount; ++i)
-			{
-				DCStates[i] = stateFactory(nodeIndices, activeComponentsIndices, dcVoltageSourcesDescriptionsList[i]);
+				throw new ArgumentNullException(nameof(sourcesDescriptions));
 			}
 
 			// Assign the collections to private properties for future use
@@ -89,30 +48,21 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Constructor with parameters
 		/// </summary>
-		/// <param name="acSourcesCount">Number of AC sources expected in this state</param>
-		/// <param name="dcSourcesCount">Number of DC sources expected in this state</param>
 		/// <param name="nodeIndices">Indices of nodes present in this instance</param>
 		/// <param name="activeComponentsCount">Number of active components, indices available in this instance are given by a
 		/// range: 0 to <paramref name="activeComponentsCount"/> - 1</param>
 		/// <param name="stateFactory">Factory method used to generate default values of <see cref="ACStates"/> and <see cref="DCState"/>.
 		/// First argument are indices of nodes, second argument are indices of active components currents, third argument is the description
 		/// of the source that produced the state</param>
-		/// <param name="acVoltageSourcesDescriptions">Descriptions of AC voltage sources that will produce the partial states</param>
-		/// <param name="dcVoltageSourcesDescriptions">Descriptions of DC voltage sources that will produce the partial states</param>
-		public GenericPartialStates(int acSourcesCount,
-			int dcSourcesCount,
-			IEnumerable<int> nodeIndices, int activeComponentsCount,
-			IEnumerable<ISourceDescription> acVoltageSourcesDescriptions,
-			IEnumerable<ISourceDescription> dcVoltageSourcesDescriptions,
+		/// <param name="sourcesDescriptions">Descriptions of sources that will produce the partial states</param>
+		public GenericPartialStates(IEnumerable<int> nodeIndices, int activeComponentsCount,
+			IEnumerable<ISourceDescription> sourcesDescriptions,
 			Func<IEnumerable<int>, IEnumerable<int>, ISourceDescription, TState> stateFactory = null) :
-			this(acSourcesCount, dcSourcesCount, nodeIndices, Enumerable.Range(0, activeComponentsCount), acVoltageSourcesDescriptions,
-				dcVoltageSourcesDescriptions, stateFactory) { }
+			this(nodeIndices, Enumerable.Range(0, activeComponentsCount), sourcesDescriptions, stateFactory) { }
 
 		/// <summary>
 		/// Constructor with parameters
 		/// </summary>
-		/// <param name="acSourcesCount">Number of AC sources expected in this state</param>
-		/// <param name="dcSourcesCount">Number of DC sources expected in this state</param>
 		/// <param name="nodesCount">Number of nodes, indices available in this instance are given by a
 		/// range: 0 to <paramref name="nodesCount"/> - 1</param>
 		/// <param name="activeComponentsCount">Number of active components, indices available in this instance are given by a
@@ -120,17 +70,12 @@ namespace ECAT.Simulation
 		/// <param name="stateFactory">Factory method used to generate default values of <see cref="ACStates"/> and <see cref="DCState"/>.
 		/// First argument are indices of nodes, second argument are indices of active components currents, third argument is the description
 		/// of the source that produced the state</param>
-		/// <param name="acVoltageSourcesDescriptions">Descriptions of AC voltage sources that will produce the partial states</param>
-		/// <param name="dcVoltageSourcesDescriptions">Descriptions of DC voltage sources that will produce the partial states</param>
-		public GenericPartialStates(int acSourcesCount,
-			int dcSourcesCount,
-			int nodesCount,
+		/// <param name="sourcesDescriptions">Descriptions of sources that will produce the partial states</param>
+		public GenericPartialStates(int nodesCount,
 			int activeComponentsCount,
-			IEnumerable<ISourceDescription> acVoltageSourcesDescriptions,
-			IEnumerable<ISourceDescription> dcVoltageSourcesDescriptions,
+			IEnumerable<ISourceDescription> sourcesDescriptions,
 			Func<IEnumerable<int>, IEnumerable<int>, ISourceDescription, TState> stateFactory = null) :
-			this(acSourcesCount, dcSourcesCount, Enumerable.Range(0, nodesCount), Enumerable.Range(0, activeComponentsCount),
-				acVoltageSourcesDescriptions, dcVoltageSourcesDescriptions, stateFactory) { }
+			this(Enumerable.Range(0, nodesCount), Enumerable.Range(0, activeComponentsCount), sourcesDescriptions, stateFactory) { }
 
 		/// <summary>
 		/// Constructor with parameters
@@ -143,17 +88,12 @@ namespace ECAT.Simulation
 		/// <param name="stateFactory">Factory method used to generate default values of <see cref="ACStates"/> and <see cref="DCState"/>.
 		/// First argument are indices of nodes, second argument are indices of active components currents, third argument is the description
 		/// of the source that produced the state</param>
-		/// <param name="acVoltageSourcesDescriptions">Descriptions of AC voltage sources that will produce the partial states</param>
-		/// <param name="dcVoltageSourcesDescriptions">Descriptions of DC voltage sources that will produce the partial states</param>
-		public GenericPartialStates(int acSourcesCount,
-			int dcSourcesCount,
-			int nodesCount,
+		/// <param name="sourcesDescriptions">Descriptions of AC voltage sources that will produce the partial states</param>
+		public GenericPartialStates(int nodesCount,
 			IEnumerable<int> activeComponentsIndices,
-			IEnumerable<ISourceDescription> acVoltageSourcesDescriptions,
-			IEnumerable<ISourceDescription> dcVoltageSourcesDescriptions,
+			IEnumerable<ISourceDescription> sourcesDescriptions,
 			Func<IEnumerable<int>, IEnumerable<int>, ISourceDescription, TState> stateFactory = null) :
-			this(acSourcesCount, dcSourcesCount, Enumerable.Range(0, nodesCount), activeComponentsIndices,acVoltageSourcesDescriptions,
-				dcVoltageSourcesDescriptions, stateFactory) { }
+			this(Enumerable.Range(0, nodesCount), activeComponentsIndices, sourcesDescriptions, stateFactory) { }
 
 		#endregion
 
@@ -176,12 +116,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Array holding AC state for each source
 		/// </summary>
-		public TState[] ACStates { get; }
-
-		/// <summary>
-		/// Array holding DC state for each source
-		/// </summary>
-		public TState[] DCStates { get; }
+		public IDictionary<ISourceDescription, TState> States { get; } = new Dictionary<ISourceDescription, TState>();
 
 		#endregion
 	}
