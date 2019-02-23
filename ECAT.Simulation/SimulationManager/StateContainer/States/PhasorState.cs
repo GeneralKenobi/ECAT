@@ -48,5 +48,31 @@ namespace ECAT.Simulation
 			this(Enumerable.Range(0, nodesCount), Enumerable.Range(0, activeComponentsCount), sourceDescription) { }
 
 		#endregion
+
+		#region Public methods
+
+		/// <summary>
+		/// Adds the given values to this instance. If <see cref="GenericState{T}.Potentials"/> or <see cref="GenericState{T}.Currents"/> don't
+		/// have a key corresponding to index in either <paramref name="nodePotentials"/> or <paramref name="activeComponentsCurrents"/> an
+		/// exception will be thrown.
+		/// </summary>
+		/// <param name="nodePotentials"></param>
+		/// <param name="activeComponentsCurrents"></param>
+		public void AddValues(Complex[] nodePotentials, Complex[] activeComponentsCurrents)
+		{
+			// Add node potentials
+			for (int i = 0; i < nodePotentials.Length; ++i)
+			{
+				Potentials[i] += nodePotentials[i];
+			}
+
+			// Add active components currents
+			for (int i = 0; i < activeComponentsCurrents.Length; ++i)
+			{
+				Currents[i] += activeComponentsCurrents[i];
+			}
+		}
+
+		#endregion
 	}
 }
