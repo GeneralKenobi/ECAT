@@ -170,6 +170,16 @@ namespace ECAT.Simulation
 		/// <returns></returns>
 		public IEnumerable<ISourceDescription> DCCurrentSources => _DCCurrentSources;
 
+		/// <summary>
+		/// Returns descriptions of all AC sources
+		/// </summary>
+		public IEnumerable<ISourceDescription> ACSources => _ACVoltageSources;
+
+		/// <summary>
+		/// Returns descriptions of all DC sources
+		/// </summary>
+		public IEnumerable<ISourceDescription> DCSources => _DCVoltageSources.Concat(_DCCurrentSources);
+
 		#endregion
 
 		#region Private methods
