@@ -76,7 +76,7 @@ namespace ECAT.Simulation
 		/// <see cref="IOpAmp"/>s.
 		/// </summary>
 		private IDictionary<IComponentDescription, int> _IndexedComponentsIndices { get; set; }
-		
+
 		/// <summary>
 		/// Dictionary with indices of nodes of <see cref="IACVoltageSource"/>s, <see cref="IDCVoltageSource"/>s and <see cref="ICurrentSource"/>s
 		/// </summary>
@@ -153,6 +153,11 @@ namespace ECAT.Simulation
 		public int ActiveComponentsCount { get; private set; }
 
 		/// <summary>
+		/// All indices assigned to active components
+		/// </summary>
+		public IEnumerable<int> ActiveComponentsIndices { get; private set; }
+
+		/// <summary>
 		/// Returns descriptions of AC voltage sources
 		/// </summary>
 		/// <returns></returns>
@@ -179,6 +184,11 @@ namespace ECAT.Simulation
 		/// Returns descriptions of all DC sources
 		/// </summary>
 		public IEnumerable<ISourceDescription> DCSources => _DCVoltageSources.Concat(_DCCurrentSources);
+
+		/// <summary>
+		/// Descriptions of all sources
+		/// </summary>
+		public IEnumerable<ISourceDescription> AllSources => _ACVoltageSources.Concat(_DCVoltageSources).Concat(_DCCurrentSources);
 
 		#endregion
 
@@ -244,7 +254,7 @@ namespace ECAT.Simulation
 		private void FillAMatrixDiagonal(AdmittanceMatrix matrix, double frequency)
 		{
 			// For each node
-			foreach(var node in _Nodes)
+			foreach (var node in _Nodes)
 			{
 				// For each component connected to that node
 				node.ConnectedComponents.ForEach((component) =>
@@ -258,7 +268,7 @@ namespace ECAT.Simulation
 				});
 			}
 		}
-		
+
 		/// <summary>
 		/// Fills the non-diagonal entries of an admittance matrix - for entry i,j all admittances located between node i and node j are subtracted
 		/// from that entry
@@ -266,11 +276,11 @@ namespace ECAT.Simulation
 		private void FillAMatrixNonDiagonal(AdmittanceMatrix matrix, double frequency)
 		{
 			// For each node
-			foreach(var node1 in _Nodes)
+			foreach (var node1 in _Nodes)
 			{
 				// Matrix A is symmetrical along the main diagonal so it's only necessary to fill the
 				// part below main diagonal and copy the operation to the corresponding entry above the main diagonal
-				foreach(var node2 in _Nodes.FindAll((x) => x.Index < node1.Index))
+				foreach (var node2 in _Nodes.FindAll((x) => x.Index < node1.Index))
 				{
 					// Find all components located between node i and node j
 					var admittancesBetweenNodesij =
@@ -306,7 +316,7 @@ namespace ECAT.Simulation
 		private void FillBMatrixOpAmpOutputNodes(AdmittanceMatrix matrix)
 		{
 			// For each op-amp
-			foreach(var opAmp in _OpAmps)
+			foreach (var opAmp in _OpAmps)
 			{
 				// Set the entry in _B corresponding to the output node to 1
 				matrix._B[_OpAmpsNodes[opAmp].Output, _IndexedComponentsIndices[opAmp]] = 1;
@@ -316,7 +326,7 @@ namespace ECAT.Simulation
 		#endregion
 
 		#region Op-amp operation mode switching
-		
+
 		/// <summary>
 		/// Configures <see cref="IOpAmp"/> for operation in <paramref name="operationMode"/> in <paramref name="matrix"/>.
 		/// Saturation mode will generate output voltage only if matrix is built for DC (<paramref name="ac"/> is false).
@@ -452,7 +462,7 @@ namespace ECAT.Simulation
 			// supply voltage
 			if (!ac)
 			{
-				matrix._E[index] = positiveSaturation ? opAmp.PositiveSupplyVoltage: opAmp.NegativeSupplyVoltage;
+				matrix._E[index] = positiveSaturation ? opAmp.PositiveSupplyVoltage : opAmp.NegativeSupplyVoltage;
 			}
 		}
 
@@ -461,12 +471,12 @@ namespace ECAT.Simulation
 		#region Voltage source activation
 
 		/// <summary>
-		/// Configures all voltage sources for specific operation. Outputs are set to 1 in order to generate transfer functions.
+		/// Configures all voltage sources for specific operation.
 		/// </summary>
 		private void ConfigureVoltageSources(AdmittanceMatrix matrix, bool state)
 		{
 			// Take all voltage sources (DC + AC)
-			foreach(var source in _DCVoltageSources.Concat(_ACVoltageSources))
+			foreach (var source in _DCVoltageSources.Concat(_ACVoltageSources))
 			{
 				// And configure them for the state
 				ConfigureVoltageSource(matrix, source, state);
@@ -511,35 +521,44 @@ namespace ECAT.Simulation
 				matrix._C[sourceIndex, nodes.Negative] = -1;
 			}
 
-			matrix._E[sourceIndex] = state ? 1 : 0;
+			matrix._E[sourceIndex] = state ? source.OutputValue : 0;
 		}
 
 		#endregion
 
 		#region Current source activation
-		
+
 		/// <summary>
-		/// Activates (all current sources are not active by default) the current source given by the index. Assigns 1 to its output in order to
-		/// generate admittance matrix that produces transfer function.
+		/// Activates (all current sources are not active by default) the current source given by the index.
 		/// </summary>
 		/// <param name="sourceIndex"></param>
 		private void ActivateCurrentSource(AdmittanceMatrix matrix, ISourceDescription source)
 		{
+			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//                                                                                                                                         //
+			// Matrix I has += and -= instead of just assignment because that's the actual correct way of building the matrix.                         //
+			// However it only matters if there is more than one source active at a time. For example, if there would be 2 sources, each connected     //
+			// to the same node, then the value in the corresponding entry in I matrix should be a sum of produced currents. Simply assigning value    //
+			// would result in an error. Again, for now, admittance matrices are built only for one source, however if it would happen that it changes //
+			// in the future then there won't be any errors because of assigning rather than adding / subtracting.                                     //
+			//                                                                                                                                         //
+			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			
 			// Get the nodes
 			var nodes = _SourcesNodes[source];
-			
+
 			// If the positive terminal is not grounded
 			if (nodes.Positive != GroundNodeIndex)
 			{
 				// Add source's current to the node
-				matrix._I[nodes.Positive] = 1;
+				matrix._I[nodes.Positive] += source.OutputValue;
 			}
 
 			// If the negative terminal is not grounded
 			if (nodes.Negative != -1)
 			{
 				// Subtract source's current from the node
-				matrix._I[nodes.Negative] = -1;
+				matrix._I[nodes.Negative] -= source.OutputValue;
 			}
 		}
 
@@ -577,7 +596,7 @@ namespace ECAT.Simulation
 		{
 			// Find all reference nodes
 			var referenceNodes = FindReferenceNodes();
-						
+
 			// Remove them from the nodes list
 			_Nodes.RemoveAll((node) => referenceNodes.Contains(node));
 
@@ -664,11 +683,26 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Finds all active components and assigns their count to <see cref="ActiveComponentsCount"/>
 		/// </summary>
-		private void InitializeActiveComponents() => ActiveComponentsCount = _Schematic.Components.
-			// Find all active components
-			Where((component) => component is IActiveComponent).
-			Cast<IActiveComponent>().
-			Count();
+		private void InitializeIndexedComponents()
+		{
+			// Generate indices collection for active components - DC voltage sources, AC voltage sources and op-amps are generated together - these
+			// components are considered to be the same type in admittance matrix. That's why descriptions of these elements are first concatenated
+			// (order matters) and then indexed, from 0 till the end of the enumeration of descriptions.
+			var activeComponents = _DCVoltageSources.
+				Concat(_ACVoltageSources).
+				Cast<IComponentDescription>().
+				Concat(_OpAmps).
+				Select((x, i) => new KeyValuePair<IComponentDescription, int>(x, i));
+
+			// Assign the indices to public property
+			ActiveComponentsIndices = activeComponents.Select((x) => x.Value);
+
+			// Create a final collection - base in on previously determined indexing for active components and add
+			// DC current sources, those are indexed separately, also starting from 0.
+			_IndexedComponentsIndices = activeComponents.
+				Concat(_DCCurrentSources.Select((x, i) => new KeyValuePair<IComponentDescription, int>(x, i))).
+				ToDictionary((x) => x.Key, (x) => x.Value);
+		}
 
 		/// <summary>
 		/// Returns all <see cref="IDCVoltageSource"/>s present in <see cref="ISchematic"/>
@@ -727,20 +761,8 @@ namespace ECAT.Simulation
 				Cast<IOpAmp>().
 				Select((x) => x.Description));
 
-			// Generate source indices collection - DC voltage sources, AC voltage sources and op-amps are generated together - these components are
-			// considered to be the same type in admittance matrix. That's why descriptions of these elements are first concatenated (order matters)
-			// and then indexed, from 0 till the end of the enumeration of descriptions. Finally DC current sources are added to the collection,
-			// those are indexed separately, also starting from 0.
-			_IndexedComponentsIndices = _DCVoltageSources.
-				Concat(_ACVoltageSources).
-				Cast<IComponentDescription>().
-				Concat(_OpAmps).
-				Select((x, i) => new KeyValuePair<IComponentDescription, int>(x, i)).
-				Concat(_DCCurrentSources.Select((x, i) => new KeyValuePair<IComponentDescription, int>(x, i))).
-				ToDictionary((x) => x.Key, (x) => x.Value);
-
 			// Prepare the active components
-			InitializeActiveComponents();
+			InitializeIndexedComponents();
 		}
 
 		/// <summary>
@@ -918,9 +940,6 @@ namespace ECAT.Simulation
 
 		/// <summary>
 		/// Returns an admittance matrix for voltage source given by <paramref name="source"/>.
-		/// The source is regarded as a unity source so that any node potential is in fact the transfer function and can be used to determine
-		/// potentials for arbitrary voltage source values (Unode = K(jw) * Usource, for Usource = 1 we have Unode = K(jw) which allows to
-		/// obtain K(jw) which can be then substituted to Unode = K(jw) * Usource to obtain Unode for any Usource).
 		/// </summary>
 		/// <param name="source"></param>
 		/// <returns></returns>
@@ -937,9 +956,6 @@ namespace ECAT.Simulation
 
 		/// <summary>
 		/// Returns an admittance matrix for current source given by <paramref name="source"/>.
-		/// The source is regarded as a unity source so that any node potential is in fact the transfer function and can be used to determine
-		/// potentials for arbitrary voltage source values (Unode = K(jw) * Usource, for Usource = 1 we have Unode = K(jw) which allows to
-		/// obtain K(jw) which can be then substituted to Unode = K(jw) * Usource to obtain Unode for any Usource).
 		/// </summary>
 		/// <returns></returns>
 		private AdmittanceMatrix ConstructForCurrentSource(ISourceDescription source)
@@ -988,8 +1004,7 @@ namespace ECAT.Simulation
 			CheckOpAmpOperation(nodePotentials, true);
 
 		/// <summary>
-		/// Constructrs an admittance matrix for the given source - the solution of that admittance matrix are transfer functions for node potentials
-		/// and active components currents.
+		/// Constructrs an admittance matrix for the given source.
 		/// </summary>
 		/// <param name="source"></param>
 		/// <returns></returns>
@@ -1020,7 +1035,7 @@ namespace ECAT.Simulation
 		/// <see cref="IOpAmp"/>s on AC circuits.
 		/// </summary>
 		/// <returns></returns>
-		public AdmittanceMatrix ConstructDCForSaturatedOpAmpsOnly1() => ConstructAndInitialize(0);
+		public AdmittanceMatrix ConstructDCForSaturatedOpAmpsOnly() => ConstructAndInitialize(0);
 
 		/// <summary>
 		/// Returns all nodes generated for the <see cref="ISchematic"/> passed to constructor
