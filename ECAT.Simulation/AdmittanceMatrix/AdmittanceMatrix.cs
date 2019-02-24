@@ -20,7 +20,7 @@ namespace ECAT.Simulation
 		public AdmittanceMatrix(int bigDimension, int smallDimension)
 		{
 			_BigDimension = bigDimension > 0 ? bigDimension : throw new ArgumentException(nameof(bigDimension) + " can't be smaller than 1");
-			_SmallDimension = smallDimension > 0 ? smallDimension : throw new ArgumentException(nameof(smallDimension) + " can't be smaller than 1");
+			_SmallDimension = smallDimension >= 0 ? smallDimension : throw new ArgumentException(nameof(smallDimension) + " can't be smaller than 0");
 		}
 
 		#endregion
