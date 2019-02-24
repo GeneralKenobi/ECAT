@@ -133,7 +133,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Description of this <see cref="IOpAmp"/>
 		/// </summary>
-		public IOpAmpDescription Description { get; }
+		public IOpAmpDescription Description => _Description;
 
 		#endregion
 	}
