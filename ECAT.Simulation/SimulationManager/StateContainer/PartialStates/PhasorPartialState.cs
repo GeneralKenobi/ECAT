@@ -61,5 +61,94 @@ namespace ECAT.Simulation
 			this(Enumerable.Range(0, nodesCount), activeComponentsIndices, sourcesDescriptions) { }
 
 		#endregion
+
+		#region Public methods
+
+		/// <summary>
+		/// Merges <paramref name="other"/> into this instance. Adds up all states that are present in both <see cref="PhasorPartialStates"/> and
+		/// makes new entries for all states present in <paramref name="other"/> but not in this instance.
+		/// </summary>
+		/// <param name="other"></param>
+		public void MergeWith(PhasorPartialStates other)
+		{
+			// For all keys in other that are present in this instance
+			foreach(var key in States.Keys.Intersect(other.States.Keys))
+			{
+				// Add corresponding states from other to already existing states in this instance
+				States[key].AddState(other.States[key]);
+			}
+
+			// For all keys in other that are not present in this instance
+			foreach(var key in other.States.Keys.Except(States.Keys))
+			{
+				// Add them, with values corresponding to them, to this instance
+				States.Add(key, other.States[key]);
+			}
+		}
+
+		/// <summary>
+		/// Converts every state to its DC version (taking only real part from phasor - phasors for DC are purely real). If any of the sources is not,
+		/// DC an exception will be thrown.
+		/// </summary>
+		/// <returns></returns>
+		public InstantenousPartialStates ToDC()
+		{
+			// Create state for result
+			var result = new InstantenousPartialStates(_NodeIndices, _ActiveComponentsIndices, States.Keys);
+
+			// For each state
+			foreach (var state in States)
+			{
+				// Use its method to convert to DC
+				result.States[state.Key] = States[state.Key].ToDC();
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Creates an instantenous state from each state. The time moment is defined as <paramref name="pointIndex"/> * <paramref name="timeStep"/>.
+		/// </summary>
+		/// <returns></returns>
+		/// <param name="pointIndex">Index of the point for which the instantenous values will be calculated, indexing starts from 0</param>
+		/// <param name="timeStep">Time step between 2 subsequent points</param>
+		public InstantenousPartialStates ToInstantenousValue(int pointIndex, double timeStep)
+		{
+			// Create state for result
+			var result = new InstantenousPartialStates(_NodeIndices, _ActiveComponentsIndices, States.Keys);
+
+			// For each state
+			foreach (var state in States)
+			{
+				// Use its method to calculate instantenous value at given time moment
+				result.States[state.Key] = States[state.Key].ToInstantenousValues(pointIndex, timeStep);
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Converts every state to a waveform. Waveforms built have <paramref name="pointsCount"/> points and time increment of
+		/// <paramref name="timeStep"/>.
+		/// </summary>
+		/// <returns></returns>
+		/// <param name="pointsCount"></param>
+		/// <param name="timeStep"></param>
+		public WaveformPartialState ToWaveform(int pointsCount, double timeStep)
+		{
+			// Create state for result
+			var result = new WaveformPartialState(_NodeIndices, _ActiveComponentsIndices, States.Keys);
+
+			// For each state
+			foreach (var state in States)
+			{
+				// Use its method to convert to a waveform
+				result.States[state.Key] = States[state.Key].ToWaveform(pointsCount, timeStep);
+			}
+
+			return result;
+		}
+
+		#endregion
 	}
 }
