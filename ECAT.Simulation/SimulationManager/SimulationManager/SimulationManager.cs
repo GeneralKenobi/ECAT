@@ -30,35 +30,10 @@ namespace ECAT.Simulation
 
 		#endregion
 
-		#region Private methods		
+		#region Private methods
 
 		#region DC biasing
-
-		/// <summary>
-		/// Helper function performing dc bias simulation for <see cref="ISchematic"/> which was used to construct
-		/// <see cref="AdmittanceMatrixFactory"/>.
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <param name="nodePotentials"></param>
-		/// <param name="activeComponentsCurrents"></param>
-		private void DCBiasHelper(AdmittanceMatrixFactory factory, out double[] nodePotentials, out double[] activeComponentsCurrents)
-		{
-			// Create an admittance matrix corresponding to it
-			var matrix = factory.ConstructDC();
-
-			// Solve it
-			matrix.Solve(out var calculatedNodePotentials, out var calculatedActiveComponentsCurrents);
-
-			// Use the Real part of the results only - DC matrices can't produce imaginary parts not equal to 0.
-			nodePotentials = calculatedNodePotentials.
-				Select((x) => x.Real).
-				ToArray();
-
-			activeComponentsCurrents = calculatedActiveComponentsCurrents.
-				Select((x) => x.Real).
-				ToArray();
-		}
-
+		
 		/// <summary>
 		/// Topmost logic behind DC bias - calling it will result in simulation being performed and saved to <see cref="ISimulationResultsProvider"/>
 		/// </summary>
@@ -68,58 +43,38 @@ namespace ECAT.Simulation
 			// Create dictionary holding final values of potentials at nodes
 			var totalPotentials = new Dictionary<INode, IPhasorDomainSignal>();
 
-			// Create dictionary holding final values of potentials at nodes
+			// Create dictionary holding final values of currents
 			var totalActiveComponentsCurrents = new Dictionary<int, IPhasorDomainSignal>();
-
-			// Get nodes constructed on the basis of the circuit
-			var nodes = factory.GetNodes();
 
 			bool opAmpOperationCorrect = true;
 
-			// Variables for results
-			double[] nodePotentials = null;
-			double[] activeComponentsCurrents = null;
+			InstantenousState combined = null;
 
 			// Loop that will find correct op-amp settings - initial settings are tested and, if not correct, adjusted. This process
 			// goes on until the correct configuration is found.
 			do
 			{
-				// Solve the admittance matrix
-				DCBiasHelper(factory, out nodePotentials, out activeComponentsCurrents);
-
-				// Assign node potentials to nodes
-				var keyedNodePotentials = factory.GetSimulationNodeIndices().MergeSelect(
-					nodePotentials, (x, y) => new KeyValuePair<int, double>(x, y));
+				// Get the DC transfer functions, combine potentials from all sources to check op-amp operaiton
+				combined = GetPhasorsForAllDCSources(factory).ToDC().Combine();
 
 				// Check if op-amps operate correctly with self-adjustment
-				opAmpOperationCorrect = factory.CheckOpAmpOperationWithSelfAdjustment(keyedNodePotentials);
-			}
-			while (!opAmpOperationCorrect);
+				opAmpOperationCorrect = factory.CheckOpAmpOperationWithSelfAdjustment(combined.Potentials);
+			} while (!opAmpOperationCorrect);
 
-			// Get enumerator to nodes
-			var enumerator = nodes.GetEnumerator();
-
-			// Move to the first (reference) node
-			enumerator.MoveNext();
-
-			// Create signal for it
-			totalPotentials.Add(enumerator.Current, IoC.Resolve<IPhasorDomainSignal>(0d));
-
+			// Create signal for reference node
+			totalPotentials.Add(factory.GetNodes().First(), IoC.Resolve<IPhasorDomainSignal>(0d));
+			
 			// For each calculated node potential
-			for (int i = 0; i < nodePotentials.Count(); ++i)
+			foreach(var node in factory.GetNodesWithoutReference())
 			{
-				// Move to the next node
-				enumerator.MoveNext();
-
-				// And create a phasor domain signal for it
-				totalPotentials.Add(enumerator.Current, IoC.Resolve<IPhasorDomainSignal>(nodePotentials[i]));
+				totalPotentials.Add(node, IoC.Resolve<IPhasorDomainSignal>(combined.Potentials[node.Index]));
 			}
 
 			// For each active component
-			for (int i = 0; i < activeComponentsCurrents.Count(); ++i)
+			foreach(var current in combined.Currents)
 			{
 				// Create a phasor domain signal for its current
-				totalActiveComponentsCurrents.Add(i, IoC.Resolve<IPhasorDomainSignal>(activeComponentsCurrents[i]));
+				totalActiveComponentsCurrents.Add(current.Key, IoC.Resolve<IPhasorDomainSignal>(current.Value));
 			}
 
 			// Create simulation results based on determined node potentials and active components currents
@@ -128,75 +83,90 @@ namespace ECAT.Simulation
 
 		#endregion
 
-		#region AC transfer functions
+		/// <summary>
+		/// Creates and solves DC admittance matrix for saturated op-amps
+		/// </summary>
+		/// <param name="factory"></param>
+		/// <returns></returns>
+		private InstantenousState GetOpAmpSaturationBias(AdmittanceMatrixFactory factory)
+		{
+			var matrix = factory.ConstructDCForSaturatedOpAmpsOnly();
+
+			matrix.Solve(out var nodePotentials, out var activeComponentsCurrents);
+
+			var result = new InstantenousState(factory.GetNodeIndicesWithoutReference(), factory.ActiveComponentsCount, a.Singleton);
+
+			result.AddValues(nodePotentials.Select((x) => x.Real).ToArray(), activeComponentsCurrents.Select((x) => x.Real).ToArray());
+
+			return result;
+		}
+
+		#region Transfer functions
 
 		/// <summary>
-		/// Returns AC transfer functions constructed for voltage source given by <paramref name="sourceIndex"/>
+		/// Returns phasors constructed for source given by <paramref name="sourceIndex"/>
 		/// </summary>
 		/// <param name="factory"></param>
 		/// <param name="sourceIndex"></param>
 		/// <param name="nodePotentialTransferFunctions"></param>
 		/// <param name="activeComponentsCurrentsTransferFunctions"></param>
-		private void GetACTransferFunction(AdmittanceMatrixFactory factory, int sourceIndex, out Complex[] nodePotentialTransferFunctions,
-			out Complex[] activeComponentsCurrentsTransferFunctions)
+		private PhasorState GetPhasor(AdmittanceMatrixFactory factory, ISourceDescription sourceDescription)
 		{
-			// Create an admittance matrix corresponding to the given source
-			var matrix = factory.ConstructAC(sourceIndex);
+			var state = new PhasorState(factory.NodesCount, factory.ActiveComponentsCount, sourceDescription);
 
-			// Solve it
-			matrix.Solve(out nodePotentialTransferFunctions, out activeComponentsCurrentsTransferFunctions);
+			// Create an admittance matrix corresponding to the given source
+			factory.Construct(sourceDescription).
+				Solve(out var nodePotentialTransferFunctions, out var activeComponentsCurrentsTransferFunctions);
+
+			state.AddValues(nodePotentialTransferFunctions, activeComponentsCurrentsTransferFunctions);
+
+			return state;
 		}
 
 		/// <summary>
-		/// Returns an array of AC transfer functions - in total for all voltage sources found by <paramref name="factory"/>.
+		/// Helper for functions that return phasors generated for many sources. Returns a <see cref="PhasorPartialStates"/> that contains
+		/// phasors for all sources in <paramref name="sources"/>.
 		/// </summary>
 		/// <param name="factory"></param>
-		/// <param name="nodePotentialTransferFunctions"></param>
-		/// <param name="activeComponentsCurrentsTransferFunctions"></param>
-		private void GetAllACTransferFunctions(AdmittanceMatrixFactory factory, out Complex[,] nodePotentialTransferFunctions,
-			out Complex[,] activeComponentsCurrentsTransferFunctions)
+		/// <param name="sources">Enumeration of sources to construct transfer functions for. All sources listed have to be present in
+		/// <paramref name="factory"/>, otherwise an exception will be thrown.</param>
+		/// <returns></returns>
+		private PhasorPartialStates GetAllPhasorsHelper(AdmittanceMatrixFactory factory, IEnumerable<ISourceDescription> sources)
 		{
-			// Create result arrays
-			nodePotentialTransferFunctions = new Complex[factory.ACVoltageSourcesCount, factory.NodesCount];
-			activeComponentsCurrentsTransferFunctions = new Complex[factory.ACVoltageSourcesCount, factory.ActiveComponentsCount];
+			var result = new PhasorPartialStates(factory.NodesCount, factory.ActiveComponentsCount, sources);
 
 			// For each AC source
-			for (int i = 0; i < factory.ACVoltageSourcesCount; ++i)
+			foreach (var source in sources)
 			{
 				// Get transfer function
-				GetACTransferFunction(factory, i, out var nodePotentials, out var activeComponentsCurrents);
-
-				// Copy it into the result arrays
-				nodePotentialTransferFunctions.CopyRowInto(nodePotentials, i);
-				activeComponentsCurrentsTransferFunctions.CopyRowInto(activeComponentsCurrents, i);
+				result.States[source] = GetPhasor(factory, source);
 			}
+
+			return result;
 		}
-
-		#endregion
-
-		#region DC transfer functions
 
 		/// <summary>
-		/// Returns DC transfer functions constructed for voltage source given by <paramref name="sourceIndex"/>
+		/// Returns phasors with transfer functions for all AC sources in <paramref name="factory"/>
 		/// </summary>
 		/// <param name="factory"></param>
-		/// <param name="sourceIndex"></param>
 		/// <param name="nodePotentialTransferFunctions"></param>
 		/// <param name="activeComponentsCurrentsTransferFunctions"></param>
-		private void GeDCTransferFunction(AdmittanceMatrixFactory factory, int sourceIndex, out Complex[] nodePotentialTransferFunctions,
-			out Complex[] activeComponentsCurrentsTransferFunctions)
-		{
-			// Create an admittance matrix corresponding to the given source
-			var matrix = factory.ConstructAC(sourceIndex);
+		private PhasorPartialStates GetPhasorsForAllACSources(AdmittanceMatrixFactory factory) =>
+			GetAllPhasorsHelper(factory, factory.ACVoltageSources);
 
-			// Solve it
-			matrix.Solve(out nodePotentialTransferFunctions, out activeComponentsCurrentsTransferFunctions);
-		}
-
+		/// <summary>
+		/// Returns phasors with transfer functions for all DC sources in <paramref name="factory"/>
+		/// </summary>
+		/// <param name="factory"></param>
+		/// <param name="nodePotentialTransferFunctions"></param>
+		/// <param name="activeComponentsCurrentsTransferFunctions"></param>
+		private PhasorPartialStates GetPhasorsForAllDCSources(AdmittanceMatrixFactory factory) =>
+			GetAllPhasorsHelper(factory, factory.DCSources);
+		
 		#endregion
-
+		
 		#region AC full cycle helpers
-
+		
 		/// <summary>
 		/// Performs an AC cycle simulation - simulation is running for one full period of lowest frequency source in the <paramref name="factory"/>.
 		/// Returns calculated node potentials and active component currents as sinusoidal waveforms.
@@ -210,84 +180,103 @@ namespace ECAT.Simulation
 		/// will be considered for DC part of simulation</param>
 		private WaveformPartialState FullCycleHelper(AdmittanceMatrixFactory factory, int pointsCount, double timeStep, bool includeDCBias = false)
 		{
-			// Container for calculated states
-			// TODO: Provide DC voltage sources descriptions
-			var result = new WaveformPartialState(factory.ACVoltageSourcesCount, factory.DCSourcesCount, factory.NodesCount,
-				factory.ActiveComponentsCount, factory.GetDCSourcesDescriptions(), factory.GetACVoltageSourcesDescriptions());
+			//// Container for calculated states
+			//var result = new WaveformPartialState(factory.NodesCount,
+			//	factory.ActiveComponentsCount,
+			//	factory.ACVoltageSources.
+			//		Concat(factory.DCVoltageSources).
+			//		Concat(factory.DCCurrentSources));
 
 			// Get nodes constructed on the basis of the circuit
 			var nodes = factory.GetNodes();
+
 			// Get nodes without the reference node and group them into a list for easier access with indexes
 			var nodesWithoutReference = factory.GetNodesWithoutReference().ToList();
+
+			// Get AC transfer functions
+			var systemState = GetPhasorsForAllACSources(factory);
+
+			if (includeDCBias)
+			{
+				// As well as DC transfer functions, if requested
+				systemState.MergeWith(GetPhasorsForAllDCSources(factory));
+			}
+
+			return systemState.ToWaveform(pointsCount, timeStep);
 			
-			// Get all transfer functions
-			GetAllACTransferFunctions(factory, out var nodePotentials, out var activeComponentsCurrents);
+			//// For each function for i-th voltage source
+			//for (int i = 0; i < factory.ACVoltageSourcesCount; ++i)
+			//{
+			//	// Transfer functions for node potentials
+			//	for (int j = 0; j < acNodePotentials.GetLength(1); ++j)
+			//	{
+			//		// Get j-th node
+			//		var currentNode = nodesWithoutReference[j];
 
-			// Get DC transfer function - if DC biasing was specified construct a full DC admittance matrix, if not construct DC matrix only for
-			// saturated op-amps, then solve the constructed matrix
-			(includeDCBias ? factory.ConstructDC() : factory.ConstructDCForSaturatedOpAmpsOnly()).Solve(out var dcPotentials, out var dcCurrents);
+			//		// Add to appropriate node's potentials calculated for i-th voltage source
+			//		result.ACStates[i].Potentials[j] = WaveformBuilder.SineWave(
+			//			// Amplitude is the amplitude of the source times magnitude of transfer function
+			//			factory.GetACVoltageSourceAmplitude(i) * acNodePotentials[i, j].Magnitude,
+			//			// Frequency of the i-th voltage source
+			//			factory.GetACVoltageSourceFrequency(i),
+			//			// Phase introduced by transfer function
+			//			acNodePotentials[i, j].Phase,
+			//			// Number of points specified by caller
+			//			pointsCount,
+			//			// Time step specified by caller
+			//			timeStep);
+			//	}
 
-			// For each function for i-th voltage source
-			for (int i = 0; i < factory.ACVoltageSourcesCount; ++i)
-			{
-				// Transfer functions for node potentials
-				for (int j = 0; j < nodePotentials.GetLength(1); ++j)
-				{
-					// Get j-th node
-					var currentNode = nodesWithoutReference[j];
+			//	// For each active component current transfer function for i-th source
+			//	for (int j = 0; j < factory.ActiveComponentsCount; ++j)
+			//	{
+			//		// Add to appropriate active component's current's calculated current for i-th voltage source
+			//		result.ACStates[i].Currents[j] = WaveformBuilder.SineWave(
+			//			// Amplitude is the amplitude of the source times magnitude of transfer function
+			//			factory.GetACVoltageSourceAmplitude(i) * acActiveComponentsCurrents[i, j].Magnitude,
+			//			// Frequency of the i-th voltage source
+			//			factory.GetACVoltageSourceFrequency(i),
+			//			// Phase introduced by transfer function
+			//			acActiveComponentsCurrents[i, j].Phase,
+			//			// Number of points specified by caller
+			//			pointsCount,
+			//			// Time step specified by caller
+			//			timeStep);
+			//	}
+			//}
 
-					// Add to appropriate node's potentials calculated for i-th voltage source
-					result.ACStates[i].Potentials[j] = WaveformBuilder.SineWave(
-						// Amplitude is the amplitude of the source times magnitude of transfer function
-						factory.GetACVoltageSourceAmplitude(i) * nodePotentials[i, j].Magnitude,
-						// Frequency of the i-th voltage source
-						factory.GetACVoltageSourceFrequency(i),
-						// Phase introduced by transfer function
-						nodePotentials[i, j].Phase,
-						// Number of points specified by caller
-						pointsCount,
-						// Time step specified by caller
-						timeStep);
-				}
+			//// Add the calculated DC potential at each node to corresponding nodes' waveforms, as constant value 
+			//for (int i = 0; i < nodes.Count() - 1; ++i)
+			//{
+			//	// Get i-th node
+			//	var currentNode = nodesWithoutReference[i];
 
-				// For each active component current transfer function for i-th source
-				for (int j = 0; j < factory.ActiveComponentsCount; ++j)
-				{
-					// Add to appropriate active component's current's calculated current for i-th voltage source
-					result.ACStates[i].Currents[j] = WaveformBuilder.SineWave(
-						// Amplitude is the amplitude of the source times magnitude of transfer function
-						factory.GetACVoltageSourceAmplitude(i) * activeComponentsCurrents[i, j].Magnitude,
-						// Frequency of the i-th voltage source
-						factory.GetACVoltageSourceFrequency(i),
-						// Phase introduced by transfer function
-						activeComponentsCurrents[i, j].Phase,
-						// Number of points specified by caller
-						pointsCount,
-						// Time step specified by caller
-						timeStep);
-				}
+			//	// Add the DC potential as constant value - take the real part because for DC bias results can only be purely real
+			//	// TODO: Add support for one single constant value storage and do it like that
+			//	result.DCState.Potentials[i] = Enumerable.Repeat(dcPotentials[i].Real, pointsCount);
+			//}
 
-			}
+			//// Add the calculated DC active component currents to corresponding active components currents, as constant value
+			//for (int i = 0; i < factory.ActiveComponentsCount; ++i)
+			//{
+			//	// Take the real part only because for DC bias results can only be purely real
+			//	result.DCState.Currents[i] = Enumerable.Repeat(dcCurrents[i].Real, pointsCount);
+			//}
 
-			// Add the calculated DC potential at each node to corresponding nodes' waveforms, as constant value 
-			for (int i = 0; i < nodes.Count() - 1; ++i)
-			{
-				// Get i-th node
-				var currentNode = nodesWithoutReference[i];
+			//return result;
+		}
 
-				// Add the DC potential as constant value - take the real part because for DC bias results can only be purely real
-				// TODO: Add support for one single constant value storage and do it like that
-				result.DCState.Potentials[i] = Enumerable.Repeat(dcPotentials[i].Real, pointsCount);
-			}
+		private class a : ISourceDescription
+		{
+			public double Frequency => 0;
 
-			// Add the calculated DC active component currents to corresponding active components currents, as constant value
-			for (int i = 0; i < factory.ActiveComponentsCount; ++i)
-			{
-				// Take the real part only because for DC bias results can only be purely real
-				result.DCState.Currents[i] = Enumerable.Repeat(dcCurrents[i].Real, pointsCount);
-			}
+			public SourceType SourceType => SourceType.DCVoltageSource;
 
-			return result;
+			public double OutputValue => 0;
+
+			public IIDLabel Label => null;
+
+			public static a Singleton { get; } = new a();
 		}
 
 		/// <summary>
@@ -305,75 +294,86 @@ namespace ECAT.Simulation
 			bool includeDCBias = false)
 		{
 			// Get indices of nodes, without the reference node, and group them into a list for easier access
-			var nodeIndices = factory.GetSimulationNodeIndices().ToList();
+			var nodeIndices = factory.GetNodeIndicesWithoutReference().ToList();
 
 			// Result container that will be returned
 			// TODO: Provide DC voltage sources descriptions
-			var result = new InstantenousPartialStates(factory.ACVoltageSourcesCount, nodeIndices, factory.ActiveComponentsCount,
-				factory.GetACVoltageSourcesDescriptions(), factory.GetACVoltageSourcesDescriptions());
-			
-			// Get all transfer functions
-			GetAllACTransferFunctions(factory, out var nodePotentials, out var activeComponentsCurrents);
+			var result = new InstantenousPartialStates(nodeIndices, factory.ActiveComponentsCount, factory.AllSources);
 
-			// For each function for i-th voltage source
-			for (int i = 0; i < factory.ACVoltageSourcesCount; ++i)
+			var phasors = GetPhasorsForAllACSources(factory);
+
+			if(includeDCBias)
 			{
-				// Transfer functions for node potentials
-				foreach(var index in nodeIndices)
-				{
-					// Add to appropriate node's instantenous potential calculated for i-th voltage source
-					result.ACStates[i].Potentials[index] += WaveformBuilder.SineWaveInstantenousValue(
-						// Amplitude is the amplitude of the source times magnitude of transfer function
-						factory.GetACVoltageSourceAmplitude(i) * nodePotentials[i, index].Magnitude,
-						// Frequency of the i-th voltage source
-						factory.GetACVoltageSourceFrequency(i),
-						// Phase introduced by transfer function
-						nodePotentials[i, index].Phase,
-						// Index specified by caller
-						pointIndex,
-						// Time step specified by caller
-						timeStep);
-				}
-
-				// Transfer functions for active components currents
-				for (int j = 0; j < factory.ActiveComponentsCount; ++j)
-				{
-					// Add to appropriate current's instantenous value
-					result.ACStates[i].Currents[j] += WaveformBuilder.SineWaveInstantenousValue(
-						// Amplitude is the amplitude of the source times magnitude of transfer function
-						factory.GetACVoltageSourceAmplitude(i) * activeComponentsCurrents[i, j].Magnitude,
-						// Frequency of the i-th voltage source
-						factory.GetACVoltageSourceFrequency(i),
-						// Phase introduced by transfer function
-						activeComponentsCurrents[i, j].Phase,
-						// Index specified by caller
-						pointIndex,
-						// Time step specified by caller
-						timeStep);
-				}
+				phasors.MergeWith(GetPhasorsForAllDCSources(factory));
 			}
 
-			// Get DC transfer function - if DC biasing was specified construct a full DC admittance matrix, if not construct DC matrix only for
-			// saturated op-amps, then solve the constructed matrix
-			(includeDCBias ?
-				factory.ConstructDC() : factory.ConstructDCForSaturatedOpAmpsOnly()).Solve(out var dcBiasPotentials, out var dcBiasCurrents);
+			var inst = phasors.ToInstantenousValue(pointIndex, timeStep);
 
-			// Cast the results to their real parts only - DC biasing can't produce complex values.
-			// Transfer functions for node potentials
-			foreach(var index in nodeIndices)
-			{
-				// Add to appropriate node's instantenous potential calculated for i-th voltage source
-				result.DCState.Potentials[index] += dcBiasPotentials[index].Real;
-			}
+			var opAmpBias = GetOpAmpSaturationBias(factory);
 
-			// Transfer functions for active components currents
-			for (int i = 0; i < factory.ActiveComponentsCount; ++i)
-			{
-				// Add to appropriate node's instantenous potential calculated for i-th voltage source
-				result.DCState.Currents[i] += dcBiasCurrents[i].Real;
-			}
+			inst.States.Add(a.Singleton, opAmpBias);
 
-			return result;
+			return inst;
+
+			//// For each function for i-th voltage source
+			//for (int i = 0; i < factory.ACVoltageSourcesCount; ++i)
+			//{
+			//	// Transfer functions for node potentials
+			//	foreach(var index in nodeIndices)
+			//	{
+			//		// Add to appropriate node's instantenous potential calculated for i-th voltage source
+			//		result.ACStates[i].Potentials[index] += WaveformBuilder.SineWaveInstantenousValue(
+			//			// Amplitude is the amplitude of the source times magnitude of transfer function
+			//			factory.GetACVoltageSourceAmplitude(i) * nodePotentials[i, index].Magnitude,
+			//			// Frequency of the i-th voltage source
+			//			factory.GetACVoltageSourceFrequency(i),
+			//			// Phase introduced by transfer function
+			//			nodePotentials[i, index].Phase,
+			//			// Index specified by caller
+			//			pointIndex,
+			//			// Time step specified by caller
+			//			timeStep);
+			//	}
+
+			//	// Transfer functions for active components currents
+			//	for (int j = 0; j < factory.ActiveComponentsCount; ++j)
+			//	{
+			//		// Add to appropriate current's instantenous value
+			//		result.ACStates[i].Currents[j] += WaveformBuilder.SineWaveInstantenousValue(
+			//			// Amplitude is the amplitude of the source times magnitude of transfer function
+			//			factory.GetACVoltageSourceAmplitude(i) * activeComponentsCurrents[i, j].Magnitude,
+			//			// Frequency of the i-th voltage source
+			//			factory.GetACVoltageSourceFrequency(i),
+			//			// Phase introduced by transfer function
+			//			activeComponentsCurrents[i, j].Phase,
+			//			// Index specified by caller
+			//			pointIndex,
+			//			// Time step specified by caller
+			//			timeStep);
+			//	}
+			//}
+
+			//// Get DC transfer function - if DC biasing was specified construct a full DC admittance matrix, if not construct DC matrix only for
+			//// saturated op-amps, then solve the constructed matrix
+			//(includeDCBias ?
+			//	factory.ConstructDC() : factory.ConstructDCForSaturatedOpAmpsOnly()).Solve(out var dcBiasPotentials, out var dcBiasCurrents);
+
+			//// Cast the results to their real parts only - DC biasing can't produce complex values.
+			//// Transfer functions for node potentials
+			//foreach(var index in nodeIndices)
+			//{
+			//	// Add to appropriate node's instantenous potential calculated for i-th voltage source
+			//	result.DCState.Potentials[index] += dcBiasPotentials[index].Real;
+			//}
+
+			//// Transfer functions for active components currents
+			//for (int i = 0; i < factory.ActiveComponentsCount; ++i)
+			//{
+			//	// Add to appropriate node's instantenous potential calculated for i-th voltage source
+			//	result.DCState.Currents[i] += dcBiasCurrents[i].Real;
+			//}
+
+			//return result;
 		}
 
 		#endregion
@@ -408,7 +408,7 @@ namespace ECAT.Simulation
 			int pointsCount = 600;
 
 			// Get highest/lowest frequencies in the circuit
-			var lowestFrequency = factory.FrequenciesInCircuit.Min();
+			var lowestFrequency = factory.LowestFrequency;
 
 			// Time step between two subsequent points in time vector
 			double timeStep = GetTimeStep(pointsCount, lowestFrequency);
@@ -452,13 +452,17 @@ namespace ECAT.Simulation
 			int pointsCount = 600;
 
 			// Get highest/lowest frequencies in the circuit
-			var lowestFrequency = factory.FrequenciesInCircuit.Min();
+			var lowestFrequency = factory.LowestFrequency;
 
 			// Time step between two subsequent points in time vector
 			double timeStep = GetTimeStep(pointsCount, lowestFrequency);
 
 			// Get nodes constructed on the basis of the circuit
-			var nodeIndices = factory.GetSimulationNodeIndices().ToList();
+			var nodeIndices = factory.GetNodeIndicesWithoutReference().ToList();
+
+			var usedSources = (includeDCBias ? factory.AllSources : factory.ACSources).Concat(a.Singleton);
+
+			var adjustedState = new WaveformPartialState(factory.NodesCount, factory.ActiveComponentsCount, usedSources);
 
 			// Potentials as waveforms with values adjusted for proper op-amp operation at each point
 			var adjustedWaveforms = new Dictionary<int, IList<double>>[factory.ACVoltageSourcesCount];
@@ -517,34 +521,21 @@ namespace ECAT.Simulation
 					instantenousValues = FullCycleInstantenousValuesHelper(factory, i, timeStep, includeDCBias);
 				}
 
-				// At this point op-amp operation is correct - assign the instantenous potentials and currents to the final waveform
-				for (int j = 0; j < factory.ACVoltageSourcesCount; ++j)
+				foreach(var state in instantenousValues.States.Values)
 				{
-					foreach(var index in nodeIndices)
+					foreach (var index in nodeIndices)
 					{
 						// Lists are empty - points should just be added to them to form a full waveform
-						adjustedWaveforms[j][index].Add(instantenousValues.ACStates[j].Potentials[index]);
+						adjustedState.States[state.SourceDescription].Potentials[index].Add(
+							instantenousValues.States[state.SourceDescription].Potentials[index]);
 					}
-
+					
 					// Add the instantenous values of active components currents to the waveforms
-					for (int k = 0; k < factory.ActiveComponentsCount; ++k)
+					foreach(var index in factory.ActiveComponentsIndices)
 					{
-						adjustedActiveComponentsCurrents[j][k].Add(instantenousValues.ACStates[j].Currents[k]);
+						adjustedState.States[state.SourceDescription].Currents[index].Add(
+							instantenousValues.States[state.SourceDescription].Currents[index]);
 					}
-				}
-
-				// For each node
-				foreach(var index in nodeIndices)
-				{
-					// Assign DC potential to adjusted DC waveform
-					adjustedDCOffsets[index].Add(instantenousValues.DCState.Potentials[index]);
-				}
-
-				// For each active component
-				for(int j = 0; j < factory.ActiveComponentsCount; ++j)
-				{
-					// Assign its current
-					adjustedDCActiveComponentsCurrents[j].Add(instantenousValues.DCState.Currents[j]);
 				}
 
 				// Finally reset the op-amp operation for next iteration
@@ -578,38 +569,40 @@ namespace ECAT.Simulation
 				finalActiveComponentsCurrents.Add(i, IoC.Resolve<ITimeDomainSignalMutable>(pointsCount, timeStep));
 			}
 
+
 			// Full waveforms were determined - assign them to final signals, go through each AC voltage source
-			for (int i = 0; i < factory.ACVoltageSourcesCount; ++i)
+			foreach(var source in usedSources)
 			{
 				// For each node
-				for (int j = 0; j < nodes.Count; ++j)
+				foreach(var nodeIndex in factory.GetNodeIndicesWithoutReference())
 				{
 					// Fetch it
-					var currentNode = nodes[j];
+					var currentNode = nodes[nodeIndex];
 
 					// And add a waveform generated by i-th AC voltage source on that node
-					finalPotentials[currentNode].AddWaveform(factory.GetACVoltageSourceDescription(i), adjustedWaveforms[i][currentNode.Index]);
+					finalPotentials[currentNode].AddWaveform(source, adjustedState.States[source].Potentials[currentNode.Index]);
 				}
 
 				// For each active component
-				for (int j = 0; j < factory.ActiveComponentsCount; ++j)
+				foreach(var activeComponentIndex in factory.ActiveComponentsIndices)
 				{
 					// Add a waveform generated by i-th AC voltage source in this current
-					finalActiveComponentsCurrents[j].AddWaveform(factory.GetACVoltageSourceDescription(i), adjustedActiveComponentsCurrents[i][j]);
+					finalActiveComponentsCurrents[activeComponentIndex].AddWaveform(
+						source, adjustedState.States[source].Currents[activeComponentIndex]);
 				}
 			}
 						
-			// Finally add DC waveforms to each node
-			foreach(var index in nodeIndices)
-			{
-				finalPotentials[nodes[index]].AddDCWaveform(adjustedDCOffsets[index]);
-			}
+			//// Finally add DC waveforms to each node
+			//foreach(var index in nodeIndices)
+			//{
+			//	finalPotentials[nodes[index]].AddDCWaveform(adjustedDCOffsets[index]);
+			//}
 
-			// And DC currents to active components
-			for(int i = 0; i < factory.ActiveComponentsCount; ++i)
-			{
-				finalActiveComponentsCurrents[i].AddDCWaveform(adjustedDCActiveComponentsCurrents[i]);
-			}
+			//// And DC currents to active components
+			//for(int i = 0; i < factory.ActiveComponentsCount; ++i)
+			//{
+			//	finalActiveComponentsCurrents[i].AddDCWaveform(adjustedDCActiveComponentsCurrents[i]);
+			//}
 
 			// Create simulation results
 			IoC.Resolve<SimulationResultsProvider>().Value = new SimulationResultsTime(
