@@ -763,10 +763,11 @@ namespace ECAT.Simulation
 			_DCCurrentSources = new List<ISourceDescription>(FindDCCurrentSources().Select((x) => x.Description));
 
 			// Get the op-amps
-			_OpAmps = new List<IOpAmpDescription>(_Schematic.Components.
+			_OpAmps = _Schematic.Components.
 				Where((component) => component is IOpAmp).
 				Cast<IOpAmp>().
-				Select((x) => x.Description));
+				Select((x) => x.Description).
+				ToList();
 
 			// Prepare the active components
 			InitializeIndexedComponents();
