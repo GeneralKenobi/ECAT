@@ -9,7 +9,7 @@ namespace ECAT.Simulation
 	/// <summary>
 	/// Container for state of a circuit represented by waveforms
 	/// </summary>
-	public class WaveformState : GenericState<IEnumerable<double>>
+	public class WaveformState : GenericState<IList<double>>
 	{
 		#region Constructor
 
@@ -21,7 +21,7 @@ namespace ECAT.Simulation
 		/// <param name="sourceDescription">Description of source that produced this state. Can be null - it means that it's indetermined or
 		/// many sources produced this state</param>
 		public WaveformState(IEnumerable<int> nodeIndices, IEnumerable<int> activeComponentsIndices, ISourceDescription sourceDescription) :
-			base(nodeIndices, activeComponentsIndices, sourceDescription) { }
+			base(nodeIndices, activeComponentsIndices, sourceDescription, () => new List<double>()) { }
 
 		/// <summary>
 		/// Constructor with parameters
@@ -44,7 +44,7 @@ namespace ECAT.Simulation
 		/// <param name="signal">Signal to add to</param>
 		/// <param name="sourceCollection">Source dictionary to add from (<see cref="GenericState{T}.Potentials"/> or <see cref="GenericState{T}.Currents"/>
 		/// </param>
-		private void AddToSignalHelper(IDictionary<int, ITimeDomainSignalMutable> signal, IDictionary<int, IEnumerable<double>> sourceCollection)
+		private void AddToSignalHelper(IDictionary<int, ITimeDomainSignalMutable> signal, IDictionary<int, IList<double>> sourceCollection)
 		{
 			// Perform necessary null checks
 			if(signal == null || sourceCollection == null)

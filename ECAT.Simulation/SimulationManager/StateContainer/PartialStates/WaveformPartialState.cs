@@ -8,7 +8,7 @@ namespace ECAT.Simulation
 	/// <summary>
 	/// Container for waveform based state of a system
 	/// </summary>
-	public class WaveformPartialState : GenericPartialStates<WaveformState, IEnumerable<double>>
+	public class WaveformPartialState : GenericPartialStates<WaveformState, IList<double>>
 	{
 		#region Constructor
 
