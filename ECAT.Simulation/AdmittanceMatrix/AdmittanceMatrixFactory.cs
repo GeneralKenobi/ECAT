@@ -42,6 +42,11 @@ namespace ECAT.Simulation
 		private List<INode> _Nodes { get; set; }
 
 		/// <summary>
+		/// All indices assigned to active components
+		/// </summary>
+		private IList<int> _ActiveComponentsIndices { get; set; }
+
+		/// <summary>
 		/// Node that is used as reference (with potential equal to 0)
 		/// </summary>
 		private INode _ReferenceNode { get; set; }
@@ -104,7 +109,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Size of D part of admittance matrix (equal to number of independent voltage sources, with op-amp outputs included)
 		/// </summary>
-		private int _SmallDimension => _SourcesNodes.Count;
+		private int _SmallDimension => ActiveComponentsCount;
 
 		#endregion
 
@@ -150,12 +155,12 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Number of active components in the circuit
 		/// </summary>
-		public int ActiveComponentsCount { get; private set; }
+		public int ActiveComponentsCount => _ActiveComponentsIndices.Count;
 
 		/// <summary>
 		/// All indices assigned to active components
 		/// </summary>
-		public IEnumerable<int> ActiveComponentsIndices { get; private set; }
+		public IEnumerable<int> ActiveComponentsIndices => _ActiveComponentsIndices;
 
 		/// <summary>
 		/// Returns descriptions of AC voltage sources
@@ -609,6 +614,8 @@ namespace ECAT.Simulation
 
 			// Merge every node that was determined to be a reference node to the final reference node
 			referenceNodes.ForEach((node) => _ReferenceNode.Merge(node));
+
+			_ReferenceNode.ConnectedTerminals.ForEach((x) => x.NodeIndex = -1);
 		}
 
 		/// <summary>
@@ -695,7 +702,7 @@ namespace ECAT.Simulation
 				Select((x, i) => new KeyValuePair<IComponentDescription, int>(x, i));
 
 			// Assign the indices to public property
-			ActiveComponentsIndices = activeComponents.Select((x) => x.Value);
+			_ActiveComponentsIndices = activeComponents.Select((x) => x.Value).ToList();
 
 			// Create a final collection - base in on previously determined indexing for active components and add
 			// DC current sources, those are indexed separately, also starting from 0.
