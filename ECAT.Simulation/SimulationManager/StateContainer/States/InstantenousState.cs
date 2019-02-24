@@ -39,6 +39,28 @@ namespace ECAT.Simulation
 		#region Public methods
 
 		/// <summary>
+		/// Adds the given values to this instance. If <see cref="GenericState{T}.Potentials"/> or <see cref="GenericState{T}.Currents"/> don't
+		/// have a key corresponding to index in either <paramref name="nodePotentials"/> or <paramref name="activeComponentsCurrents"/> an
+		/// exception will be thrown.
+		/// </summary>
+		/// <param name="nodePotentials"></param>
+		/// <param name="activeComponentsCurrents"></param>
+		public void AddValues(double[] nodePotentials, double[] activeComponentsCurrents)
+		{
+			// Add node potentials
+			for (int i = 0; i < nodePotentials.Length; ++i)
+			{
+				Potentials[i] += nodePotentials[i];
+			}
+
+			// Add active components currents
+			for (int i = 0; i < activeComponentsCurrents.Length; ++i)
+			{
+				Currents[i] += activeComponentsCurrents[i];
+			}
+		}
+
+		/// <summary>
 		/// Adds the <paramref name="other"/> state to this instance.
 		/// </summary>
 		/// <param name="other">Object to add to this instance, internal collections' keys have to match, otherwise an exception is thrown</param>
