@@ -64,7 +64,7 @@ namespace ECAT.Simulation
 					TypeSwitch.Construct().
 						LazyCase<IResistor>((x) => _Currents.TryGet(x, out current)).
 						LazyCase<ICapacitor>((x) => _Currents.TryGet(x, out current)).
-						LazyCase<IActiveComponent>((x) => _Currents.TryGet(x.ActiveComponentIndex, out current)).
+						//LazyCase<IActiveComponent>((x) => _Currents.TryGet(x.ActiveComponentIndex, out current)).
 						Switch(twoTerminal);
 					
 					// If both voltage and current were obtained

@@ -45,7 +45,7 @@ namespace ECAT.DataDisplay
 					// For capacitors no change in VI directions means that current flow is taken for voltage from node A (reference) to node B
 					LazyCase<ICapacitor>((x) => info = results.Get(x, !target.ChangeVIDirections)).
 					// For active components no change in VI directions means that current flow is taken for voltage from node A (reference) to node B
-					LazyCase<IActiveComponent>((x) => info = results.Get(x.ActiveComponentIndex, !target.ChangeVIDirections)).
+					//LazyCase<IActiveComponent>((x) => info = results.Get(x.ActiveComponentIndex, !target.ChangeVIDirections)).
 					Switch(target);
 
 				return info;
