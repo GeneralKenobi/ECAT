@@ -31,7 +31,7 @@
 							<!-- Presents a parameter associated with the component -->
 							<controls:ValueUnitDisplay Foreground="{StaticResource BlackBrush}"
 								FontSize="{StaticResource FontSizeXLarge}"								
-								Value="{Binding Component.PeakProducedVoltage}"
+								Value="{Binding Component.OutputValue}"
 								RoundToDigit="4"
 								Unit="V AC"
 								HorizontalAlignment="Left"

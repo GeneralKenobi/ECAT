@@ -23,7 +23,7 @@
 								FontSize="{StaticResource FontSizeXLarge}"
 								HorizontalAlignment="Center"
 								VerticalAlignment="Bottom"
-								Value="{Binding Component.ProducedDCVoltage}"
+								Value="{Binding Component.OutputValue}"
 								RoundToDigit="4"
 								Unit="V"
 								Margin="0 0 0 -25"

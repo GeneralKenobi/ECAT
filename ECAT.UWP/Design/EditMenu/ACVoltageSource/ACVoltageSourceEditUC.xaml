@@ -30,12 +30,12 @@
 		<!-- Produced AC voltage label -->
 		<TextBlock Style="{StaticResource WhiteTextBlockStyle}"
 			FontSize="{StaticResource FontSizeBig}"
-			Text="{Binding PeakProducedVoltageEditHeader, Mode=OneTime}"
+			Text="{Binding OutputHeader, Mode=OneTime}"
 			Margin="0 20 0 10"/>
 
 		<!-- TextBox with the produced AC voltage settings -->
 		<TextBox Style="{StaticResource SideMenuTextBoxStyleUnder8}"
-			Text="{Binding PeakProducedVoltage, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"
+			Text="{Binding OutputValue, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"
 			Grid.ColumnSpan="2"/>
 
 	</StackPanel>

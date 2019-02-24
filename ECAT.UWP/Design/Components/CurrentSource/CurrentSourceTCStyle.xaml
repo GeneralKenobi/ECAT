@@ -23,7 +23,7 @@
 								FontSize="{StaticResource FontSizeXLarge}"
 								HorizontalAlignment="Center"
 								VerticalAlignment="Bottom"
-								Value="{Binding Component.ProducedCurrent}"
+								Value="{Binding Component.OutputValue}"
 								RoundToDigit="4"
 								Margin="0 0 0 -25"
 								Unit="A"
