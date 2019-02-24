@@ -43,6 +43,12 @@ namespace ECAT.Simulation
 			// Assign the collections to private properties for future use
 			_NodeIndices = nodeIndices;
 			_ActiveComponentsIndices = activeComponentsIndices;
+
+			// Initialize States using factory - create a state for each source
+			foreach(var source in sourcesDescriptions)
+			{
+				States.Add(source, stateFactory(nodeIndices, activeComponentsIndices, source));
+			}
 		}
 
 		/// <summary>
