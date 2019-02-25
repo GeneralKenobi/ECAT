@@ -180,13 +180,6 @@ namespace ECAT.Simulation
 		/// will be considered for DC part of simulation</param>
 		private WaveformPartialState FullCycleHelper(AdmittanceMatrixFactory factory, int pointsCount, double timeStep, bool includeDCBias = false)
 		{
-			//// Container for calculated states
-			//var result = new WaveformPartialState(factory.NodesCount,
-			//	factory.ActiveComponentsCount,
-			//	factory.ACVoltageSources.
-			//		Concat(factory.DCVoltageSources).
-			//		Concat(factory.DCCurrentSources));
-
 			// Get nodes constructed on the basis of the circuit
 			var nodes = factory.GetNodes();
 
@@ -203,67 +196,6 @@ namespace ECAT.Simulation
 			}
 
 			return systemState.ToWaveform(pointsCount, timeStep);
-			
-			//// For each function for i-th voltage source
-			//for (int i = 0; i < factory.ACVoltageSourcesCount; ++i)
-			//{
-			//	// Transfer functions for node potentials
-			//	for (int j = 0; j < acNodePotentials.GetLength(1); ++j)
-			//	{
-			//		// Get j-th node
-			//		var currentNode = nodesWithoutReference[j];
-
-			//		// Add to appropriate node's potentials calculated for i-th voltage source
-			//		result.ACStates[i].Potentials[j] = WaveformBuilder.SineWave(
-			//			// Amplitude is the amplitude of the source times magnitude of transfer function
-			//			factory.GetACVoltageSourceAmplitude(i) * acNodePotentials[i, j].Magnitude,
-			//			// Frequency of the i-th voltage source
-			//			factory.GetACVoltageSourceFrequency(i),
-			//			// Phase introduced by transfer function
-			//			acNodePotentials[i, j].Phase,
-			//			// Number of points specified by caller
-			//			pointsCount,
-			//			// Time step specified by caller
-			//			timeStep);
-			//	}
-
-			//	// For each active component current transfer function for i-th source
-			//	for (int j = 0; j < factory.ActiveComponentsCount; ++j)
-			//	{
-			//		// Add to appropriate active component's current's calculated current for i-th voltage source
-			//		result.ACStates[i].Currents[j] = WaveformBuilder.SineWave(
-			//			// Amplitude is the amplitude of the source times magnitude of transfer function
-			//			factory.GetACVoltageSourceAmplitude(i) * acActiveComponentsCurrents[i, j].Magnitude,
-			//			// Frequency of the i-th voltage source
-			//			factory.GetACVoltageSourceFrequency(i),
-			//			// Phase introduced by transfer function
-			//			acActiveComponentsCurrents[i, j].Phase,
-			//			// Number of points specified by caller
-			//			pointsCount,
-			//			// Time step specified by caller
-			//			timeStep);
-			//	}
-			//}
-
-			//// Add the calculated DC potential at each node to corresponding nodes' waveforms, as constant value 
-			//for (int i = 0; i < nodes.Count() - 1; ++i)
-			//{
-			//	// Get i-th node
-			//	var currentNode = nodesWithoutReference[i];
-
-			//	// Add the DC potential as constant value - take the real part because for DC bias results can only be purely real
-			//	// TODO: Add support for one single constant value storage and do it like that
-			//	result.DCState.Potentials[i] = Enumerable.Repeat(dcPotentials[i].Real, pointsCount);
-			//}
-
-			//// Add the calculated DC active component currents to corresponding active components currents, as constant value
-			//for (int i = 0; i < factory.ActiveComponentsCount; ++i)
-			//{
-			//	// Take the real part only because for DC bias results can only be purely real
-			//	result.DCState.Currents[i] = Enumerable.Repeat(dcCurrents[i].Real, pointsCount);
-			//}
-
-			//return result;
 		}
 
 		private class a : ISourceDescription
@@ -311,69 +243,27 @@ namespace ECAT.Simulation
 
 			var opAmpBias = GetOpAmpSaturationBias(factory);
 
+			//factory.ResetOpAmpOperation();
+
+			var phasorsBeforeAdjustment = GetPhasorsForAllACSources(factory);
+
 			inst.States.Add(a.Singleton, opAmpBias);
 
+			foreach (var index in factory.GetNodeIndicesWithoutReference())
+			{
+				var sum = inst.States.Values.Sum((x) => x.Potentials[index]);
+
+				inst.States.Values.ForEach((x) => x.Potentials[index] += opAmpBias.Potentials[index]);
+			}
+
+			foreach (var index in factory.ActiveComponentsIndices)
+			{
+				var sum = inst.States.Values.Sum((x) => x.Currents[index]);
+
+				inst.States.Values.ForEach((x) => x.Currents[index] += opAmpBias.Currents[index]);
+			}
+
 			return inst;
-
-			//// For each function for i-th voltage source
-			//for (int i = 0; i < factory.ACVoltageSourcesCount; ++i)
-			//{
-			//	// Transfer functions for node potentials
-			//	foreach(var index in nodeIndices)
-			//	{
-			//		// Add to appropriate node's instantenous potential calculated for i-th voltage source
-			//		result.ACStates[i].Potentials[index] += WaveformBuilder.SineWaveInstantenousValue(
-			//			// Amplitude is the amplitude of the source times magnitude of transfer function
-			//			factory.GetACVoltageSourceAmplitude(i) * nodePotentials[i, index].Magnitude,
-			//			// Frequency of the i-th voltage source
-			//			factory.GetACVoltageSourceFrequency(i),
-			//			// Phase introduced by transfer function
-			//			nodePotentials[i, index].Phase,
-			//			// Index specified by caller
-			//			pointIndex,
-			//			// Time step specified by caller
-			//			timeStep);
-			//	}
-
-			//	// Transfer functions for active components currents
-			//	for (int j = 0; j < factory.ActiveComponentsCount; ++j)
-			//	{
-			//		// Add to appropriate current's instantenous value
-			//		result.ACStates[i].Currents[j] += WaveformBuilder.SineWaveInstantenousValue(
-			//			// Amplitude is the amplitude of the source times magnitude of transfer function
-			//			factory.GetACVoltageSourceAmplitude(i) * activeComponentsCurrents[i, j].Magnitude,
-			//			// Frequency of the i-th voltage source
-			//			factory.GetACVoltageSourceFrequency(i),
-			//			// Phase introduced by transfer function
-			//			activeComponentsCurrents[i, j].Phase,
-			//			// Index specified by caller
-			//			pointIndex,
-			//			// Time step specified by caller
-			//			timeStep);
-			//	}
-			//}
-
-			//// Get DC transfer function - if DC biasing was specified construct a full DC admittance matrix, if not construct DC matrix only for
-			//// saturated op-amps, then solve the constructed matrix
-			//(includeDCBias ?
-			//	factory.ConstructDC() : factory.ConstructDCForSaturatedOpAmpsOnly()).Solve(out var dcBiasPotentials, out var dcBiasCurrents);
-
-			//// Cast the results to their real parts only - DC biasing can't produce complex values.
-			//// Transfer functions for node potentials
-			//foreach(var index in nodeIndices)
-			//{
-			//	// Add to appropriate node's instantenous potential calculated for i-th voltage source
-			//	result.DCState.Potentials[index] += dcBiasPotentials[index].Real;
-			//}
-
-			//// Transfer functions for active components currents
-			//for (int i = 0; i < factory.ActiveComponentsCount; ++i)
-			//{
-			//	// Add to appropriate node's instantenous potential calculated for i-th voltage source
-			//	result.DCState.Currents[i] += dcBiasCurrents[i].Real;
-			//}
-
-			//return result;
 		}
 
 		#endregion
@@ -418,12 +308,6 @@ namespace ECAT.Simulation
 
 			var nodes = factory.GetNodes().ToList();
 
-			//// Create simulation results
-			//IoC.Resolve<SimulationResultsProvider>().Value = new SimulationResultsTime(
-			//	totalPotentials.ToDictionary((x) => x.Key, (x) => (ITimeDomainSignal)x.Value),
-			//	totalActiveComponentsCurrents.ToDictionary((x) => x.Key, (x) => (ITimeDomainSignal)x.Value),
-			//	timeStep,
-			//	0);
 			// Create simulation results
 			IoC.Resolve<SimulationResultsProvider>().Value = new SimulationResultsTime(
 				state.PotentialsToTimeDomainSignals(timeStep).
@@ -591,18 +475,6 @@ namespace ECAT.Simulation
 						source, adjustedState.States[source].Currents[activeComponentIndex]);
 				}
 			}
-						
-			//// Finally add DC waveforms to each node
-			//foreach(var index in nodeIndices)
-			//{
-			//	finalPotentials[nodes[index]].AddDCWaveform(adjustedDCOffsets[index]);
-			//}
-
-			//// And DC currents to active components
-			//for(int i = 0; i < factory.ActiveComponentsCount; ++i)
-			//{
-			//	finalActiveComponentsCurrents[i].AddDCWaveform(adjustedDCActiveComponentsCurrents[i]);
-			//}
 
 			// Create simulation results
 			IoC.Resolve<SimulationResultsProvider>().Value = new SimulationResultsTime(
