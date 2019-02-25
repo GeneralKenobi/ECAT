@@ -8,12 +8,12 @@
 		#region Properties
 
 		/// <summary>
-		/// Frequency of the described <see cref="IActiveComponent"/>
+		/// Frequency of the described source
 		/// </summary>
 		double Frequency { get; }
 
 		/// <summary>
-		/// Type of the <see cref="IActiveComponent"/>
+		/// Type of the described source
 		/// </summary>
 		SourceType SourceType { get; }
 

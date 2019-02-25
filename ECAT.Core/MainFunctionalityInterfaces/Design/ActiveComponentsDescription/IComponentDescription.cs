@@ -8,7 +8,7 @@
 		#region Properties
 
 		/// <summary>
-		/// Unique label assigned to the <see cref="IActiveComponent"/> that is described by this instance
+		/// Unique label assigned to the <see cref="IBaseComponent"/> that is described by this instance
 		/// </summary>
 		IIDLabel Label { get; }
 
