@@ -10,7 +10,7 @@ namespace ECAT.Simulation
 	/// <summary>
 	/// Class that allows for easy construction and configuration of admittance matrices for one <see cref="ISchematic"/>
 	/// </summary>
-	public class AdmittanceMatrixFactory
+	public partial class AdmittanceMatrixFactory
 	{
 		#region Constructor
 
@@ -188,12 +188,21 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Returns descriptions of all DC sources
 		/// </summary>
-		public IEnumerable<ISourceDescription> DCSources => _DCVoltageSources.Concat(_DCCurrentSources);
+		public IEnumerable<ISourceDescription> DCSources => _DCVoltageSources.Concat(_DCCurrentSources).Concat(OpAmpSaturationSource);
 
 		/// <summary>
 		/// Descriptions of all sources
 		/// </summary>
-		public IEnumerable<ISourceDescription> AllSources => _ACVoltageSources.Concat(_DCVoltageSources).Concat(_DCCurrentSources);
+		public IEnumerable<ISourceDescription> AllSources => _ACVoltageSources.
+			Concat(_DCVoltageSources).
+			Concat(_DCCurrentSources).
+			Concat(OpAmpSaturationSource);
+
+		/// <summary>
+		/// <see cref="ISourceDescription"/> for results generated for saturated op-amps (matrices built with
+		/// <see cref="ConstructDCForSaturatedOpAmpsOnly"/>).
+		/// </summary>
+		public ISourceDescription OpAmpSaturationSource { get; } = new OpAmpSaturationSourceDescription();
 
 		#endregion
 
