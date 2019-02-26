@@ -188,15 +188,14 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Returns descriptions of all DC sources
 		/// </summary>
-		public IEnumerable<ISourceDescription> DCSources => _DCVoltageSources.Concat(_DCCurrentSources).Concat(OpAmpSaturationSource);
+		public IEnumerable<ISourceDescription> DCSources => _DCVoltageSources.Concat(_DCCurrentSources);
 
 		/// <summary>
 		/// Descriptions of all sources
 		/// </summary>
 		public IEnumerable<ISourceDescription> AllSources => _ACVoltageSources.
 			Concat(_DCVoltageSources).
-			Concat(_DCCurrentSources).
-			Concat(OpAmpSaturationSource);
+			Concat(_DCCurrentSources);
 
 		/// <summary>
 		/// <see cref="ISourceDescription"/> for results generated for saturated op-amps (matrices built with
@@ -437,7 +436,7 @@ namespace ECAT.Simulation
 		}
 
 		/// <summary>
-		/// Configures submatrices so that <paramref name="opAmp"/> is considered to work in saturatio (output is either positive or negative
+		/// Configures submatrices so that <paramref name="opAmp"/> is considered to work in saturation (output is either positive or negative
 		/// supply voltage - depending on <paramref name="positiveSaturation"/>)
 		/// </summary>
 		/// <param name="matrix"></param>
