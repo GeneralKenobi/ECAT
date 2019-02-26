@@ -94,7 +94,7 @@ namespace ECAT.Simulation
 
 			matrix.Solve(out var nodePotentials, out var activeComponentsCurrents);
 
-			var result = new InstantenousState(factory.GetNodeIndicesWithoutReference(), factory.ActiveComponentsCount, a.Singleton);
+			var result = new InstantenousState(factory.GetNodeIndicesWithoutReference(), factory.ActiveComponentsCount, factory.OpAmpSaturationSource);
 
 			result.AddValues(nodePotentials.Select((x) => x.Real).ToArray(), activeComponentsCurrents.Select((x) => x.Real).ToArray());
 
@@ -197,20 +197,7 @@ namespace ECAT.Simulation
 
 			return systemState.ToWaveform(pointsCount, timeStep);
 		}
-
-		private class a : ISourceDescription
-		{
-			public double Frequency => 0;
-
-			public SourceType SourceType => SourceType.DCVoltageSource;
-
-			public double OutputValue => 0;
-
-			public IIDLabel Label => null;
-
-			public static a Singleton { get; } = new a();
-		}
-
+		
 		/// <summary>
 		/// Performs an AC cycle simulation - simulation is running for one full period of lowest frequency source in the <paramref name="factory"/>.
 		/// After determining the transfer functions calculates only one set of instantenous values for point described by
@@ -242,26 +229,8 @@ namespace ECAT.Simulation
 			var inst = phasors.ToInstantenousValue(pointIndex, timeStep);
 
 			var opAmpBias = GetOpAmpSaturationBias(factory);
-
-			//factory.ResetOpAmpOperation();
-
-			var phasorsBeforeAdjustment = GetPhasorsForAllACSources(factory);
-
-			inst.States.Add(a.Singleton, opAmpBias);
-
-			foreach (var index in factory.GetNodeIndicesWithoutReference())
-			{
-				var sum = inst.States.Values.Sum((x) => x.Potentials[index]);
-
-				inst.States.Values.ForEach((x) => x.Potentials[index] += opAmpBias.Potentials[index]);
-			}
-
-			foreach (var index in factory.ActiveComponentsIndices)
-			{
-				var sum = inst.States.Values.Sum((x) => x.Currents[index]);
-
-				inst.States.Values.ForEach((x) => x.Currents[index] += opAmpBias.Currents[index]);
-			}
+			
+			inst.AddState(opAmpBias);
 
 			return inst;
 		}
@@ -344,7 +313,7 @@ namespace ECAT.Simulation
 			// Get nodes constructed on the basis of the circuit
 			var nodeIndices = factory.GetNodeIndicesWithoutReference().ToList();
 
-			var usedSources = (includeDCBias ? factory.AllSources : factory.ACSources).Concat(a.Singleton);
+			var usedSources = (includeDCBias ? factory.AllSources : factory.ACSources).Concat(factory.OpAmpSaturationSource);
 
 			var adjustedState = new WaveformPartialState(factory.NodesCount, factory.ActiveComponentsCount, usedSources);
 
