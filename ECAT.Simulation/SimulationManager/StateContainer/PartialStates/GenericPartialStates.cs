@@ -1,4 +1,5 @@
-﻿using ECAT.Core;
+﻿using CSharpEnhanced.Helpers;
+using ECAT.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -123,6 +124,43 @@ namespace ECAT.Simulation
 		/// Array holding AC state for each source
 		/// </summary>
 		public IDictionary<ISourceDescription, TState> States { get; } = new Dictionary<ISourceDescription, TState>();
+
+		#endregion
+
+		#region Public methods
+
+		/// <summary>
+		/// Adds <paramref name="state"/> to this partial state (into <see cref="States"/>). <paramref name="state"/> cannot be null,
+		/// <see cref="TState.SourceDescription"/> cannot be null, node indices and active components indices in <paramref name="state"/> must
+		/// exactly match those in this <see cref="GenericPartialStates{TState, TValues}"/>, <see cref="States"/> cannot contain an entry for
+		/// <see cref="TState.SourceDescription"/>. Otherwise an exception is thrown.
+		/// </summary>
+		/// <param name="state"></param>
+		public void AddState(TState state)
+		{
+			// Necessary null checks
+			if(state == null || state.SourceDescription == null)
+			{
+				throw new ArgumentNullException();
+			}
+			
+			// Check if key collections match - node indices as well as active components indices in this partial state and the added state must
+			// be equal
+			if(!state.Potentials.Keys.IsSequenceEqual(_NodeIndices) || !state.Currents.Keys.IsSequenceEqual(_ActiveComponentsIndices))
+			{
+				throw new ArgumentException("Node indices and active components indices in " + nameof(state) +
+					" must match those in this partial state");
+			}
+
+			// Check if the state is already in this partial state - if so it cannot be added
+			if(States.Keys.Contains(state.SourceDescription))
+			{
+				throw new ArgumentException(nameof(state) + " is already present in this partial state");
+			}
+
+			// Finally, if everything is ok, add the state
+			States.Add(state.SourceDescription, state);
+		}
 
 		#endregion
 	}
