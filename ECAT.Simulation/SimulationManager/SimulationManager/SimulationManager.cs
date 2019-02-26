@@ -1,12 +1,10 @@
 ﻿using CSharpEnhanced.Helpers;
 using ECAT.Core;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Numerics;
 
 namespace ECAT.Simulation
 {
@@ -32,93 +30,24 @@ namespace ECAT.Simulation
 
 		#region Private methods
 
-		#region DC biasing
-		
-		/// <summary>
-		/// Topmost logic behind DC bias - calling it will result in simulation being performed and saved to <see cref="ISimulationResultsProvider"/>
-		/// </summary>
-		/// <param name="factory"></param>
-		private void DCBiasLogic(AdmittanceMatrixFactory factory)
-		{
-			// Create dictionary holding final values of potentials at nodes
-			var totalPotentials = new Dictionary<INode, IPhasorDomainSignal>();
-
-			// Create dictionary holding final values of currents
-			var totalActiveComponentsCurrents = new Dictionary<int, IPhasorDomainSignal>();
-
-			bool opAmpOperationCorrect = true;
-
-			InstantenousState combined = null;
-
-			// Loop that will find correct op-amp settings - initial settings are tested and, if not correct, adjusted. This process
-			// goes on until the correct configuration is found.
-			do
-			{
-				// Get the DC transfer functions, combine potentials from all sources to check op-amp operaiton
-				combined = GetPhasorsForAllDCSources(factory).ToDC().Combine();
-
-				// Check if op-amps operate correctly with self-adjustment
-				opAmpOperationCorrect = factory.CheckOpAmpOperationWithSelfAdjustment(combined.Potentials);
-			} while (!opAmpOperationCorrect);
-
-			// Create signal for reference node
-			totalPotentials.Add(factory.GetNodes().First(), IoC.Resolve<IPhasorDomainSignal>(0d));
-			
-			// For each calculated node potential
-			foreach(var node in factory.GetNodesWithoutReference())
-			{
-				totalPotentials.Add(node, IoC.Resolve<IPhasorDomainSignal>(combined.Potentials[node.Index]));
-			}
-
-			// For each active component
-			foreach(var current in combined.Currents)
-			{
-				// Create a phasor domain signal for its current
-				totalActiveComponentsCurrents.Add(current.Key, IoC.Resolve<IPhasorDomainSignal>(current.Value));
-			}
-
-			// Create simulation results based on determined node potentials and active components currents
-			IoC.Resolve<SimulationResultsProvider>().Value = new SimulationResultsBias(totalPotentials, totalActiveComponentsCurrents);
-		}
-
-		#endregion
+		#region Admittance matrix solving for specific sources
 
 		/// <summary>
-		/// Creates and solves DC admittance matrix for saturated op-amps
+		/// Returns phasors constructed for source given by <paramref name="sourceDescription"/>
 		/// </summary>
 		/// <param name="factory"></param>
-		/// <returns></returns>
-		private InstantenousState GetOpAmpSaturationBias(AdmittanceMatrixFactory factory)
-		{
-			var matrix = factory.ConstructDCForSaturatedOpAmpsOnly();
-
-			matrix.Solve(out var nodePotentials, out var activeComponentsCurrents);
-
-			var result = new InstantenousState(factory.GetNodeIndicesWithoutReference(), factory.ActiveComponentsCount, factory.OpAmpSaturationSource);
-
-			result.AddValues(nodePotentials.Select((x) => x.Real).ToArray(), activeComponentsCurrents.Select((x) => x.Real).ToArray());
-
-			return result;
-		}
-
-		#region Transfer functions
-
-		/// <summary>
-		/// Returns phasors constructed for source given by <paramref name="sourceIndex"/>
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <param name="sourceIndex"></param>
-		/// <param name="nodePotentialTransferFunctions"></param>
-		/// <param name="activeComponentsCurrentsTransferFunctions"></param>
+		/// <param name="sourceDescription"></param>
 		private PhasorState GetPhasor(AdmittanceMatrixFactory factory, ISourceDescription sourceDescription)
 		{
 			var state = new PhasorState(factory.NodesCount, factory.ActiveComponentsCount, sourceDescription);
 
 			// Create an admittance matrix corresponding to the given source
 			factory.Construct(sourceDescription).
-				Solve(out var nodePotentialTransferFunctions, out var activeComponentsCurrentsTransferFunctions);
+				// And solve it
+				Solve(out var nodePotentials, out var activeComponentsCurrents);
 
-			state.AddValues(nodePotentialTransferFunctions, activeComponentsCurrentsTransferFunctions);
+			// Add the results to state
+			state.AddValues(nodePotentials, activeComponentsCurrents);
 
 			return state;
 		}
@@ -129,16 +58,15 @@ namespace ECAT.Simulation
 		/// </summary>
 		/// <param name="factory"></param>
 		/// <param name="sources">Enumeration of sources to construct transfer functions for. All sources listed have to be present in
-		/// <paramref name="factory"/>, otherwise an exception will be thrown.</param>
 		/// <returns></returns>
 		private PhasorPartialStates GetAllPhasorsHelper(AdmittanceMatrixFactory factory, IEnumerable<ISourceDescription> sources)
 		{
 			var result = new PhasorPartialStates(factory.NodesCount, factory.ActiveComponentsCount, sources);
 
-			// For each AC source
+			// For each source
 			foreach (var source in sources)
 			{
-				// Get transfer function
+				// Get phasor and add it to states
 				result.States[source] = GetPhasor(factory, source);
 			}
 
@@ -146,23 +74,96 @@ namespace ECAT.Simulation
 		}
 
 		/// <summary>
-		/// Returns phasors with transfer functions for all AC sources in <paramref name="factory"/>
+		/// Returns phasors with for all AC sources in <paramref name="factory"/>
 		/// </summary>
 		/// <param name="factory"></param>
-		/// <param name="nodePotentialTransferFunctions"></param>
-		/// <param name="activeComponentsCurrentsTransferFunctions"></param>
 		private PhasorPartialStates GetPhasorsForAllACSources(AdmittanceMatrixFactory factory) =>
 			GetAllPhasorsHelper(factory, factory.ACVoltageSources);
 
 		/// <summary>
-		/// Returns phasors with transfer functions for all DC sources in <paramref name="factory"/>
+		/// Returns phasors with for all DC sources in <paramref name="factory"/>
 		/// </summary>
 		/// <param name="factory"></param>
-		/// <param name="nodePotentialTransferFunctions"></param>
-		/// <param name="activeComponentsCurrentsTransferFunctions"></param>
-		private PhasorPartialStates GetPhasorsForAllDCSources(AdmittanceMatrixFactory factory) =>
-			GetAllPhasorsHelper(factory, factory.DCSources);
-		
+		private PhasorPartialStates GetPhasorsForAllDCSources(AdmittanceMatrixFactory factory) => GetAllPhasorsHelper(factory, factory.DCSources);
+
+		/// <summary>
+		/// Creates and solves DC admittance matrix for saturated op-amps
+		/// </summary>
+		/// <param name="factory"></param>
+		/// <returns></returns>
+		private InstantenousState GetOpAmpSaturationBias(AdmittanceMatrixFactory factory)
+		{
+			// Create an instantenous state based on node indices and active components indices in factory,
+			// use the factory's op amp saturation source as source description
+			var result = new InstantenousState(factory.GetNodeIndicesWithoutReference(), factory.ActiveComponentsCount, factory.OpAmpSaturationSource);
+
+			// Construct matrix for saturated op-amps and solve it
+			factory.ConstructDCForSaturatedOpAmpsOnly().Solve(out var nodePotentials, out var activeComponentsCurrents);
+
+			// Add the results from simulation to state
+			result.AddValues(nodePotentials.Select((x) => x.Real).ToArray(), activeComponentsCurrents.Select((x) => x.Real).ToArray());
+
+			return result;
+		}
+
+		#endregion
+
+		#region DC biasing
+
+		/// <summary>
+		/// Topmost logic behind DC bias - calling it will result in simulation being performed and saved to <see cref="ISimulationResultsProvider"/>
+		/// </summary>
+		/// <param name="factory"></param>
+		private void DCBiasLogic(AdmittanceMatrixFactory factory)
+		{
+			// TODO: Build IPhasorDomainSignal from multiple sources, not one combined state. 
+			// IPhasorDomainSignal has to be first refactored.
+
+			// Calculated state of the system
+			var state = GetPhasorsForAllDCSources(factory).ToDC();
+
+			// Add op-amp saturation bias to complete the DC bias
+			state.AddState(GetOpAmpSaturationBias(factory));
+
+			// Loop until correct op-amp operation is found
+			while (!factory.CheckOpAmpOperationWithSelfAdjustment(state.Combine().Potentials))
+			{
+				// If the op-amp operation was adjusted, recalculate the state
+				state = GetPhasorsForAllDCSources(factory).ToDC();
+				
+				state.AddState(GetOpAmpSaturationBias(factory));
+			}
+
+			// Combine the states into one state
+			var combined = state.Combine();
+
+			// Create dictionary holding final values of potentials at nodes
+			var totalPotentials = new Dictionary<INode, IPhasorDomainSignal>();
+
+			// Create dictionary holding final values of currents
+			var totalActiveComponentsCurrents = new Dictionary<int, IPhasorDomainSignal>();
+
+			// Create signal for reference node
+			totalPotentials.Add(factory.GetNodes().First(), IoC.Resolve<IPhasorDomainSignal>(0d));
+
+			// Assign node potentials from the combined state
+			foreach(var node in factory.GetNodesWithoutReference())
+			{
+				// Create a phasor domain signal for each node
+				totalPotentials.Add(node, IoC.Resolve<IPhasorDomainSignal>(combined.Potentials[node.Index]));
+			}
+
+			// And active componetns currents
+			foreach(var current in combined.Currents)
+			{
+				// Create a phasor domain signal for each current
+				totalActiveComponentsCurrents.Add(current.Key, IoC.Resolve<IPhasorDomainSignal>(current.Value));
+			}
+
+			// Create simulation results based on determined node potentials and active components currents
+			IoC.Resolve<SimulationResultsProvider>().Value = new SimulationResultsBias(totalPotentials, totalActiveComponentsCurrents);
+		}
+
 		#endregion
 		
 		#region AC full cycle helpers
@@ -172,26 +173,17 @@ namespace ECAT.Simulation
 		/// Returns calculated node potentials and active component currents as sinusoidal waveforms.
 		/// </summary>
 		/// <param name="factory"></param>
-		/// <param name="totalPotentials">Calculated instantenous values of potentials at nodes</param>
-		/// <param name="totalActiveComponentsCurrents">Calculated instantenous values of active components' currents</param>
 		/// <param name="pointsCount">Number of points to calculate for the signals</param>
 		/// <param name="timeStep">Time step between two calculational points</param>
-		/// <param name="includeDCBias">If true DC bias will be performed and added to results, if false only saturated <see cref="IOpAmp"/>s
-		/// will be considered for DC part of simulation</param>
+		/// <param name="includeDCBias">If true DC bias will be performed and added to results</param>
 		private WaveformPartialState FullCycleHelper(AdmittanceMatrixFactory factory, int pointsCount, double timeStep, bool includeDCBias = false)
 		{
-			// Get nodes constructed on the basis of the circuit
-			var nodes = factory.GetNodes();
-
-			// Get nodes without the reference node and group them into a list for easier access with indexes
-			var nodesWithoutReference = factory.GetNodesWithoutReference().ToList();
-
 			// Get AC transfer functions
 			var systemState = GetPhasorsForAllACSources(factory);
-
+			
 			if (includeDCBias)
 			{
-				// As well as DC transfer functions, if requested
+				// As well as DC transfer function, if requested
 				systemState.MergeWith(GetPhasorsForAllDCSources(factory));
 			}
 
@@ -201,36 +193,39 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Performs an AC cycle simulation - simulation is running for one full period of lowest frequency source in the <paramref name="factory"/>.
 		/// After determining the transfer functions calculates only one set of instantenous values for point described by
-		/// <paramref name="pointIndex"/> and <paramref name="timeStep"/>. Returns an array, each entry corresponds to one
-		/// <see cref="IACVoltageSource"/>.
+		/// <paramref name="pointIndex"/> and <paramref name="timeStep"/>.
 		/// </summary>
 		/// <param name="factory"></param>
 		/// <param name="pointIndex">Index of the point for which to calculate instantenous values</param>
 		/// <param name="timeStep">Time step between two calculational points</param>
-		/// <param name="includeDCBias">If true DC bias will be performed and added to results, if false only saturated <see cref="IOpAmp"/>s
-		/// will be considered for DC part of simulation</param>
+		/// <param name="includeDCBias">If true DC bias will be performed and added to results</param>
+		/// <param name="performSaturatedOpAmpBias">If true, op-amp saturation bias will be performed and added to results</param>
 		private InstantenousPartialStates FullCycleInstantenousValuesHelper(AdmittanceMatrixFactory factory, int pointIndex, double timeStep,
-			bool includeDCBias = false)
+			bool includeDCBias = false, bool performSaturatedOpAmpBias = true)
 		{
 			// Get indices of nodes, without the reference node, and group them into a list for easier access
 			var nodeIndices = factory.GetNodeIndicesWithoutReference().ToList();
 
 			// Result container that will be returned
-			// TODO: Provide DC voltage sources descriptions
 			var result = new InstantenousPartialStates(nodeIndices, factory.ActiveComponentsCount, factory.AllSources);
 
+			// Get phasors for AC sources
 			var phasors = GetPhasorsForAllACSources(factory);
 
 			if(includeDCBias)
 			{
+				// Add DC phasors, if requested
 				phasors.MergeWith(GetPhasorsForAllDCSources(factory));
 			}
 
+			// Transform those phasors to instantenous values
 			var inst = phasors.ToInstantenousValue(pointIndex, timeStep);
 
-			var opAmpBias = GetOpAmpSaturationBias(factory);
-			
-			inst.AddState(opAmpBias);
+			// Finally get op amp bias, if requested
+			if (performSaturatedOpAmpBias)
+			{
+				inst.AddState(GetOpAmpSaturationBias(factory));
+			}
 
 			return inst;
 		}
@@ -247,7 +242,8 @@ namespace ECAT.Simulation
 		/// <param name="lowestFrequency">Lowest frequency in simulation</param>
 		/// <returns></returns>
 		private double GetTimeStep(int pointsCount, double lowestFrequency) =>
-			// Time step between two subsequent points in time vector
+			// Time step between two subsequent points in time vector - full period is 1 / lowestFrequency, time step is given by full period
+			// divided by the number of points
 			1 / (lowestFrequency * pointsCount);
 
 		#endregion
@@ -266,22 +262,22 @@ namespace ECAT.Simulation
 			// TODO: number of points should be given by caller
 			int pointsCount = 600;
 
-			// Get highest/lowest frequencies in the circuit
-			var lowestFrequency = factory.LowestFrequency;
-
-			// Time step between two subsequent points in time vector
-			double timeStep = GetTimeStep(pointsCount, lowestFrequency);
+			// Calculate time step between two subsequent points in time vector
+			double timeStep = GetTimeStep(pointsCount, factory.LowestFrequency);
 
 			// Use helper to get the state of the system
 			var state = FullCycleHelper(factory, pointsCount, timeStep, includeDCBias);
 
+			// Get nodes
 			var nodes = factory.GetNodes().ToList();
 
 			// Create simulation results
 			IoC.Resolve<SimulationResultsProvider>().Value = new SimulationResultsTime(
+				// Transform potentials to time domain signals
 				state.PotentialsToTimeDomainSignals(timeStep).
+				// Make an additional entry for ground node - it's an empty ITimeDomainSginal - just a 0 wave
 				Concat(new KeyValuePair<int, ITimeDomainSignal>(GroundNodeIndex, IoC.Resolve<ITimeDomainSignal>(pointsCount, timeStep))).
-				ToDictionary((x) => nodes.Find((node) => node.Index == x.Key), (x) => x.Value),				
+				ToDictionary((x) => nodes.Find((node) => node.Index == x.Key), (x) => x.Value),
 				state.CurrentsToTimeDomainSignals(timeStep),
 				timeStep,
 				0);
@@ -289,7 +285,7 @@ namespace ECAT.Simulation
 
 		#endregion
 
-		#region AC (DC) full cycle logics with op-amp adjustment
+		#region AC (DC) full cycle logic with op-amp adjustment
 
 		/// <summary>
 		/// Topmost logic behind AC Full Cycle - calling it will result in simulation being performed and saved to
@@ -301,66 +297,26 @@ namespace ECAT.Simulation
 		/// will be considered for DC part of simulation</param>
 		private void FullCycleLogicWithOpAmpAdjustment(AdmittanceMatrixFactory factory, bool includeDCBias)
 		{
+			// TODO: When SimulationResults with nodes (rather with their indices), adjust the simulation result creation below.
+
+			// TODO: Try to make it so that saturated op amp bias is not considered to be pure DC but rather an extension of all sources
+			// contributing to the circuit
+
 			// TODO: number of points should be given by caller
 			int pointsCount = 600;
 
-			// Get highest/lowest frequencies in the circuit
-			var lowestFrequency = factory.LowestFrequency;
-
 			// Time step between two subsequent points in time vector
-			double timeStep = GetTimeStep(pointsCount, lowestFrequency);
+			double timeStep = GetTimeStep(pointsCount, factory.LowestFrequency);
 
-			// Get nodes constructed on the basis of the circuit
-			var nodeIndices = factory.GetNodeIndicesWithoutReference().ToList();
-
+			// Create an enumeration of used sources - take AC sources and op-amp saturation source. If DC bias is requested, add the DC sources too.
 			var usedSources = (includeDCBias ? factory.AllSources : factory.ACSources).Concat(factory.OpAmpSaturationSource);
 
+			// Get node indices constructed on the basis of the circuit
+			var nodeIndices = factory.GetNodeIndicesWithoutReference().ToList();
+			
+			// Create a state which will be filled with adjusted simulation points
 			var adjustedState = new WaveformPartialState(factory.NodesCount, factory.ActiveComponentsCount, usedSources);
-
-			// Potentials as waveforms with values adjusted for proper op-amp operation at each point
-			var adjustedWaveforms = new Dictionary<int, IList<double>>[factory.ACVoltageSourcesCount];
-
-			// Active components currents with values adjusted for proper op-amp operation at each point
-			var adjustedActiveComponentsCurrents = new Dictionary<int, IList<double>>[factory.ACVoltageSourcesCount];
-
-			// Waveforms of DC offset that are result of adjusted op-amp operation
-			var adjustedDCOffsets = new Dictionary<int, IList<double>>();
-
-			// Waveforms of DC active component currents that are results of adjusted op-amp operation
-			var adjustedDCActiveComponentsCurrents = new Dictionary<int, IList<double>>();
-
-			// Make an entry for each adjusted DC offset
-			foreach(var index in nodeIndices)
-			{
-				adjustedDCOffsets.Add(index, new List<double>());
-			}
-
-			// Make an entry for each adjusted DC active component current
-			for(int i = 0; i < factory.ActiveComponentsCount; ++i)
-			{
-				adjustedDCActiveComponentsCurrents.Add(i, new List<double>());
-			}
-
-			// For each AC voltage source
-			for(int i = 0; i < factory.ACVoltageSourcesCount; ++i)
-			{
-				// Make entries in i-th entry in arrays
-				adjustedWaveforms[i] = new Dictionary<int, IList<double>>();
-				adjustedActiveComponentsCurrents[i] = new Dictionary<int, IList<double>>();
-
-				// Create time domain signal for each node
-				foreach (var index in nodeIndices)
-				{
-					adjustedWaveforms[i].Add(index, new List<double>());
-				}
-
-				// Create time domain signals for each active component current
-				for (int j = 0; j < factory.ActiveComponentsCount; ++j)
-				{
-					adjustedActiveComponentsCurrents[i].Add(j, new List<double>());
-				}
-			}
-
+			
 			// Go through each simulation point separately - it is necessary in order to correctly determine op-amp operation at each specific point
 			for (int i = 0; i < pointsCount; ++i)
 			{
@@ -370,20 +326,23 @@ namespace ECAT.Simulation
 				// Loop until correct op-amp operation is found
 				while (!factory.CheckOpAmpOperationWithSelfAdjustment(instantenousValues.Combine().Potentials))
 				{
-					// If the op-amp operation was adjusted, recalculate the waveforms
+					// If the op-amp operation was adjusted, recalculate the instantenous values
 					instantenousValues = FullCycleInstantenousValuesHelper(factory, i, timeStep, includeDCBias);
 				}
 
+				// For each state
 				foreach(var state in instantenousValues.States.Values)
 				{
+					// And for each node
 					foreach (var index in nodeIndices)
 					{
-						// Lists are empty - points should just be added to them to form a full waveform
+						// Add the calculated potential for state at node 'index' to the adjusted result waveform.
+						// Lists are empty - points should just be added to them to form a full waveform.
 						adjustedState.States[state.SourceDescription].Potentials[index].Add(
 							instantenousValues.States[state.SourceDescription].Potentials[index]);
 					}
 					
-					// Add the instantenous values of active components currents to the waveforms
+					// Add the instantenous values of active components currents to the waveforms - just like currents
 					foreach(var index in factory.ActiveComponentsIndices)
 					{
 						adjustedState.States[state.SourceDescription].Currents[index].Add(
@@ -421,7 +380,6 @@ namespace ECAT.Simulation
 				// Create an ITimeDomainSignal
 				finalActiveComponentsCurrents.Add(i, IoC.Resolve<ITimeDomainSignalMutable>(pointsCount, timeStep));
 			}
-
 
 			// Full waveforms were determined - assign them to final signals, go through each AC voltage source
 			foreach(var source in usedSources)
