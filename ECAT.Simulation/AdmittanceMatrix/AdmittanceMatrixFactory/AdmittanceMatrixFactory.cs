@@ -341,13 +341,14 @@ namespace ECAT.Simulation
 		#region Op-amp operation mode switching
 
 		/// <summary>
-		/// Configures <see cref="IOpAmp"/> for operation in <paramref name="operationMode"/> in <paramref name="matrix"/>.
-		/// Saturation mode will generate output voltage only if matrix is built for DC (<paramref name="ac"/> is false).
+		/// Configures <see cref="IOpAmp"/> for operation in <paramref name="operationMode"/> in <paramref name="matrix"/>. Saturated op-amps remain
+		/// inactive after this call - they will appear to be saturated but saturation voltage will be equal to 0. Op-amps have to be manually
+		/// activated, for example using <see cref="ActivateSaturatedOpAmps(AdmittanceMatrix)"/>
 		/// </summary>
 		/// <param name="matrix"></param>
 		/// <param name="opAmpIndex"></param>
 		/// <param name="operationMode"></param>
-		private void ConfigureOpAmpOperation(AdmittanceMatrix matrix, IOpAmpDescription opAmp, OpAmpOperationMode operationMode, bool ac)
+		private void ConfigureOpAmpOperation(AdmittanceMatrix matrix, IOpAmpDescription opAmp, OpAmpOperationMode operationMode)
 		{
 			// Call appropriate method based on operation mode
 			switch (_OpAmpOperation[opAmp])
@@ -359,14 +360,9 @@ namespace ECAT.Simulation
 					break;
 
 				case OpAmpOperationMode.PositiveSaturation:
-					{
-						ConfigureOpAmpForSaturation(matrix, opAmp, true, ac);
-					}
-					break;
-
 				case OpAmpOperationMode.NegativeSaturation:
 					{
-						ConfigureOpAmpForSaturation(matrix, opAmp, false, ac);
+						ConfigureOpAmpForSaturation(matrix, opAmp);
 					}
 					break;
 
@@ -436,15 +432,12 @@ namespace ECAT.Simulation
 		}
 
 		/// <summary>
-		/// Configures submatrices so that <paramref name="opAmp"/> is considered to work in saturation (output is either positive or negative
-		/// supply voltage - depending on <paramref name="positiveSaturation"/>)
+		/// Configures submatrices so that <paramref name="opAmp"/> is considered to work in saturation, however output remains at 0 - op-amps have
+		/// to be manually activated, for example using <see cref="ActivateSaturatedOpAmp(AdmittanceMatrix, IOpAmpDescription)"/>.
 		/// </summary>
 		/// <param name="matrix"></param>
 		/// <param name="opAmp"></param>
-		/// <param name="positiveSaturation">If true, the output is set to positive supply voltage, if false to the negative
-		/// supply</param>
-		/// <param name="ac"></param>
-		private void ConfigureOpAmpForSaturation(AdmittanceMatrix matrix, IOpAmpDescription opAmp, bool positiveSaturation, bool ac)
+		private void ConfigureOpAmpForSaturation(AdmittanceMatrix matrix, IOpAmpDescription opAmp)
 		{
 			// Indices of op-amps nodes
 			var nodes = _OpAmpsNodes[opAmp];
@@ -470,14 +463,38 @@ namespace ECAT.Simulation
 			// the one for non-inverting input no special conditions are necessary however it's very important to remeber about
 			// it if (when) this method is modified
 			matrix._C[index, nodes.Output] = 1;
+		}
 
-			// Finally, depending on which supply was exceeded, set the value of the source to either positive or negative
-			// supply voltage
-			if (!ac)
+		/// <summary>
+		/// Activates all saturated op amps
+		/// </summary>
+		/// <param name="matrix"></param>
+		private void ActivateSaturatedOpAmps(AdmittanceMatrix matrix)
+		{
+			// For each op-amp
+			foreach(var opAmp in _OpAmps)
 			{
-				matrix._E[index] = positiveSaturation ? opAmp.PositiveSupplyVoltage : opAmp.NegativeSupplyVoltage;
+				// If it's in either saturation
+				if (_OpAmpOperation[opAmp] == OpAmpOperationMode.PositiveSaturation || _OpAmpOperation[opAmp] == OpAmpOperationMode.NegativeSaturation)
+				{
+					// Activate it
+					ActivateSaturatedOpAmp(matrix, opAmp);
+				}
 			}
 		}
+
+		/// <summary>
+		/// Activates saturated op-amp - modifies matrix E with saturation voltage in entry corresponding to that op-amp. Does not check if
+		/// the op-amp is in fact saturated - assumes that caller checked that.
+		/// </summary>
+		/// <param name="matrix"></param>
+		/// <param name="opAmp"></param>
+		private void ActivateSaturatedOpAmp(AdmittanceMatrix matrix, IOpAmpDescription opAmp) =>
+			// Depending on which supply was exceeded, set the value of the op-amp output to either positive or negative
+			// supply voltage, depending on saturaiton (if determined that it is in either saturation).
+			// Modify entry in E matrix corresponding to index of the op-amp.
+			matrix._E[_IndexedComponentsIndices[opAmp]] = _OpAmpOperation[opAmp] == OpAmpOperationMode.PositiveSaturation ?
+				opAmp.PositiveSupplyVoltage : opAmp.NegativeSupplyVoltage;
 
 		#endregion
 
@@ -832,14 +849,14 @@ namespace ECAT.Simulation
 		/// Modifies <paramref name="matrix"/> with initial op-amp settings - op-amps are set in their respective operation modes depending on
 		/// <see cref="_OpAmpOperation"/>.
 		/// </summary>
-		private void InitialOpAmpConfiguration(AdmittanceMatrix matrix, bool ac)
+		private void InitialOpAmpConfiguration(AdmittanceMatrix matrix)
 		{
 			FillBMatrixOpAmpOutputNodes(matrix);
 
 			// Configure each op-amp for its operation
 			foreach(var opAmp in _OpAmps)
 			{
-				ConfigureOpAmpOperation(matrix, opAmp, _OpAmpOperation[opAmp], ac);
+				ConfigureOpAmpOperation(matrix, opAmp, _OpAmpOperation[opAmp]);
 			}
 		}
 
@@ -948,8 +965,8 @@ namespace ECAT.Simulation
 			// Configure voltage sources to be off - the only active voltage source (if any) can then be turned on
 			ConfigureVoltageSources(matrix, false);
 
-			// Initialize op-amp settings - active operation
-			InitialOpAmpConfiguration(matrix, frequency > 0);
+			// Initialize op-amp settings - disabled saturated op-amps
+			InitialOpAmpConfiguration(matrix);
 
 			return matrix;
 		}
@@ -1051,7 +1068,16 @@ namespace ECAT.Simulation
 		/// <see cref="IOpAmp"/>s on AC circuits.
 		/// </summary>
 		/// <returns></returns>
-		public AdmittanceMatrix ConstructDCForSaturatedOpAmpsOnly() => ConstructAndInitialize(0);
+		public AdmittanceMatrix ConstructDCForSaturatedOpAmpsOnly()
+		{
+			// Construct initial version
+			var matrix = ConstructAndInitialize(0);
+
+			// And activate saturated op-amps
+			ActivateSaturatedOpAmps(matrix);
+
+			return matrix;
+		}
 
 		/// <summary>
 		/// Returns all nodes generated for the <see cref="ISchematic"/> passed to constructor
