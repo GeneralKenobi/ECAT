@@ -203,12 +203,6 @@ namespace ECAT.Simulation
 		private InstantenousPartialStates FullCycleInstantenousValuesHelper(AdmittanceMatrixFactory factory, int pointIndex, double timeStep,
 			bool includeDCBias = false, bool performSaturatedOpAmpBias = true)
 		{
-			// Get indices of nodes, without the reference node, and group them into a list for easier access
-			var nodeIndices = factory.Nodes.ToList();
-
-			// Result container that will be returned
-			var result = new InstantenousPartialStates(nodeIndices, factory.ActiveComponentsCount, factory.AllSources);
-
 			// Get phasors for AC sources
 			var phasors = GetPhasorsForAllACSources(factory);
 
@@ -219,15 +213,15 @@ namespace ECAT.Simulation
 			}
 
 			// Transform those phasors to instantenous values
-			var inst = phasors.ToInstantenousValue(pointIndex, timeStep);
+			var instantenous = phasors.ToInstantenousValue(pointIndex, timeStep);
 
 			// Finally get op amp bias, if requested
 			if (performSaturatedOpAmpBias)
 			{
-				inst.AddState(GetOpAmpSaturationBias(factory));
+				instantenous.AddState(GetOpAmpSaturationBias(factory));
 			}
 
-			return inst;
+			return instantenous;
 		}
 
 		#endregion
