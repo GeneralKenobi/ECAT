@@ -19,7 +19,7 @@ namespace ECAT.Simulation
 		/// </summary>
 		/// <param name="data">Data obtained during simulation; potentials at nodes</param>
 		/// <exception cref="ArgumentNullException"></exception>
-		protected VoltageCache(IEnumerable<KeyValuePair<INode, TSignal>> data)
+		protected VoltageCache(IEnumerable<KeyValuePair<int, TSignal>> data)
 			// Compare the elements of the Tuples, not tuples themselves
 			: base (new CustomEqualityComparer<Tuple<int, int>>((x, y) => x.Item1 == y.Item1 && x.Item2 == y.Item2))
 		{
@@ -28,7 +28,7 @@ namespace ECAT.Simulation
 				throw new ArgumentNullException(nameof(data));
 			}
 
-			_Data = new Dictionary<INode, TSignal>(data.ToDictionary((x) => x.Key, (x) => x.Value));
+			_Data = data.ToDictionary((x) => x.Key, (x) => x.Value);
 		}
 
 		#endregion
@@ -38,7 +38,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Data obtained during simulation
 		/// </summary>
-		protected Dictionary<INode, TSignal> _Data { get; }
+		protected Dictionary<int, TSignal> _Data { get; }
 
 		#endregion
 
@@ -117,7 +117,7 @@ namespace ECAT.Simulation
 		/// </summary>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		protected bool NodeExists(int index) => _Data.Keys.FirstOrDefault((node) => node.Index == index) != null;
+		protected bool NodeExists(int index) => _Data.ContainsKey(index);
 
 		/// <summary>
 		/// Constructs a new <see cref="PhasorDomainSignal"/> based on voltage drop between two nodes (with <paramref name="nodeA"/>
