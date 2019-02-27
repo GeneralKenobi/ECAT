@@ -165,7 +165,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// All indices assigned to active components
 		/// </summary>
-		public IEnumerable<int> ActiveComponentsIndices => _ActiveComponentsIndices;
+		public IEnumerable<int> ActiveComponents => _ActiveComponentsIndices;
 
 		/// <summary>
 		/// Returns descriptions of AC voltage sources
@@ -409,7 +409,7 @@ namespace ECAT.Simulation
 
 			// If there exists a node to which TerminalA (non-inverting input) is connected
 			// (it's possible it may not exist due to removed ground node)
-			if (nodes.NonInvertingInput != GroundNodeIndex)
+			if (nodes.NonInvertingInput != ReferenceNode)
 			{
 				// Fill the entry in the row corresponding to the op-amp (plus starting row)
 				// and column corresponding to the node (positive terminal) with -OpenLoopGain
@@ -418,7 +418,7 @@ namespace ECAT.Simulation
 
 			// If there exists a node to which TerminalB (inverting input) is connected
 			// (it's possible it may not exist due to removed ground node)
-			if (nodes.InvertingInput != GroundNodeIndex)
+			if (nodes.InvertingInput != ReferenceNode)
 			{
 				// Fill the entry in the row corresponding to the op-amp (plus starting row)
 				// and column corresponding to the node (positive terminal) with OpenLoopGain
@@ -451,13 +451,13 @@ namespace ECAT.Simulation
 			var index = _IndexedComponentsIndices[opAmp];
 
 			// If the non-inverting input is not grounded, reset its entry in the _C matrix
-			if (nodes.NonInvertingInput != GroundNodeIndex)
+			if (nodes.NonInvertingInput != ReferenceNode)
 			{
 				matrix._C[index, nodes.NonInvertingInput] = 0;
 			}
 
 			// If the inverting input is not grounded, reset its entry in the _C matrix
-			if (nodes.InvertingInput != GroundNodeIndex)
+			if (nodes.InvertingInput != ReferenceNode)
 			{
 				matrix._C[index, nodes.InvertingInput] = 0;
 			}
@@ -533,7 +533,7 @@ namespace ECAT.Simulation
 			var sourceIndex = _IndexedComponentsIndices[source];
 
 			// If the positive terminal is not grounded
-			if (nodes.Positive != GroundNodeIndex)
+			if (nodes.Positive != ReferenceNode)
 			{
 				// Fill the entry in the row corresponding to the node and column corresponding to the source (plus start column)
 				// with 1 (positive terminal)
@@ -545,7 +545,7 @@ namespace ECAT.Simulation
 			}
 
 			// If the negative terminal is not grounded
-			if (nodes.Negative != GroundNodeIndex)
+			if (nodes.Negative != ReferenceNode)
 			{
 				// Fill the entry in the row corresponding to the node and column corresponding to the source (plus start column)
 				// with -1 (negative terminal)
@@ -583,7 +583,7 @@ namespace ECAT.Simulation
 			var nodes = _SourcesNodes[source];
 
 			// If the positive terminal is not grounded
-			if (nodes.Positive != GroundNodeIndex)
+			if (nodes.Positive != ReferenceNode)
 			{
 				// Add source's current to the node
 				matrix._I[nodes.Positive] += source.OutputValue;
@@ -616,7 +616,7 @@ namespace ECAT.Simulation
 			for (int i = 0; i < _Nodes.Count; ++i)
 			{
 				// Node indexing starts at ground node index + 1
-				_Nodes[i].Index = GroundNodeIndex + 1 + i;
+				_Nodes[i].Index = ReferenceNode + 1 + i;
 			}
 		}
 
@@ -639,7 +639,7 @@ namespace ECAT.Simulation
 			_ReferenceNode = new Node
 			{
 				// Assign ground node index to it
-				Index = GroundNodeIndex
+				Index = ReferenceNode
 			};
 
 			// Merge every node that was determined to be a reference node to the final reference node
@@ -876,7 +876,7 @@ namespace ECAT.Simulation
 		{
 			foreach (var item in _OpAmpsNodes.Values)
 			{
-				if (item.Output == GroundNodeIndex)
+				if (item.Output == ReferenceNode)
 				{
 					throw new Exception("Output of a(n) " + IoC.Resolve<IComponentFactory>().GetDeclaration<IOpAmp>().DisplayName +
 						" cannot be grounded");
@@ -1091,7 +1091,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Index assigned to reference (ground) nodes
 		/// </summary>
-		public static int GroundNodeIndex { get; } = -1;
+		public static int ReferenceNode { get; } = -1;
 
 		#endregion
 	}
