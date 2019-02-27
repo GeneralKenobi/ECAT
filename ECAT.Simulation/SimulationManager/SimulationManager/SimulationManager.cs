@@ -95,7 +95,7 @@ namespace ECAT.Simulation
 		{
 			// Create an instantenous state based on node indices and active components indices in factory,
 			// use the factory's op amp saturation source as source description
-			var result = new InstantenousState(factory.GetNodeIndicesWithoutReference(), factory.ActiveComponentsCount, factory.OpAmpSaturationSource);
+			var result = new InstantenousState(factory.Nodes, factory.ActiveComponentsCount, factory.OpAmpSaturationSource);
 
 			// Construct matrix for saturated op-amps and solve it
 			factory.ConstructDCForSaturatedOpAmpsOnly().Solve(out var nodePotentials, out var activeComponentsCurrents);
@@ -138,19 +138,19 @@ namespace ECAT.Simulation
 			var combined = state.Combine();
 
 			// Create dictionary holding final values of potentials at nodes
-			var totalPotentials = new Dictionary<INode, IPhasorDomainSignal>();
+			var totalPotentials = new Dictionary<int, IPhasorDomainSignal>();
 
 			// Create dictionary holding final values of currents
 			var totalActiveComponentsCurrents = new Dictionary<int, IPhasorDomainSignal>();
 
 			// Create signal for reference node
-			totalPotentials.Add(factory.GetNodes().First(), IoC.Resolve<IPhasorDomainSignal>(0d));
+			totalPotentials.Add(AdmittanceMatrixFactory.GroundNodeIndex, IoC.Resolve<IPhasorDomainSignal>(0d));
 
 			// Assign node potentials from the combined state
-			foreach(var node in factory.GetNodesWithoutReference())
+			foreach(var node in factory.Nodes)
 			{
 				// Create a phasor domain signal for each node
-				totalPotentials.Add(node, IoC.Resolve<IPhasorDomainSignal>(combined.Potentials[node.Index]));
+				totalPotentials.Add(node, IoC.Resolve<IPhasorDomainSignal>(combined.Potentials[node]));
 			}
 
 			// And active componetns currents
@@ -204,7 +204,7 @@ namespace ECAT.Simulation
 			bool includeDCBias = false, bool performSaturatedOpAmpBias = true)
 		{
 			// Get indices of nodes, without the reference node, and group them into a list for easier access
-			var nodeIndices = factory.GetNodeIndicesWithoutReference().ToList();
+			var nodeIndices = factory.Nodes.ToList();
 
 			// Result container that will be returned
 			var result = new InstantenousPartialStates(nodeIndices, factory.ActiveComponentsCount, factory.AllSources);
@@ -268,16 +268,14 @@ namespace ECAT.Simulation
 			// Use helper to get the state of the system
 			var state = FullCycleHelper(factory, pointsCount, timeStep, includeDCBias);
 
-			// Get nodes
-			var nodes = factory.GetNodes().ToList();
-
 			// Create simulation results
 			IoC.Resolve<SimulationResultsProvider>().Value = new SimulationResultsTime(
 				// Transform potentials to time domain signals
 				state.PotentialsToTimeDomainSignals(timeStep).
 				// Make an additional entry for ground node - it's an empty ITimeDomainSginal - just a 0 wave
-				Concat(new KeyValuePair<int, ITimeDomainSignal>(GroundNodeIndex, IoC.Resolve<ITimeDomainSignal>(pointsCount, timeStep))).
-				ToDictionary((x) => nodes.Find((node) => node.Index == x.Key), (x) => x.Value),
+				Concat(new KeyValuePair<int, ITimeDomainSignal>(AdmittanceMatrixFactory.GroundNodeIndex,
+					IoC.Resolve<ITimeDomainSignal>(pointsCount, timeStep))).
+				ToDictionary((x) => x.Key, (x) => x.Value),
 				state.CurrentsToTimeDomainSignals(timeStep),
 				timeStep,
 				0);
@@ -312,7 +310,7 @@ namespace ECAT.Simulation
 			var usedSources = (includeDCBias ? factory.AllSources : factory.ACSources).Concat(factory.OpAmpSaturationSource);
 
 			// Get node indices constructed on the basis of the circuit
-			var nodeIndices = factory.GetNodeIndicesWithoutReference().ToList();
+			var nodeIndices = factory.Nodes.ToList();
 			
 			// Create a state which will be filled with adjusted simulation points
 			var adjustedState = new WaveformPartialState(factory.NodesCount, factory.ActiveComponentsCount, usedSources);
@@ -355,43 +353,37 @@ namespace ECAT.Simulation
 			}
 
 			// Dictionary holding final values of potentials at nodes that will be passed to simulation results
-			var finalPotentials = new Dictionary<INode, ITimeDomainSignalMutable>()
+			var finalPotentials = new Dictionary<int, ITimeDomainSignalMutable>()
 			{
 				// Add entry for reference node
-				{ factory.GetNodes().First(), IoC.Resolve<ITimeDomainSignalMutable>(pointsCount, timeStep) },
+				{ AdmittanceMatrixFactory.GroundNodeIndex, IoC.Resolve<ITimeDomainSignalMutable>(pointsCount, timeStep) },
 			};
 
 			// Dictionary for final active components currents
 			var finalActiveComponentsCurrents = new Dictionary<int, ITimeDomainSignalMutable>();
-
-			// Get nodes in order to construct ITimeDomainSignals for them and pass those as pairs to simulation results
-			var nodes = factory.GetNodesWithoutReference().ToList();
-
+			
 			// For each node index
-			foreach(var index in nodeIndices)
+			foreach(var index in factory.Nodes)
 			{
 				// Create an ITimeDomainSignal
-				finalPotentials.Add(nodes[index], IoC.Resolve<ITimeDomainSignalMutable>(pointsCount, timeStep));
+				finalPotentials.Add(index, IoC.Resolve<ITimeDomainSignalMutable>(pointsCount, timeStep));
 			}
 
 			// For each active component
-			for (int i = 0; i < factory.ActiveComponentsCount; ++i)
+			foreach(var index in factory.ActiveComponentsIndices)
 			{
 				// Create an ITimeDomainSignal
-				finalActiveComponentsCurrents.Add(i, IoC.Resolve<ITimeDomainSignalMutable>(pointsCount, timeStep));
+				finalActiveComponentsCurrents.Add(index, IoC.Resolve<ITimeDomainSignalMutable>(pointsCount, timeStep));
 			}
 
 			// Full waveforms were determined - assign them to final signals, go through each AC voltage source
 			foreach(var source in usedSources)
 			{
 				// For each node
-				foreach(var nodeIndex in factory.GetNodeIndicesWithoutReference())
+				foreach(var index in factory.Nodes)
 				{
-					// Fetch it
-					var currentNode = nodes[nodeIndex];
-
 					// And add a waveform generated by i-th AC voltage source on that node
-					finalPotentials[currentNode].AddWaveform(source, adjustedState.States[source].Potentials[currentNode.Index]);
+					finalPotentials[index].AddWaveform(source, adjustedState.States[source].Potentials[index]);
 				}
 
 				// For each active component
