@@ -118,9 +118,14 @@ namespace ECAT.Simulation
 		#region Public properties
 
 		/// <summary>
-		/// Number of nodes created on basis of <see cref="ISchematic"/> passed to constructor
+		/// Number of nodes (without reference node) created on basis of <see cref="ISchematic"/> passed to constructor.
 		/// </summary>
 		public int NodesCount => _Nodes.Count;
+
+		/// <summary>
+		/// Indices of all generated nodes, without reference node.
+		/// </summary>
+		public IEnumerable<int> Nodes => _Nodes.Select((x) => x.Index);
 
 		/// <summary>
 		/// Lowest frequency in the circuit
@@ -806,8 +811,8 @@ namespace ECAT.Simulation
 		{
 			// Get nodes with reference node (some terminals are grounded - if ground node is not considered List.Find functions wouldn't
 			// be successful.
-			var nodesWithReference = new List<INode>(GetNodes());
-
+			var nodesWithReference = _Nodes.Concat(_ReferenceNode).ToList();
+			
 			// Find nodes of all two-terminal sources, to do that make an enumeration of DC voltage sources, AC voltage sources and DC current sources.
 			// Create tuples where first item is the source casted to ITwoTerminal (just its terminals are required) and the second item is the
 			// source's description
@@ -1079,30 +1084,6 @@ namespace ECAT.Simulation
 			return matrix;
 		}
 
-		/// <summary>
-		/// Returns all nodes generated for the <see cref="ISchematic"/> passed to constructor
-		/// </summary>
-		/// <returns></returns>
-		public IEnumerable<INode> GetNodes() => _Nodes.ConcatAtBeginning(_ReferenceNode);
-
-		/// <summary>
-		/// Returns all nodes generated for the <see cref="ISchematic"/> passed to constructor without the reference (ground) node
-		/// </summary>
-		/// <returns></returns>
-		public IEnumerable<INode> GetNodesWithoutReference() => _Nodes;
-
-		/// <summary>
-		/// Returns indices of all nodes generated for the <see cref="ISchematic"/> passed to constructor
-		/// </summary>
-		/// <returns></returns>
-		public IEnumerable<int> GetNodeIndices() => GetNodes().Select((x) => x.Index);
-
-		/// <summary>
-		/// Returns indices of all nodes generated for the <see cref="ISchematic"/> passed to constructor without the reference (ground) node.
-		/// </summary>
-		/// <returns></returns>
-		public IEnumerable<int> GetNodeIndicesWithoutReference() => GetNodesWithoutReference().Select((x) => x.Index);
-		
 		#endregion
 
 		#region Public static properties
