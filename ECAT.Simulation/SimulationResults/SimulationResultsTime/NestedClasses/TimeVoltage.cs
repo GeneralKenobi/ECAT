@@ -97,8 +97,8 @@ namespace ECAT.Simulation
 			/// <paramref name="nodeIndex"/>, if false it is calculated from node given by <paramref name="nodeIndex"/> to ground</param>
 			/// <returns></returns>
 			public bool TryGet(int nodeIndex, out ITimeDomainSignal voltage, bool nodeToGround = true) => nodeToGround ?
-				TryGet(SimulationManager.GroundNodeIndex, nodeIndex, out voltage) :
-				TryGet(nodeIndex, SimulationManager.GroundNodeIndex, out voltage);
+				TryGet(AdmittanceMatrixFactory.GroundNodeIndex, nodeIndex, out voltage) :
+				TryGet(nodeIndex, AdmittanceMatrixFactory.GroundNodeIndex, out voltage);
 
 			/// <summary>
 			/// Gets voltage drop between two nodes (with node A being treated as the reference node) or null if unsuccessful and
@@ -151,7 +151,7 @@ namespace ECAT.Simulation
 			/// <paramref name="nodeIndex"/>, if false it is calculated from node given by <paramref name="nodeIndex"/> to ground</param>
 			/// <returns></returns>
 			public ISignalInformation Get(int nodeIndex, bool nodeToGround = true) => nodeToGround ?
-				Get(SimulationManager.GroundNodeIndex, nodeIndex) : Get(nodeIndex, SimulationManager.GroundNodeIndex);
+				Get(AdmittanceMatrixFactory.GroundNodeIndex, nodeIndex) : Get(nodeIndex, AdmittanceMatrixFactory.GroundNodeIndex);
 			
 			/// <summary>
 			/// Gets information on voltage drop between two nodes (with node A being treated as the reference node) or returns null

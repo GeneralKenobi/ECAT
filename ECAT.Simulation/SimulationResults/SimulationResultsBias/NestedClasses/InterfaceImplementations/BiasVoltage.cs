@@ -113,9 +113,9 @@ namespace ECAT.Simulation
 				// Depending on requested voltage drop direction
 				nodeToGround ?
 				// Get voltage drop from ground to node
-				TryGet(SimulationManager.GroundNodeIndex, nodeIndex, out voltage) :
+				TryGet(AdmittanceMatrixFactory.GroundNodeIndex, nodeIndex, out voltage) :
 				// Get voltage drop from node to ground
-				TryGet(nodeIndex, SimulationManager.GroundNodeIndex, out voltage);
+				TryGet(nodeIndex, AdmittanceMatrixFactory.GroundNodeIndex, out voltage);
 
 			/// <summary>
 			/// Gets voltage drop between two nodes (with node A being treated as the reference node) or null if unsuccessful and
@@ -175,9 +175,9 @@ namespace ECAT.Simulation
 				// Depending on requested voltage drop direction
 				nodeToGround ?
 				// Get voltage drop from ground to node
-				Get(SimulationManager.GroundNodeIndex, nodeIndex) :
+				Get(AdmittanceMatrixFactory.GroundNodeIndex, nodeIndex) :
 				// Get voltage drop from node to ground
-				Get(nodeIndex, SimulationManager.GroundNodeIndex);
+				Get(nodeIndex, AdmittanceMatrixFactory.GroundNodeIndex);
 			
 			/// <summary>
 			/// Gets information on voltage drop between two nodes (with node A being treated as the reference node) or returns null

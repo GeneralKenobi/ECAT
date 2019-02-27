@@ -616,7 +616,7 @@ namespace ECAT.Simulation
 			for (int i = 0; i < _Nodes.Count; ++i)
 			{
 				// Node indexing starts at ground node index + 1
-				_Nodes[i].Index = SimulationManager.GroundNodeIndex + 1 + i;
+				_Nodes[i].Index = GroundNodeIndex + 1 + i;
 			}
 		}
 
@@ -639,7 +639,7 @@ namespace ECAT.Simulation
 			_ReferenceNode = new Node
 			{
 				// Assign ground node index to it
-				Index = SimulationManager.GroundNodeIndex
+				Index = GroundNodeIndex
 			};
 
 			// Merge every node that was determined to be a reference node to the final reference node

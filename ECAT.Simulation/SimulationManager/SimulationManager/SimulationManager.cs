@@ -481,14 +481,5 @@ namespace ECAT.Simulation
 			SimulationRunWrapper(schematic, (x) => FullCycleLogicWithOpAmpAdjustment(x, true), "ACDC Cycle with op-amp adjustment", SimulationType.AC);
 
 		#endregion
-
-		#region Public static properties
-
-		/// <summary>
-		/// The index assumed for ground nodes
-		/// </summary>
-		public static int GroundNodeIndex { get; } = -1;
-
-		#endregion
 	}
 }
