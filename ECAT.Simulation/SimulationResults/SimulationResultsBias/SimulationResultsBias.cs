@@ -17,7 +17,7 @@ namespace ECAT.Simulation
 		/// <param name="nodes"></param>
 		/// <param name="activeComponentsCurrents"></param>
 		/// <exception cref="ArgumentNullException"></exception>
-		public SimulationResultsBias(IEnumerable<KeyValuePair<INode, IPhasorDomainSignal>> nodes,
+		public SimulationResultsBias(IEnumerable<KeyValuePair<int, IPhasorDomainSignal>> nodes,
 			IEnumerable<KeyValuePair<int, IPhasorDomainSignal>> activeComponentsCurrents)
 		{
 			var biasVoltage = new BiasVoltage(nodes ?? throw new ArgumentNullException(nameof(nodes)));

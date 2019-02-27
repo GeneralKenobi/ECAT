@@ -21,7 +21,7 @@ namespace ECAT.Simulation
 			/// </summary>
 			/// <param name="nodes">Nodes using which voltage drops will be calculated, can't be null</param>
 			/// <exception cref="ArgumentNullException"></exception>
-			public BiasVoltage(IEnumerable<KeyValuePair<INode, IPhasorDomainSignal>> nodes) : base(nodes) { }
+			public BiasVoltage(IEnumerable<KeyValuePair<int, IPhasorDomainSignal>> nodes) : base(nodes) { }
 
 			#endregion
 
@@ -77,12 +77,11 @@ namespace ECAT.Simulation
 			protected override IPhasorDomainSignal ConstructVoltageDrop(int nodeAIndex, int nodeBIndex)
 			{
 				// Get the nodes
-				var nodeA = _Data.First((node) => node.Key.Index == nodeAIndex).Value;
-				var nodeB = _Data.First((node) => node.Key.Index == nodeBIndex).Value;
+				var nodeA = _Data[nodeAIndex];
+				var nodeB = _Data[nodeBIndex];
 
 				// Construct the result
-				var result = IoC.Resolve<IPhasorDomainSignal>(nodeB.DC - nodeA.DC,
-					GetACWaveforms(nodeA.Phasors, nodeB.Phasors));
+				var result = IoC.Resolve<IPhasorDomainSignal>(nodeB.DC - nodeA.DC, GetACWaveforms(nodeA.Phasors, nodeB.Phasors));
 
 				// Return it
 				return result;

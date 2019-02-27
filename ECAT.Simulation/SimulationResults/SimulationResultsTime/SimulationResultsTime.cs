@@ -19,7 +19,7 @@ namespace ECAT.Simulation
 		/// <param name="timeStep"></param>
 		/// <param name="startTime"></param>
 		/// <exception cref="ArgumentNullException"></exception>
-		public SimulationResultsTime(IEnumerable<KeyValuePair<INode, ITimeDomainSignal>> nodes,
+		public SimulationResultsTime(IEnumerable<KeyValuePair<int, ITimeDomainSignal>> nodes,
 			IEnumerable<KeyValuePair<int, ITimeDomainSignal>> activeComponentsCurrents, double timeStep, double startTime)
 		{
 			var biasVoltage = new TimeVoltage(nodes ?? throw new ArgumentNullException(nameof(nodes)));

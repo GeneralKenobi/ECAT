@@ -23,7 +23,7 @@ namespace ECAT.Simulation
 			/// <param name="startTime">Start time of the simulation</param>
 			/// <param name="timeStep">Time step of the simulation - difference between two subsequent simulation points</param>
 			/// <exception cref="ArgumentNullException"></exception>
-			public TimeVoltage(IEnumerable<KeyValuePair<INode, ITimeDomainSignal>> data) : base(data) { }
+			public TimeVoltage(IEnumerable<KeyValuePair<int, ITimeDomainSignal>> data) : base(data) { }
 
 			#endregion
 
@@ -40,8 +40,8 @@ namespace ECAT.Simulation
 			protected override ITimeDomainSignal ConstructVoltageDrop(int nodeAIndex, int nodeBIndex)
 			{
 				// Get the nodes
-				var nodeA = _Data.First((node) => node.Key.Index == nodeAIndex).Value;
-				var nodeB = _Data.First((node) => node.Key.Index == nodeBIndex).Value;
+				var nodeA = _Data[nodeAIndex];
+				var nodeB = _Data[nodeBIndex];
 
 				//var nodeAWaveforms = nodeA.AllWaveforms.ToDictionary((x) => x.Key, (x) => x.Value);
 				//var nodeBWaveforms = nodeB.AllWaveforms.ToDictionary((x) => x.Key, (x) => x.Value);
