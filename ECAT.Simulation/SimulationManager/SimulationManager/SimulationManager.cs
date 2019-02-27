@@ -285,8 +285,6 @@ namespace ECAT.Simulation
 		/// will be considered for DC part of simulation</param>
 		private void FullCycleLogicWithOpAmpAdjustment(AdmittanceMatrixFactory factory, bool includeDCBias)
 		{
-			// TODO: When SimulationResults with nodes (rather with their indices), adjust the simulation result creation below.
-
 			// TODO: Try to make it so that saturated op amp bias is not considered to be pure DC but rather an extension of all sources
 			// contributing to the circuit
 
