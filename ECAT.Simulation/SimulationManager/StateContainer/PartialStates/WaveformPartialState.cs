@@ -1,4 +1,5 @@
-﻿using ECAT.Core;
+﻿using CSharpEnhanced.Helpers;
+using ECAT.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -169,7 +170,12 @@ namespace ECAT.Simulation
 		/// Constructs <see cref="ITimeDomainSignal"/>s for every node
 		/// </summary>
 		/// <returns></returns>
-		public IEnumerable<KeyValuePair<int, ITimeDomainSignal>> PotentialsToTimeDomainSignals(double timeStep)
+		/// <param name="timeStep"></param>
+		/// <param name="includeReferenceNode">If true, an entry is made for <see cref="AdmittanceMatrixFactory.ReferenceNode"/> in which
+		/// an empty <see cref="ITimeDomainSignal"/> is stored. In general it is assumed that reference node is not included in
+		/// system states because reference node's potential is always 0. However, if for some reason it was added then setting this
+		/// parameter to true will cause an exception (key already present in dictionary)</param>
+		public IEnumerable<KeyValuePair<int, ITimeDomainSignal>> PotentialsToTimeDomainSignals(double timeStep, bool includeReferenceNode)
 		{
 			// Check if all potentials are matching waveforms
 			if(!CheckPotentialsCorrectness(out var pointsCount))
@@ -179,7 +185,7 @@ namespace ECAT.Simulation
 
 			// Create a dictionary, keys are node indices, values are mutable time domain signals
 			var result = new Dictionary<int, ITimeDomainSignalMutable>();
-
+			
 			// Add each node index with time domain signal for it
 			foreach (var index in _NodeIndices)
 			{
@@ -190,6 +196,13 @@ namespace ECAT.Simulation
 			foreach(var state in States.Values)
 			{
 				state.AddPotentialsTo(result);
+			}
+
+			// If it was requested to add reference node
+			if(includeReferenceNode)
+			{
+				// Create an entry for it with an empty ITimeDomainSignal stored
+				result.Add(AdmittanceMatrixFactory.ReferenceNode, IoC.Resolve<ITimeDomainSignalMutable>(pointsCount, timeStep));
 			}
 
 			// Cast the mutable time domain signal to standard ITimeDomainSignal
