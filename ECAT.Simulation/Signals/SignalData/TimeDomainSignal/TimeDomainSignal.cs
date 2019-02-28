@@ -43,8 +43,7 @@ namespace ECAT.Simulation
 		public TimeDomainSignal()
 		{
 			Interpreter = new TimeDomainSignalInterpreter(this);
-			ACWaveforms = new ReadOnlyDictionary<ISourceDescription, IEnumerable<double>>(_ACWaveforms);
-			DCWaveforms = new ReadOnlyDictionary<ISourceDescription, IEnumerable<double>>(_DCWaveforms);
+			Waveforms = new ReadOnlyDictionary<ISourceDescription, IEnumerable<double>>(_Waveforms);
 		}
 
 		/// <summary>
@@ -86,16 +85,9 @@ namespace ECAT.Simulation
 		#region Private properties
 
 		/// <summary>
-		/// Backing store for <see cref="ACWaveforms"/>
+		/// Backing store for <see cref="Waveforms"/>
 		/// </summary>
-		private IDictionary<ISourceDescription, IEnumerable<double>> _ACWaveforms { get; } =
-			new Dictionary<ISourceDescription, IEnumerable<double>>();
-
-		/// <summary>
-		/// Backing store for <see cref="DCWaveforms"/>
-		/// </summary>
-		private IDictionary<ISourceDescription, IEnumerable<double>> _DCWaveforms { get; } =
-			new Dictionary<ISourceDescription, IEnumerable<double>>();
+		private IDictionary<ISourceDescription, IEnumerable<double>> _Waveforms { get; } = new Dictionary<ISourceDescription, IEnumerable<double>>();
 
 		/// <summary>
 		/// Backing store for <see cref="FinalWaveform"/>
@@ -127,19 +119,9 @@ namespace ECAT.Simulation
 		public IEnumerable<double> FinalWaveform => _FinalWaveform;
 
 		/// <summary>
-		/// Dictionary of instantenous values of DC waveforms that compose this signal. Key is the source that produced the wave.
-		/// </summary>
-		public IReadOnlyDictionary<ISourceDescription, IEnumerable<double>> DCWaveforms { get; }
-
-		/// <summary>
-		/// Dictionary of instantenous values of AC waveforms that compose this signal. Key is the source that produced the wave.
-		/// </summary>
-		public IReadOnlyDictionary<ISourceDescription, IEnumerable<double>> ACWaveforms { get; }
-
-		/// <summary>
 		/// All waveforms composing this <see cref="ITimeDomainSignal"/> (AC and DC).
 		/// </summary>
-		public IEnumerable<KeyValuePair<ISourceDescription, IEnumerable<double>>> AllWaveforms => ACWaveforms.Concat(DCWaveforms);
+		public IReadOnlyDictionary<ISourceDescription, IEnumerable<double>> Waveforms { get; }
 
 		/// <summary>
 		/// Object capable of calculating characteristic values for this <see cref="ISignalData"/>
@@ -155,8 +137,7 @@ namespace ECAT.Simulation
 		/// </summary>
 		private void Clear()
 		{
-			_ACWaveforms.Clear();
-			_DCWaveforms.Clear();
+			_Waveforms.Clear();
 
 			for(int i = 0; i < Samples; ++i)
 			{
@@ -187,20 +168,16 @@ namespace ECAT.Simulation
 				throw new ArgumentException(nameof(values) + $" must have count equal to {Samples} ({nameof(Samples)})");
 			}
 
-			// Determine the target collection for the waveform - it depends on the type of the source.
-			// _ACWaveforms is only for AC voltage sources
-			var targetCollection = description.SourceType == SourceType.ACVoltageSource ? _ACWaveforms : _DCWaveforms;
-
 			// If the source description is already present in the collection
-			if(targetCollection.ContainsKey(description))
+			if(_Waveforms.ContainsKey(description))
 			{
 				// Add the new values to those already present
-				targetCollection[description] = targetCollection[description].MergeSelect(values, (x, y) => x + y);
+				_Waveforms[description] = _Waveforms[description].MergeSelect(values, (x, y) => x + y);
 			}
 			else
 			{
 				// Otherwise make a new entry
-				targetCollection.Add(description, values);
+				_Waveforms.Add(description, values);
 			}
 
 			// And finally add values to the final waveform
@@ -244,8 +221,7 @@ namespace ECAT.Simulation
 			}
 
 			// Copy composing waveforms and constant offsets
-			obj.DCWaveforms.ForEach((x) => AddWaveformHelper(x.Key, x.Value));
-			obj.ACWaveforms.ForEach((x) => AddWaveformHelper(x.Key, x.Value));
+			obj.Waveforms.ForEach((x) => AddWaveformHelper(x.Key, x.Value));
 		}
 
 		/// <summary>
@@ -264,8 +240,7 @@ namespace ECAT.Simulation
 			var result = new TimeDomainSignal(Samples, TimeStep, StartTime);
 
 			// Copy waveforms and constant offsets with switched sign
-			_DCWaveforms.ForEach((x) => result.AddWaveformHelper(x.Key, x.Value.Select((y) => -y)));
-			_ACWaveforms.ForEach((x) => result.AddWaveformHelper(x.Key, x.Value.Select((y) => -y)));
+			_Waveforms.ForEach((x) => result.AddWaveformHelper(x.Key, x.Value.Select((y) => -y)));
 
 			return result;
 		}

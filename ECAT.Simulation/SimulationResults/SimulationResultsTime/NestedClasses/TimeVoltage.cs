@@ -50,10 +50,10 @@ namespace ECAT.Simulation
 				var result = IoC.Resolve<ITimeDomainSignalMutable>(nodeA.Samples, nodeA.TimeStep, nodeA.StartTime);
 
 				// Add waveforms from node B
-				nodeB.AllWaveforms.ForEach((x) => result.AddWaveform(x.Key, x.Value));
+				nodeB.Waveforms.ForEach((x) => result.AddWaveform(x.Key, x.Value));
 
 				// And subtract waveforms from node A
-				nodeA.AllWaveforms.ForEach((x) => result.AddWaveform(x.Key, x.Value.Select((y) => -y)));
+				nodeA.Waveforms.ForEach((x) => result.AddWaveform(x.Key, x.Value.Select((y) => -y)));
 
 				//// Add waveforms of sources only appearing on node B (unlikely any will appear but it can't be neglected)
 				//foreach (var key in nodeBWaveforms.Keys.Except(nodeAWaveforms.Keys))

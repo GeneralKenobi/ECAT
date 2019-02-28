@@ -37,19 +37,9 @@ namespace ECAT.Core
 		IEnumerable<double> FinalWaveform { get; }
 
 		/// <summary>
-		/// Dictionary of instantenous values of DC waveforms that compose this signal. Key is the source that produced the wave.
-		/// </summary>
-		IReadOnlyDictionary<ISourceDescription, IEnumerable<double>> DCWaveforms { get; }
-
-		/// <summary>
-		/// Dictionary of instantenous values of AC waveforms that compose this signal. Key is the source that produced the wave.
-		/// </summary>
-		IReadOnlyDictionary<ISourceDescription, IEnumerable<double>> ACWaveforms { get; }
-
-		/// <summary>
 		/// All waveforms composing this <see cref="ITimeDomainSignal"/> (AC and DC).
 		/// </summary>
-		IEnumerable<KeyValuePair<ISourceDescription, IEnumerable<double>>> AllWaveforms { get; }
+		IReadOnlyDictionary<ISourceDescription, IEnumerable<double>> Waveforms { get; }
 
 		#endregion
 
