@@ -26,41 +26,20 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Constructor with parameter
 		/// </summary>
-		/// <param name="dc"></param>
-		public PhasorDomainSignalMutable(double dc) : base(dc) { }
-
-		/// <summary>
-		/// Constructor with parameter
-		/// </summary>
 		/// <param name="phasors"></param>
 		/// <exception cref="ArgumentNullException"></exception>
-		public PhasorDomainSignalMutable(IEnumerable<KeyValuePair<double, Complex>> phasors) : base(phasors) { }
-
-		/// <summary>
-		/// Constructor with parameters
-		/// </summary>
-		/// <param name="dc"></param>
-		/// <param name="phasors">Composing phasors, exception will be thrown if null (use an empty enumeration when there are no phasors)
-		/// </param>
-		/// <exception cref="ArgumentNullException"></exception>
-		public PhasorDomainSignalMutable(double dc, IEnumerable<KeyValuePair<double, Complex>> phasors) : base(dc, phasors) { }		
+		public PhasorDomainSignalMutable(IEnumerable<KeyValuePair<ISourceDescription, Complex>> phasors) : base(phasors) { }
 
 		#endregion
 
 		#region Public methods
 
 		/// <summary>
-		/// Used to set the value of <see cref="INodePotentialBias.DC"/> property
-		/// </summary>
-		/// <param name="dc"></param>
-		public void SetDC(double dc) => DC = dc;
-
-		/// <summary>
 		/// Used to add <see cref="KeyValuePair{TKey, TValue}"/> to <see cref="INodePotentialBias.Phasors"/>
 		/// </summary>
-		/// <param name="frequency"></param>
+		/// <param name="source"></param>
 		/// <param name="value"></param>
-		public void AddPhasor(double frequency, Complex value) => _Phasors.Add(frequency, value);
+		public void AddPhasor(ISourceDescription source, Complex value) => AddPhasorHelper(source, value);
 
 		#endregion
 	}

@@ -36,35 +36,11 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Constructor with parameter
 		/// </summary>
-		/// <param name="dc"></param>
-		public PhasorDomainSignal(double dc) : this()
-		{
-			DC = dc;
-		}
-
-		/// <summary>
-		/// Constructor with parameter
-		/// </summary>
 		/// <param name="phasors"></param>
 		/// <exception cref="ArgumentNullException"></exception>
-		public PhasorDomainSignal(IEnumerable<KeyValuePair<double, Complex>> phasors) : this()
+		public PhasorDomainSignal(IEnumerable<KeyValuePair<ISourceDescription, Complex>> phasors) : this()
 		{
-			_Phasors = new Dictionary<double, Complex>(phasors?.ToDictionary((x) => x.Key, (x) => x.Value) ??
-				throw new ArgumentNullException(nameof(phasors)));
-		}
-
-		/// <summary>
-		/// Constructor with parameters
-		/// </summary>
-		/// <param name="dc"></param>
-		/// <param name="phasors">Composing phasors, exception will be thrown if null (use an empty enumeration when there are no phasors)
-		/// </param>
-		/// <exception cref="ArgumentNullException"></exception>
-		public PhasorDomainSignal(double dc, IEnumerable<KeyValuePair<double, Complex>> phasors) : this()
-		{
-			DC = dc;
-			_Phasors = new Dictionary<double, Complex>(phasors?.ToDictionary((x) => x.Key, (x) => x.Value) ??
-				throw new ArgumentNullException(nameof(phasors)));
+			_Phasors = phasors?.ToDictionary((x) => x.Key, (x) => x.Value) ?? throw new ArgumentNullException(nameof(phasors));
 		}
 
 		#endregion
@@ -74,21 +50,16 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Backing store for <see cref="Phasors"/>
 		/// </summary>
-		protected Dictionary<double, Complex> _Phasors { get; } = new Dictionary<double, Complex>();
+		protected Dictionary<ISourceDescription, Complex> _Phasors { get; } = new Dictionary<ISourceDescription, Complex>();
 
 		#endregion
 
 		#region Public properties
 
 		/// <summary>
-		/// DC component of the signal
-		/// </summary>
-		public double DC { get; protected set; }
-
-		/// <summary>
 		/// List with phasors adding to the signal
 		/// </summary>
-		public IDictionary<double, Complex> Phasors => _Phasors;
+		public IDictionary<ISourceDescription, Complex> Phasors => _Phasors;
 
 		/// <summary>
 		/// Object capable of calculating characteristic values for this <see cref="ISignalData"/>
@@ -106,19 +77,19 @@ namespace ECAT.Simulation
 				var result = SignalType.Empty;
 
 				// Check for DC, if present set the flag
-				if (DC != 0)
+				if (_Phasors.Keys.Where((x) => x.Frequency == 0).FirstOrDefault() != null)
 				{
 					result |= SignalType.DC;
 				}
 
 				// Get the number of phasors
-				var phasorsCount = Phasors.Count();
+				var acPhasorsCount = Phasors.Keys.Where((x) => x.Frequency > 0).Count();
 
 				// If it's greater than 0
-				if (phasorsCount > 0)
+				if (acPhasorsCount > 0)
 				{
 					// And greater than 1, set the multi AC flag
-					if (phasorsCount > 1)
+					if (acPhasorsCount > 1)
 					{
 						result |= SignalType.MultipleAC;
 					}
@@ -130,6 +101,31 @@ namespace ECAT.Simulation
 				}
 
 				return result;
+			}
+		}
+
+		#endregion
+
+		#region Protected methods
+
+		/// <summary>
+		/// Adds <paramref name="value"/> to this <see cref="PhasorDomainSignal"/>. Either creates a new entry or adds the <paramref name="value"/>
+		/// to the entry already existing for <paramref name="source"/>.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="value"></param>
+		protected void AddPhasorHelper(ISourceDescription source, Complex value)
+		{
+			// If source is already present in the dictionary
+			if(_Phasors.ContainsKey(source))
+			{
+				// Add the value to the stored value
+				_Phasors[source] += value;
+			}
+			else
+			{
+				// Otherwise create a new entry
+				_Phasors.Add(source, value);
 			}
 		}
 
@@ -155,11 +151,9 @@ namespace ECAT.Simulation
 				throw new ArgumentNullException(nameof(obj));
 			}
 
-			DC = obj.DC;
-
 			// Clear the phasors and add obj's elements to it
 			_Phasors.Clear();
-			obj.Phasors.ForEach((x) => _Phasors.Add(x.Key, x.Value));
+			obj.Phasors.ForEach((x) => AddPhasorHelper(x.Key, x.Value));
 		}
 
 		/// <summary>
@@ -172,8 +166,8 @@ namespace ECAT.Simulation
 		/// Creates a copy of the signal in reversed direction (<see cref="DC"/> and each <see cref="Phasors"/> value is negated)
 		/// </summary>
 		/// <returns></returns>
-		public PhasorDomainSignal CopyAndNegate() => new PhasorDomainSignal(-DC, Phasors.Select((phasor) =>
-			new KeyValuePair<double, Complex>(phasor.Key, -phasor.Value)));
+		public PhasorDomainSignal CopyAndNegate() => new PhasorDomainSignal(Phasors.Select((phasor) =>
+			new KeyValuePair<ISourceDescription, Complex>(phasor.Key, -phasor.Value)));
 
 		/// <summary>
 		/// Creates a copy of the signal in reversed direction (<see cref="DC"/> and each <see cref="Phasors"/> value is negated)
@@ -181,14 +175,6 @@ namespace ECAT.Simulation
 		/// <returns></returns>
 		IPhasorDomainSignal IPhasorDomainSignal.CopyAndNegate() => CopyAndNegate();
 		
-		/// <summary>
-		/// Checks if average value is positive (<see cref="DC"/> is >= 0), if true returns a copy of this instance, if not returns a
-		/// negated copy of this instance
-		/// drops and sets the <see cref="ISignalInformation.InvertedDirection"/> flag to true
-		/// </summary>
-		/// <param name="info"></param>
-		public PhasorDomainSignal CopyWithPositiveAverage() => DC >= 0 ? Copy() : CopyAndNegate();
-
 		#endregion
 	}
 }

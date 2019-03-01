@@ -1,5 +1,4 @@
 ﻿using CSharpEnhanced.CoreInterfaces;
-using System;
 using System.Collections.Generic;
 using System.Numerics;
 
@@ -10,23 +9,16 @@ namespace ECAT.Core
 	/// </summary>
 	[NecessaryService]
 	[ConstructorDeclaration]
-	[ConstructorDeclaration(typeof(double), "DC")]
 	[ConstructorDeclaration(typeof(IEnumerable<KeyValuePair<double, Complex>>), "Phasors")]
-	[ConstructorDeclaration(new Type[] { typeof(double), typeof(IEnumerable<KeyValuePair<double, Complex>>) }, "DC", "Phasors")]
 	[ConstructorDeclaration(typeof(IPhasorDomainSignal), "Copy constructor")]
 	public interface IPhasorDomainSignal : ISignalData, IShallowCopy<IPhasorDomainSignal>
 	{
 		#region Properties
 
 		/// <summary>
-		/// DC component of the signal
-		/// </summary>
-		double DC { get; }
-
-		/// <summary>
 		/// List with phasors adding to the signal
 		/// </summary>
-		IDictionary<double, Complex> Phasors { get; }
+		IDictionary<ISourceDescription, Complex> Phasors { get; }
 
 		/// <summary>
 		/// The type of the signal
