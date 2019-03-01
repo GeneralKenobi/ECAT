@@ -20,6 +20,11 @@ namespace ECAT.Design
 		public SourceType SourceType { get; set; }
 
 		/// <summary>
+		/// Frequency category to which this source belongs
+		/// </summary>
+		public FrequencyCategory FrequencyCategory => SourceType == SourceType.ACVoltageSource ? FrequencyCategory.AC : FrequencyCategory.DC;
+
+		/// <summary>
 		/// Output value produced by the source (voltage, current, etc.)
 		/// </summary>
 		public double OutputValue { get; set; }

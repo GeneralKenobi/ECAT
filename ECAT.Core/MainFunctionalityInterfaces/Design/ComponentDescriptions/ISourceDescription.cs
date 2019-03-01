@@ -18,6 +18,11 @@
 		SourceType SourceType { get; }
 
 		/// <summary>
+		/// Frequency category to which this source belongs
+		/// </summary>
+		FrequencyCategory FrequencyCategory { get; }
+
+		/// <summary>
 		/// Output value produced by the source (voltage, current, etc.)
 		/// </summary>
 		double OutputValue { get; }
