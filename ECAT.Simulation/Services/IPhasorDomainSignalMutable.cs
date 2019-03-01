@@ -10,7 +10,7 @@ namespace ECAT.Simulation
 	/// </summary>
 	[NecessaryService]
 	[ConstructorDeclaration]
-	[ConstructorDeclaration(typeof(IEnumerable<KeyValuePair<double, Complex>>), "Phasors")]
+	[ConstructorDeclaration(typeof(IEnumerable<KeyValuePair<ISourceDescription, Complex>>), "Phasors")]
 	[ConstructorDeclaration(typeof(IPhasorDomainSignal), "Copy constructor")]
 	public interface IPhasorDomainSignalMutable : IPhasorDomainSignal
     {
