@@ -22,6 +22,11 @@ namespace ECAT.Simulation
 			public SourceType SourceType { get; } = SourceType.DCVoltageSource;
 
 			/// <summary>
+			/// Frequency category to which this source belongs
+			/// </summary>
+			public FrequencyCategory FrequencyCategory { get; } = FrequencyCategory.DC;
+
+			/// <summary>
 			/// Output value produced by the source (voltage, current, etc.)
 			/// </summary>
 			public double OutputValue { get; } = 0;
