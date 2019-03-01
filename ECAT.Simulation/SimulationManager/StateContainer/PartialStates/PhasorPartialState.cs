@@ -149,6 +149,65 @@ namespace ECAT.Simulation
 			return result;
 		}
 
+		/// <summary>
+		/// Builds an <see cref="IPhasorDomainSignal"/> for each node, takes every state from
+		/// <see cref="GenericPartialStates{TState, TValues}.States"/>.
+		/// </summary>
+		/// <param name="includeReferenceNode">If true, an empty signal will be generated for the reference node</param>
+		/// <returns></returns>
+		public IDictionary<int, IPhasorDomainSignal> PotentialsToPhasorDomainSignal(bool includeReferenceNode)
+		{
+			// Create a dictionary, keys are node indices, values are mutable time domain signals
+			var result = new Dictionary<int, IPhasorDomainSignalMutable>();
+
+			// Add each node index with time domain signal for it
+			foreach (var index in _NodeIndices)
+			{
+				result.Add(index, IoC.Resolve<IPhasorDomainSignalMutable>());
+			}
+
+			// Add the states
+			foreach (var state in States.Values)
+			{
+				state.AddPotentialsTo(result);
+			}
+
+			// If it was requested to add reference node
+			if (includeReferenceNode)
+			{
+				// Create an entry for it with an empty ITimeDomainSignal stored
+				result.Add(AdmittanceMatrixFactory.ReferenceNode, IoC.Resolve<IPhasorDomainSignalMutable>());
+			}
+
+			// Cast the mutable time domain signal to standard ITimeDomainSignal
+			return result.ToDictionary((x) => x.Key, ((x) => (IPhasorDomainSignal)x.Value));
+		}
+
+		/// <summary>
+		/// Builds an <see cref="IPhasorDomainSignal"/> for each active component current, takes every state from
+		/// <see cref="GenericPartialStates{TState, TValues}.States"/>.
+		/// </summary>
+		public IDictionary<int, IPhasorDomainSignal> CurrentsToPhasorDomainSignal()
+		{
+			// Create a dictionary, keys are node indices, values are mutable time domain signals
+			var result = new Dictionary<int, IPhasorDomainSignalMutable>();
+
+			// Add each node index with time domain signal for it
+			foreach (var index in _ActiveComponentsIndices)
+			{
+				result.Add(index, IoC.Resolve<IPhasorDomainSignalMutable>());
+			}
+
+			// Add the states
+			foreach (var state in States.Values)
+			{
+				state.AddCurrentsTo(result);
+			}
+
+			// Cast the mutable time domain signal to standard ITimeDomainSignal
+			return result.ToDictionary((x) => x.Key, ((x) => (IPhasorDomainSignal)x.Value));
+		}
+
 		#endregion
 	}
 }

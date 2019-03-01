@@ -1,4 +1,5 @@
-﻿using ECAT.Core;
+﻿using CSharpEnhanced.Helpers;
+using ECAT.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,6 +46,45 @@ namespace ECAT.Simulation
 		/// many sources produced this state</param>
 		public PhasorState(int nodesCount, int activeComponentsCount, ISourceDescription sourceDescription) :
 			this(Enumerable.Range(0, nodesCount), Enumerable.Range(0, activeComponentsCount), sourceDescription) { }
+
+		#endregion
+
+		#region Private methods
+
+		/// <summary>
+		/// Adds this instance (passed dictionary) to <paramref name="signal"/>
+		/// </summary>
+		/// <param name="signal">Signal to add to</param>
+		/// <param name="sourceCollection">Source dictionary to add from (<see cref="GenericState{T}.Potentials"/> or
+		/// <see cref="GenericState{T}.Currents"/>
+		/// </param>
+		private void AddToSignalHelper(IDictionary<int, IPhasorDomainSignalMutable> signal, IDictionary<int, Complex> sourceCollection)
+		{
+			// Perform necessary null checks
+			if (signal == null || sourceCollection == null)
+			{
+				throw new ArgumentNullException();
+			}
+
+			if (SourceDescription == null)
+			{
+				throw new Exception(nameof(SourceDescription) + " cannot be null for this method (it's needed to determine the source of the waveform" +
+					" in order to add to appropriate collection - AC/DC)");
+			}
+
+			// Check if key collections match - it's necessary, otherwise the signal is not compatible with this instance
+			if (!sourceCollection.Keys.IsSequenceEqual(signal.Keys))
+			{
+				throw new ArgumentException(nameof(signal) + " has incompatible key collection");
+			}
+
+			// For each key in the dictionary
+			foreach (var key in sourceCollection.Keys)
+			{
+				// Add that entry's value to appropriate signal
+				signal[key].AddPhasor(SourceDescription, sourceCollection[key]);
+			}
+		}
 
 		#endregion
 
@@ -236,6 +276,18 @@ namespace ECAT.Simulation
 
 			return result;
 		}
+
+		/// <summary>
+		/// Adds this instance's <see cref="GenericState{T}.Potentials"/> to <paramref name="signal"/>
+		/// </summary>
+		/// <param name="signal">Signal to add to</param>
+		public void AddPotentialsTo(IDictionary<int, IPhasorDomainSignalMutable> signal) => AddToSignalHelper(signal, Potentials);
+
+		/// <summary>
+		/// Adds this instance's <see cref="GenericState{T}.Currents"/> to <paramref name="signal"/>
+		/// </summary>
+		/// <param name="signal">Signal to add to</param>
+		public void AddCurrentsTo(IDictionary<int, IPhasorDomainSignalMutable> signal) => AddToSignalHelper(signal, Currents);
 
 		#endregion
 	}
