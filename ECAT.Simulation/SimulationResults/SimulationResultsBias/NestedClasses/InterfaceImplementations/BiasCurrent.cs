@@ -41,25 +41,27 @@ namespace ECAT.Simulation
 
 			#region Private methods
 
-			/// <summary>
-			/// Returns a DC current flowing through a two terminal
-			/// </summary>
-			/// <param name="voltageDrop"></param>
-			/// <param name="twoTerminal"></param>
-			/// <returns></returns>
-			private double GetPassiveTwoTerminalDCCurrent(IPhasorDomainSignal voltageDrop, ITwoTerminal twoTerminal) =>
-				voltageDrop.DC * twoTerminal.GetConductance();
-
-			/// <summary>
-			/// Returns AC current phasors for a two terminal
-			/// </summary>
-			/// <param name="voltageDrop"></param>
-			/// <param name="twoTerminal"></param>
-			/// <returns></returns>
-			private IEnumerable<KeyValuePair<double, Complex>> GetPassiveTwoTerminalACCurrentPhasors(
-				IPhasorDomainSignal voltageDrop, ITwoTerminal twoTerminal) =>
-				voltageDrop.Phasors.Select((phasor) =>
-				new KeyValuePair<double, Complex>(phasor.Key, phasor.Value * twoTerminal.GetAdmittance(phasor.Key)));
+			///// <summary>
+			///// Returns a DC current flowing through a two terminal
+			///// </summary>
+			///// <param name="voltageDrop"></param>
+			///// <param name="twoTerminal"></param>
+			///// <returns></returns>
+			//private double GetPassiveTwoTerminalDCCurrent(IPhasorDomainSignal voltageDrop, ITwoTerminal twoTerminal) =>
+			//	twoTerminal.GetConductance() * voltageDrop.Phasors.
+			//	Where((x) => x.Key.FrequencyCategory == FrequencyCategory.DC).
+			//	Sum((x) => x.Value.Real) ;
+			//
+			///// <summary>
+			///// Returns AC current phasors for a two terminal
+			///// </summary>
+			///// <param name="voltageDrop"></param>
+			///// <param name="twoTerminal"></param>
+			///// <returns></returns>
+			//private IEnumerable<KeyValuePair<double, Complex>> GetPassiveTwoTerminalACCurrentPhasors(
+			//	IPhasorDomainSignal voltageDrop, ITwoTerminal twoTerminal) =>
+			//	voltageDrop.Phasors.Select((phasor) =>
+			//	new KeyValuePair<double, Complex>(phasor.Key, phasor.Value * twoTerminal.GetAdmittance(phasor.Key)));
 
 			/// <summary>
 			/// Attempts to obtain a current for some <see cref="ITwoTerminal"/> <paramref name="component"/>
@@ -128,9 +130,12 @@ namespace ECAT.Simulation
 				if (_VoltageDrops.TryGet(element, out var voltageDrop, voltageBA))
 				{
 					// If successful, create a new current signal based on it, cache it
+					//current = IoC.Resolve<IPhasorDomainSignal>(
+					//		GetPassiveTwoTerminalDCCurrent(voltageDrop, element),
+					//		GetPassiveTwoTerminalACCurrentPhasors(voltageDrop, element));
+
 					current = IoC.Resolve<IPhasorDomainSignal>(
-							GetPassiveTwoTerminalDCCurrent(voltageDrop, element),
-							GetPassiveTwoTerminalACCurrentPhasors(voltageDrop, element));
+						voltageDrop.Phasors.Select((x) => x.Value * element.GetAdmittance(x.Key.Frequency)));
 
 					// And return success
 					return true;

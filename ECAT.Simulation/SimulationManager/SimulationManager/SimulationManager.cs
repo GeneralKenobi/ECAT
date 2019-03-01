@@ -85,23 +85,23 @@ namespace ECAT.Simulation
 		/// </summary>
 		/// <param name="factory"></param>
 		private PhasorPartialStates GetPhasorsForAllDCSources(AdmittanceMatrixFactory factory) => GetAllPhasorsHelper(factory, factory.DCSources);
-
+		
 		/// <summary>
 		/// Creates and solves DC admittance matrix for saturated op-amps
 		/// </summary>
 		/// <param name="factory"></param>
 		/// <returns></returns>
-		private InstantenousState GetOpAmpSaturationBias(AdmittanceMatrixFactory factory)
+		private PhasorState GetOpAmpSaturationBias(AdmittanceMatrixFactory factory)
 		{
 			// Create an instantenous state based on node indices and active components indices in factory,
 			// use the factory's op amp saturation source as source description
-			var result = new InstantenousState(factory.Nodes, factory.ActiveComponentsCount, factory.OpAmpSaturationSource);
+			var result = new PhasorState(factory.Nodes, factory.ActiveComponentsCount, factory.OpAmpSaturationSource);
 
 			// Construct matrix for saturated op-amps and solve it
 			factory.ConstructDCForSaturatedOpAmpsOnly().Solve(out var nodePotentials, out var activeComponentsCurrents);
 
 			// Add the results from simulation to state
-			result.AddValues(nodePotentials.Select((x) => x.Real).ToArray(), activeComponentsCurrents.Select((x) => x.Real).ToArray());
+			result.AddValues(nodePotentials.ToArray(), activeComponentsCurrents.ToArray());
 
 			return result;
 		}
@@ -116,52 +116,25 @@ namespace ECAT.Simulation
 		/// <param name="factory"></param>
 		private void DCBiasLogic(AdmittanceMatrixFactory factory)
 		{
-			// TODO: Build IPhasorDomainSignal from multiple sources, not one combined state. 
-			// IPhasorDomainSignal has to be first refactored.
-
 			// Calculated state of the system
-			var state = GetPhasorsForAllDCSources(factory).ToDC();
+			var state = GetPhasorsForAllDCSources(factory);
 
 			// Add op-amp saturation bias to complete the DC bias
 			state.AddState(GetOpAmpSaturationBias(factory));
 
 			// Loop until correct op-amp operation is found
-			while (!factory.CheckOpAmpOperationWithSelfAdjustment(state.Combine().Potentials))
+			while (!factory.CheckOpAmpOperationWithSelfAdjustment(state.ToDC().Combine().Potentials))
 			{
 				// If the op-amp operation was adjusted, recalculate the state
-				state = GetPhasorsForAllDCSources(factory).ToDC();
+				state = GetPhasorsForAllDCSources(factory);
 				
 				state.AddState(GetOpAmpSaturationBias(factory));
 			}
 
-			// Combine the states into one state
-			var combined = state.Combine();
-
-			// Create dictionary holding final values of potentials at nodes
-			var totalPotentials = new Dictionary<int, IPhasorDomainSignal>();
-
-			// Create dictionary holding final values of currents
-			var totalActiveComponentsCurrents = new Dictionary<int, IPhasorDomainSignal>();
-
-			// Create signal for reference node
-			totalPotentials.Add(AdmittanceMatrixFactory.ReferenceNode, IoC.Resolve<IPhasorDomainSignal>(0d));
-
-			// Assign node potentials from the combined state
-			foreach(var node in factory.Nodes)
-			{
-				// Create a phasor domain signal for each node
-				totalPotentials.Add(node, IoC.Resolve<IPhasorDomainSignal>(combined.Potentials[node]));
-			}
-
-			// And active componetns currents
-			foreach(var current in combined.Currents)
-			{
-				// Create a phasor domain signal for each current
-				totalActiveComponentsCurrents.Add(current.Key, IoC.Resolve<IPhasorDomainSignal>(current.Value));
-			}
-
-			// Create simulation results based on determined node potentials and active components currents
-			IoC.Resolve<SimulationResultsProvider>().Value = new SimulationResultsBias(totalPotentials, totalActiveComponentsCurrents);
+			// Create simulation results based on node potentials and active components currents in the state
+			IoC.Resolve<SimulationResultsProvider>().Value = new SimulationResultsBias(
+				state.PotentialsToPhasorDomainSignal(true),
+				state.CurrentsToPhasorDomainSignal());
 		}
 
 		#endregion
@@ -218,7 +191,7 @@ namespace ECAT.Simulation
 			// Finally get op amp bias, if requested
 			if (performSaturatedOpAmpBias)
 			{
-				instantenous.AddState(GetOpAmpSaturationBias(factory));
+				instantenous.AddState(GetOpAmpSaturationBias(factory).ToDC());
 			}
 
 			return instantenous;

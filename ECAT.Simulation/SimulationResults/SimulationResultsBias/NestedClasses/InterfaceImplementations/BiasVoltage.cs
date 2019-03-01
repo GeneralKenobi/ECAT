@@ -30,35 +30,35 @@ namespace ECAT.Simulation
 			/// <summary>
 			/// Finds all AC voltage waveforms between the two node potentials collections
 			/// </summary>
-			/// <param name="nodeAACPotentials"></param>
-			/// <param name="nodeBACPotentials"></param>
+			/// <param name="nodeAPotentials"></param>
+			/// <param name="nodeBPotentials"></param>
 			/// <returns></returns>
-			private IEnumerable<KeyValuePair<double, Complex>> GetACWaveforms(IDictionary<double, Complex> nodeAACPotentials,
-				IDictionary<double, Complex> nodeBACPotentials)
+			private IEnumerable<KeyValuePair<ISourceDescription, Complex>> GetACWaveforms(IDictionary<ISourceDescription, Complex> nodeAPotentials,
+				IDictionary<ISourceDescription, Complex> nodeBPotentials)
 			{
 				// Get the intersecting keys (i.e. find all waveforms that are present at both nodes, in 90% situations it will be all
 				// elements but not always)
-				var intersectingKeys = nodeAACPotentials.Keys.Intersect(nodeBACPotentials.Keys);
+				var intersectingKeys = nodeAPotentials.Keys.Intersect(nodeBPotentials.Keys);
 
 				// For each waveform present at both nodes
 				foreach (var key in intersectingKeys)
 				{
 					// Return a difference between waveform at node B and waveform at node A
-					yield return new KeyValuePair<double, Complex>(key, nodeBACPotentials[key] - nodeAACPotentials[key]);
+					yield return new KeyValuePair<ISourceDescription, Complex>(key, nodeBPotentials[key] - nodeAPotentials[key]);
 				}
 
 				// For each waveform present only at node B
-				foreach (var key in nodeBACPotentials.Keys.Except(intersectingKeys))
+				foreach (var key in nodeBPotentials.Keys.Except(intersectingKeys))
 				{
 					// Add its value to the waveforms
-					yield return new KeyValuePair<double, Complex>(key, nodeBACPotentials[key]);
+					yield return new KeyValuePair<ISourceDescription, Complex>(key, nodeBPotentials[key]);
 				}
 
 				// For each waveform present only at node A
-				foreach (var key in nodeAACPotentials.Keys.Except(intersectingKeys))
+				foreach (var key in nodeAPotentials.Keys.Except(intersectingKeys))
 				{
 					// Subtract its value from the waveforms
-					yield return new KeyValuePair<double, Complex>(key, -nodeAACPotentials[key]);
+					yield return new KeyValuePair<ISourceDescription, Complex>(key, -nodeAPotentials[key]);
 				}
 			}
 
@@ -81,7 +81,7 @@ namespace ECAT.Simulation
 				var nodeB = _Data[nodeBIndex];
 
 				// Construct the result
-				var result = IoC.Resolve<IPhasorDomainSignal>(nodeB.DC - nodeA.DC, GetACWaveforms(nodeA.Phasors, nodeB.Phasors));
+				var result = IoC.Resolve<IPhasorDomainSignal>(GetACWaveforms(nodeA.Phasors, nodeB.Phasors));
 
 				// Return it
 				return result;

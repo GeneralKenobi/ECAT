@@ -80,12 +80,19 @@ namespace ECAT.Simulation
 				// Try to get voltage drop across the element
 				if (_VoltageDrops.TryGet(resistor, out var voltageDrop))
 				{
-					// If successful, create a new power signal based on it, cache it
-					CachePower(resistor, 
-						IoC.Resolve<IPhasorDomainSignal>(
-						Math.Pow(voltageDrop.DC, 2) / resistor.Resistance,
+					//// If successful, create a new power signal based on it, cache it
+					//CachePower(resistor,
+					//	IoC.Resolve<IPhasorDomainSignal>(
+					//	Math.Pow(voltageDrop.DC, 2) / resistor.Resistance,
+					//	voltageDrop.Phasors.
+					//	Select((v) => new KeyValuePair<double, Complex>(v.Key, Complex.Pow(v.Value, 2) / resistor.Resistance))));
+
+					CachePower(resistor, IoC.Resolve<IPhasorDomainSignal>(
 						voltageDrop.Phasors.
-						Select((v) => new KeyValuePair<double, Complex>(v.Key, Complex.Pow(v.Value, 2) / resistor.Resistance))));
+						Select((x) => new KeyValuePair<ISourceDescription, double>(
+							x.Key, x.Key.FrequencyCategory == FrequencyCategory.DC ? x.Value.Real : x.Value.Magnitude / Math.Sqrt(2))).
+						Select((x) => new KeyValuePair<ISourceDescription, Complex>(x.Key, Math.Pow(x.Value, 2) / resistor.Resistance))));
+						
 
 					// And return success
 					return true;
