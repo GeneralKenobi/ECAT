@@ -54,18 +54,29 @@ namespace ECAT.ViewModel
 		/// <returns></returns>
 		private IEnumerable<string> ProcessSignal(IPhasorDomainSignal signal, string unit)
 		{
-			// If DC is not 0, print it
-			if(signal.DC != 0)
+			// For each phasor in the signal
+			foreach(var phasor in signal.Phasors)
 			{
-				yield return "DC: " + SIHelpers.ToSIStringExcludingSmallPrefixes(signal.DC, unit, _RoundToDigit);
+				// Start with description of the source
+				var infoString = "Source: \"" + phasor.Key.Label.Label + "\" produces ";
+
+				// Then, depending on the category
+				switch(phasor.Key.FrequencyCategory)
+				{
+					case FrequencyCategory.DC:
+						{
+							infoString += SIHelpers.ToAltSIStringExcludingSmallPrefixes(phasor.Value, unit, _RoundToDigit) + " DC";
+						} break;
+
+					case FrequencyCategory.AC:
+						{
+							infoString += SIHelpers.ToAltSIStringExcludingSmallPrefixes(phasor.Value, unit, _RoundToDigit) + " AC";
+						}
+						break;
+				}
+
+				yield return infoString;
 			}
-			
-			// Print each phasor
-			foreach (var acWaveform in signal.Phasors)
-			{
-				yield return "Phasor (peak): " + acWaveform.Value + unit + " at " + acWaveform.Key +
-					IoC.Resolve<ISIUnits>().FrequencyShort;
-			}			
 		}
 
 		#endregion
