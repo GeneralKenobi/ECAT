@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace ECAT.Core
@@ -14,7 +15,7 @@ namespace ECAT.Core
 		/// <summary>
 		/// Collection of names of all components that are implemented and usable
 		/// </summary>
-		ReadOnlyCollection<IComponentDeclaration> ImplementedComponents { get; }
+		IEnumerable<IComponentDeclaration> ImplementedComponents { get; }
 
 		#endregion
 

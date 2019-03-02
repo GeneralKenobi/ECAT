@@ -27,6 +27,11 @@
 		/// </summary>
 		ComponentType ComponentType { get; }
 
+		/// <summary>
+		/// Category in which the component should be presented (e.g. in component adding menu)
+		/// </summary>
+		ComponentCategory Category { get; }
+
 		#endregion
 	}
 }

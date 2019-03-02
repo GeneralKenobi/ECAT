@@ -12,12 +12,14 @@ namespace ECAT.Design
 		/// <summary>
 		/// Default Constructor
 		/// </summary>
-		public ComponentDeclaration(ComponentIDEnumeration id, string displayName, int numberOfTerminals, ComponentType componentType)
+		public ComponentDeclaration(ComponentIDEnumeration id, string displayName, int numberOfTerminals, ComponentType componentType,
+			ComponentCategory category)
 		{
 			ID = id;
 			DisplayName = displayName;
 			NumberOfTerminals = numberOfTerminals;
 			ComponentType = componentType;
+			Category = category;
 		}
 
 		#endregion
@@ -43,6 +45,11 @@ namespace ECAT.Design
 		/// Type of the component
 		/// </summary>
 		public ComponentType ComponentType { get; }
+
+		/// <summary>
+		/// Category in which the component should be presented (e.g. in component adding menu)
+		/// </summary>
+		public ComponentCategory Category { get; }
 
 		#endregion
 	}

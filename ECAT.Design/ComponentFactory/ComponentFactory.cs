@@ -19,15 +19,12 @@ namespace ECAT.Design
 		/// </summary>
 		public ComponentFactory()
 		{
-			ImplementedComponents = new ReadOnlyCollection<IComponentDeclaration>(_ImplementedComponents);
-
 			// Construct the dictionary from the existing collections
 			var interfacesWithDeclarations = _AssociatedInterfaces.ToDictionary((entry) => entry.Value,
 				(entry) => _ImplementedComponents.Find((declaration) => declaration.ID == entry.Key));
 
 			_AssociatedDeclarations = _AssociatedTypes.Select((entry) => new KeyValuePair<Type, IComponentDeclaration>(entry.Value,
 			  interfacesWithDeclarations[entry.Key])).Concat(interfacesWithDeclarations).ToDictionary((x) => x.Key, (x) => x.Value);
-
 		}
 
 		#endregion
@@ -39,13 +36,13 @@ namespace ECAT.Design
 		/// </summary>
 		private List<IComponentDeclaration> _ImplementedComponents { get; } = new List<IComponentDeclaration>()
 		{
-			new ComponentDeclaration(ComponentIDEnumeration.Resistor, "Resistor", 2, ComponentType.Passive),
-			new ComponentDeclaration(ComponentIDEnumeration.VoltageSource, "Voltage Source", 2, ComponentType.Passive),
-			new ComponentDeclaration(ComponentIDEnumeration.CurrentSource, "Current Source", 2, ComponentType.Passive),
-			new ComponentDeclaration(ComponentIDEnumeration.Ground, "Ground", 1, ComponentType.Passive),
-			new ComponentDeclaration(ComponentIDEnumeration.OpAmp, "Operational Amplifier", 3, ComponentType.Active),
-			new ComponentDeclaration(ComponentIDEnumeration.ACVoltageSource, "AC Voltage Source", 3, ComponentType.Passive),
-			new ComponentDeclaration(ComponentIDEnumeration.Capacitor, "Capacitor", 3, ComponentType.Passive),
+			new ComponentDeclaration(ComponentIDEnumeration.Resistor, "Resistor", 2, ComponentType.Passive, ComponentCategory.Impedance),
+			new ComponentDeclaration(ComponentIDEnumeration.VoltageSource, "Voltage Source", 2, ComponentType.Passive, ComponentCategory.Source),
+			new ComponentDeclaration(ComponentIDEnumeration.CurrentSource, "Current Source", 2, ComponentType.Passive, ComponentCategory.Source),
+			new ComponentDeclaration(ComponentIDEnumeration.Ground, "Ground", 1, ComponentType.Passive, ComponentCategory.Other),
+			new ComponentDeclaration(ComponentIDEnumeration.OpAmp, "Operational Amplifier", 3, ComponentType.Active, ComponentCategory.ThreeTerminal),
+			new ComponentDeclaration(ComponentIDEnumeration.ACVoltageSource, "AC Voltage Source", 3, ComponentType.Passive, ComponentCategory.Source),
+			new ComponentDeclaration(ComponentIDEnumeration.Capacitor, "Capacitor", 3, ComponentType.Passive, ComponentCategory.Impedance),
 		};
 
 		/// <summary>
@@ -91,7 +88,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// Collection of names of all components that are implemented and usable
 		/// </summary>
-		public ReadOnlyCollection<IComponentDeclaration> ImplementedComponents { get; }
+		public IEnumerable<IComponentDeclaration> ImplementedComponents => _ImplementedComponents;
 
 		#endregion
 
