@@ -63,6 +63,12 @@ namespace ECAT.Design
 			}
 		}
 
+		/// <summary>
+		/// Index assigned to this <see cref="IActiveComponent"/>
+		/// TODO: Make it so that only the designated classes can assign it, this is temporary
+		/// </summary>
+		public int Index { get; set; }
+
 		#endregion
 
 		#region Protected methods

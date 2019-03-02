@@ -223,6 +223,8 @@ namespace ECAT.Simulation
 
 			ExtractSpecialComponents();
 
+			InitializeIndexedComponents();
+
 			FindFrequenciesInCircuit();
 
 			FindImportantNodes();
@@ -718,7 +720,8 @@ namespace ECAT.Simulation
 		}
 
 		/// <summary>
-		/// Finds all active components and assigns their count to <see cref="ActiveComponentsCount"/>
+		/// Finds all active components and assigns their count to <see cref="ActiveComponentsCount"/>. Collections of component descriptions have
+		/// to be initialized before call to this method.
 		/// </summary>
 		private void InitializeIndexedComponents()
 		{
@@ -739,6 +742,13 @@ namespace ECAT.Simulation
 			_IndexedComponentsIndices = activeComponents.
 				Concat(_DCCurrentSources.Select((x, i) => new KeyValuePair<IComponentDescription, int>(x, i))).
 				ToDictionary((x) => x.Key, (x) => x.Value);
+
+			foreach(var component in FindDCVoltageSources().Select((x) => Tuple.Create((IActiveComponent)x, (IComponentDescription)x.Description)).
+				Concat(FindACVoltageSources().Select((x) => Tuple.Create((IActiveComponent)x, (IComponentDescription)x.Description))).
+				Concat(FindOpAmps().Select((x) => Tuple.Create((IActiveComponent)x, (IComponentDescription)x.Description))))
+			{
+				component.Item1.Index = _IndexedComponentsIndices[component.Item2];
+			}
 		}
 
 		/// <summary>
@@ -798,9 +808,6 @@ namespace ECAT.Simulation
 				Cast<IOpAmp>().
 				Select((x) => x.Description).
 				ToList();
-
-			// Prepare the active components
-			InitializeIndexedComponents();
 		}
 
 		/// <summary>
