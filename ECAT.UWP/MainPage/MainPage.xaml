@@ -201,7 +201,8 @@
 			<controls:Menu.Content>
 
 				<!--Menu allowing the user to add parts-->
-				<local:ComponentAddingMenuUC controls:Menu.Glyph="&#xE710;"/>
+				<local:ComponentAddingMenuUC controls:Menu.Glyph="&#xE710;"
+					DataContext="{Binding DesignVM}"/>
 
 				<!--Edit menu control-->
 				<local:ComponentEditMenuUC controls:Menu.Glyph="&#xE104;"
