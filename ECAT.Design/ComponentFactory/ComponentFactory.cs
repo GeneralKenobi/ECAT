@@ -41,8 +41,9 @@ namespace ECAT.Design
 			new ComponentDeclaration(ComponentIDEnumeration.CurrentSource, "Current Source", 2, ComponentType.Passive, ComponentCategory.Source),
 			new ComponentDeclaration(ComponentIDEnumeration.Ground, "Ground", 1, ComponentType.Passive, ComponentCategory.Other),
 			new ComponentDeclaration(ComponentIDEnumeration.OpAmp, "Operational Amplifier", 3, ComponentType.Active, ComponentCategory.ThreeTerminal),
-			new ComponentDeclaration(ComponentIDEnumeration.ACVoltageSource, "AC Voltage Source", 3, ComponentType.Passive, ComponentCategory.Source),
-			new ComponentDeclaration(ComponentIDEnumeration.Capacitor, "Capacitor", 3, ComponentType.Passive, ComponentCategory.Impedance),
+			new ComponentDeclaration(ComponentIDEnumeration.ACVoltageSource, "AC Voltage Source", 2, ComponentType.Passive, ComponentCategory.Source),
+			new ComponentDeclaration(ComponentIDEnumeration.Capacitor, "Capacitor", 2, ComponentType.Passive, ComponentCategory.Impedance),
+			new ComponentDeclaration(ComponentIDEnumeration.SweepVoltageSource, "Sweep Voltage Source", 2, ComponentType.Active, ComponentCategory.Source),
 		};
 
 		/// <summary>
@@ -58,6 +59,7 @@ namespace ECAT.Design
 			{ ComponentIDEnumeration.OpAmp, typeof(IOpAmp) },
 			{ ComponentIDEnumeration.ACVoltageSource, typeof(IACVoltageSource) },
 			{ ComponentIDEnumeration.Capacitor, typeof(ICapacitor) },
+			{ ComponentIDEnumeration.SweepVoltageSource, typeof(ISweepVoltageSource) },
 		};
 
 		/// <summary>
@@ -79,6 +81,7 @@ namespace ECAT.Design
 			{ typeof(IOpAmp), typeof(OpAmp) },
 			{ typeof(IACVoltageSource), typeof(ACVoltageSource) },
 			{ typeof(ICapacitor), typeof(Capacitor) },
+			{ typeof(ISweepVoltageSource), typeof(SweepVoltageSource) },
 		};
 
 		#endregion

@@ -18,5 +18,7 @@
 		ACVoltageSource = 5,
 
 		Capacitor = 6,
+
+		SweepVoltageSource = 7,
     }
 }

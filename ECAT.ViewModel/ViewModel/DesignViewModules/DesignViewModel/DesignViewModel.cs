@@ -21,9 +21,10 @@ namespace ECAT.ViewModel
 		/// </summary>
 		public DesignViewModel()
 		{
-			if(IoC.Container.TryResolve(out IDesignManager manager))
+			if(IoC.Container.TryResolve(out IDesignManager manager) && IoC.Container.TryResolve(out IComponentFactory factory))
 			{
 				DesignManager = manager;
+				ComponentFactory = factory;
 			}
 			else
 			{
@@ -116,6 +117,11 @@ namespace ECAT.ViewModel
 		/// View model for the component edit menu
 		/// </summary>
 		public ComponentEditSectionViewModel ComponentEditSectionVM { get; } = new ComponentEditSectionViewModel();
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public IComponentFactory ComponentFactory { get; }
 
 		#endregion
 

@@ -94,7 +94,10 @@ namespace ECAT.ViewModel
 				"Place Ground", new KeyArgument("G"), () => PlacePartHelper(ComponentIDEnumeration.Ground)));
 
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
-				"Place Ground", new KeyArgument("O"), () => PlacePartHelper(ComponentIDEnumeration.OpAmp)));
+				"Place OpAmp", new KeyArgument("O"), () => PlacePartHelper(ComponentIDEnumeration.OpAmp)));
+
+			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
+				"Place Sweep Voltage Source", new KeyArgument("S"), () => PlacePartHelper(ComponentIDEnumeration.SweepVoltageSource)));
 
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
 				"Place AC Voltage Source", new KeyArgument("V", KeyModifiers.Shift), () => PlacePartHelper(ComponentIDEnumeration.ACVoltageSource)));

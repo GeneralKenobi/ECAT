@@ -24,6 +24,7 @@ namespace ECAT.ViewModel
 			{ ComponentIDEnumeration.OpAmp, typeof(OpAmpEditViewModel) },
 			{ ComponentIDEnumeration.Capacitor, typeof(CapacitorEditViewModel) },
 			{ ComponentIDEnumeration.ACVoltageSource, typeof(ACVoltageSourceEditViewModel) },
+			{ ComponentIDEnumeration.SweepVoltageSource, typeof(SweepVoltageSourceEditViewModel) },
 		};
 
 		#endregion

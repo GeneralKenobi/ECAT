@@ -32,8 +32,16 @@
 
 			</Border>
 
+			<ListView IsEnabled="{Binding EnableAddPartsButtons}"
+					ItemsSource="{Binding ComponentFactory.ImplementedComponents, Mode=OneWay}"
+					SelectedItem="{Binding ComponentToAdd, Mode=TwoWay}"
+					Style="{StaticResource PartAddingListViewStyle}"
+					ItemContainerStyle="{StaticResource PartAddingListViewItemStyle}"/>
+					<!-- ItemClick="PartAddingListViewItemClicked"-->
+					<!-- SelectedIndex="{x:Bind InputListSelectedIndex, Mode=TwoWay}"-->
+
 			<!-- List with inputs -->
-			<controls:Expander Header="{Binding PartTypeCollection.InputListHeader, Mode=OneTime}"
+			<!--<controls:Expander Header="{Binding PartTypeCollection.InputListHeader, Mode=OneTime}"
 				Style="{StaticResource ExpanderEditMenuStyle}"			
 				IsExpanded="{Binding PartTypeCollection.ExpandInputList, Mode=TwoWay}">
 
@@ -45,10 +53,10 @@
 					Style="{StaticResource PartAddingListViewStyle}"
 					ItemContainerStyle="{StaticResource PartAddingListViewItemStyle}"/>
 
-			</controls:Expander>
+			</controls:Expander>-->
 
 			<!-- List with simple logic gates -->
-			<controls:Expander Header="{Binding PartTypeCollection.SimpleLogicListHeader, Mode=OneTime}"
+			<!--<controls:Expander Header="{Binding PartTypeCollection.SimpleLogicListHeader, Mode=OneTime}"
 				Style="{StaticResource ExpanderEditMenuStyle}"			
 				IsExpanded="{Binding PartTypeCollection.ExpandSimpleLogicList, Mode=TwoWay}">
 
@@ -60,10 +68,10 @@
 							Style="{StaticResource PartAddingListViewStyle}"
 							ItemContainerStyle="{StaticResource PartAddingListViewItemStyle}"/>
 
-			</controls:Expander>
+			</controls:Expander>-->
 
 			<!-- List with complex logic -->
-			<controls:Expander Header="{Binding PartTypeCollection.ComplexLogicListHeader, Mode=OneTime}"
+			<!--<controls:Expander Header="{Binding PartTypeCollection.ComplexLogicListHeader, Mode=OneTime}"
 				Style="{StaticResource ExpanderEditMenuStyle}"			
 				IsExpanded="{Binding PartTypeCollection.ExpandComplexLogicList, Mode=TwoWay}">
 
@@ -75,7 +83,7 @@
 							Style="{StaticResource PartAddingListViewStyle}"
 							ItemContainerStyle="{StaticResource PartAddingListViewItemStyle}"/>
 
-			</controls:Expander>
+			</controls:Expander>-->
 
 
 
