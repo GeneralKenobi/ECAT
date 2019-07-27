@@ -36,7 +36,8 @@
 					ItemsSource="{Binding ComponentFactory.ImplementedComponents, Mode=OneWay}"
 					SelectedItem="{Binding ComponentToAdd, Mode=TwoWay}"
 					Style="{StaticResource PartAddingListViewStyle}"
-					ItemContainerStyle="{StaticResource PartAddingListViewItemStyle}"/>
+					ItemContainerStyle="{StaticResource PartAddingListViewItemStyle}"
+					ItemClick="PartAddingListViewItemClicked"/>
 					<!-- ItemClick="PartAddingListViewItemClicked"-->
 					<!-- SelectedIndex="{x:Bind InputListSelectedIndex, Mode=TwoWay}"-->
 
