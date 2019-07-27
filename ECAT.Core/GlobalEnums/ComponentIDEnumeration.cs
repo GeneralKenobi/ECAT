@@ -20,5 +20,7 @@
 		Capacitor = 6,
 
 		SweepVoltageSource = 7,
+
+		Voltmeter = 8,
     }
 }

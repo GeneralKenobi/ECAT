@@ -20,6 +20,7 @@
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/Capacitor/CapacitorTCStyle.xaml"/>
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/ACVoltageSource/ACVoltageSourceTCStyle.xaml"/>
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/SweepVoltageSource/SweepVoltageSourceTCStyle.xaml"/>
+		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/Voltmeter/VoltmeterTCStyle.xaml"/>
 	</ResourceDictionary.MergedDictionaries>
 	    
 
