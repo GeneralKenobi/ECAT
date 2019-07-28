@@ -18,7 +18,7 @@ namespace ECAT.Design
 		/// </summary>
 		public Voltmeter()
 		{
-			this.ID = _IDCounter;
+			this.ID = "V" + _IDCounter;
 			++_IDCounter;
 		}
 
@@ -29,7 +29,7 @@ namespace ECAT.Design
 		/// <summary>
 		/// The ID number of this Voltmeter (used to differentiate between generated voltage plots)
 		/// </summary>
-		public int ID { get; }
+		public string ID { get; }
 
 		#endregion
 

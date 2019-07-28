@@ -13,7 +13,8 @@
 
 		<Button Content="Schematic" Style="{StaticResource StandardSideMenuButtonStyle}"
 			Margin="10"
-			FontSize="{StaticResource FontSizeLarge}"/>
+			FontSize="{StaticResource FontSizeLarge}"
+			Command="{Binding ShowSchematicCommand}"/>
 
 		<TextBlock Text="Meter Readings"
 			FontSize="{StaticResource FontSizeXLarge}"
@@ -24,7 +25,8 @@
 			Style="{StaticResource PartAddingListViewStyle}"
 			ItemContainerStyle="{StaticResource VoltmeterMeasurementsListViewItemStyle}"
 			Margin="10"
-			SelectionMode="None"/>
+			SelectionMode="None"
+			ItemClick="ListViewItemClick"/>
 
 	</StackPanel>
 </UserControl>

@@ -14,7 +14,7 @@ namespace ECAT.Core
 		/// <summary>
 		/// The ID number of this Voltmeter (used to differentiate between generated voltage plots)
 		/// </summary>
-		int ID { get; }
+		string ID { get; }
 
 		#endregion
 	}
