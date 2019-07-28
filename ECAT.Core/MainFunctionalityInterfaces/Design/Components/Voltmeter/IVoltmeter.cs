@@ -9,6 +9,13 @@ namespace ECAT.Core
 	/// </summary>
 	public interface IVoltmeter : ITwoTerminal
 	{
+		#region Properties
 
+		/// <summary>
+		/// The ID number of this Voltmeter (used to differentiate between generated voltage plots)
+		/// </summary>
+		int ID { get; }
+
+		#endregion
 	}
 }
