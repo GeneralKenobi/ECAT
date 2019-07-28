@@ -343,8 +343,14 @@ namespace ECAT.Simulation
 			// Start measuring time
 			watch.Start();
 
-			// Create an admittance matrix factory and use it to invoke passed simulation logic
-			simulationLogic(new AdmittanceMatrixFactory(schematic));
+			// Create an admittance matrix factory
+			var factory = new AdmittanceMatrixFactory(schematic);
+
+			// Use it to invoke passed simulation logic
+			simulationLogic(factory);
+
+			// Assign voltmeters
+			IoC.Resolve<SimulationResultsProvider>().DeclaredVoltmeterMeasurements = factory.Voltmeters;
 
 			// Stop time measurement
 			watch.Stop();

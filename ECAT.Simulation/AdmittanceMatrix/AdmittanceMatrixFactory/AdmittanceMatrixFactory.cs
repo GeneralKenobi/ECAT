@@ -203,6 +203,11 @@ namespace ECAT.Simulation
 			Concat(_DCCurrentSources);
 
 		/// <summary>
+		/// Enumeration of voltmeters in the circuit
+		/// </summary>
+		public IEnumerable<IVoltmeterMeasurement> Voltmeters { get; private set; }
+
+		/// <summary>
 		/// <see cref="ISourceDescription"/> for results generated for saturated op-amps (matrices built with
 		/// <see cref="ConstructDCForSaturatedOpAmpsOnly"/>).
 		/// </summary>
@@ -783,6 +788,14 @@ namespace ECAT.Simulation
 			Where((component) => component is IOpAmp).
 			Cast<IOpAmp>();
 
+		/// <summary>
+		/// Returns all <see cref="IVoltmeter"/>s present in <see cref="ISchematic"/>
+		/// </summary>
+		/// <returns></returns>
+		private IEnumerable<IVoltmeter> FindVoltmeters() => _Schematic.Components.
+			Where((component) => component is IVoltmeter).
+			Cast<IVoltmeter>();
+
 		#endregion
 
 		#region Initialization of private collections
@@ -808,6 +821,9 @@ namespace ECAT.Simulation
 				Cast<IOpAmp>().
 				Select((x) => x.Description).
 				ToList();
+
+			// Get voltmeters
+			Voltmeters = FindVoltmeters().Select((x) => IoC.Resolve<IVoltmeterMeasurement>(x.ID, x.TerminalA.NodeIndex, x.TerminalB.NodeIndex));
 		}
 
 		/// <summary>

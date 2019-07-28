@@ -70,10 +70,8 @@
 								VerticalAlignment="Center"
 								FontSize="{StaticResource FontSizeXXXXLarge}"
 								RenderTransformOrigin="0.5 0.5"
-								CharacterSpacing="0">
-
-								<!-- Keep in single line to prevent whitespace being inserted between these 2 runs -->
-								<Run Text="V"/><Run Text="{Binding Component.ID}"/>
+								CharacterSpacing="0"
+								Text="{Binding Component.ID}">
 
 								<TextBlock.RenderTransform>
 									<RotateTransform Angle="{Binding Component.Center.RotationAngle}"/>
