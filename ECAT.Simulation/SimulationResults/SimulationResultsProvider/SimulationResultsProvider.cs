@@ -1,4 +1,6 @@
 ﻿using ECAT.Core;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ECAT.Simulation
 {
@@ -15,6 +17,11 @@ namespace ECAT.Simulation
 		/// Backing store for <see cref="Value"/>
 		/// </summary>
 		private ISimulationResults mValue;
+
+		/// <summary>
+		/// Backing store for <see cref="DeclaredVoltmeterMeasurements"/>
+		/// </summary>
+		private IEnumerable<IVoltmeterMeasurement> mDeclaredVoltmeterMeasurements;
 
 		#endregion
 
@@ -36,6 +43,15 @@ namespace ECAT.Simulation
 		{
 			get => mValue ?? _DummySimulationResults;
 			set => mValue = value;
+		}
+
+		/// <summary>
+		/// Measurements made by voltmeters
+		/// </summary>
+		public IEnumerable<IVoltmeterMeasurement> DeclaredVoltmeterMeasurements
+		{
+			get => mDeclaredVoltmeterMeasurements ?? Enumerable.Empty<IVoltmeterMeasurement>();
+			set => mDeclaredVoltmeterMeasurements = value;
 		}
 
 		#endregion
