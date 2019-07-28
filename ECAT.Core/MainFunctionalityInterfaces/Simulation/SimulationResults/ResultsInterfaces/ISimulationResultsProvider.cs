@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace ECAT.Core
 {
@@ -6,7 +7,7 @@ namespace ECAT.Core
 	/// Interface for classes providing results from simulation
 	/// </summary>
 	[NecessaryService]
-	public interface ISimulationResultsProvider
+	public interface ISimulationResultsProvider: INotifyPropertyChanged
 	{
 		#region Properties
 

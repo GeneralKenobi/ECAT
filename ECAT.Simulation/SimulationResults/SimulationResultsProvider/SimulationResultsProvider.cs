@@ -1,5 +1,6 @@
 ﻿using ECAT.Core;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace ECAT.Simulation
@@ -11,6 +12,15 @@ namespace ECAT.Simulation
 	[RegisterAsInstance(typeof(SimulationResultsProvider), typeof(ISimulationResultsProvider))]
 	public partial class SimulationResultsProvider : ISimulationResultsProvider
 	{
+		#region Events
+
+		/// <summary>
+		/// Event fired whenever a property changes its value
+		/// </summary>
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		#endregion
+
 		#region Private members
 
 		/// <summary>
@@ -42,7 +52,11 @@ namespace ECAT.Simulation
 		public ISimulationResults Value
 		{
 			get => mValue ?? _DummySimulationResults;
-			set => mValue = value;
+			set
+			{
+				mValue = value;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
+			}
 		}
 
 		/// <summary>
@@ -51,7 +65,11 @@ namespace ECAT.Simulation
 		public IEnumerable<IVoltmeterMeasurement> DeclaredVoltmeterMeasurements
 		{
 			get => mDeclaredVoltmeterMeasurements ?? Enumerable.Empty<IVoltmeterMeasurement>();
-			set => mDeclaredVoltmeterMeasurements = value;
+			set
+			{
+				mDeclaredVoltmeterMeasurements = value;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
+			}
 		}
 
 		#endregion

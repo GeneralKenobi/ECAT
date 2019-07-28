@@ -72,6 +72,11 @@ namespace ECAT.ViewModel
 		public IComponentInfoProvider ComponentInfoProvider { get; } = IoC.Resolve<IComponentInfoProvider>();
 
 		/// <summary>
+		/// Viewmodel for content selection in side menu
+		/// </summary>
+		public ContentSelectionViewModel ContentSelectionVM { get; } = new ContentSelectionViewModel();
+
+		/// <summary>
 		/// InfoLogger for this app
 		/// </summary>
 		public IInfoLogger InfoLogger { get; } = IoC.Resolve<IInfoLogger>();

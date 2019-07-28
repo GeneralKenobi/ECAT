@@ -200,6 +200,9 @@
 			ContentLength="200">
 			<controls:Menu.Content>
 
+				<local:ContentSelectionUC controls:Menu.Glyph="&#xECCD;"
+					DataContext="{Binding DesignVM.ContentSelectionVM}"/>
+
 				<!--Menu allowing the user to add parts-->
 				<local:ComponentAddingMenuUC controls:Menu.Glyph="&#xE710;"
 					DataContext="{Binding DesignVM}"/>
