@@ -27,5 +27,25 @@
 			/>
 
 	</DataTemplate>
+
+	<DataTemplate x:Key="MainContentTimeDomainSignalDataTemplate">
+		<controls:Graph Data="{Binding Data}"
+			TitleFontSize="16"
+			Background="{StaticResource WhiteBrush}"
+			BorderThickness="0"
+			Margin="10"
+			PointDiameter="0"
+			FontSize="12"
+			HorizontalAxisDescription="{Binding XUnit}"
+			VerticalAxisDescription="{Binding YUnit}"
+			SIPrefixConfig="Adequate"
+			InterpolationLineThickness="2"
+			GridlinesThickness="1"
+			DataForeground="{StaticResource BlackBrush}"
+			GridlinesBrush="{StaticResource DarkGrayBrush}"
+			SecondaryGridlinesBrush="{StaticResource DarkGrayBrush}"
+			/>
+
+	</DataTemplate>
     
 </ResourceDictionary>

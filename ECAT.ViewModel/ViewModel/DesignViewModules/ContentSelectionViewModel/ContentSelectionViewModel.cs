@@ -55,7 +55,8 @@ namespace ECAT.ViewModel
 		/// </summary>
 		private void ShowSchematic()
 		{
-
+			AppViewModel.Singleton.DesignVM.GraphToShow = null;
+			AppViewModel.Singleton.DesignVM.GraphHeader = string.Empty;
 		}
 
 		/// <summary>
@@ -64,7 +65,11 @@ namespace ECAT.ViewModel
 		/// <param name="parameter"></param>
 		private void ShowVoltmeterMeasurement(object parameter)
 		{
-
+			if(parameter is IVoltmeterMeasurement measurement)
+			{
+				AppViewModel.Singleton.DesignVM.GraphToShow = IoC.Resolve<ISimulationResultsProvider>().Value.Voltage.Get(measurement.NodeA, measurement.NodeB);
+				AppViewModel.Singleton.DesignVM.GraphHeader = measurement.VoltmeterID;
+			}
 		}
 
 		#endregion

@@ -48,6 +48,11 @@ namespace ECAT.ViewModel
 		/// </summary>
 		private IComponentDeclaration mComponentToAdd;
 
+		/// <summary>
+		/// Backing store for <see cref="GraphToShow"/>
+		/// </summary>
+		private ISignalInformation mGraphToShow;
+
 		#endregion
 
 		#region Private properties
@@ -65,6 +70,34 @@ namespace ECAT.ViewModel
 		#endregion
 
 		#region Public properties
+
+		/// <summary>
+		/// Header text to display above the graph
+		/// </summary>
+		public string GraphHeader { get; set; }
+
+		/// <summary>
+		/// True if schematic should be shown, false if a plot should be shown
+		/// </summary>
+		public ISignalInformation GraphToShow
+		{
+			get => mGraphToShow;
+			set
+			{
+				mGraphToShow = value;
+				InvokePropertyChanged(nameof(GraphToShow), nameof(ShowSchematic), nameof(ShowGraph));
+			}
+		}
+
+		/// <summary>
+		/// True if schematic should be visible
+		/// </summary>
+		public bool ShowSchematic => GraphToShow == null;
+
+		/// <summary>
+		/// True if graph should be visible
+		/// </summary>
+		public bool ShowGraph => GraphToShow != null;
 
 		/// <summary>
 		/// Provider of <see cref="IComponentInfo"/> to display.

@@ -21,7 +21,8 @@
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/ACVoltageSource/ACVoltageSourceTCStyle.xaml"/>
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/SweepVoltageSource/SweepVoltageSourceTCStyle.xaml"/>
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/Voltmeter/VoltmeterTCStyle.xaml"/>
+		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/ComponentInfo/Templates/PhasorDomainSignalDataPresenterTemplate.xaml"/>
+		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/ComponentInfo/Templates/TimeDomainSignalDataPresenterTemplate.xaml"/>
 	</ResourceDictionary.MergedDictionaries>
-	    
 
 </ResourceDictionary>

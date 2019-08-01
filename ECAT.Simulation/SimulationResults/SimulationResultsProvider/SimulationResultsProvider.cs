@@ -68,7 +68,7 @@ namespace ECAT.Simulation
 			set
 			{
 				mDeclaredVoltmeterMeasurements = value;
-				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DeclaredVoltmeterMeasurements)));
 			}
 		}
 

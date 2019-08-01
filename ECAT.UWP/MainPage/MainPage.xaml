@@ -13,9 +13,31 @@
 	Name="RootPage">
 
 	<Page.Resources>
-		<local:IBaseComponentToComponentViewModelConverter x:Key="ComponentConverter"/>
-		<local:IWireToWireViewModelConverter x:Key="WireConverter"/>
-		<converters:NegateImaginaryComplexConverter x:Key="PositionConverter"/>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="ms-appx:///Themes/Generic.xaml"/>
+			</ResourceDictionary.MergedDictionaries>
+
+			<local:IBaseComponentToComponentViewModelConverter x:Key="ComponentConverter"/>
+			<local:IWireToWireViewModelConverter x:Key="WireConverter"/>
+			<local:SignalDataToViewModelConverter x:Key="SignalDataConverter"/>
+			<converters:NegateImaginaryComplexConverter x:Key="PositionConverter"/>
+
+			<DataTemplate x:Key="NoDataToShowTemplate">
+				<TextBlock HorizontalAlignment="Center"
+								VerticalAlignment="Center"
+								FontSize="{StaticResource FontSizeXXXLarge}"
+								Text="No data to show"/>
+			</DataTemplate>
+
+			<xaml:TypeBasedDataTemplateSelector x:Key="SignalDataTemplateSelector">
+				<xaml:LazyTemplateTypeRule Template="{StaticResource PhasorDomainSignalDataTemplate}"
+									Type="{xaml:TypeResolver TypeName=ECAT.ViewModel.PhasorDomainSignalViewModel}"/>
+				<xaml:LazyTemplateTypeRule Template="{StaticResource MainContentTimeDomainSignalDataTemplate}"
+									Type="{xaml:TypeResolver TypeName=ECAT.ViewModel.TimeDomainSignalViewModel}"/>
+			</xaml:TypeBasedDataTemplateSelector>
+
+		</ResourceDictionary>
 	</Page.Resources>
 
 
@@ -28,34 +50,35 @@
 	<Grid>
 
 		<ScrollViewer Name="ScrollViewerControl"
-		ZoomMode="Enabled" MinZoomFactor="0.1" MaxZoomFactor="10"			
-			HorizontalScrollMode="Enabled" HorizontalScrollBarVisibility="Auto"
-			HorizontalAlignment="Left"
-			VerticalAlignment="Top">
+					ZoomMode="Enabled" MinZoomFactor="0.1" MaxZoomFactor="10"			
+					HorizontalScrollMode="Enabled" HorizontalScrollBarVisibility="Auto"
+					HorizontalAlignment="Left"
+					VerticalAlignment="Top"
+					Visibility="{Binding DesignVM.ShowSchematic, Converter={converters:BoolToVisibilityMEC}}">
 
 			<!--<Grid Tapped="DesignAreaTapped">-->
 			<Grid>
 
 				<xaml:VisualAttachments.AttachedVisuals>
 					<xaml:TappedPointerPositionVisualCommand Command="{Binding DesignVM.DesignAreaClickedCommand}"
-						Converter="{StaticResource PositionConverter}">
+							Converter="{StaticResource PositionConverter}">
 						<xaml:VisualTappedTrigger/>
 					</xaml:TappedPointerPositionVisualCommand>
 				</xaml:VisualAttachments.AttachedVisuals>
 
 				<Grid x:Name="BackgroundGrid"
-					Background="Transparent"
-					UseLayoutRounding="False"
-					HorizontalAlignment="Left"
-					VerticalAlignment="Top"/>
+						Background="Transparent"
+						UseLayoutRounding="False"
+						HorizontalAlignment="Left"
+						VerticalAlignment="Top"/>
 
 				<!--DragOver="PartDragOver"
-				Drop="DropOnMainCanvas"
-				Tapped="MainCanvasTapped"-->
+					Drop="DropOnMainCanvas"
+					Tapped="MainCanvasTapped"-->
 
 				<!-- Control for wires-->
 				<ItemsControl ItemsSource="{Binding DesignVM.DesignManager.CurrentSchematic.Wires}"
-					UseLayoutRounding="False">
+						UseLayoutRounding="False">
 
 					<ItemsControl.ItemsPanel>
 						<ItemsPanelTemplate>
@@ -72,9 +95,9 @@
 
 				<!-- Control for components -->
 				<!-- Don't use layout rounding because it blurs the parts when they're rotated,
-				especially noticeable when the control has text in it -->
+					especially noticeable when the control has text in it -->
 				<ItemsControl ItemsSource="{Binding DesignVM.DesignManager.CurrentSchematic.Components}"
-					UseLayoutRounding="False">
+						UseLayoutRounding="False">
 
 					<ItemsControl.ItemsPanel>
 						<ItemsPanelTemplate>
@@ -88,11 +111,27 @@
 						</DataTemplate>
 					</ItemsControl.ItemTemplate>
 				</ItemsControl>
-
-
-
 			</Grid>
 		</ScrollViewer>
+
+		<Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+
+			<TextBlock Text="{Binding DesignVM.GraphHeader}"
+				FontSize="{StaticResource FontSizeXXXLarge}"
+				HorizontalAlignment="Center"
+				Margin="0 10 0 0"/>
+
+			<ContentControl Content="{Binding DesignVM.GraphToShow.Data, Converter={StaticResource SignalDataConverter}}"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center"
+				Grid.Row="1"
+				ContentTemplateSelector="{StaticResource SignalDataTemplateSelector}"
+				Visibility="{Binding DesignVM.ShowGraph, Converter={converters:BoolToVisibilityMEC}}"/>
+		</Grid>
 
 		<!-- Elements at the bottom of the screen: The dark blue border, the currently logged message, the component info -->
 		<StackPanel 
