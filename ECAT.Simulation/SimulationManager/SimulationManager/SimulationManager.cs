@@ -349,8 +349,9 @@ namespace ECAT.Simulation
 			// Use it to invoke passed simulation logic
 			simulationLogic(factory);
 
-			// Assign voltmeters
-			IoC.Resolve<SimulationResultsProvider>().DeclaredVoltmeterMeasurements = factory.Voltmeters;
+			// Assign voltmeters - if it's an AC simulation.
+			IoC.Resolve<SimulationResultsProvider>().DeclaredVoltmeterMeasurements =
+				simulationType == SimulationType.DC ? Enumerable.Empty<IVoltmeterMeasurement>() : factory.Voltmeters;
 
 			// Stop time measurement
 			watch.Stop();

@@ -9,6 +9,7 @@ namespace ECAT.Design
 	/// <summary>
 	/// Standard implementation of an IVoltmeter
 	/// </summary>
+	[DisplayVoltageInfo(nameof(TerminalA), nameof(TerminalB))]
 	public class Voltmeter : TwoTerminal, IVoltmeter
 	{
 		#region Constructor

@@ -33,7 +33,7 @@
 			TitleFontSize="16"
 			Background="{StaticResource WhiteBrush}"
 			BorderThickness="0"
-			Margin="10"
+			Margin="40 10 10 40"
 			PointDiameter="0"
 			FontSize="12"
 			HorizontalAxisDescription="{Binding XUnit}"
