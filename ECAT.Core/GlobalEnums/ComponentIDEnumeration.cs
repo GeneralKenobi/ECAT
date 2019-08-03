@@ -22,5 +22,7 @@
 		SweepVoltageSource = 7,
 
 		Voltmeter = 8,
+
+		Inductor = 9,
     }
 }

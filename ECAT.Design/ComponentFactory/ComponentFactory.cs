@@ -45,6 +45,7 @@ namespace ECAT.Design
 			new ComponentDeclaration(ComponentIDEnumeration.Capacitor, "Capacitor", 2, ComponentType.Passive, ComponentCategory.Impedance),
 			new ComponentDeclaration(ComponentIDEnumeration.SweepVoltageSource, "Sweep Voltage Source", 2, ComponentType.Active, ComponentCategory.Source),
 			new ComponentDeclaration(ComponentIDEnumeration.Voltmeter, "Voltmeter", 2, ComponentType.Passive, ComponentCategory.Other),
+			new ComponentDeclaration(ComponentIDEnumeration.Inductor, "Inductor", 2, ComponentType.Passive, ComponentCategory.Impedance),
 		};
 
 		/// <summary>
@@ -62,6 +63,7 @@ namespace ECAT.Design
 			{ ComponentIDEnumeration.Capacitor, typeof(ICapacitor) },
 			{ ComponentIDEnumeration.SweepVoltageSource, typeof(ISweepVoltageSource) },
 			{ ComponentIDEnumeration.Voltmeter, typeof(IVoltmeter) },
+			{ ComponentIDEnumeration.Inductor, typeof(IInductor) },
 		};
 
 		/// <summary>
@@ -85,6 +87,7 @@ namespace ECAT.Design
 			{ typeof(ICapacitor), typeof(Capacitor) },
 			{ typeof(ISweepVoltageSource), typeof(SweepVoltageSource) },
 			{ typeof(IVoltmeter), typeof(Voltmeter) },
+			{ typeof(IInductor), typeof(Inductor) },
 		};
 
 		#endregion

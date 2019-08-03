@@ -48,6 +48,11 @@ namespace ECAT.Simulation
 		public double DefaultCapacitorCapacitance { get; } = 1e-5;
 
 		/// <summary>
+		/// Default inductance for an <see cref="IInductor"/>
+		/// </summary>
+		public double DefaultInductorInductance { get; } = 1;
+
+		/// <summary>
 		/// Default frequency of an <see cref="IACVoltageSource"/>
 		/// </summary>
 		public double DefaultACVoltageSourceFrequency { get; } = 1e1;

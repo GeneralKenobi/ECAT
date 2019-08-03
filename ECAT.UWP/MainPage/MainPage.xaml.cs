@@ -150,9 +150,9 @@ namespace ECAT.UWP
 				case EditedComponentChanged.ComponentToComponent:
 					{
 						// Show the edit menu if it wasn't shown
-						if (SideMenu.GetSelectedContentIndex() != 1)
+						if (SideMenu.GetSelectedContentIndex() != 2)
 						{
-							SideMenu.SetSelectedContentFromIndex(1);
+							SideMenu.SetSelectedContentFromIndex(2);
 						}
 
 						SideMenu.IsOpen = true;

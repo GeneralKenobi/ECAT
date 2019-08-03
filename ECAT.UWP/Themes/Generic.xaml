@@ -23,6 +23,7 @@
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/Voltmeter/VoltmeterTCStyle.xaml"/>
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/ComponentInfo/Templates/PhasorDomainSignalDataPresenterTemplate.xaml"/>
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/ComponentInfo/Templates/TimeDomainSignalDataPresenterTemplate.xaml"/>
+		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/Inductor/InductorTCStyle.xaml"/>
 	</ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

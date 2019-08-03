@@ -65,6 +65,7 @@ namespace ECAT.UWP
 			{ComponentIDEnumeration.Capacitor, typeof(CapacitorTC) },
 			{ComponentIDEnumeration.SweepVoltageSource, typeof(SweepVoltageSourceTC) },
 			{ComponentIDEnumeration.Voltmeter, typeof(VoltmeterTC) },
+			{ComponentIDEnumeration.Inductor, typeof(InductorTC) },
 		};
 
 		#endregion

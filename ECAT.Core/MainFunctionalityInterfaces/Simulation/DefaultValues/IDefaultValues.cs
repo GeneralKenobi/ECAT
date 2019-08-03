@@ -46,6 +46,11 @@ namespace ECAT.Core
 		double DefaultCapacitorCapacitance { get; }
 
 		/// <summary>
+		/// Default inductance for an <see cref="IInductor"/>
+		/// </summary>
+		double DefaultInductorInductance { get; }
+
+		/// <summary>
 		/// Default frequency of an <see cref="IACVoltageSource"/>
 		/// </summary>
 		double DefaultACVoltageSourceFrequency { get; }
