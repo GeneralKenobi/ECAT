@@ -64,8 +64,9 @@ namespace ECAT.Simulation
 					TypeSwitch.Construct().
 						LazyCase<IResistor>((x) => _Currents.TryGet(x, out current)).
 						LazyCase<ICapacitor>((x) => _Currents.TryGet(x, out current)).
+						LazyCase<IInductor>((x) => _Currents.TryGet(x, out current)).
 						LazyCase<IActiveComponent>((x) => _Currents.TryGet(x.Index, out current)).
-						Switch(twoTerminal);
+						SwitchFirst(twoTerminal);
 					
 					// If both voltage and current were obtained
 					if(current != null)
@@ -146,6 +147,15 @@ namespace ECAT.Simulation
 				TryEnablePower(capacitor, voltageBA) &&
 				_Cache.TryGetValue(Tuple.Create<IBaseComponent, bool>(capacitor, voltageBA), out var power) ? power.Item2 : null;
 
+			/// <summary>
+			/// Gets information about power dissipated on an <see cref="IInductor"/>
+			/// </summary>
+			/// <param name="inductor"></param>
+			/// <returns></returns>
+			public ISignalInformation Get(IInductor inductor, bool voltageBA) =>
+				// Check if power can be enabled and if it can be fetched, if so return it, otherwise return null
+				TryEnablePower(inductor, voltageBA) &&
+				_Cache.TryGetValue(Tuple.Create<IBaseComponent, bool>(inductor, voltageBA), out var power) ? power.Item2 : null;
 
 			/// <summary>
 			/// Gets information about power on an <see cref="ICurrentSource"/>

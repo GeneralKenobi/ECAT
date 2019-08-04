@@ -32,6 +32,17 @@ namespace ECAT.Simulation
 		bool TryGet(ICapacitor capacitor, out T current, bool voltageBA = true);
 
 		/// <summary>
+		/// Gets current flowing through an <see cref="IInductor"/> or null if unsuccessful and stores it in
+		/// <paramref name="current"/>. Returns true on success, false otherwise.
+		/// </summary>
+		/// <param name="inductor"></param>
+		/// <paramref name="current"></paramref>
+		/// <param name="voltageBA">If true, voltage used to calculate the current is taken from <see cref="ITwoTerminal.TerminalA"/>
+		/// (reference node) to <see cref="ITwoTerminal.TerminalB"/>, if false the direction is reversed</param>
+		/// <returns></returns>
+		bool TryGet(IInductor inductor, out T current, bool voltageBA = true);
+
+		/// <summary>
 		/// Gets current produced by some <see cref="IActiveComponent"/> or null if unsuccessful and stores it in
 		/// <paramref name="current"/>. Returns true on success, false otherwise.
 		/// </summary>

@@ -186,6 +186,18 @@ namespace ECAT.Simulation
 				TryGetStandardTwoTerminalCurrent(capacitor, voltageBA, out current);
 
 			/// <summary>
+			/// Gets current flowing through an <see cref="IInductor"/> or null if unsuccessful and stores it in
+			/// <paramref name="current"/>. Returns true on success, false otherwise.
+			/// </summary>
+			/// <param name="inductor"></param>
+			/// <param name="current"></param>
+			/// <param name="voltageBA">If true, voltage used to calculate the current is taken from <see cref="ITwoTerminal.TerminalA"/>
+			/// (reference node) to <see cref="ITwoTerminal.TerminalB"/>, if false the direction is reversed</param>
+			/// <returns></returns>
+			public bool TryGet(IInductor inductor, out IPhasorDomainSignal current, bool voltageBA = true) =>
+				TryGetActiveComponentCurrent(inductor.Index, out current, voltageBA);
+
+			/// <summary>
 			/// Gets current produced by some <see cref="IActiveComponent"/> or null if unsuccessful and stores it in
 			/// <paramref name="current"/>. Returns true on success, false otherwise.
 			/// </summary>
@@ -220,6 +232,16 @@ namespace ECAT.Simulation
 			/// <returns></returns>
 			public ISignalInformation Get(ICapacitor capacitor, bool voltageBA) =>
 				GetStandardTwoTerminalCurrent(capacitor, voltageBA);
+
+			/// <summary>
+			/// Gets information about current flowing through an <see cref="IInductor"/> or null if unsuccessful
+			/// </summary>		
+			/// <param name="inductor"></param>
+			/// <param name="voltageBA">If true, voltage used to calculate the current is taken from <see cref="ITwoTerminal.TerminalA"/>
+			/// (reference node) to <see cref="ITwoTerminal.TerminalB"/>, if false the direction is reversed</param>
+			/// <returns></returns>
+			public ISignalInformation Get(IInductor inductor, bool voltageBA) =>
+				Get(inductor.Index, voltageBA);
 
 			/// <summary>
 			/// Returns current produced by some <see cref="IActiveComponent"/>. If simulation was not yet performed or the current can't be

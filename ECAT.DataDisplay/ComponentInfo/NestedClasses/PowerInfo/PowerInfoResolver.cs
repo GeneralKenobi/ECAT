@@ -42,12 +42,13 @@ namespace ECAT.DataDisplay
 				TypeSwitch.Construct().
 					LazyCase<IResistor>((x) => info = results.Get(x, target.ChangeVIDirections)).
 					LazyCase<ICapacitor>((x) => info = results.Get(x, target.ChangeVIDirections)).
+					LazyCase<IInductor>((x) => info = results.Get(x, target.ChangeVIDirections)).
 					LazyCase<ICurrentSource>((x) => info = results.Get(x, target.ChangeVIDirections)).
 					// Because IACVoltageSource extens IVoltageSource the check for that needs to be done manually so as not to
 					// fetch the result twice (first only for IVoltageSource then for IACVoltageSource)
 					LazyCase<IDCVoltageSource>((x) => info = results.Get(x, target.ChangeVIDirections)).
 					LazyCase<IACVoltageSource>((x) => info = results.Get(x, target.ChangeVIDirections)).
-					Switch(target);
+					SwitchFirst(target);
 
 				return info;
 			}

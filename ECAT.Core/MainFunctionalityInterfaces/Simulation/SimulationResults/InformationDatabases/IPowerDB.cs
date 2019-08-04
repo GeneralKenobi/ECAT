@@ -22,6 +22,13 @@
 		ISignalInformation Get(ICapacitor capacitor, bool voltageBA);
 
 		/// <summary>
+		/// Gets information about power dissipated on an <see cref="IInductor"/>
+		/// </summary>
+		/// <param name="inductor"></param>
+		/// <returns></returns>
+		ISignalInformation Get(IInductor inductor, bool voltageBA);
+
+		/// <summary>
 		/// Gets information about power on an <see cref="ICurrentSource"/>
 		/// </summary>
 		/// <param name="currentSource"></param>

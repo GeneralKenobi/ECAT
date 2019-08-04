@@ -245,7 +245,14 @@ namespace ECAT.Simulation
 			/// </summary>
 			/// <param name="capacitor"></param>
 			/// <returns></returns>
-			public ISignalInformation Get(ICapacitor capacitor, bool voltageBA) => throw new NotImplementedException();				
+			public ISignalInformation Get(ICapacitor capacitor, bool voltageBA) => throw new NotImplementedException();
+
+			/// <summary>
+			/// Gets information about power dissipated on an <see cref="IInductor"/>
+			/// </summary>
+			/// <param name="inductor"></param>
+			/// <returns></returns>
+			public ISignalInformation Get(IInductor inductor, bool voltageBA) => throw new NotImplementedException();
 
 			/// <summary>
 			/// Gets information about power on an <see cref="ICurrentSource"/>

@@ -15,12 +15,6 @@ namespace ECAT.UWP
 		public ComponentInfoUC()
 		{
 			this.InitializeComponent();
-			this.DataContextChanged += ComponentInfoUC_DataContextChanged;
-		}
-
-		private void ComponentInfoUC_DataContextChanged(Windows.UI.Xaml.FrameworkElement sender, Windows.UI.Xaml.DataContextChangedEventArgs args)
-		{
-			
 		}
 
 		#endregion

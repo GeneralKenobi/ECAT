@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Interface for Inductors
 	/// </summary>
-	public interface IInductor : ITwoTerminal
+	public interface IInductor : ITwoTerminal, IActiveComponent
 	{
 		#region Properties
 

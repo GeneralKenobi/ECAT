@@ -38,6 +38,16 @@ namespace ECAT.Simulation
 			/// <returns></returns>
 			public ISignalInformation Get(int activeComponentIndex, bool reverseDirection) => null;
 
+
+			/// <summary>
+			/// Gets information about current flowing through an <see cref="IInductor"/> or null if unsuccessful
+			/// </summary>		
+			/// <param name="inductor"></param>
+			/// <param name="voltageBA">If true, voltage used to calculate the current is taken from <see cref="ITwoTerminal.TerminalA"/>
+			/// (reference node) to <see cref="ITwoTerminal.TerminalB"/>, if false the direction is reversed</param>
+			/// <returns></returns>
+			public ISignalInformation Get(IInductor inductor, bool voltageBA) => null;
+
 			#endregion
 		}
 	}

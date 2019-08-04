@@ -106,6 +106,9 @@ namespace ECAT.ViewModel
 				"Place Capacitor", new KeyArgument("C", KeyModifiers.Shift), () => PlacePartHelper(ComponentIDEnumeration.Capacitor)));
 
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
+				"Place Inductor", new KeyArgument("L"), () => PlacePartHelper(ComponentIDEnumeration.Inductor)));
+
+			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
 				"Run DC Bias", new KeyArgument("T"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.DCBias(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic)));
 			
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
