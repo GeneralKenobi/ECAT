@@ -135,7 +135,9 @@ namespace ECAT.Simulation
 					//		GetPassiveTwoTerminalACCurrentPhasors(voltageDrop, element));
 
 					current = IoC.Resolve<IPhasorDomainSignal>(
-						voltageDrop.Phasors.Select((x) => x.Value * element.GetAdmittance(x.Key.Frequency)));
+						voltageDrop.Phasors.ToDictionary(
+							(x) => x.Key,
+							(x) => x.Value * element.GetAdmittance(x.Key.Frequency)));
 
 					// And return success
 					return true;
