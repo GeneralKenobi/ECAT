@@ -6,12 +6,12 @@ using System.Linq;
 
 namespace ECAT.Simulation
 {
-	partial class SimulationResultsTime
+	partial class SimulationResultsFrequency
 	{
 		/// <summary>
 		/// Manages voltage-related results
 		/// </summary>
-		private class TimeVoltage : VoltageCache<ITimeDomainSignal>, IVoltageDB, IVoltageSignalDB<ITimeDomainSignal>
+		private class FrequencyVoltage : VoltageCache<IFrequencyDomainSignal>, IVoltageDB, IVoltageSignalDB<IFrequencyDomainSignal>
 		{
 			#region Constructors
 
@@ -23,7 +23,7 @@ namespace ECAT.Simulation
 			/// <param name="startTime">Start time of the simulation</param>
 			/// <param name="timeStep">Time step of the simulation - difference between two subsequent simulation points</param>
 			/// <exception cref="ArgumentNullException"></exception>
-			public TimeVoltage(IEnumerable<KeyValuePair<int, ITimeDomainSignal>> data) : base(data) { }
+			public FrequencyVoltage(IEnumerable<KeyValuePair<int, IFrequencyDomainSignal>> data) : base(data) { }
 
 			#endregion
 
@@ -37,7 +37,7 @@ namespace ECAT.Simulation
 			/// <param name="nodeA"></param>
 			/// <param name="nodeB"></param>
 			/// <returns></returns>
-			protected override ITimeDomainSignal ConstructVoltageDrop(int nodeAIndex, int nodeBIndex)
+			protected override IFrequencyDomainSignal ConstructVoltageDrop(int nodeAIndex, int nodeBIndex)
 			{
 				// Get the nodes
 				var nodeA = _Data[nodeAIndex];
@@ -45,15 +45,10 @@ namespace ECAT.Simulation
 
 				//var nodeAWaveforms = nodeA.AllWaveforms.ToDictionary((x) => x.Key, (x) => x.Value);
 				//var nodeBWaveforms = nodeB.AllWaveforms.ToDictionary((x) => x.Key, (x) => x.Value);
-
+				
 				// Construct a result
-				var result = IoC.Resolve<ITimeDomainSignalMutable>(nodeA.Samples, nodeA.Step, nodeA.StartSample);
+				var result = IoC.Resolve<IFrequencyDomainSignal>(nodeB.Waveform.MergeSelect(nodeA.Waveform, (x, y) => x - y), nodeA.Step, 0d);
 
-				// Add waveforms from node B
-				nodeB.ComposingWaveforms.ForEach((x) => result.AddWaveform(x.Key, x.Value));
-
-				// And subtract waveforms from node A
-				nodeA.ComposingWaveforms.ForEach((x) => result.AddWaveform(x.Key, x.Value.Select((y) => -y)));
 
 				//// Add waveforms of sources only appearing on node B (unlikely any will appear but it can't be neglected)
 				//foreach (var key in nodeBWaveforms.Keys.Except(nodeAWaveforms.Keys))
@@ -79,7 +74,7 @@ namespace ECAT.Simulation
 			/// </summary>
 			/// <param name="signal"></param>
 			/// <returns></returns>
-			protected override ITimeDomainSignal CopyAndNegate(ITimeDomainSignal signal) => signal.CopyAndNegate();
+			protected override IFrequencyDomainSignal CopyAndNegate(IFrequencyDomainSignal signal) => signal.CopyAndNegate();
 
 			#endregion
 
@@ -96,7 +91,7 @@ namespace ECAT.Simulation
 			/// <param name="nodeToGround">If true, voltage drop is calculated from ground to node given by
 			/// <paramref name="nodeIndex"/>, if false it is calculated from node given by <paramref name="nodeIndex"/> to ground</param>
 			/// <returns></returns>
-			public bool TryGet(int nodeIndex, out ITimeDomainSignal voltage, bool nodeToGround = true) => nodeToGround ?
+			public bool TryGet(int nodeIndex, out IFrequencyDomainSignal voltage, bool nodeToGround = true) => nodeToGround ?
 				TryGet(AdmittanceMatrixFactory.ReferenceNode, nodeIndex, out voltage) :
 				TryGet(nodeIndex, AdmittanceMatrixFactory.ReferenceNode, out voltage);
 
@@ -108,7 +103,7 @@ namespace ECAT.Simulation
 			/// <param name="nodeBIndex"></param>
 			/// <param name="voltage"></param>
 			/// <returns></returns>
-			public bool TryGet(int nodeAIndex, int nodeBIndex, out ITimeDomainSignal voltage)
+			public bool TryGet(int nodeAIndex, int nodeBIndex, out IFrequencyDomainSignal voltage)
 			{
 				// Check if it's possible to get the voltage drop from cache
 				if (TryEnableVoltageDrop(nodeAIndex, nodeBIndex) &&
@@ -135,7 +130,7 @@ namespace ECAT.Simulation
 			/// <param name="voltageBA">If true, voltage drop is calculated from <see cref="ITwoTerminal.TerminalB"/> to
 			/// <param name="voltage"></param>
 			/// <returns></returns>
-			public bool TryGet(ITwoTerminal component, out ITimeDomainSignal voltage, bool voltageBA = true) => voltageBA ?
+			public bool TryGet(ITwoTerminal component, out IFrequencyDomainSignal voltage, bool voltageBA = true) => voltageBA ?
 				TryGet(component.TerminalA.NodeIndex, component.TerminalB.NodeIndex, out voltage) :
 				TryGet(component.TerminalB.NodeIndex, component.TerminalA.NodeIndex, out voltage);
 

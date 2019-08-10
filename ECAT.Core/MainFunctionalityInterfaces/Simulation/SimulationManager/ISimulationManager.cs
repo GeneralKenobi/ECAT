@@ -52,6 +52,13 @@ namespace ECAT.Core
 		/// <param name="schematic"></param>
 		void ACDCFullCycleWithOpAmpAdjustment(ISchematic schematic);
 
+		/// <summary>
+		/// Performs a full ACDC simulation with <see cref="IOpAmp"/> adjustment - every <see cref="IOpAmp"/> is operating in either active or
+		/// saturated state so that its output voltage does not exceed its supply voltages.
+		/// </summary>
+		/// <param name="schematic"></param>
+		void FrequencySweep(ISchematic schematic);
+
 		#endregion
 	}
 }

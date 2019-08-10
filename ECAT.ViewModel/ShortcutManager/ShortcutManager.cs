@@ -127,6 +127,10 @@ namespace ECAT.ViewModel
 				"Run Full Cycle ACDC With Op-Amp Adjustment",
 				new KeyArgument("X", KeyModifiers.Shift), () => AppViewModel.Singleton.SimulationVM.SimulationManager.ACDCFullCycleWithOpAmpAdjustment(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic)));
 
+			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
+				"Run Full Cycle ACDC With Op-Amp Adjustment",
+				new KeyArgument("Z", KeyModifiers.Ctrl), () => AppViewModel.Singleton.SimulationVM.SimulationManager.FrequencySweep(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic)));
+
 			// TODO: Change the ShortcutKeys to ShortcutKey.Empty and load the saved combinations from a local file
 		}
 

@@ -35,6 +35,8 @@
 									Type="{xaml:TypeResolver TypeName=ECAT.ViewModel.PhasorDomainSignalViewModel}"/>
 				<xaml:LazyTemplateTypeRule Template="{StaticResource MainContentTimeDomainSignalDataTemplate}"
 									Type="{xaml:TypeResolver TypeName=ECAT.ViewModel.TimeDomainSignalViewModel}"/>
+				<xaml:LazyTemplateTypeRule Template="{StaticResource MainContentFrequencyDomainSignalDataTemplate}"
+								Type="{xaml:TypeResolver TypeName=ECAT.ViewModel.FrequencyDomainSignalViewModel}"/>
 			</xaml:TypeBasedDataTemplateSelector>
 
 		</ResourceDictionary>

@@ -7,7 +7,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Dummy voltage database - always returns null.
 		/// </summary>
-		private class DummyVoltageDB : IVoltageDB
+		public class DummyVoltageDB : IVoltageDB
 		{
 			#region Methods
 

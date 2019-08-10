@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Interface for sweep voltage sources used to perform parametric simulations (
 	/// </summary>
-	public interface ISweepVoltageSource: ITwoTerminal, IActiveComponent, ISource
+	public interface ISweepVoltageSource: IACVoltageSource
 	{
 
 	}

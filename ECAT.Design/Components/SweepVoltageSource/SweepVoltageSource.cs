@@ -3,25 +3,17 @@ using ECAT.Core;
 
 namespace ECAT.Design
 {
-	public class SweepVoltageSource : TwoTerminalSource, ISweepVoltageSource
+	public class SweepVoltageSource : ACVoltageSource, ISweepVoltageSource
 	{
-		#region Public properties
+		#region Constructor
 
 		/// <summary>
-		///  Index of this <see cref="IActiveComponent"/>
+		/// 
 		/// </summary>
-		public int Index { get; set; }
-
-		#endregion
-
-		#region Protected methods
-
-		/// <summary>
-		/// Returns admittance of this component
-		/// </summary>
-		/// <param name="frequency"></param>
-		/// <returns></returns>
-		protected override Complex CalculateAdmittance(double frequency) => 0;
+		public SweepVoltageSource()
+		{
+			OutputValue = 1;
+		}
 
 		#endregion
 	}

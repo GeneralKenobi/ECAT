@@ -29,6 +29,7 @@ namespace ECAT.UWP
 			TypeSwitch.Construct().
 				LazyCase<IPhasorDomainSignal>((x) => result = new PhasorDomainSignalViewModel(x, IoC.Resolve<ISIUnits>().VoltageShort)).
 				LazyCase<ITimeDomainSignal>((x) => result = new TimeDomainSignalViewModel(x, IoC.Resolve<ISIUnits>().VoltageShort)).
+				LazyCase<IFrequencyDomainSignal>((x) => result = new FrequencyDomainSignalViewModel(x, IoC.Resolve<ISIUnits>().VoltageShort)).
 				Switch(value);
 
 			return result;

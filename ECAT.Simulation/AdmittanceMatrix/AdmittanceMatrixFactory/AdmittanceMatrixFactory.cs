@@ -229,6 +229,11 @@ namespace ECAT.Simulation
 			Concat(_DCCurrentSourcesDescriptions);
 
 		/// <summary>
+		/// Sweep source in the schematic
+		/// </summary>
+		public ISweepVoltageSource SweepSource { get; private set; }
+
+		/// <summary>
 		/// Enumeration of voltmeters in the circuit
 		/// </summary>
 		public IEnumerable<IVoltmeterMeasurement> Voltmeters { get; private set; }
@@ -838,6 +843,11 @@ namespace ECAT.Simulation
 			Where((component) => component is ICurrentSource).
 			Cast<ICurrentSource>();
 
+		private ISweepVoltageSource FindSweepVoltageSource() => _Schematic.Components.
+			Where((component) => component is ISweepVoltageSource).
+			Cast<ISweepVoltageSource>().
+			FirstOrDefault();
+
 		/// <summary>
 		/// Returns all <see cref="IOpAmp"/>s present in <see cref="ISchematic"/>
 		/// </summary>
@@ -910,6 +920,8 @@ namespace ECAT.Simulation
 
 			// Get the current sources
 			_DCCurrentSources = new List<ICurrentSource>(FindDCCurrentSources());
+
+			SweepSource = FindSweepVoltageSource();
 
 			// Get the op-amps
 			_OpAmps = _Schematic.Components.

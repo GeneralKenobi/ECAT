@@ -106,14 +106,14 @@ namespace ECAT.Simulation
 				if (_VoltageDrops.TryGet(element, out var voltageDrop, voltageBA))
 				{
 					// If successful, create a new current signal based on it, cache it
-					var result = IoC.Resolve<ITimeDomainSignalMutable>(voltageDrop.Samples, voltageDrop.TimeStep, voltageDrop.StartTime);
+					var result = IoC.Resolve<ITimeDomainSignalMutable>(voltageDrop.Samples, voltageDrop.Step, voltageDrop.StartSample);
 
 					// Get the minimum frequency - it is needed for capacitor waveform shifting, check if there are any waveforms, if not
 					// just assign 0 (technically no waveforms result in a zero wave, which is DC)
-					var minACFrequency = voltageDrop.Waveforms.Count > 0 ? voltageDrop.Waveforms.Keys.Min((x) => x.Frequency) : 0;
+					var minACFrequency = voltageDrop.ComposingWaveforms.Count > 0 ? voltageDrop.ComposingWaveforms.Keys.Min((x) => x.Frequency) : 0;
 
 					// Current is composed of each voltage waveform times admittance of the element
-					foreach (var waveform in voltageDrop.Waveforms)
+					foreach (var waveform in voltageDrop.ComposingWaveforms)
 					{
 						// Get magnitude of element's admittance
 						var admittanceMagnitude = element.GetAdmittance(waveform.Key.Frequency).Magnitude;

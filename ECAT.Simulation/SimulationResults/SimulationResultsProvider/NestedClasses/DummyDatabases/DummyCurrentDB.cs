@@ -7,7 +7,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Dummy current database - always returns null.
 		/// </summary>
-		private class DummyCurrentDB : ICurrentDB
+		public class DummyCurrentDB : ICurrentDB
 		{
 			#region Methods
 

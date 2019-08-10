@@ -7,7 +7,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Dummy power database - always returns null.
 		/// </summary>
-		private class DummyPowerDB : IPowerDB
+		public class DummyPowerDB : IPowerDB
 		{
 			#region Methods
 

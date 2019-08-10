@@ -12,7 +12,7 @@ namespace ECAT.Simulation
 	/// Signal defined by a series of points with instantenous values for a specific time
 	/// </summary>
 	[RegisterAsType(typeof(ITimeDomainSignal))]
-	public partial class TimeDomainSignal : ITimeDomainSignal
+	public partial class TimeDomainSignal : WaveSignal<double>, ITimeDomainSignal
 	{
 		#region Constructors
 
@@ -43,32 +43,33 @@ namespace ECAT.Simulation
 		public TimeDomainSignal()
 		{
 			Interpreter = new TimeDomainSignalInterpreter(this);
-			Waveforms = new ReadOnlyDictionary<ISourceDescription, IEnumerable<double>>(_Waveforms);
+			ComposingWaveforms = new ReadOnlyDictionary<ISourceDescription, IEnumerable<double>>(_Waveforms);
 		}
 
 		/// <summary>
 		/// Constructor with parameters, start time is considered 0
 		/// </summary>
 		/// <param name="instantenousValues">Values occuring at specific time moments, can'be be null</param>
-		/// <param name="timeStep">Time step between two subsequent values</param>
+		/// <param name="step">Time step between two subsequent values</param>
 		/// <exception cref="ArgumentNullException"></exception>
-		public TimeDomainSignal(int samples, double timeStep) : this(samples, timeStep, 0) { }
+		public TimeDomainSignal(int samples, double step) : this(samples, step, 0) { }
 
 		/// <summary>
 		/// Constructor with parameters
 		/// </summary>
 		/// <param name="instantenousValues">Values occuring at specific time moments, can'be be null</param>
-		/// <param name="timeStep">Time step between two subsequent values</param>
-		/// <param name="startTime">Start time of the signal</param>
-		public TimeDomainSignal(int samples, double timeStep, double startTime) : this(samples)
+		/// <param name="step">Time step between two subsequent values</param>
+		/// <param name="startSample">Start time of the signal</param>
+		public TimeDomainSignal(int samples, double step, double startSample) : base(samples, step, startSample)
 		{
-			if(timeStep < 0)
+			if(step < 0)
 			{
-				throw new ArgumentOutOfRangeException(nameof(timeStep));
+				throw new ArgumentOutOfRangeException(nameof(step));
 			}
 
-			TimeStep = timeStep;
-			StartTime = startTime;
+			Step = step;
+			StartSample = startSample;
+			Interpreter = new TimeDomainSignalInterpreter(this);
 		}
 
 		/// <summary>
@@ -85,48 +86,18 @@ namespace ECAT.Simulation
 		#region Private properties
 
 		/// <summary>
-		/// Backing store for <see cref="Waveforms"/>
+		/// Backing store for <see cref="ComposingWaveforms"/>
 		/// </summary>
 		private IDictionary<ISourceDescription, IEnumerable<double>> _Waveforms { get; } = new Dictionary<ISourceDescription, IEnumerable<double>>();
-
-		/// <summary>
-		/// Backing store for <see cref="FinalWaveform"/>
-		/// </summary>
-		private IList<double> _FinalWaveform { get; } = new List<double>();
 
 		#endregion
 
 		#region Public properties
 
 		/// <summary>
-		/// Start time of the simulation, in seconds
-		/// </summary>
-		public double StartTime { get; private set; }
-
-		/// <summary>
-		/// Time elapsed between two calculated values, in seconds
-		/// </summary>
-		public double TimeStep { get; private set; }
-
-		/// <summary>
-		/// Number of samples in this signal
-		/// </summary>
-		public int Samples { get; private set; }
-
-		/// <summary>
-		/// List with instantenous values. Key is the time, value is the signal's value.
-		/// </summary>
-		public IEnumerable<double> FinalWaveform => _FinalWaveform;
-
-		/// <summary>
 		/// All waveforms composing this <see cref="ITimeDomainSignal"/> (AC and DC).
 		/// </summary>
-		public IReadOnlyDictionary<ISourceDescription, IEnumerable<double>> Waveforms { get; }
-
-		/// <summary>
-		/// Object capable of calculating characteristic values for this <see cref="ISignalData"/>
-		/// </summary>
-		public ISignalDataInterpreter Interpreter { get; }
+		public IReadOnlyDictionary<ISourceDescription, IEnumerable<double>> ComposingWaveforms { get; }
 
 		#endregion
 
@@ -150,7 +121,7 @@ namespace ECAT.Simulation
 		#region Protected methods
 
 		/// <summary>
-		/// Adds a new waveform to the signal, updates <see cref="FinalWaveform"/>
+		/// Adds a new waveform to the signal, updates <see cref="Waveform"/>
 		/// </summary>
 		/// <param name="description">Positive value</param>
 		/// <param name="values"></param>
@@ -210,8 +181,8 @@ namespace ECAT.Simulation
 			Clear();
 
 			// Copy properties
-			StartTime = obj.StartTime;
-			TimeStep = obj.TimeStep;
+			StartSample = obj.StartSample;
+			Step = obj.Step;
 			Samples = obj.Samples;
 
 			// Add new data points to _FinalWaveform
@@ -221,7 +192,7 @@ namespace ECAT.Simulation
 			}
 
 			// Copy composing waveforms and constant offsets
-			obj.Waveforms.ForEach((x) => AddWaveformHelper(x.Key, x.Value));
+			obj.ComposingWaveforms.ForEach((x) => AddWaveformHelper(x.Key, x.Value));
 		}
 
 		/// <summary>
@@ -237,7 +208,7 @@ namespace ECAT.Simulation
 		public TimeDomainSignal CopyAndNegate()
 		{
 			// Create result based on internal properties
-			var result = new TimeDomainSignal(Samples, TimeStep, StartTime);
+			var result = new TimeDomainSignal(Samples, Step, StartSample);
 
 			// Copy waveforms and constant offsets with switched sign
 			_Waveforms.ForEach((x) => result.AddWaveformHelper(x.Key, x.Value.Select((y) => -y)));

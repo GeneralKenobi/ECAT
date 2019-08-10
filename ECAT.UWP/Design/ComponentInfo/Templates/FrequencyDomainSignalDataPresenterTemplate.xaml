@@ -1,0 +1,102 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:controls="using:UWPEnhanced.Controls"
+    xmlns:local="using:ECAT.UWP">
+
+
+	<DataTemplate x:Key="FrequencyDomainSignalDataTemplate">
+		<Grid Margin="-15 -30 0 -15">
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*"/>
+				<RowDefinition Height="40"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+
+			<controls:Graph Data="{Binding Magnitude}"
+				Title="Magnitude"
+				TitleFontSize="16"
+				Width="400"
+				Height="300"
+				Background="{StaticResource WhiteBrush}"
+				BorderThickness="0"				
+				PointDiameter="0"
+				FontSize="12"
+				HorizontalAxisDescription="{Binding XUnit}"
+				VerticalAxisDescription="{Binding YUnit}"
+				SIPrefixConfig="Adequate"
+				InterpolationLineThickness="2"
+				GridlinesThickness="1"
+				DataForeground="{StaticResource BlackBrush}"
+				GridlinesBrush="{StaticResource DarkGrayBrush}"
+				SecondaryGridlinesBrush="{StaticResource DarkGrayBrush}"
+				/>
+
+			<controls:Graph Data="{Binding Phase}"
+				Grid.Row="2"
+				Title="Phase"
+				TitleFontSize="16"
+				Width="400"
+				Height="300"
+				Background="{StaticResource WhiteBrush}"
+				BorderThickness="0"
+				PointDiameter="0"
+				FontSize="12"
+				HorizontalAxisDescription="{Binding XUnit}"
+				VerticalAxisDescription="{Binding YUnit}"
+				SIPrefixConfig="Adequate"
+				InterpolationLineThickness="2"
+				GridlinesThickness="1"
+				DataForeground="{StaticResource BlackBrush}"
+				GridlinesBrush="{StaticResource DarkGrayBrush}"
+				SecondaryGridlinesBrush="{StaticResource DarkGrayBrush}"
+				/>
+		</Grid>
+	</DataTemplate>
+
+	<DataTemplate x:Key="MainContentFrequencyDomainSignalDataTemplate">
+		<Grid Margin="40 10 10 40">
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*"/>
+				<RowDefinition Height="40"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+
+			<controls:Graph Data="{Binding Magnitude}"
+				TitleFontSize="16"
+				Background="{StaticResource WhiteBrush}"
+				BorderThickness="0"
+				PointDiameter="0"
+				FontSize="12"
+				HorizontalAxisDescription="{Binding XUnit}"
+				VerticalAxisDescription="{Binding YUnit}"
+				SIPrefixConfig="Adequate"
+				InterpolationLineThickness="2"
+				GridlinesThickness="1"
+				DataForeground="{StaticResource BlackBrush}"
+				GridlinesBrush="{StaticResource DarkGrayBrush}"
+				SecondaryGridlinesBrush="{StaticResource DarkGrayBrush}"
+			/>
+
+			<controls:Graph Data="{Binding Phase}"
+				Grid.Row="2"
+				TitleFontSize="16"
+				Background="{StaticResource WhiteBrush}"
+				BorderThickness="0"
+				PointDiameter="0"
+				FontSize="12"
+				HorizontalAxisDescription="{Binding XUnit}"
+				VerticalAxisDescription="{Binding YUnit}"
+				SIPrefixConfig="Adequate"
+				InterpolationLineThickness="2"
+				GridlinesThickness="1"
+				DataForeground="{StaticResource BlackBrush}"
+				GridlinesBrush="{StaticResource DarkGrayBrush}"
+				SecondaryGridlinesBrush="{StaticResource DarkGrayBrush}"
+			/>
+		</Grid>
+	</DataTemplate>
+    
+</ResourceDictionary>

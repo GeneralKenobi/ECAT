@@ -1,35 +1,28 @@
 ﻿using CSharpEnhanced.CoreInterfaces;
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace ECAT.Core
 {
 	/// <summary>
-	/// Interface for a signal calculated in time domain (based on instantenous values calculated for a specific time)
+	/// Interface for a signal calculated in frequency domain (transfer function charcteristics)
 	/// </summary>
 	[NecessaryService]
 	[ConstructorDeclaration]
-	[ConstructorDeclaration(typeof(ITimeDomainSignal), "Copy constructor")]
+	[ConstructorDeclaration(typeof(IFrequencyDomainSignal), "Copy constructor")]
 	[ConstructorDeclaration(new Type[] { typeof(int), typeof(double)}, "Samples", "Time step", "Start time is equal to 0")]
 	[ConstructorDeclaration(new Type[] { typeof(int), typeof(double), typeof(double)}, "Samples", "Time step", "Start time")]
-	public interface ITimeDomainSignal : IWaveSignal<double>, IShallowCopy<ITimeDomainSignal>
+	[ConstructorDeclaration(new Type[] { typeof(IEnumerable<Complex>), typeof(double), typeof(double)}, "Samples", "Time step", "Start time")]
+	public interface IFrequencyDomainSignal : IWaveSignal<Complex>, IShallowCopy<IFrequencyDomainSignal>
 	{
-		#region Properties
-
-		/// <summary>
-		/// All waveforms composing this <see cref="ITimeDomainSignal"/> (AC and DC).
-		/// </summary>
-		IReadOnlyDictionary<ISourceDescription, IEnumerable<double>> ComposingWaveforms { get; }
-
-		#endregion
-
 		#region Methods
 
 		/// <summary>
 		/// Creates a copy of the signal in reversed direction (values change their signs)
 		/// </summary>
 		/// <returns></returns>
-		ITimeDomainSignal CopyAndNegate();
+		IFrequencyDomainSignal CopyAndNegate();
 
 		#endregion
 	}

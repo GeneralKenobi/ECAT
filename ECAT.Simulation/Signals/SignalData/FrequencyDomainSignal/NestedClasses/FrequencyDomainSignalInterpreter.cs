@@ -4,12 +4,12 @@ using System.Linq;
 
 namespace ECAT.Simulation
 {
-	public partial class TimeDomainSignal : ITimeDomainSignal
+	public partial class FrequencyDomainSignal
 	{
 		/// <summary>
-		/// Class capable of interpreting <see cref="ITimeDomainSignal"/> and calculating its characteristic values
+		/// Class capable of interpreting <see cref="IFrequencyDomainSignal"/> and calculating its characteristic values
 		/// </summary>
-		private class TimeDomainSignalInterpreter : ISignalDataInterpreter
+		private class FrequencyDomainSignalInterpreter : ISignalDataInterpreter
 		{
 			#region Constructors
 
@@ -17,7 +17,7 @@ namespace ECAT.Simulation
 			/// Default constructor
 			/// </summary>
 			/// <param name="Signal"></param>
-			public TimeDomainSignalInterpreter(ITimeDomainSignal Signal)
+			public FrequencyDomainSignalInterpreter(IFrequencyDomainSignal Signal)
 			{
 				_Signal = Signal ?? throw new ArgumentNullException(nameof(Signal));
 			}
@@ -29,7 +29,7 @@ namespace ECAT.Simulation
 			/// <summary>
 			/// Signal being interpreted
 			/// </summary>
-			private ITimeDomainSignal _Signal { get; }
+			private IFrequencyDomainSignal _Signal { get; }
 
 			#endregion
 
@@ -39,25 +39,25 @@ namespace ECAT.Simulation
 			/// Calculates and returns the maximum instantenous value of the signal
 			/// </summary>
 			/// <returns></returns>
-			public double Maximum() => _Signal.Waveform.Max();
+			public double Maximum() => _Signal.Waveform.Max((x) => x.Magnitude);
 
 			/// <summary>
 			/// Calculates and returns the minimum instantenous value of the signal
 			/// </summary>
 			/// <returns></returns>
-			public double Minimum() => _Signal.Waveform.Min();
+			public double Minimum() => _Signal.Waveform.Min((x) => x.Magnitude);
 
 			/// <summary>
 			/// Calculates and returns the root-mean-square value of the signal
 			/// </summary>
 			/// <returns></returns>
-			public double RMS() => Math.Sqrt(_Signal.Waveform.Sum((x) => Math.Pow(x, 2)) / _Signal.Waveform.Count());
+			public double RMS() => 0;
 
 			/// <summary>
 			/// Returns the average value of the signal
 			/// </summary>
 			/// <returns></returns>
-			public double Average() => _Signal.Waveform.Average();
+			public double Average() => 0;
 
 			#endregion
 		}

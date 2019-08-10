@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 
 namespace ECAT.Simulation
 {
@@ -138,9 +139,40 @@ namespace ECAT.Simulation
 		}
 
 		#endregion
-		
+
+		#region Frequency sweep helper
+
+		/// <summary>
+		/// Performs an AC cycle simulation - simulation is running for one full period of lowest frequency source in the <paramref name="factory"/>.
+		/// Returns calculated node potentials and active component currents as sinusoidal waveforms.
+		/// </summary>
+		/// <param name="factory"></param>
+		/// <param name="pointsCount">Number of points to calculate for the signals</param>
+		/// <param name="step">Time step between two calculational points</param>
+		private IDictionary<int, IEnumerable<Complex>> FrequencySweepHelper(AdmittanceMatrixFactory factory, int pointsCount, double start, double step)
+		{
+			IDictionary<int, IList<Complex>> result = new Dictionary<int, IList<Complex>>();
+			factory.Nodes.ForEach((x) => result.Add(x, new List<Complex>()));
+
+			double f = start;
+
+			for(int i = 0; i < pointsCount; ++i, f+=step)
+			{
+				factory.SweepSource.Frequency = f;
+
+				// Get AC transfer functions
+				var state = GetPhasor(factory, factory.SweepSource.Description);
+
+				state.Potentials.ForEach((x) => result[x.Key].Add(x.Value));
+			}
+
+			return result.ToDictionary((x) => x.Key, (x) => x.Value as IEnumerable<Complex>);
+		}
+
+		#endregion
+
 		#region AC full cycle helpers
-		
+
 		/// <summary>
 		/// Performs an AC cycle simulation - simulation is running for one full period of lowest frequency source in the <paramref name="factory"/>.
 		/// Returns calculated node potentials and active component currents as sinusoidal waveforms.
@@ -324,6 +356,35 @@ namespace ECAT.Simulation
 
 		#endregion
 
+		#region Frequency Sweep
+
+		/// <summary>
+		/// Topmost logic behind AC Full Cycle - calling it will result in simulation being performed and saved to
+		/// <see cref="ISimulationResultsProvider"/>
+		/// </summary>
+		/// <param name="factory"></param>
+		/// <param name="includeDCBias">If true DC bias will be performed and added to results, if false only saturated <see cref="IOpAmp"/>s
+		/// will be considered for DC part of simulation</param>
+		private void FrequencySweep(AdmittanceMatrixFactory factory)
+		{
+			// TODO: number of points should be given by caller
+			double startFrequency = 1;
+			double endFrequency = 100;
+			double step = 0.1;
+			// Calculate time step between two subsequent points in time vector
+			int pointsCount = (int)Math.Ceiling((endFrequency - startFrequency) / step);
+
+
+			// Use helper to get the state of the system
+			var potentials = FrequencySweepHelper(factory, pointsCount, startFrequency, step);
+			var signals = potentials.ToDictionary((x) => x.Key, (x) => IoC.Resolve<IFrequencyDomainSignal>(x.Value, step, 0d));
+			signals.Add(-1, IoC.Resolve<IFrequencyDomainSignal>(pointsCount, step, 0d));
+			// Create simulation results
+			IoC.Resolve<SimulationResultsProvider>().Value = new SimulationResultsFrequency(signals);
+		}
+
+		#endregion
+
 		#region Simulation wrapper
 
 		/// <summary>
@@ -343,15 +404,22 @@ namespace ECAT.Simulation
 			// Start measuring time
 			watch.Start();
 
-			// Create an admittance matrix factory
-			var factory = new AdmittanceMatrixFactory(schematic);
+			try
+			{
+				// Create an admittance matrix factory
+				var factory = new AdmittanceMatrixFactory(schematic);
 
-			// Use it to invoke passed simulation logic
-			simulationLogic(factory);
+				// Use it to invoke passed simulation logic
+				simulationLogic(factory);
 
-			// Assign voltmeters - if it's an AC simulation.
-			IoC.Resolve<SimulationResultsProvider>().DeclaredVoltmeterMeasurements =
-				simulationType == SimulationType.DC ? Enumerable.Empty<IVoltmeterMeasurement>() : factory.Voltmeters;
+				// Assign voltmeters - if it's an AC simulation.
+				IoC.Resolve<SimulationResultsProvider>().DeclaredVoltmeterMeasurements =
+					simulationType == SimulationType.DC ? Enumerable.Empty<IVoltmeterMeasurement>() : factory.Voltmeters;
+			}
+			catch(Exception e)
+			{
+				IoC.Log("Exception thrown");
+			}
 
 			// Stop time measurement
 			watch.Stop();
@@ -405,6 +473,14 @@ namespace ECAT.Simulation
 		/// <param name="schematic"></param>
 		public void ACDCFullCycleWithOpAmpAdjustment(ISchematic schematic) =>
 			SimulationRunWrapper(schematic, (x) => FullCycleLogicWithOpAmpAdjustment(x, true), "ACDC Cycle with op-amp adjustment", SimulationType.AC);
+
+		/// <summary>
+		/// Performs a full ACDC simulation with <see cref="IOpAmp"/> adjustment - every <see cref="IOpAmp"/> is operating in either active or
+		/// saturated state so that its output voltage does not exceed its supply voltages.
+		/// </summary>
+		/// <param name="schematic"></param>
+		public void FrequencySweep(ISchematic schematic) =>
+			SimulationRunWrapper(schematic, (x) => FrequencySweep(x), "Frequency Sweep", SimulationType.AC);
 
 		#endregion
 	}
