@@ -29,6 +29,21 @@
 		string CurrentShort { get; }
 
 		/// <summary>
+		/// Full name of unit of gain
+		/// </summary>
+		string Gain { get; }
+
+		/// <summary>
+		/// Full name of degrees unit
+		/// </summary>
+		string Phase { get; }
+
+		/// <summary>
+		/// Shortened name of gain unit
+		/// </summary>
+		string GainShort { get; }
+
+		/// <summary>
 		/// Full name of unit of power
 		/// </summary>
 		string Power { get; }

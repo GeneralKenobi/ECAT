@@ -103,6 +103,9 @@ namespace ECAT.ViewModel
 				"Place AC Voltage Source", new KeyArgument("V", KeyModifiers.Shift), () => PlacePartHelper(ComponentIDEnumeration.ACVoltageSource)));
 
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
+				"Place Voltmeter", new KeyArgument("V", KeyModifiers.Ctrl), () => PlacePartHelper(ComponentIDEnumeration.Voltmeter)));
+
+			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
 				"Place Capacitor", new KeyArgument("C", KeyModifiers.Shift), () => PlacePartHelper(ComponentIDEnumeration.Capacitor)));
 
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(

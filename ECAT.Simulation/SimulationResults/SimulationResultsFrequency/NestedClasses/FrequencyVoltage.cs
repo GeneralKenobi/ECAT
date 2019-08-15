@@ -47,7 +47,7 @@ namespace ECAT.Simulation
 				//var nodeBWaveforms = nodeB.AllWaveforms.ToDictionary((x) => x.Key, (x) => x.Value);
 				
 				// Construct a result
-				var result = IoC.Resolve<IFrequencyDomainSignal>(nodeB.Waveform.MergeSelect(nodeA.Waveform, (x, y) => x - y), nodeA.Step, 0d);
+				var result = IoC.Resolve<IFrequencyDomainSignal>(nodeB.Waveform.MergeSelect(nodeA.Waveform, (x, y) => x - y), nodeA.Step, nodeA.StartSample);
 
 
 				//// Add waveforms of sources only appearing on node B (unlikely any will appear but it can't be neglected)

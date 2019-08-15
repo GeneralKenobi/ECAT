@@ -31,6 +31,16 @@ namespace ECAT.DataDisplay
 		public string CurrentShort { get; } = "A";
 
 		/// <summary>
+		/// Full name of unit of gain
+		/// </summary>
+		public string Gain { get; } = "Decibels";
+
+		/// <summary>
+		/// Shortened name of gain unit
+		/// </summary>
+		public string GainShort { get; } = "dB";
+
+		/// <summary>
 		/// Full name of unit of power
 		/// </summary>
 		public string Power { get; } = "Watt";
@@ -49,7 +59,7 @@ namespace ECAT.DataDisplay
 		/// Shortened name of frequency unit
 		/// </summary>
 		public string FrequencyShort { get; } = "Hz";
-		
+
 		/// <summary>
 		/// Full name of time unit
 		/// </summary>
@@ -59,7 +69,12 @@ namespace ECAT.DataDisplay
 		/// Shortened name of time unit
 		/// </summary>
 		public string TimeShort { get; } = "s";
-		
+
+		/// <summary>
+		/// Full name of degrees unit
+		/// </summary>
+		public string Phase { get; } = "Degrees";
+
 		#endregion
 	}
 }

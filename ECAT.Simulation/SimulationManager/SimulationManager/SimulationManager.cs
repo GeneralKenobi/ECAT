@@ -154,11 +154,11 @@ namespace ECAT.Simulation
 			IDictionary<int, IList<Complex>> result = new Dictionary<int, IList<Complex>>();
 			factory.Nodes.ForEach((x) => result.Add(x, new List<Complex>()));
 
-			double f = start;
+			double exponent = start;
 
-			for(int i = 0; i < pointsCount; ++i, f+=step)
+			for(int i = 0; i < pointsCount; ++i, exponent+=step)
 			{
-				factory.SweepSource.Frequency = f;
+				factory.SweepSource.Frequency = Math.Pow(10, exponent);
 
 				// Get AC transfer functions
 				var state = GetPhasor(factory, factory.SweepSource.Description);
@@ -259,7 +259,7 @@ namespace ECAT.Simulation
 		private void FullCycleWithoutOpAmpAdjustment(AdmittanceMatrixFactory factory, bool includeDCBias)
 		{
 			// TODO: number of points should be given by caller
-			int pointsCount = 600;
+			int pointsCount = IoC.Resolve<IDefaultValues>().DefaultACCyclePointsCount;
 
 			// Calculate time step between two subsequent points in time vector
 			double timeStep = GetTimeStep(pointsCount, factory.LowestFrequency);
@@ -294,7 +294,7 @@ namespace ECAT.Simulation
 			// contributing to the circuit
 
 			// TODO: number of points should be given by caller
-			int pointsCount = 600;
+			int pointsCount = IoC.Resolve<IDefaultValues>().DefaultACCyclePointsCount;
 
 			// Time step between two subsequent points in time vector
 			double timeStep = GetTimeStep(pointsCount, factory.LowestFrequency);
@@ -368,17 +368,16 @@ namespace ECAT.Simulation
 		private void FrequencySweep(AdmittanceMatrixFactory factory)
 		{
 			// TODO: number of points should be given by caller
-			double startFrequency = 1;
-			double endFrequency = 100;
-			double step = 0.1;
-			// Calculate time step between two subsequent points in time vector
-			int pointsCount = (int)Math.Ceiling((endFrequency - startFrequency) / step);
+			double startFrequency = Math.Log10(factory.SweepSource.StartFrequency);
+			double endFrequency = Math.Log10(factory.SweepSource.EndFrequency);
 
+			int pointsCount = IoC.Resolve<IDefaultValues>().DefaultFrequencySweepPointsCount;
+			double step = (endFrequency - startFrequency) / (pointsCount - 1);
 
 			// Use helper to get the state of the system
 			var potentials = FrequencySweepHelper(factory, pointsCount, startFrequency, step);
-			var signals = potentials.ToDictionary((x) => x.Key, (x) => IoC.Resolve<IFrequencyDomainSignal>(x.Value, step, 0d));
-			signals.Add(-1, IoC.Resolve<IFrequencyDomainSignal>(pointsCount, step, 0d));
+			var signals = potentials.ToDictionary((x) => x.Key, (x) => IoC.Resolve<IFrequencyDomainSignal>(x.Value, step, startFrequency));
+			signals.Add(-1, IoC.Resolve<IFrequencyDomainSignal>(pointsCount, step, startFrequency));
 			// Create simulation results
 			IoC.Resolve<SimulationResultsProvider>().Value = new SimulationResultsFrequency(signals);
 		}

@@ -16,29 +16,25 @@ namespace ECAT.ViewModel
 		/// Default constructor
 		/// </summary>
 		/// <param name="signal"></param>
-		/// <param name="unit">The unit of values</param>
+		/// <param name="gainUnit">The unit of values</param>
 		/// <exception cref="ArgumentNullException"></exception>
-		public FrequencyDomainSignalViewModel(IFrequencyDomainSignal signal, string unit)
+		public FrequencyDomainSignalViewModel(IFrequencyDomainSignal signal, string gainUnit, string phaseUnit)
 		{
 			if(signal == null)
 			{
 				throw new ArgumentNullException(nameof(signal));
 			}
 
-			//Magnitude = signal.Waveform.
-			//	Select((value, counter) => new KeyValuePair<double, double>(
-			//		signal.StartSample + counter * signal.Step,
-			//		20 * Math.Log10(value.Magnitude)));
-
 			Magnitude = signal.Waveform.
 				Select((value, counter) => new KeyValuePair<double, double>(
 					signal.StartSample + counter * signal.Step,
-					value.Magnitude));
+					20 * Math.Log10(value.Magnitude)));
 
 			Phase = signal.Waveform.
-				Select((value, counter) => new KeyValuePair<double, double>(signal.StartSample + counter * signal.Step, value.Phase));
+				Select((value, counter) => new KeyValuePair<double, double>(signal.StartSample + counter * signal.Step, value.Phase * 180 / Math.PI));
 
-			YUnit = unit ?? throw new ArgumentNullException(nameof(unit));
+			YUnitGain = gainUnit ?? throw new ArgumentNullException(nameof(gainUnit));
+			YUnitPhase = phaseUnit ?? throw new ArgumentNullException(nameof(phaseUnit));
 		}
 
 		#endregion
@@ -58,12 +54,17 @@ namespace ECAT.ViewModel
 		/// <summary>
 		/// Unit for frequency (horizontal axis)
 		/// </summary>
-		public string XUnit { get; } = IoC.Resolve<ISIUnits>().Time;
+		public string XUnit { get; } = "10^(x) " + IoC.Resolve<ISIUnits>().FrequencyShort;
 
 		/// <summary>
-		/// Unit for values
+		/// Unit for gain values
 		/// </summary>
-		public string YUnit { get; }
+		public string YUnitGain { get; }
+
+		/// <summary>
+		/// Unit for phase values
+		/// </summary>
+		public string YUnitPhase { get; }
 
 		#endregion
 	}

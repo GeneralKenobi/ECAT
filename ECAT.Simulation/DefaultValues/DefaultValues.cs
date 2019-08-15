@@ -87,6 +87,27 @@ namespace ECAT.Simulation
 		/// </summary>
 		public double DefaultOpAmpOpenLoopGain { get; } = 1e5;
 
+
+		/// <summary>
+		/// Default frequency at which to start Frequency Sweep simulation
+		/// </summary>
+		public double DefaultSweepStartFrequency { get; } = 1;
+
+		/// <summary>
+		/// Default frequency at which to end Frequency Sweep simulation
+		/// </summary>
+		public double DefaultSweepEndFrequency { get; } = 1000;
+
+		/// <summary>
+		/// Default number of points calculated during an AC Cycle
+		/// </summary>
+		public int DefaultACCyclePointsCount { get; } = 600;
+
+		/// <summary>
+		/// Default number of poitns calculated during a Frequency Sweep
+		/// </summary>
+		public int DefaultFrequencySweepPointsCount { get; } = 300;
+		
 		#endregion
 
 		#region Private static properties

@@ -11,6 +11,20 @@
 
     <StackPanel>
 
+		<!-- Name of the part / title of the menu header with white underline -->
+		<Border BorderThickness="0 0 0 1"
+								BorderBrush="{StaticResource WhiteBrush}"
+								Margin="0 5 10 15"
+								Padding="0 0 0 5">
+
+			<!-- TextBlock with name of the part -->
+			<TextBlock Text="{Binding Header, Mode=OneTime}"
+									FontSize="{StaticResource FontSizeLarge}"
+									FontFamily="{StaticResource LatoBold}"
+									Style="{StaticResource WhiteTextBlockStyle}"/>
+
+		</Border>
+
 		<Button Content="Schematic" Style="{StaticResource StandardSideMenuButtonStyle}"
 			Margin="10"
 			FontSize="{StaticResource FontSizeLarge}"

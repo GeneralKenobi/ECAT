@@ -161,6 +161,11 @@ namespace ECAT.ViewModel
 		/// </summary>
 		public IComponentFactory ComponentFactory { get; }
 
+		/// <summary>
+		/// Header for list of components
+		/// </summary>
+		public string ComponentAddingHeader { get; } = "Components";
+
 		#endregion
 
 		#region Commands

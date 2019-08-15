@@ -32,6 +32,11 @@ namespace ECAT.ViewModel
 		/// </summary>
 		public ISimulationResultsProvider SimulationResultsProvider { get; } = IoC.Resolve<ISimulationResultsProvider>();
 
+		/// <summary>
+		/// Header to display in this section
+		/// </summary>
+		public string Header { get; } = "Views";
+
 		#endregion
 
 		#region Commands

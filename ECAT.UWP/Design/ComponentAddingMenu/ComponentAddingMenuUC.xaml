@@ -25,7 +25,7 @@
 								Padding="0 0 0 5">
 
 				<!-- TextBlock with name of the part -->
-				<TextBlock Text="{Binding PartTypeCollection.Header, Mode=OneTime}"
+				<TextBlock Text="{Binding ComponentAddingHeader, Mode=OneTime}"
 									FontSize="{StaticResource FontSizeLarge}"
 									FontFamily="{StaticResource LatoBold}"
 									Style="{StaticResource WhiteTextBlockStyle}"/>

@@ -25,11 +25,12 @@ namespace ECAT.UWP
 		public object Convert(object value, Type targetType, object parameter, string language)
 		{
 			object result = null;
-			
+
 			TypeSwitch.Construct().
 				LazyCase<IPhasorDomainSignal>((x) => result = new PhasorDomainSignalViewModel(x, IoC.Resolve<ISIUnits>().VoltageShort)).
 				LazyCase<ITimeDomainSignal>((x) => result = new TimeDomainSignalViewModel(x, IoC.Resolve<ISIUnits>().VoltageShort)).
-				LazyCase<IFrequencyDomainSignal>((x) => result = new FrequencyDomainSignalViewModel(x, IoC.Resolve<ISIUnits>().VoltageShort)).
+				LazyCase<IFrequencyDomainSignal>((x) => result = new FrequencyDomainSignalViewModel(
+					x, IoC.Resolve<ISIUnits>().GainShort, IoC.Resolve<ISIUnits>().Phase)).
 				Switch(value);
 
 			return result;

@@ -60,7 +60,7 @@ namespace ECAT.Simulation
 		/// <param name="instantenousValues">Values occuring at specific time moments, can'be be null</param>
 		/// <param name="step">Time step between two subsequent values</param>
 		/// <param name="startSample">Start time of the signal</param>
-		public FrequencyDomainSignal(int samples, double step, double startSample) : base(samples, step, startSample)
+		public FrequencyDomainSignal(int samples, double step, double startSample) : base(samples, step, startSample, 0)
 		{
 			if(step < 0)
 			{
@@ -78,7 +78,7 @@ namespace ECAT.Simulation
 		/// <param name="instantenousValues">Values occuring at specific time moments, can'be be null</param>
 		/// <param name="step">Time step between two subsequent values</param>
 		/// <param name="startSample">Start time of the signal</param>
-		public FrequencyDomainSignal(IEnumerable<Complex> samples, double step, double startSample) : base(samples.Count(), step, startSample)
+		public FrequencyDomainSignal(IEnumerable<Complex> samples, double step, double startSample) : base(samples.Count(), step, startSample, 0)
 		{
 			if (step < 0)
 			{
@@ -141,13 +141,9 @@ namespace ECAT.Simulation
 		/// Creates a copy of the signal in reversed direction (values change their signs)
 		/// </summary>
 		/// <returns></returns>
-		public FrequencyDomainSignal CopyAndNegate()
-		{
+		public FrequencyDomainSignal CopyAndNegate() =>
 			// Create result based on internal properties
-			var result = new FrequencyDomainSignal(Samples, Step, StartSample);
-
-			return result;
-		}
+			new FrequencyDomainSignal(_FinalWaveform.Select((x) => -x), Step, StartSample);
 
 		/// <summary>
 		/// Creates a copy of the signal in reversed direction (values change their signs)

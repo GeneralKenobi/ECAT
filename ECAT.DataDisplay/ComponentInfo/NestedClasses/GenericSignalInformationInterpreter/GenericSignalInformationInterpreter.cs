@@ -76,7 +76,7 @@ namespace ECAT.DataDisplay
 			public IEnumerable<string> Get(ISignalInformation info)
 			{
 				// Return empty sequence for null info
-				if (info == null)
+				if (info == null || info.Data is IFrequencyDomainSignal)
 				{
 					yield break;
 				}
