@@ -70,6 +70,7 @@ namespace ECAT.Simulation
 			Step = step;
 			StartSample = startSample;
 			Interpreter = new TimeDomainSignalInterpreter(this);
+			ComposingWaveforms = new ReadOnlyDictionary<ISourceDescription, IEnumerable<double>>(_Waveforms);
 		}
 
 		/// <summary>

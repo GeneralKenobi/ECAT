@@ -91,7 +91,8 @@
                           Padding="{TemplateBinding Padding}"
                           HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                           VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                          AutomationProperties.AccessibilityView="Raw"/>
+                          AutomationProperties.AccessibilityView="Raw"
+						  TextWrapping="WrapWholeWords"/>
 					</Grid>
 				</ControlTemplate>
 			</Setter.Value>

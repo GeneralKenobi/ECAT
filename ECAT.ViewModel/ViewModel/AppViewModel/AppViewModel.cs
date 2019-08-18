@@ -18,6 +18,7 @@ namespace ECAT.ViewModel
 		public AppViewModel()
 		{
 			ProcessKeyPressCommand = new RelayParametrizedCommand(ProcessKeyPress);
+			SimulationMenuVM = new SimulationMenuViewModel(SimulationVM.SimulationManager, DesignVM.DesignManager);
 		}
 
 		#endregion
@@ -38,6 +39,11 @@ namespace ECAT.ViewModel
 		/// ViewModel related with circuit simulation functionalities
 		/// </summary>
 		public SimulationViewModel SimulationVM { get; } = new SimulationViewModel();
+
+		/// <summary>
+		/// View model for simulation menu
+		/// </summary>
+		public SimulationMenuViewModel SimulationMenuVM { get; }
 
 		/// <summary>
 		/// Manages shortcuts and processes key presses

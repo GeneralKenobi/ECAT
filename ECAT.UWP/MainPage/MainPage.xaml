@@ -253,6 +253,9 @@
 					DataContext="{Binding DesignVM.ComponentEditSectionVM}"/>
 				<!--<local:EditMenu controls:Menu.Glyph="&#xE104;"/>-->
 
+				<local:SimulationMenuUC controls:Menu.Glyph="&#xE768;"
+					DataContext="{Binding SimulationMenuVM}"/>
+
 			</controls:Menu.Content>
 
 		</controls:Menu>

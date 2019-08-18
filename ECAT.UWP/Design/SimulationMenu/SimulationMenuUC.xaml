@@ -1,0 +1,72 @@
+﻿<UserControl
+    x:Class="ECAT.UWP.SimulationMenuUC"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ECAT.UWP"
+	xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+	<!-- Listview which allows to add parts -->
+	<!-- Scroll viewer is temporary -->
+	<ScrollViewer VerticalScrollBarVisibility="Auto"
+		VerticalScrollMode="Auto">
+		<StackPanel>
+
+			<!-- Name of the part / title of the menu header with white underline -->
+			<Border BorderThickness="0 0 0 1"
+								BorderBrush="{StaticResource WhiteBrush}"
+								Margin="0 5 10 15"
+								Padding="0 0 0 5">
+
+				<!-- TextBlock with name of the part -->
+				<TextBlock Text="{Binding Header, Mode=OneTime}"
+									FontSize="{StaticResource FontSizeLarge}"
+									FontFamily="{StaticResource LatoBold}"
+									Style="{StaticResource WhiteTextBlockStyle}"/>
+
+			</Border>
+
+			<Button Content="DC Bias" Style="{StaticResource StandardSideMenuButtonStyle}"
+				Margin="10"
+				Height="80"
+				FontSize="{StaticResource FontSizeLarge}"
+				Command="{Binding DCBiasCommand}"/>
+
+			<Button Content="AC Full Cycle without OpAmp adjustment" Style="{StaticResource StandardSideMenuButtonStyle}"
+				Margin="10"
+				Height="80"
+				FontSize="{StaticResource FontSizeRegular}"
+				Command="{Binding ACFullCycleWithoutOpAmpAdjustmentCommand}"/>
+
+			<Button Content="AC Full Cycle with OpAmp adjustment" Style="{StaticResource StandardSideMenuButtonStyle}"
+				Margin="10"
+				Height="80"
+				FontSize="{StaticResource FontSizeRegular}"
+				Command="{Binding ACFullCycleWithOpAmpAdjustmentCommand}"/>
+
+			<Button Content="ACDC Full Cycle without OpAmp adjustment" Style="{StaticResource StandardSideMenuButtonStyle}"
+				Margin="10"
+				Height="80"
+				FontSize="{StaticResource FontSizeRegular}"
+				Command="{Binding ACDCFullCycleWithoutOpAmpAdjustmentCommand}"/>
+
+			<Button Content="ACDC Full Cycle with OpAmp adjustment" Style="{StaticResource StandardSideMenuButtonStyle}"
+				Margin="10"
+				Height="80"
+				FontSize="{StaticResource FontSizeRegular}"
+				Command="{Binding ACDCFullCycleWithOpAmpAdjustmentCommand}"/>
+
+			<Button Content="Frequency Sweep" Style="{StaticResource StandardSideMenuButtonStyle}"
+				Margin="10"
+				Height="80"
+				FontSize="{StaticResource FontSizeLarge}"
+				Command="{Binding FrequencySweepCommand}"/>
+
+
+		</StackPanel>
+	</ScrollViewer>
+</UserControl>

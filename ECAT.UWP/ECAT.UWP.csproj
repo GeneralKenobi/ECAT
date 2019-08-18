@@ -155,6 +155,9 @@
     <Compile Include="Design\GeneralPurposeControls\CurrentFlow\CurrentFlowTC.cs" />
     <Compile Include="Design\GeneralPurposeControls\TwoTerminalComponentPackage\TwoTerminalComponentPackageTC.cs" />
     <Compile Include="Design\GeneralPurposeControls\VoltageDrop\VoltageDropTC.cs" />
+    <Compile Include="Design\SimulationMenu\SimulationMenuUC.xaml.cs">
+      <DependentUpon>SimulationMenuUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="GeneralValueConverters\ComplexToSIStringConverter.cs" />
     <Compile Include="GeneralValueConverters\ComponentEditViewModelToComponentEditControlConverter.cs" />
     <Compile Include="GeneralValueConverters\DoubleToChosenParameterConverter.cs" />
@@ -327,6 +330,10 @@
     <Page Include="Design\GeneralPurposeControls\VoltageDrop\VoltageDropTCStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Design\SimulationMenu\SimulationMenuUC.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="MainPage\MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>

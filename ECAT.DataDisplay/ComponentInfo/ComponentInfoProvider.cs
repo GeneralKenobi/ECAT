@@ -74,7 +74,7 @@ namespace ECAT.DataDisplay
 		/// <param name="e"></param>
 		private void FocusedComponentPropertyChangedCallback(object sender, PropertyChangedEventArgs e)
 		{
-			if(sender is IBaseComponent component && e.PropertyName == nameof(IBaseComponent.ChangeVIDirections))
+			if(sender is IBaseComponent component && e.PropertyName == nameof(IBaseComponent.ChangeVIDirections) && Value != null)
 			{
 				_Value.Update(component);
 			}
