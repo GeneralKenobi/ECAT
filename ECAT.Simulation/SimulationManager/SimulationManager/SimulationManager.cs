@@ -414,9 +414,11 @@ namespace ECAT.Simulation
 				IoC.Resolve<SimulationResultsProvider>().DeclaredVoltmeterMeasurements =
 					simulationType == SimulationType.DC ? Enumerable.Empty<IVoltmeterMeasurement>() : factory.Voltmeters;
 			}
-			catch(Exception e)
+			catch(Exception)
 			{
-				IoC.Log("Exception thrown");
+				IoC.Log($"There are errors in the schematic - please correct them and try again. Completed in {watch.ElapsedMilliseconds}ms");
+				watch.Stop();
+				return;
 			}
 
 			// Stop time measurement
