@@ -459,9 +459,9 @@ namespace ECAT.Simulation
 		/// <param name="schematic"></param>
 		private bool CheckSchematicForFrequencySweep(ISchematic schematic)
 		{
-			if (schematic.Components.Where((x) => x is ISweepVoltageSource).Count() != 10)
+			if (schematic.Components.Where((x) => x is ISweepVoltageSource).Count() != 1)
 			{
-				IoC.Log("There is a different than allowed number of sweep voltage sources. Allowed number is 1");
+				IoC.Log("There may be only 1 sweep source");
 				return false;
 			}
 
