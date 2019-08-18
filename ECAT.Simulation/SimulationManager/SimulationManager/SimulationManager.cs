@@ -367,7 +367,6 @@ namespace ECAT.Simulation
 		/// will be considered for DC part of simulation</param>
 		private void FrequencySweep(AdmittanceMatrixFactory factory)
 		{
-			// TODO: number of points should be given by caller
 			double startFrequency = Math.Log10(factory.SweepSource.StartFrequency);
 			double endFrequency = Math.Log10(factory.SweepSource.EndFrequency);
 
@@ -431,6 +430,50 @@ namespace ECAT.Simulation
 				InfoLoggerMessageDuration.Short);
 		}
 
+		/// <summary>
+		/// Checks if schematic passes all requirements necessary to perform a normal (i.e. not a sweep) simulation.
+		/// If it doesn't then an exception is thrown.
+		/// </summary>
+		/// <param name="schematic"></param>
+		private bool CheckSchematicForNormalSimulation(ISchematic schematic)
+		{
+			if (schematic.Components.Where((x) => x is ISweepVoltageSource).Count() != 0)
+			{
+				IoC.Log("No sweep voltage sources are allowed in normal simulation");
+				return false;
+			}
+
+			if (schematic.Components.Where((x) => x is IDCVoltageSource || x is ICurrentSource || x is IACVoltageSource).Count() == 0)
+			{
+				IoC.Log("There are no sources in the system");
+				return false;
+			}
+
+			return true;
+		}
+
+		/// <summary>
+		/// Checks if schematic passes all requirements necessary to perform a normal (i.e. not a sweep) simulation.
+		/// If it doesn't then an exception is thrown.
+		/// </summary>
+		/// <param name="schematic"></param>
+		private bool CheckSchematicForFrequencySweep(ISchematic schematic)
+		{
+			if (schematic.Components.Where((x) => x is ISweepVoltageSource).Count() != 10)
+			{
+				IoC.Log("There is a different than allowed number of sweep voltage sources. Allowed number is 1");
+				return false;
+			}
+
+			if (schematic.Components.Where((x) => x is IDCVoltageSource || x is ICurrentSource || (x is IACVoltageSource && !(x is ISweepVoltageSource))).Count() > 0)
+			{
+				IoC.Log("During sweep there may be no other sources");
+				return false;
+			}
+
+			return true;
+		}
+
 		#endregion
 
 		#endregion
@@ -441,45 +484,76 @@ namespace ECAT.Simulation
 		/// Performs a DC bias simulation of the circuit.
 		/// </summary>
 		/// <param name="schematic"></param>
-		public void DCBias(ISchematic schematic) => SimulationRunWrapper(schematic, DCBiasLogic, "DC bias", SimulationType.DC);
+		public void DCBias(ISchematic schematic)
+		{
+			if(CheckSchematicForNormalSimulation(schematic))
+			{
+				SimulationRunWrapper(schematic, DCBiasLogic, "DC bias", SimulationType.DC);
+			}
+		}
 
 		/// <summary>
 		/// Performs an AC cycle simulation - simulation is running for one full period of lowest frequency source in the <paramref name="schematic"/>
 		/// </summary>
 		/// <param name="schematic"></param>
-		public void ACFullCycleWithoutOpAmpAdjustment(ISchematic schematic) =>
-			SimulationRunWrapper(schematic, (x) => FullCycleWithoutOpAmpAdjustment(x, false), "AC cycle without op-amp adjustment", SimulationType.AC);
+		public void ACFullCycleWithoutOpAmpAdjustment(ISchematic schematic)
+		{
+			if(CheckSchematicForNormalSimulation(schematic))
+			{
+				SimulationRunWrapper(schematic, (x) => FullCycleWithoutOpAmpAdjustment(x, false), "AC cycle without op-amp adjustment", SimulationType.AC);
+			}
+		}
 
 		/// <summary>
 		/// Performs a full ACDC simulation
 		/// </summary>
 		/// <param name="schematic"></param>
-		public void ACDCFullCycleWithoutOpAmpAdjustment(ISchematic schematic) =>
-			SimulationRunWrapper(schematic, (x) => FullCycleWithoutOpAmpAdjustment(x, true), "ACDC cycle without op-amp adjustment", SimulationType.ACDC);
+		public void ACDCFullCycleWithoutOpAmpAdjustment(ISchematic schematic)
+		{
+			if(CheckSchematicForNormalSimulation(schematic))
+			{
+				SimulationRunWrapper(schematic, (x) => FullCycleWithoutOpAmpAdjustment(x, true), "ACDC cycle without op-amp adjustment", SimulationType.ACDC);
+			}
+		}
 
 		/// <summary>
 		/// Performs a full cycle AC simulation with <see cref="IOpAmp"/> adjustment - every <see cref="IOpAmp"/> is operating in either active or
 		/// saturated state so that its output voltage does not exceed its supply voltages.
 		/// </summary>
 		/// <param name="schematic"></param>
-		public void ACFullCycleWithOpAmpAdjustment(ISchematic schematic) =>
-			SimulationRunWrapper(schematic, (x) => FullCycleLogicWithOpAmpAdjustment(x, false), "AC Cycle with op-amp adjustment", SimulationType.AC);
+		public void ACFullCycleWithOpAmpAdjustment(ISchematic schematic)
+		{
+			if(CheckSchematicForNormalSimulation(schematic))
+			{
+				SimulationRunWrapper(schematic, (x) => FullCycleLogicWithOpAmpAdjustment(x, false), "AC Cycle with op-amp adjustment", SimulationType.AC);
+			}
+		}
 
 		/// <summary>
 		/// Performs a full ACDC simulation with <see cref="IOpAmp"/> adjustment - every <see cref="IOpAmp"/> is operating in either active or
 		/// saturated state so that its output voltage does not exceed its supply voltages.
 		/// </summary>
 		/// <param name="schematic"></param>
-		public void ACDCFullCycleWithOpAmpAdjustment(ISchematic schematic) =>
-			SimulationRunWrapper(schematic, (x) => FullCycleLogicWithOpAmpAdjustment(x, true), "ACDC Cycle with op-amp adjustment", SimulationType.AC);
+		public void ACDCFullCycleWithOpAmpAdjustment(ISchematic schematic)
+		{
+			if(CheckSchematicForNormalSimulation(schematic))
+			{
+				SimulationRunWrapper(schematic, (x) => FullCycleLogicWithOpAmpAdjustment(x, true), "ACDC Cycle with op-amp adjustment", SimulationType.AC);
+			}
+		}
 
 		/// <summary>
 		/// Performs a full ACDC simulation with <see cref="IOpAmp"/> adjustment - every <see cref="IOpAmp"/> is operating in either active or
 		/// saturated state so that its output voltage does not exceed its supply voltages.
 		/// </summary>
 		/// <param name="schematic"></param>
-		public void FrequencySweep(ISchematic schematic) =>
-			SimulationRunWrapper(schematic, (x) => FrequencySweep(x), "Frequency Sweep", SimulationType.AC);
+		public void FrequencySweep(ISchematic schematic)
+		{
+			if(CheckSchematicForFrequencySweep(schematic))
+			{
+				SimulationRunWrapper(schematic, (x) => FrequencySweep(x), "Frequency Sweep", SimulationType.AC);
+			}
+		}
 
 		#endregion
 	}
