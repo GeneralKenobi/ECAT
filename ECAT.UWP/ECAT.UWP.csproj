@@ -104,6 +104,7 @@
     <Compile Include="Design\ComponentInfo\ValueConverters\DiagonalVisibilityConverter.cs" />
     <Compile Include="Design\ComponentInfo\ValueConverters\SignalDataToViewModelConverter.cs" />
     <Compile Include="Design\Components\Inductor\InductorTC.cs" />
+    <Compile Include="Design\Components\BJT\BjtTC.cs" />
     <Compile Include="Design\Components\Voltmeter\VoltmeterTC.cs" />
     <Compile Include="Design\Components\SweepVoltageSource\SweepVoltageSourceTC.cs" />
     <Compile Include="Design\Components\ACVoltageSource\ACVoltageSourceTC.cs" />
@@ -111,6 +112,9 @@
     <Compile Include="Design\Components\OpAmp\OpAmpTC.cs" />
     <Compile Include="Design\ContentSelection\ContentSelectionUC.xaml.cs">
       <DependentUpon>ContentSelectionUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Design\EditMenu\BJTEdit\BjtEditUC.xaml.cs">
+      <DependentUpon>BjtEditUC.xaml</DependentUpon>
     </Compile>
     <Compile Include="Design\EditMenu\SweepVoltageSource\SweepVoltageSourceEditUC.xaml.cs">
       <DependentUpon>SweepVoltageSourceEditUC.xaml</DependentUpon>
@@ -223,6 +227,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Design\Components\BJT\BjtTCStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Design\Components\Voltmeter\VoltmeterTCStyle.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -246,6 +254,10 @@
     <Page Include="Design\ContentSelection\ContentSelectionUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Design\EditMenu\BJTEdit\BjtEditUC.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Design\EditMenu\SweepVoltageSource\SweepVoltageSourceEditUC.xaml">
       <Generator>MSBuild:Compile</Generator>

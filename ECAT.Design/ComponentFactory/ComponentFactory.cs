@@ -46,6 +46,7 @@ namespace ECAT.Design
 			new ComponentDeclaration(ComponentIDEnumeration.SweepVoltageSource, "Sweep Voltage Source", 2, ComponentType.Active, ComponentCategory.Source),
 			new ComponentDeclaration(ComponentIDEnumeration.Voltmeter, "Voltmeter", 2, ComponentType.Passive, ComponentCategory.Other),
 			new ComponentDeclaration(ComponentIDEnumeration.Inductor, "Inductor", 2, ComponentType.Passive, ComponentCategory.Impedance),
+			new ComponentDeclaration(ComponentIDEnumeration.NpnBjt, "NPN BJT", 2, ComponentType.Active, ComponentCategory.ThreeTerminal),
 		};
 
 		/// <summary>
@@ -64,6 +65,7 @@ namespace ECAT.Design
 			{ ComponentIDEnumeration.SweepVoltageSource, typeof(ISweepVoltageSource) },
 			{ ComponentIDEnumeration.Voltmeter, typeof(IVoltmeter) },
 			{ ComponentIDEnumeration.Inductor, typeof(IInductor) },
+			{ ComponentIDEnumeration.NpnBjt, typeof(IBjt) },
 		};
 
 		/// <summary>
@@ -88,6 +90,7 @@ namespace ECAT.Design
 			{ typeof(ISweepVoltageSource), typeof(SweepVoltageSource) },
 			{ typeof(IVoltmeter), typeof(Voltmeter) },
 			{ typeof(IInductor), typeof(Inductor) },
+			{ typeof(IBjt), typeof(Bjt) },
 		};
 
 		#endregion

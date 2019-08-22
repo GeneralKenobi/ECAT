@@ -24,5 +24,7 @@
 		Voltmeter = 8,
 
 		Inductor = 9,
+
+		NpnBjt = 10,
     }
 }
