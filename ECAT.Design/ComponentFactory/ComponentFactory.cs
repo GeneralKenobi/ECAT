@@ -47,6 +47,7 @@ namespace ECAT.Design
 			new ComponentDeclaration(ComponentIDEnumeration.Voltmeter, "Voltmeter", 2, ComponentType.Passive, ComponentCategory.Other),
 			new ComponentDeclaration(ComponentIDEnumeration.Inductor, "Inductor", 2, ComponentType.Passive, ComponentCategory.Impedance),
 			new ComponentDeclaration(ComponentIDEnumeration.NpnBjt, "NPN BJT", 2, ComponentType.Active, ComponentCategory.ThreeTerminal),
+			new ComponentDeclaration(ComponentIDEnumeration.NChannelJfet, "N-Channel JFET", 2, ComponentType.Active, ComponentCategory.ThreeTerminal),
 		};
 
 		/// <summary>
@@ -65,7 +66,8 @@ namespace ECAT.Design
 			{ ComponentIDEnumeration.SweepVoltageSource, typeof(ISweepVoltageSource) },
 			{ ComponentIDEnumeration.Voltmeter, typeof(IVoltmeter) },
 			{ ComponentIDEnumeration.Inductor, typeof(IInductor) },
-			{ ComponentIDEnumeration.NpnBjt, typeof(IBjt) },
+			{ ComponentIDEnumeration.NpnBjt, typeof(INpnBjt) },
+			{ ComponentIDEnumeration.NChannelJfet, typeof(INChannelJfet) },
 		};
 
 		/// <summary>
@@ -90,7 +92,8 @@ namespace ECAT.Design
 			{ typeof(ISweepVoltageSource), typeof(SweepVoltageSource) },
 			{ typeof(IVoltmeter), typeof(Voltmeter) },
 			{ typeof(IInductor), typeof(Inductor) },
-			{ typeof(IBjt), typeof(Bjt) },
+			{ typeof(INpnBjt), typeof(NpnBjt) },
+			{ typeof(INChannelJfet), typeof(NChannelJfet) },
 		};
 
 		#endregion

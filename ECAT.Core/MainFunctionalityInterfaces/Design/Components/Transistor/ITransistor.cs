@@ -9,6 +9,13 @@ namespace ECAT.Core
 	/// </summary>
 	public interface ITransistor : IThreeTerminal
 	{
+		#region Properties
 
+		/// <summary>
+		/// If true, small-signal model of the transistor will be used
+		/// </summary>
+		bool SmallSignalModel { get; set; }
+
+		#endregion
 	}
 }

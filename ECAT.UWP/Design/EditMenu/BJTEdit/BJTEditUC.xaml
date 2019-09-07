@@ -16,41 +16,81 @@
 
 	<StackPanel>
 
-		<!-- Open loop gain label -->
+		<!-- Beta coefficient -->
 		<TextBlock Style="{StaticResource WhiteTextBlockStyle}"
 			FontSize="{StaticResource FontSizeBig}"
-			Text="{Binding OpenLoopGainEditHeader, Mode=OneTime}"
+			Text="Beta"
 			TextWrapping="WrapWholeWords"
 			Margin="0 0 0 10"/>
-
-		<!-- TextBox with the open loop gain settings -->
 		<TextBox Style="{StaticResource SideMenuTextBoxStyleUnder8}"
-			Text="{Binding OpenLoopGain, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"
-			Grid.ColumnSpan="2"/>
+			Margin="0 0 0 20"
+			Text="{Binding Beta, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"/>
 
-		<!-- Positive supply voltage label -->
+		<!-- Base-emitter forward voltage -->
 		<TextBlock Style="{StaticResource WhiteTextBlockStyle}"
 			FontSize="{StaticResource FontSizeBig}"
-			Text="{Binding PositiveSupplyVoltageEditHeader, Mode=OneTime}"
+			Text="Ube forward"
 			TextWrapping="WrapWholeWords"
-			Margin="0 20 0 10"/>
-
-		<!-- TextBox with the positive supply voltage settings -->
+			Margin="0 0 0 10"/>
 		<TextBox Style="{StaticResource SideMenuTextBoxStyleUnder8}"
-			Text="{Binding PositiveSupplyVoltage, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"
-			Grid.ColumnSpan="2"/>
+			Margin="0 0 0 20"
+			Text="{Binding UBEForward, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"/>
 
-		<!-- Negative supply voltage label -->
+		<!-- Collector-emitter saturation voltage -->
 		<TextBlock Style="{StaticResource WhiteTextBlockStyle}"
 			FontSize="{StaticResource FontSizeBig}"
-			Text="{Binding NegativeSupplyVoltageEditHeader, Mode=OneTime}"
+			Text="Uce saturation"
 			TextWrapping="WrapWholeWords"
-			Margin="0 20 0 10"/>
-
-		<!-- TextBox with the negative supply voltage settings -->
+			Margin="0 0 0 10"/>
 		<TextBox Style="{StaticResource SideMenuTextBoxStyleUnder8}"
-			Text="{Binding NegativeSupplyVoltage, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"
-			Grid.ColumnSpan="2"/>
+			Margin="0 0 0 20"
+			Text="{Binding UCESaturation, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"/>
+
+		<!-- H11 -->
+		<TextBlock Style="{StaticResource WhiteTextBlockStyle}"
+			FontSize="{StaticResource FontSizeBig}"
+			Text="h11"
+			TextWrapping="WrapWholeWords"
+			Margin="0 0 0 10"/>
+		<TextBox Style="{StaticResource SideMenuTextBoxStyleUnder8}"
+			Margin="0 0 0 20"
+			Text="{Binding H11, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"/>
+
+		<!-- H12 -->
+		<TextBlock Style="{StaticResource WhiteTextBlockStyle}"
+			FontSize="{StaticResource FontSizeBig}"
+			Text="h12"
+			TextWrapping="WrapWholeWords"
+			Margin="0 0 0 10"/>
+		<TextBox Style="{StaticResource SideMenuTextBoxStyleUnder8}"
+			Margin="0 0 0 20"
+			Text="{Binding H12, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"/>
+
+		<!-- H21 -->
+		<TextBlock Style="{StaticResource WhiteTextBlockStyle}"
+			FontSize="{StaticResource FontSizeBig}"
+			Text="h21"
+			TextWrapping="WrapWholeWords"
+			Margin="0 0 0 10"/>
+		<TextBox Style="{StaticResource SideMenuTextBoxStyleUnder8}"
+			Margin="0 0 0 20"
+			Text="{Binding H21, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"/>
+
+		<!-- H22 -->
+		<TextBlock Style="{StaticResource WhiteTextBlockStyle}"
+			FontSize="{StaticResource FontSizeBig}"
+			Text="h22"
+			TextWrapping="WrapWholeWords"
+			Margin="0 0 0 10"/>
+		<TextBox Style="{StaticResource SideMenuTextBoxStyleUnder8}"
+			Margin="0 0 0 20"
+			Text="{Binding H22, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"/>
+
+		<ToggleButton Style="{StaticResource EditMenuToggleButtonStyle}"
+			FontSize="{StaticResource FontSizeBig}"
+			Content="Use small signal model"
+			Margin="0 10 0 20"
+			IsChecked="{Binding SmallSignalModel, Mode=TwoWay}"/>
 
 	</StackPanel>
 

@@ -5,7 +5,7 @@ namespace ECAT.ViewModel
 	/// <summary>
 	/// Edit view model for <see cref="IOpAmp"/>s
 	/// </summary>
-	public class BjtEditViewModel : SpecificComponentEditViewModel<IBjt>
+	public class BjtEditViewModel : TransistorEditViewModel<IBjt>
 	{
 		#region Constructor
 
@@ -22,47 +22,47 @@ namespace ECAT.ViewModel
 		/// <summary>
 		/// Input impedance
 		/// </summary>
-		public double Y11
+		public double H11
 		{
-			get => _EditedComponent.Y11;
+			get => _EditedComponent.H11;
 			set
 			{
 				if (value > 0)
 				{
-					_EditedComponent.Y11 = value;
-					InvokePropertyChanged(nameof(Y11));
+					_EditedComponent.H11 = value;
+					InvokePropertyChanged(nameof(H11));
 				}
 			}
 		}
 
 		/// <summary>
-		/// Reverse-transfer admittance
+		/// Reverse-voltage feedback
 		/// </summary>
-		public double Y12
+		public double H12
 		{
-			get => _EditedComponent.Y12;
+			get => _EditedComponent.H12;
 			set
 			{
 				if (value > 0)
 				{
-					_EditedComponent.Y12 = value;
-					InvokePropertyChanged(nameof(Y12));
+					_EditedComponent.H12 = value;
+					InvokePropertyChanged(nameof(H12));
 				}
 			}
 		}
 
 		/// <summary>
-		/// Forward-transfer admittance
+		/// Forward current gain
 		/// </summary>
-		public double Y21
+		public double H21
 		{
-			get => _EditedComponent.Y21;
+			get => _EditedComponent.H21;
 			set
 			{
 				if (value > 0)
 				{
-					_EditedComponent.Y21 = value;
-					InvokePropertyChanged(nameof(Y21));
+					_EditedComponent.H21 = value;
+					InvokePropertyChanged(nameof(H21));
 				}
 			}
 		}
@@ -70,15 +70,15 @@ namespace ECAT.ViewModel
 		/// <summary>
 		/// Output admittance
 		/// </summary>
-		public double Y22
+		public double H22
 		{
-			get => _EditedComponent.Y22;
+			get => _EditedComponent.H22;
 			set
 			{
 				if (value > 0)
 				{
-					_EditedComponent.Y22 = value;
-					InvokePropertyChanged(nameof(Y22));
+					_EditedComponent.H22 = value;
+					InvokePropertyChanged(nameof(H22));
 				}
 			}
 		}
@@ -86,10 +86,10 @@ namespace ECAT.ViewModel
 		/// <summary>
 		/// Cutoff base-emitter voltage
 		/// </summary>
-		public double UBECutoff
+		public double UBEForward
 		{
-			get => _EditedComponent.UBECutoff;
-			set => _EditedComponent.UBECutoff = value;
+			get => _EditedComponent.UBEForward;
+			set => _EditedComponent.UBEForward = value;
 		}
 
 		/// <summary>
@@ -99,6 +99,15 @@ namespace ECAT.ViewModel
 		{
 			get => _EditedComponent.UCESaturation;
 			set => _EditedComponent.UCESaturation = value;
+		}
+
+		/// <summary>
+		/// Beta coefficient of the BJT
+		/// </summary>
+		public double Beta
+		{
+			get => _EditedComponent.Beta;
+			set => _EditedComponent.Beta = value;
 		}
 
 		#endregion

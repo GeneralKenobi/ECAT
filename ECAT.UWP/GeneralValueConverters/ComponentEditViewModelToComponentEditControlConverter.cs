@@ -70,6 +70,7 @@ namespace ECAT.UWP
 			{typeof(SweepVoltageSourceEditViewModel), typeof(SweepVoltageSourceEditUC) },
 			{typeof(InductorEditViewModel), typeof(InductorEditUC) },
 			{typeof(BjtEditViewModel), typeof(BjtEditUC) },
+			{typeof(JfetEditViewModel), typeof(JfetEditUC) },
 		};
 
 		#endregion

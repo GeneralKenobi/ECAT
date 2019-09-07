@@ -25,7 +25,8 @@
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/ComponentInfo/Templates/TimeDomainSignalDataPresenterTemplate.xaml"/>
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/ComponentInfo/Templates/FrequencyDomainSignalDataPresenterTemplate.xaml"/>
 		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/Inductor/InductorTCStyle.xaml"/>
-		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/BJT/BJTTCStyle.xaml"/>
+		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/BJT/BjtTCStyle.xaml"/>
+		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/NChannelJfet/NChannelJfetTCStyle.xaml"/>
 	</ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

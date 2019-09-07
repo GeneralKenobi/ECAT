@@ -85,8 +85,8 @@ namespace ECAT.Simulation
 		/// Returns phasors with for all DC sources in <paramref name="factory"/>
 		/// </summary>
 		/// <param name="factory"></param>
-		private PhasorPartialStates GetPhasorsForAllDCSources(AdmittanceMatrixFactory factory) => GetAllPhasorsHelper(factory, factory.DCSources);
-		
+		private PhasorPartialStates GetPhasorsForAllDCSources(AdmittanceMatrixFactory factory) => GetAllPhasorsHelper(factory, factory.GetDCSources());
+
 		/// <summary>
 		/// Creates and solves DC admittance matrix for saturated op-amps
 		/// </summary>
@@ -99,9 +99,23 @@ namespace ECAT.Simulation
 			var result = new PhasorState(factory.Nodes, factory.ActiveComponentsCount, factory.OpAmpSaturationSource);
 
 			// Construct matrix for saturated op-amps and solve it
-			factory.ConstructDCForSaturatedOpAmpsOnly().Solve(out var nodePotentials, out var activeComponentsCurrents);
+			factory.ConstructDCForSaturatedComponentsOnly().Solve(out var nodePotentials, out var activeComponentsCurrents);
 
 			// Add the results from simulation to state
+			result.AddValues(nodePotentials.ToArray(), activeComponentsCurrents.ToArray());
+
+			return result;
+		}
+
+		/// <summary>
+		/// Creates and solves DC admittance matrix for saturated op-amps
+		/// </summary>
+		/// <param name="factory"></param>
+		/// <returns></returns>
+		private PhasorState GetBjtDCComponentState(AdmittanceMatrixFactory factory)
+		{
+			var result = new PhasorState(factory.Nodes, factory.ActiveComponentsCount, factory.BjtBaseEmitterComponent);
+			factory.ConstructDCForBjtBaseEmitterSources().Solve(out var nodePotentials, out var activeComponentsCurrents);
 			result.AddValues(nodePotentials.ToArray(), activeComponentsCurrents.ToArray());
 
 			return result;
@@ -122,14 +136,16 @@ namespace ECAT.Simulation
 
 			// Add op-amp saturation bias to complete the DC bias
 			state.AddState(GetOpAmpSaturationBias(factory));
+			state.AddState(GetBjtDCComponentState(factory));
 
 			// Loop until correct op-amp operation is found
-			while (!factory.CheckOpAmpOperationWithSelfAdjustment(state.ToDC().Combine().Potentials))
+			while (!factory.CheckOperationWithSelfAdjustment(state.ToDC().Combine().Potentials, state.ToDC().Combine().Currents))
 			{
 				// If the op-amp operation was adjusted, recalculate the state
 				state = GetPhasorsForAllDCSources(factory);
-				
+
 				state.AddState(GetOpAmpSaturationBias(factory));
+				state.AddState(GetBjtDCComponentState(factory));
 			}
 
 			// Create simulation results based on node potentials and active components currents in the state
@@ -156,7 +172,7 @@ namespace ECAT.Simulation
 
 			double exponent = start;
 
-			for(int i = 0; i < pointsCount; ++i, exponent+=step)
+			for (int i = 0; i < pointsCount; ++i, exponent += step)
 			{
 				factory.SweepSource.Frequency = Math.Pow(10, exponent);
 
@@ -185,7 +201,7 @@ namespace ECAT.Simulation
 		{
 			// Get AC transfer functions
 			var systemState = GetPhasorsForAllACSources(factory);
-			
+
 			if (includeDCBias)
 			{
 				// As well as DC transfer function, if requested
@@ -194,7 +210,7 @@ namespace ECAT.Simulation
 
 			return systemState.ToWaveform(pointsCount, timeStep);
 		}
-		
+
 		/// <summary>
 		/// Performs an AC cycle simulation - simulation is running for one full period of lowest frequency source in the <paramref name="factory"/>.
 		/// After determining the transfer functions calculates only one set of instantenous values for point described by
@@ -211,13 +227,15 @@ namespace ECAT.Simulation
 			// Get phasors for AC sources
 			var phasors = GetPhasorsForAllACSources(factory);
 
-			if(includeDCBias)
+			if (includeDCBias)
 			{
 				// Add DC phasors, if requested
 				phasors.MergeWith(GetPhasorsForAllDCSources(factory));
 			}
 
-			// Transform those phasors to instantenous values
+			phasors.AddState(GetBjtDCComponentState(factory));
+
+			// Transform those phasors to instantenous valuesa
 			var instantenous = phasors.ToInstantenousValue(pointIndex, timeStep);
 
 			// Finally get op amp bias, if requested
@@ -256,7 +274,7 @@ namespace ECAT.Simulation
 		/// <param name="factory"></param>
 		/// <param name="includeDCBias">If true DC bias will be performed and added to results, if false only saturated <see cref="IOpAmp"/>s
 		/// will be considered for DC part of simulation</param>
-		private void FullCycleWithoutOpAmpAdjustment(AdmittanceMatrixFactory factory, bool includeDCBias)
+		private void FullCycleWithoutOperationAdjustment(AdmittanceMatrixFactory factory, bool includeDCBias)
 		{
 			// TODO: number of points should be given by caller
 			int pointsCount = IoC.Resolve<IDefaultValues>().DefaultACCyclePointsCount;
@@ -288,7 +306,7 @@ namespace ECAT.Simulation
 		/// <param name="factory"></param>
 		/// <param name="includeDCBias">If true DC bias will be performed and added to results, if false only saturated <see cref="IOpAmp"/>s
 		/// will be considered for DC part of simulation</param>
-		private void FullCycleLogicWithOpAmpAdjustment(AdmittanceMatrixFactory factory, bool includeDCBias)
+		private void FullCycleLogicWithOperationAdjustment(AdmittanceMatrixFactory factory, bool includeDCBias)
 		{
 			// TODO: Try to make it so that saturated op amp bias is not considered to be pure DC but rather an extension of all sources
 			// contributing to the circuit
@@ -300,14 +318,16 @@ namespace ECAT.Simulation
 			double timeStep = GetTimeStep(pointsCount, factory.LowestFrequency);
 
 			// Create an enumeration of used sources - take AC sources and op-amp saturation source. If DC bias is requested, add the DC sources too.
-			var usedSources = (includeDCBias ? factory.AllSources : factory.ACSources).Concat(factory.OpAmpSaturationSource);
+			var usedSources = (includeDCBias ? factory.GetAllSources() : factory.ACSources)
+				.Concat(factory.OpAmpSaturationSource)
+				.Concat(factory.BjtBaseEmitterComponent);
 
 			// Get node indices constructed on the basis of the circuit
 			var nodeIndices = factory.Nodes.ToList();
-			
+
 			// Create a state which will be filled with adjusted simulation points
 			var adjustedState = new WaveformPartialState(factory.NodesCount, factory.ActiveComponentsCount, usedSources);
-			
+
 			// Go through each simulation point separately - it is necessary in order to correctly determine op-amp operation at each specific point
 			for (int i = 0; i < pointsCount; ++i)
 			{
@@ -315,7 +335,7 @@ namespace ECAT.Simulation
 				var instantenousValues = FullCycleInstantenousValuesHelper(factory, i, timeStep, includeDCBias);
 
 				// Loop until correct op-amp operation is found
-				while (!factory.CheckOpAmpOperationWithSelfAdjustment(instantenousValues.Combine().Potentials))
+				while (!factory.CheckOperationWithSelfAdjustment(instantenousValues.Combine().Potentials, instantenousValues.Combine().Currents))
 				{
 					// If the op-amp operation was adjusted, recalculate the instantenous values
 					instantenousValues = FullCycleInstantenousValuesHelper(factory, i, timeStep, includeDCBias);
@@ -343,6 +363,7 @@ namespace ECAT.Simulation
 
 				// Finally reset the op-amp operation for next iteration
 				factory.ResetOpAmpOperation();
+				factory.ResetBjtOperation();
 			}
 
 			// Create simulation results
@@ -498,11 +519,11 @@ namespace ECAT.Simulation
 		/// Performs an AC cycle simulation - simulation is running for one full period of lowest frequency source in the <paramref name="schematic"/>
 		/// </summary>
 		/// <param name="schematic"></param>
-		public void ACFullCycleWithoutOpAmpAdjustment(ISchematic schematic)
+		public void ACFullCycleWithoutOperationAdjustment(ISchematic schematic)
 		{
 			if(CheckSchematicForNormalSimulation(schematic))
 			{
-				SimulationRunWrapper(schematic, (x) => FullCycleWithoutOpAmpAdjustment(x, false), "AC cycle without op-amp adjustment", SimulationType.AC);
+				SimulationRunWrapper(schematic, (x) => FullCycleWithoutOperationAdjustment(x, false), "AC cycle without op-amp adjustment", SimulationType.AC);
 			}
 		}
 
@@ -510,11 +531,11 @@ namespace ECAT.Simulation
 		/// Performs a full ACDC simulation
 		/// </summary>
 		/// <param name="schematic"></param>
-		public void ACDCFullCycleWithoutOpAmpAdjustment(ISchematic schematic)
+		public void ACDCFullCycleWithoutOperationAdjustment(ISchematic schematic)
 		{
 			if(CheckSchematicForNormalSimulation(schematic))
 			{
-				SimulationRunWrapper(schematic, (x) => FullCycleWithoutOpAmpAdjustment(x, true), "ACDC cycle without op-amp adjustment", SimulationType.ACDC);
+				SimulationRunWrapper(schematic, (x) => FullCycleWithoutOperationAdjustment(x, true), "ACDC cycle without op-amp adjustment", SimulationType.ACDC);
 			}
 		}
 
@@ -523,11 +544,11 @@ namespace ECAT.Simulation
 		/// saturated state so that its output voltage does not exceed its supply voltages.
 		/// </summary>
 		/// <param name="schematic"></param>
-		public void ACFullCycleWithOpAmpAdjustment(ISchematic schematic)
+		public void ACFullCycleWithOperationAdjustment(ISchematic schematic)
 		{
 			if(CheckSchematicForNormalSimulation(schematic))
 			{
-				SimulationRunWrapper(schematic, (x) => FullCycleLogicWithOpAmpAdjustment(x, false), "AC Cycle with op-amp adjustment", SimulationType.AC);
+				SimulationRunWrapper(schematic, (x) => FullCycleLogicWithOperationAdjustment(x, false), "AC Cycle with op-amp adjustment", SimulationType.AC);
 			}
 		}
 
@@ -536,11 +557,11 @@ namespace ECAT.Simulation
 		/// saturated state so that its output voltage does not exceed its supply voltages.
 		/// </summary>
 		/// <param name="schematic"></param>
-		public void ACDCFullCycleWithOpAmpAdjustment(ISchematic schematic)
+		public void ACDCFullCycleWithOperationAdjustment(ISchematic schematic)
 		{
 			if(CheckSchematicForNormalSimulation(schematic))
 			{
-				SimulationRunWrapper(schematic, (x) => FullCycleLogicWithOpAmpAdjustment(x, true), "ACDC Cycle with op-amp adjustment", SimulationType.AC);
+				SimulationRunWrapper(schematic, (x) => FullCycleLogicWithOperationAdjustment(x, true), "ACDC Cycle with op-amp adjustment", SimulationType.AC);
 			}
 		}
 

@@ -6,10 +6,10 @@
 
 
 
-	<Style TargetType="local:BjtTC">
+	<Style TargetType="local:NChannelJfetTC">
 		<Setter Property="Template">
 			<Setter.Value>
-				<ControlTemplate TargetType="local:BjtTC">
+				<ControlTemplate TargetType="local:NChannelJfetTC">
 					<Canvas FlowDirection="LeftToRight" Background="Transparent">
 
 						<!-- Wire to base terminal, base terminal -->						
@@ -47,20 +47,14 @@
 						<!-- Wire between collector and emitter terminals -->
 						<Polyline StrokeThickness="10"
 							Stroke="{StaticResource BlackBrush}"
-							Points="150,0 150,60 100,80 100,150"/>
+							Points="150,0 150,65 100,65 100,150"/>
 						<Polyline StrokeThickness="10"
 							Stroke="{StaticResource BlackBrush}"
-							Points="100,50 100,120 150,140 150,200"/>
+							Points="100,50 100,135 150,135 150,200"/>
 
-						<Polygon Canvas.Left="125"
-							Canvas.Top="113.5"
-							Points="20,15 0,0 0,30"
-							Fill="{StaticResource BlackBrush}"
-							RenderTransformOrigin="0.5 0.5">								
-							<Polygon.RenderTransform>
-								<RotateTransform Angle="22"/>
-							</Polygon.RenderTransform>
-						</Polygon>
+						<Polyline StrokeThickness="5"
+							Stroke="{StaticResource BlackBrush}"
+							Points="75,80 95,100, 75,120"/>
 
 					</Canvas>
 				</ControlTemplate>

@@ -26,5 +26,7 @@
 		Inductor = 9,
 
 		NpnBjt = 10,
+
+		NChannelJfet = 11,
     }
 }

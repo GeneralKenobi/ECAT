@@ -1,73 +1,68 @@
 ﻿using ECAT.Core;
-using System;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Text;
 
 namespace ECAT.Design
 {
-	public class Bjt : ThreeTerminal, IBjt
+	/// <summary>
+	/// Base implementation of Bipolar Junction Transistor
+	/// </summary>
+	public class Bjt : Transistor, IBjt
 	{
-		#region Protected properties
-
-		/// <summary>
-		/// The shift assigned to <see cref="TerminalA"/>
-		/// </summary>
-		protected override Complex _TerminalAShift { get; } = new Complex(-100, 0);
-
-		/// <summary>
-		/// The shift assigned to <see cref="TerminalB"/>
-		/// </summary>
-		protected override Complex _TerminalBShift { get; } = new Complex(100, -100);
-
-		/// <summary>
-		/// The shift assigned to <see cref="TerminalC"/>
-		/// </summary>
-		protected override Complex _TerminalCShift { get; } = new Complex(100, 100);
-
-		#endregion
-
 		#region Public properties
 
 		/// <summary>
 		/// Input impedance
 		/// </summary>
-		public double Y11 { get; set; }
+		public double Y11 => 1 / H11;
 
 		/// <summary>
 		/// Reverse-transfer admittance
 		/// </summary>
-		public double Y12 { get; set; }
+		public double Y12 => -H12 / H11;
 
 		/// <summary>
 		/// Forward-transfer admittance
 		/// </summary>
-		public double Y21 { get; set; }
+		public double Y21 => H21 / H11;
 
 		/// <summary>
 		/// Output admittance
 		/// </summary>
-		public double Y22 { get; set; }
+		public double Y22 => H22 - H12 * H21 / H11;
 
 		/// <summary>
-		/// Width of the control in circuit design in the default, horizontal position
+		/// Input impedance
 		/// </summary>
-		public override double Width { get; } = 200;
+		public double H11 { get; set; } = 4 * 1e3;
 
 		/// <summary>
-		/// Height of the control in circuit design in the default, horizontal position
+		/// Reverse-voltage feedback
 		/// </summary>
-		public override double Height { get; } = 200;
+		public double H12 { get; set; } = 2.5 * 1e-4;
 
 		/// <summary>
-		/// Cutoff base-emitter voltage
+		/// Forward current gain
 		/// </summary>
-		public double UBECutoff { get; set; } = 0.6;
+		public double H21 { get; set; } = 125;
+
+		/// <summary>
+		/// Output admittance
+		/// </summary>
+		public double H22 { get; set; } = 20 * 1e-6;
+
+		/// <summary>
+		/// Base-emitter voltage during saturation
+		/// </summary>
+		public double UBEForward { get; set; } = 0.6;
 
 		/// <summary>
 		/// Saturation collector-emitter voltage
 		/// </summary>
 		public double UCESaturation { get; set; } = 0.2;
+
+		/// <summary>
+		/// Beta coefficient of this BJT
+		/// </summary>
+		public double Beta { get; set; } = 100;
 
 		#endregion
 	}

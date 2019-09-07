@@ -28,6 +28,7 @@ namespace ECAT.ViewModel
 			{ ComponentIDEnumeration.Voltmeter, typeof(VoltmeterEditViewModel) },
 			{ ComponentIDEnumeration.Inductor, typeof(InductorEditViewModel) },
 			{ ComponentIDEnumeration.NpnBjt, typeof(BjtEditViewModel) },
+			{ ComponentIDEnumeration.NChannelJfet, typeof(JfetEditViewModel) },
 		};
 
 		#endregion

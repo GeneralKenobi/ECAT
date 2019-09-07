@@ -67,6 +67,7 @@ namespace ECAT.UWP
 			{ComponentIDEnumeration.Voltmeter, typeof(VoltmeterTC) },
 			{ComponentIDEnumeration.Inductor, typeof(InductorTC) },
 			{ComponentIDEnumeration.NpnBjt, typeof(BjtTC) },
+			{ComponentIDEnumeration.NChannelJfet, typeof(NChannelJfetTC) },
 		};
 
 		#endregion
