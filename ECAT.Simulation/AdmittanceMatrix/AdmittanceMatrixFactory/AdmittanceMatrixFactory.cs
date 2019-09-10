@@ -166,21 +166,8 @@ namespace ECAT.Simulation
 		/// </summary>
 		private int GetSmallDimension(bool includeInductorVoltageSources) =>
 			_DCVoltageSources.Count + _ACVoltageSources.Count + _OpAmps.Count + (includeInductorVoltageSources ? _InductorVoltageSources.Count : 0) +
-			_BjtVoltageSources.Sum((x) =>
-			{
-				switch (_TransistorOperation[x.Key])
-				{
-					case TransistorOperationMode.Cutoff:
-						return 1;
-					case TransistorOperationMode.Active:
-						return 2;
-					case TransistorOperationMode.Saturation:
-						return 3;
-					default:
-						return 0;
-				}
-			});
-
+			_BjtVoltageSources.Where((bjt) => _TransistorOperation[bjt.Key] != TransistorOperationMode.SmallSignal).Count() * 3;
+			
 		#endregion
 
 		#endregion
@@ -1111,11 +1098,11 @@ namespace ECAT.Simulation
 				_NodesWithReference.Find((node) => node.ConnectedTerminals.Contains(x.TerminalC)).Index,
 				_InnerBjtNodes[x]));
 
-			_NpnBjts.ForEach((bjt, i) =>
+			_NpnBjts.ForEach((bjt) =>
 				{
 					if (_TransistorOperation[bjt] != TransistorOperationMode.SmallSignal)
 					{
-						InitializeBjt(bjt, GetSmallDimension(true) + i);
+						InitializeBjt(bjt, GetSmallDimension(true));
 					}
 				});
 		}
@@ -1529,6 +1516,11 @@ namespace ECAT.Simulation
 		/// Returns descriptions of all DC sources
 		/// </summary>
 		public IEnumerable<ISourceDescription> GetDCSources() => _DCVoltageSources.Concat(_InductorVoltageSources).Select((x) => x.Description);
+
+		/// <summary>
+		/// Returns descriptions of all DC sources
+		/// </summary>
+		public IEnumerable<ISourceDescription> GetCurrentSources() => _DCCurrentSources.Select((x) => x.Description);
 
 		/// <summary>
 		/// Descriptions of all sources

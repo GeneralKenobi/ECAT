@@ -85,7 +85,8 @@ namespace ECAT.Simulation
 		/// Returns phasors with for all DC sources in <paramref name="factory"/>
 		/// </summary>
 		/// <param name="factory"></param>
-		private PhasorPartialStates GetPhasorsForAllDCSources(AdmittanceMatrixFactory factory) => GetAllPhasorsHelper(factory, factory.GetDCSources());
+		private PhasorPartialStates GetPhasorsForAllDCSources(AdmittanceMatrixFactory factory) =>
+			GetAllPhasorsHelper(factory, factory.GetDCSources().Concat(factory.GetCurrentSources()));
 
 		/// <summary>
 		/// Creates and solves DC admittance matrix for saturated op-amps
