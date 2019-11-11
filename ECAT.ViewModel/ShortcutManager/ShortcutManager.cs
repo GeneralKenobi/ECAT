@@ -122,7 +122,7 @@ namespace ECAT.ViewModel
 			
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
 				"Run Full Cycle ACDC Without Op-Amp Adjustment",
-				new KeyArgument("Y"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.ACDCFullCycleWithoutOperationAdjustment(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic)));
+				new KeyArgument("Y"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.ACDCFullCycle(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic)));
 
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
 				"Run Frequency Sweep Simulation",

@@ -23,10 +23,7 @@ namespace ECAT.ViewModel
 			_DesignManager = designManager ?? throw new ArgumentNullException(nameof(designManager));
 
 			DCBiasCommand = new RelayCommand(() => SimulationMethodWrapper(_SimulationManager.DCBias));
-			ACFullCycleWithoutOpAmpAdjustmentCommand = new RelayCommand(() => SimulationMethodWrapper(_SimulationManager.ACFullCycleWithoutOperationAdjustment));
-			ACDCFullCycleWithoutOpAmpAdjustmentCommand = new RelayCommand(() => SimulationMethodWrapper(_SimulationManager.ACDCFullCycleWithoutOperationAdjustment));
-			ACFullCycleWithOpAmpAdjustmentCommand = new RelayCommand(() => SimulationMethodWrapper(_SimulationManager.ACFullCycleWithOperationAdjustment));
-			ACDCFullCycleWithOpAmpAdjustmentCommand = new RelayCommand(() => SimulationMethodWrapper(_SimulationManager.ACDCFullCycleWithOperationAdjustment));
+			ACDCFullCycleWithoutOpAmpAdjustmentCommand = new RelayCommand(() => SimulationMethodWrapper(_SimulationManager.ACDCFullCycle));
 			FrequencySweepCommand = new RelayCommand(() => SimulationMethodWrapper(_SimulationManager.FrequencySweep));
 		}
 

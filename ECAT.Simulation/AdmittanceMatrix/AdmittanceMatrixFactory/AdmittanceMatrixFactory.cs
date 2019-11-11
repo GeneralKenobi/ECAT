@@ -10,7 +10,7 @@ namespace ECAT.Simulation
 	/// <summary>
 	/// Class that allows for easy construction and configuration of admittance matrices for one <see cref="ISchematic"/>
 	/// </summary>
-	public partial class AdmittanceMatrixFactory
+	public class AdmittanceMatrixFactory
 	{
 		#region Constructor
 
@@ -121,11 +121,6 @@ namespace ECAT.Simulation
 		/// Dictionary with indices of nodes of <see cref="IOpAmp"/>s
 		/// </summary>
 		private IDictionary<IOpAmpDescription, OpAmpNodeInfo> _OpAmpsNodes { get; set; }
-
-		/// <summary>
-		/// Dictionary containing operation mode assigned to each op-amp.
-		/// </summary>
-		private IDictionary<IOpAmpDescription, OpAmpOperationMode> _OpAmpOperation { get; } = new Dictionary<IOpAmpDescription, OpAmpOperationMode>();
 
 		/// <summary>
 		/// Dictionary with indices of <see cref="IBjt"/>
@@ -251,12 +246,6 @@ namespace ECAT.Simulation
 		/// </summary>
 		public IEnumerable<IVoltmeterMeasurement> Voltmeters { get; private set; }
 
-		/// <summary>
-		/// <see cref="ISourceDescription"/> for results generated for saturated op-amps (matrices built with
-		/// <see cref="ConstructDCForSaturatedComponentsOnly"/>).
-		/// </summary>
-		public ISourceDescription OpAmpSaturationSource { get; } = new OpAmpSaturationSourceDescription();
-
 		#endregion
 
 		#region Private methods
@@ -322,8 +311,6 @@ namespace ECAT.Simulation
 			FindImportantNodes();
 
 			CheckOpAmpOutputs();
-
-			InitializeOpAmpOperationCollection();
 		}
 
 		#endregion
@@ -518,40 +505,26 @@ namespace ECAT.Simulation
 
 		#endregion
 
-		#region Op-amp operation mode switching
+		#region Correctness checks
 
 		/// <summary>
-		/// Configures <see cref="IOpAmp"/> for operation in <paramref name="operationMode"/> in <paramref name="matrix"/>. Saturated op-amps remain
-		/// inactive after this call - they will appear to be saturated but saturation voltage will be equal to 0. Op-amps have to be manually
-		/// activated, for example using <see cref="ActivateSaturatedOpAmps(AdmittanceMatrix)"/>
+		/// Checks if all <see cref="IOpAmp"/> have their outputs not grounded. If such thing occurs an exception is thrown
 		/// </summary>
-		/// <param name="matrix"></param>
-		/// <param name="opAmpIndex"></param>
-		/// <param name="operationMode"></param>
-		private void ConfigureOpAmpOperation(AdmittanceMatrix matrix, IOpAmpDescription opAmp, OpAmpOperationMode operationMode)
+		private void CheckOpAmpOutputs()
 		{
-			// Call appropriate method based on operation mode
-			switch (_OpAmpOperation[opAmp])
+			foreach (var item in _OpAmpsNodes.Values)
 			{
-				case OpAmpOperationMode.Active:
-					{
-						ConfigureOpAmpForActiveOperation(matrix, opAmp);
-					}
-					break;
-
-				case OpAmpOperationMode.PositiveSaturation:
-				case OpAmpOperationMode.NegativeSaturation:
-					{
-						ConfigureOpAmpForSaturation(matrix, opAmp);
-					}
-					break;
-
-				default:
-					{
-						throw new Exception("Unhandled case");
-					}
+				if (item.Output == ReferenceNode)
+				{
+					throw new Exception("Output of a(n) " + IoC.Resolve<IComponentFactory>().GetDeclaration<IOpAmp>().DisplayName +
+						" cannot be grounded");
+				}
 			}
 		}
+
+		#endregion
+
+		#region Op-amp operation mode switching
 
 		/// <summary>
 		/// Configures submatrices so that <paramref name="opAmp"/> is considered to work in active operation (output is between
@@ -610,71 +583,6 @@ namespace ECAT.Simulation
 			// and column corresponding to the node (positive terminal) with 1 
 			matrix._E[index] = 0;
 		}
-
-		/// <summary>
-		/// Configures submatrices so that <paramref name="opAmp"/> is considered to work in saturation, however output remains at 0 - op-amps have
-		/// to be manually activated, for example using <see cref="ActivateSaturatedOpAmp(AdmittanceMatrix, IOpAmpDescription)"/>.
-		/// </summary>
-		/// <param name="matrix"></param>
-		/// <param name="opAmp"></param>
-		private void ConfigureOpAmpForSaturation(AdmittanceMatrix matrix, IOpAmpDescription opAmp)
-		{
-			// Indices of op-amps nodes
-			var nodes = _OpAmpsNodes[opAmp];
-
-			// And its index
-			var index = _IndexedComponentsIndices[opAmp];
-
-			// If the non-inverting input is not grounded, reset its entry in the _C matrix
-			if (nodes.NonInvertingInput != ReferenceNode)
-			{
-				matrix._C[index, nodes.NonInvertingInput] = 0;
-			}
-
-			// If the inverting input is not grounded, reset its entry in the _C matrix
-			if (nodes.InvertingInput != ReferenceNode)
-			{
-				matrix._C[index, nodes.InvertingInput] = 0;
-			}
-
-			// And the entry in _C corresponding to the output node to 1
-			// It is important that, when non-inverting input is connected directly to the output, the entry in _B
-			// corresponding to that node is 1 (and not 0 like the if above would set it). Because this assigning is done after
-			// the one for non-inverting input no special conditions are necessary however it's very important to remeber about
-			// it if (when) this method is modified
-			matrix._C[index, nodes.Output] = 1;
-		}
-
-		/// <summary>
-		/// Activates all saturated op amps
-		/// </summary>
-		/// <param name="matrix"></param>
-		private void ActivateSaturatedOpAmps(AdmittanceMatrix matrix)
-		{
-			// For each op-amp
-			foreach(var opAmp in _OpAmps)
-			{
-				// If it's in either saturation
-				if (_OpAmpOperation[opAmp] == OpAmpOperationMode.PositiveSaturation || _OpAmpOperation[opAmp] == OpAmpOperationMode.NegativeSaturation)
-				{
-					// Activate it
-					ActivateSaturatedOpAmp(matrix, opAmp);
-				}
-			}
-		}
-
-		/// <summary>
-		/// Activates saturated op-amp - modifies matrix E with saturation voltage in entry corresponding to that op-amp. Does not check if
-		/// the op-amp is in fact saturated - assumes that caller checked that.
-		/// </summary>
-		/// <param name="matrix"></param>
-		/// <param name="opAmp"></param>
-		private void ActivateSaturatedOpAmp(AdmittanceMatrix matrix, IOpAmpDescription opAmp) =>
-			// Depending on which supply was exceeded, set the value of the op-amp output to either positive or negative
-			// supply voltage, depending on saturaiton (if determined that it is in either saturation).
-			// Modify entry in E matrix corresponding to index of the op-amp.
-			matrix._E[_IndexedComponentsIndices[opAmp]] = _OpAmpOperation[opAmp] == OpAmpOperationMode.PositiveSaturation ?
-				opAmp.PositiveSupplyVoltage : opAmp.NegativeSupplyVoltage;
 
 		#endregion
 
@@ -1089,112 +997,22 @@ namespace ECAT.Simulation
 					nodesWithReference.Find((node) => node.ConnectedTerminals.Contains(x.TerminalB)).Index));
 		}
 
-		/// <summary>
-		/// Initializes <see cref="_OpAmpOperation"/> with default values - all <see cref="OpAmpOperationMode.Active"/> - all <see cref="IOpAmp"/>s
-		/// in active operation
-		/// </summary>
-		private void InitializeOpAmpOperationCollection() =>
-			FindComponents<IOpAmp>().ForEach((x) => _OpAmpOperation.Add(x.Description, OpAmpOperationMode.Active));
-
 		#endregion
 
 		#region Initial OpAmp configuration
 
 		/// <summary>
-		/// Modifies <paramref name="matrix"/> with initial op-amp settings - op-amps are set in their respective operation modes depending on
+		/// Modifies <paramref name="matrix"/> with initial op-amp settings - op-amps are set in active operation mode
 		/// <see cref="_OpAmpOperation"/>.
 		/// </summary>
 		private void InitialOpAmpConfiguration(AdmittanceMatrix matrix)
 		{
 			FillBMatrixOpAmpOutputNodes(matrix);
 
-			// Configure each op-amp for its operation
 			foreach(var opAmp in _OpAmps)
 			{
-				ConfigureOpAmpOperation(matrix, opAmp, _OpAmpOperation[opAmp]);
+				ConfigureOpAmpForActiveOperation(matrix, opAmp);
 			}
-		}
-
-		#endregion
-
-		#region Correctness checks
-
-		/// <summary>
-		/// Checks if all <see cref="IOpAmp"/> have their outputs not grounded. If such thing occurs an exception is thrown
-		/// </summary>
-		private void CheckOpAmpOutputs()
-		{
-			foreach (var item in _OpAmpsNodes.Values)
-			{
-				if (item.Output == ReferenceNode)
-				{
-					throw new Exception("Output of a(n) " + IoC.Resolve<IComponentFactory>().GetDeclaration<IOpAmp>().DisplayName +
-						" cannot be grounded");
-				}
-			}
-		}
-
-		#endregion
-
-		#region OpAmps operation adjustment
-
-		/// <summary>
-		/// Checks if operation modes of all <see cref="IOpAmp"/>s is correct, if <paramref name="adjust"/> is set to true then adjusts the
-		/// <see cref="IOpAmp"/> that did not operate correctly (it does not mean all <see cref="IOpAmp"/>s will operate correctly - iterative
-		/// approach is needed).
-		/// </summary>
-		/// <param name="nodePotentials">Potentials at nodes, keys are simulation node indices</param>
-		/// <param name="adjust">True if <see cref="_OpAmpOperation"/> should be adjusted to try and find correct operation modes</param>
-		/// <returns></returns>
-		private bool CheckOperation(IEnumerable<KeyValuePair<int, double>> nodePotentials, IEnumerable<KeyValuePair<int, double>> sourcesCurrents, bool adjust)
-		{
-			// Cast the potentials to a dictionary for an easier lookup, add 1 to keys because op-amp nodes are stored with regular indices
-			var lookupPotentials = nodePotentials.ToDictionary((x) => x.Key, (x) => x.Value);
-			var lookupCurrents = sourcesCurrents.ToDictionary((x) => x.Key, (x) => x.Value);
-
-			// For each op-amp
-			foreach(var opAmp in _OpAmps)
-			{
-				// And get its output node potential
-				var outputVoltage = lookupPotentials[_OpAmpsNodes[opAmp].Output];
-
-				// The operation mode that is expected
-				OpAmpOperationMode expectedOperationMode = OpAmpOperationMode.Active;
-
-				// If output voltage is between supply voltages
-				if (outputVoltage > opAmp.NegativeSupplyVoltage && outputVoltage < opAmp.PositiveSupplyVoltage)
-				{
-					// Active operation mode
-					expectedOperationMode = OpAmpOperationMode.Active;
-				}
-				// Else if it's greater than positive supply voltage
-				else if (outputVoltage >= opAmp.PositiveSupplyVoltage)
-				{
-					// Positive saturation
-					expectedOperationMode = OpAmpOperationMode.PositiveSaturation;
-				}
-				else
-				{
-					// Last possibility - negative saturation
-					expectedOperationMode = OpAmpOperationMode.NegativeSaturation;
-				}
-
-				// If the expected operation mode differs from the actual on
-				if (expectedOperationMode != _OpAmpOperation[opAmp])
-				{
-					// If adjustment was requested, set the op-amp's operation mode to the expected mode
-					if (adjust)
-					{
-						_OpAmpOperation[opAmp] = expectedOperationMode;
-					}
-
-					// Return incorrect operation
-					return false;
-				}
-			}
-
-			// Return correct operation - neither op-amp operated incorrectly
-			return true;
 		}
 
 		#endregion
@@ -1283,34 +1101,6 @@ namespace ECAT.Simulation
 		public IEnumerable<ISourceDescription> GetAllSources() => _ACVoltageSourcesDescriptions.Concat(GetDCSources());
 
 		/// <summary>
-		/// Resets operation of <see cref="IOpAmp"/>s - every <see cref="IOpAmp"/> is set to active mode
-		/// </summary>
-		public void ResetOpAmpOperation()
-		{
-			foreach(var opAmp in _OpAmps)
-			{
-				_OpAmpOperation[opAmp] = OpAmpOperationMode.Active;
-			}
-		}
-
-		/// <summary>
-		/// Checks <see cref="IOpAmp"/>s operation and returns true if it's correct or false if it's incorrect.
-		/// </summary>
-		/// <param name="nodePotentials">Keys are simulation node indices</param>
-		/// <returns></returns>
-		public bool CheckOpAmpOperation(IEnumerable<KeyValuePair<int, double>> nodePotentials, IEnumerable<KeyValuePair<int, double>> sourcesCurrents) =>
-			CheckOperation(nodePotentials, sourcesCurrents, false);
-
-		/// <summary>
-		/// Checks <see cref="IOpAmp"/> operation, returns true if it's correct and false if it's incorrect. Additionally adjusts the
-		/// <see cref="IOpAmp"/> that triggered incorrect operation.
-		/// </summary>
-		/// <param name="nodePotentials">Keys are simulation node indices</param>
-		/// <returns></returns>
-		public bool CheckOperationWithSelfAdjustment(IEnumerable<KeyValuePair<int, double>> nodePotentials, IEnumerable<KeyValuePair<int, double>> sourcesCurrents) =>
-			CheckOperation(nodePotentials, sourcesCurrents, true);
-
-		/// <summary>
 		/// Constructrs an admittance matrix for the given source.
 		/// </summary>
 		/// <param name="source"></param>
@@ -1335,22 +1125,6 @@ namespace ECAT.Simulation
 						throw new Exception($"Unhandled {nameof(SourceType)}");
 					}
 			}
-		}
-
-		/// <summary>
-		/// Constructs a DC addmittance matrix for saturated <see cref="IOpAmp"/>s only. Its purpose is to determine influence of saturated
-		/// <see cref="IOpAmp"/>s on AC circuits.
-		/// </summary>
-		/// <returns></returns>
-		public AdmittanceMatrix ConstructDCForSaturatedComponentsOnly()
-		{
-			// Construct initial version
-			var matrix = ConstructAndInitialize(0);
-
-			// And activate saturated op-amps
-			ActivateSaturatedOpAmps(matrix);
-
-			return matrix;
 		}
 
 		#endregion
