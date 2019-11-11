@@ -37,6 +37,7 @@ namespace ECAT.ViewModel
 			DesignAreaClickedCommand = new RelayParametrizedCommand(DesignAreaClicked);
 			PrepareToPlaceLooseWireCommand = new RelayCommand(PrepareToPlaceLooseWire);
 			EditComponentCommand = new RelayParametrizedCommand(EditComponent);
+			ClearSchematicCommand = new RelayCommand(ClearSchematic);
 		}
 		
 		#endregion
@@ -171,6 +172,11 @@ namespace ECAT.ViewModel
 		#region Commands
 
 		/// <summary>
+		/// Clears the schematic
+		/// </summary>
+		public ICommand ClearSchematicCommand { get; }
+
+		/// <summary>
 		/// Stops the current action
 		/// </summary>
 		public ICommand StopActionCommand { get; }
@@ -194,6 +200,14 @@ namespace ECAT.ViewModel
 		#endregion
 
 		#region Private methods
+
+		/// <summary>
+		/// Clears the schematic
+		/// </summary>
+		private void ClearSchematic()
+		{
+			DesignManager.CurrentSchematic.Clear();
+		}
 
 		/// <summary>
 		/// Method for <see cref="EditComponentCommand"/>
@@ -223,6 +237,16 @@ namespace ECAT.ViewModel
 				case AppState.PlacingWire:
 					{
 						DesignManager.StopPlacingWire();
+					} break;
+
+				case AppState.Idle:
+					{
+						if (_PlaceLooseWireOnNextClick)
+						{
+							// Reset the flag
+							_PlaceLooseWireOnNextClick = false;
+							IoC.Log("Canceled wire placing", _LoggerID, InfoLoggerMessageDuration.Short);
+						}
 					} break;
 			}
 		}

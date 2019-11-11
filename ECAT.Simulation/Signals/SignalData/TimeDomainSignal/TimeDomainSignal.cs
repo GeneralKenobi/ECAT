@@ -20,7 +20,7 @@ namespace ECAT.Simulation
 		/// Constructor which initializes <see cref="_FinalWaveform"/>
 		/// </summary>
 		/// <param name="samples"></param>
-		private TimeDomainSignal(int samples) : this()
+		private TimeDomainSignal(int samples, string unit) : this(unit)
 		{
 			// Check if value is correct
 			if(samples < 0)
@@ -40,7 +40,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public TimeDomainSignal()
+		public TimeDomainSignal(string unit) : base(unit)
 		{
 			Interpreter = new TimeDomainSignalInterpreter(this);
 			ComposingWaveforms = new ReadOnlyDictionary<ISourceDescription, IEnumerable<double>>(_Waveforms);
@@ -52,7 +52,7 @@ namespace ECAT.Simulation
 		/// <param name="instantenousValues">Values occuring at specific time moments, can'be be null</param>
 		/// <param name="step">Time step between two subsequent values</param>
 		/// <exception cref="ArgumentNullException"></exception>
-		public TimeDomainSignal(int samples, double step) : this(samples, step, 0) { }
+		public TimeDomainSignal(int samples, double step, string unit) : this(samples, step, 0, unit) { }
 
 		/// <summary>
 		/// Constructor with parameters
@@ -60,7 +60,7 @@ namespace ECAT.Simulation
 		/// <param name="instantenousValues">Values occuring at specific time moments, can'be be null</param>
 		/// <param name="step">Time step between two subsequent values</param>
 		/// <param name="startSample">Start time of the signal</param>
-		public TimeDomainSignal(int samples, double step, double startSample) : base(samples, step, startSample)
+		public TimeDomainSignal(int samples, double step, double startSample, string unit) : base(samples, step, startSample, unit)
 		{
 			if(step < 0)
 			{
@@ -77,7 +77,7 @@ namespace ECAT.Simulation
 		/// Copy constructor
 		/// </summary>
 		/// <exception cref="ArgumentNullException"></exception>
-		public TimeDomainSignal(ITimeDomainSignal signal) : this()
+		public TimeDomainSignal(ITimeDomainSignal signal) : this(signal.Unit)
 		{
 			Copy(signal ?? throw new ArgumentNullException(nameof(signal)));
 		}
@@ -209,7 +209,7 @@ namespace ECAT.Simulation
 		public TimeDomainSignal CopyAndNegate()
 		{
 			// Create result based on internal properties
-			var result = new TimeDomainSignal(Samples, Step, StartSample);
+			var result = new TimeDomainSignal(Samples, Step, StartSample, Unit);
 
 			// Copy waveforms and constant offsets with switched sign
 			_Waveforms.ForEach((x) => result.AddWaveformHelper(x.Key, x.Value.Select((y) => -y)));

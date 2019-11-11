@@ -16,36 +16,6 @@
 
 	<StackPanel>
 
-		<!-- Beta coefficient -->
-		<TextBlock Style="{StaticResource WhiteTextBlockStyle}"
-			FontSize="{StaticResource FontSizeBig}"
-			Text="Beta"
-			TextWrapping="WrapWholeWords"
-			Margin="0 0 0 10"/>
-		<TextBox Style="{StaticResource SideMenuTextBoxStyleUnder8}"
-			Margin="0 0 0 20"
-			Text="{Binding Beta, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"/>
-
-		<!-- Base-emitter forward voltage -->
-		<TextBlock Style="{StaticResource WhiteTextBlockStyle}"
-			FontSize="{StaticResource FontSizeBig}"
-			Text="Ube forward"
-			TextWrapping="WrapWholeWords"
-			Margin="0 0 0 10"/>
-		<TextBox Style="{StaticResource SideMenuTextBoxStyleUnder8}"
-			Margin="0 0 0 20"
-			Text="{Binding UBEForward, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"/>
-
-		<!-- Collector-emitter saturation voltage -->
-		<TextBlock Style="{StaticResource WhiteTextBlockStyle}"
-			FontSize="{StaticResource FontSizeBig}"
-			Text="Uce saturation"
-			TextWrapping="WrapWholeWords"
-			Margin="0 0 0 10"/>
-		<TextBox Style="{StaticResource SideMenuTextBoxStyleUnder8}"
-			Margin="0 0 0 20"
-			Text="{Binding UCESaturation, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"/>
-
 		<!-- H11 -->
 		<TextBlock Style="{StaticResource WhiteTextBlockStyle}"
 			FontSize="{StaticResource FontSizeBig}"
@@ -85,12 +55,6 @@
 		<TextBox Style="{StaticResource SideMenuTextBoxStyleUnder8}"
 			Margin="0 0 0 20"
 			Text="{Binding H22, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"/>
-
-		<ToggleButton Style="{StaticResource EditMenuToggleButtonStyle}"
-			FontSize="{StaticResource FontSizeBig}"
-			Content="Use small signal model"
-			Margin="0 10 0 20"
-			IsChecked="{Binding SmallSignalModel, Mode=TwoWay}"/>
 
 	</StackPanel>
 

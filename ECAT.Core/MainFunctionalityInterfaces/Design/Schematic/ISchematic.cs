@@ -43,6 +43,12 @@ namespace ECAT.Core
 		void RemoveComponent(IBaseComponent component);
 
 		/// <summary>
+		/// Method that removes all components and wires from the schematic
+		/// </summary>
+		/// <param name="component"></param>
+		void Clear();
+
+		/// <summary>
 		/// Method that removes a wire from the circuit
 		/// </summary>
 		/// <param name="wire"></param>

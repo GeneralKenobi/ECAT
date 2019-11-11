@@ -17,18 +17,5 @@ namespace ECAT.ViewModel
 		public TransistorEditViewModel(ComponentViewModel componentViewModel) : base(componentViewModel) { }
 
 		#endregion
-
-		#region Public properties
-		
-		/// <summary>
-		/// If true, small-signal model of the transistor will be used
-		/// </summary>
-		public bool SmallSignalModel
-		{
-			get => _EditedComponent.SmallSignalModel;
-			set => _EditedComponent.SmallSignalModel = value;
-		}
-
-		#endregion
 	}
 }

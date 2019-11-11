@@ -38,7 +38,7 @@
 
 				<!-- TextBlock with name of the component -->
 				<TextBlock Text="{Binding HeaderName, Mode=OneWay}"
-								FontSize="{StaticResource FontSizeBig}"
+								FontSize="{StaticResource FontSizeRegular}"
 								FontFamily="{StaticResource LatoBold}"
 								Style="{StaticResource WhiteTextBlockStyle}"/>
 

@@ -4,8 +4,7 @@ namespace ECAT.Core
 {
 	/// <summary>
 	/// Attribute used to register an <see cref="IBaseComponent"/>'s current flow information. It is aimed for all components that only
-	/// have one notable current flow (all <see cref="ITwoTerminal"/>, <see cref="IOpAmp"/> (only output current)). Components that
-	/// have more (eg. transistors) should use use <see cref="DisplayCurrentInfoCustom"/>.
+	/// have one notable current flow (all <see cref="ITwoTerminal"/>, <see cref="IOpAmp"/> (only output current)).
 	/// Using it on classes that don't implement <see cref="IBaseComponent"/> will not do anything.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]

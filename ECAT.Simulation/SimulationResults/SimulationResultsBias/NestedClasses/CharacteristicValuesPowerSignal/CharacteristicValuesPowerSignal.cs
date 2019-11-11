@@ -35,6 +35,11 @@ namespace ECAT.Simulation
 			#region Public properties
 
 			/// <summary>
+			/// Unit to display
+			/// </summary>
+			public string Unit { get; } = IoC.Resolve<ISIUnits>().PowerShort;
+
+			/// <summary>
 			/// The maximum instantenous value
 			/// </summary>
 			public double Maximum { get; private set; }

@@ -12,6 +12,11 @@
 		/// </summary>
 		ISignalDataInterpreter Interpreter { get; }
 
+		/// <summary>
+		/// Unit of this data
+		/// </summary>
+		string Unit { get; }
+
 		#endregion
 	}
 }

@@ -84,6 +84,26 @@ namespace ECAT.Design
 		}
 
 		/// <summary>
+		/// Method that removes all components and wires from the schematic
+		/// </summary>
+		/// <param name="component"></param>
+		public void Clear()
+		{
+			foreach(var component in _Components)
+			{
+				component.Dispose();
+			}
+
+			foreach(var wire in _Wires)
+			{
+				wire.Dispose();
+			}
+
+			_Components.Clear();
+			_Wires.Clear();
+		}
+
+		/// <summary>
 		/// Method that removes a wire from the circuit
 		/// </summary>
 		/// <param name="wire"></param>

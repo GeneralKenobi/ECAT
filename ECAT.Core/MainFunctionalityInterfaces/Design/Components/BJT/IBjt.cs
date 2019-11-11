@@ -12,26 +12,6 @@ namespace ECAT.Core
 		#region Properties
 
 		/// <summary>
-		/// Input admittance
-		/// </summary>
-		double Y11 { get; }
-
-		/// <summary>
-		/// Reverse-transfer admittance
-		/// </summary>
-		double Y12 { get; }
-
-		/// <summary>
-		/// Forward-transfer admittance
-		/// </summary>
-		double Y21 { get; }
-
-		/// <summary>
-		/// Output admittance
-		/// </summary>
-		double Y22 { get; }
-
-		/// <summary>
 		/// Input impedance
 		/// </summary>
 		double H11 { get; set; }
@@ -50,21 +30,6 @@ namespace ECAT.Core
 		/// Output admittance
 		/// </summary>
 		double H22 { get; set; }
-
-		/// <summary>
-		/// Base-emitter voltage during saturation
-		/// </summary>
-		double UBEForward { get; set; }
-
-		/// <summary>
-		/// Saturation collector-emitter voltage
-		/// </summary>
-		double UCESaturation { get; set; }
-
-		/// <summary>
-		/// Beta coefficient of this BJT
-		/// </summary>
-		double Beta { get; set; }
 
 		#endregion
 	}

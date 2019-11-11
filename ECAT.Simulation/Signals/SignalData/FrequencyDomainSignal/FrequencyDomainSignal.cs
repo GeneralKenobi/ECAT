@@ -41,7 +41,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public FrequencyDomainSignal()
+		public FrequencyDomainSignal() : base("")
 		{
 			Interpreter = new FrequencyDomainSignalInterpreter(this);
 		}
@@ -60,7 +60,7 @@ namespace ECAT.Simulation
 		/// <param name="instantenousValues">Values occuring at specific time moments, can'be be null</param>
 		/// <param name="step">Time step between two subsequent values</param>
 		/// <param name="startSample">Start time of the signal</param>
-		public FrequencyDomainSignal(int samples, double step, double startSample) : base(samples, step, startSample, 0)
+		public FrequencyDomainSignal(int samples, double step, double startSample) : base(samples, step, startSample, 0, "")
 		{
 			if(step < 0)
 			{
@@ -78,7 +78,7 @@ namespace ECAT.Simulation
 		/// <param name="instantenousValues">Values occuring at specific time moments, can'be be null</param>
 		/// <param name="step">Time step between two subsequent values</param>
 		/// <param name="startSample">Start time of the signal</param>
-		public FrequencyDomainSignal(IEnumerable<Complex> samples, double step, double startSample) : base(samples.Count(), step, startSample, 0)
+		public FrequencyDomainSignal(IEnumerable<Complex> samples, double step, double startSample) : base(samples.Count(), step, startSample, 0, "")
 		{
 			if (step < 0)
 			{
@@ -101,7 +101,16 @@ namespace ECAT.Simulation
 		}
 
 		#endregion
-		
+
+		#region Public properties
+
+		/// <summary>
+		/// Second unit for phase
+		/// </summary>
+		public string SecondUnit { get; }
+
+		#endregion
+
 		#region Public methods
 
 		/// <summary>

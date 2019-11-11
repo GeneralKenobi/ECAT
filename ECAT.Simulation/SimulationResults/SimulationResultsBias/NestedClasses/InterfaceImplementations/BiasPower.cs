@@ -91,7 +91,8 @@ namespace ECAT.Simulation
 						voltageDrop.Phasors.
 						Select((x) => new KeyValuePair<ISourceDescription, double>(
 							x.Key, x.Key.FrequencyCategory == FrequencyCategory.DC ? x.Value.Real : x.Value.Magnitude / Math.Sqrt(2))).
-						Select((x) => new KeyValuePair<ISourceDescription, Complex>(x.Key, Math.Pow(x.Value, 2) / resistor.Resistance))));
+						Select((x) => new KeyValuePair<ISourceDescription, Complex>(x.Key, Math.Pow(x.Value, 2) / resistor.Resistance)),
+						IoC.Resolve<ISIUnits>().PowerShort));
 						
 
 					// And return success
@@ -245,14 +246,14 @@ namespace ECAT.Simulation
 			/// </summary>
 			/// <param name="capacitor"></param>
 			/// <returns></returns>
-			public ISignalInformation Get(ICapacitor capacitor, bool voltageBA) => throw new NotImplementedException();
+			public ISignalInformation Get(ICapacitor capacitor, bool voltageBA) => null;
 
 			/// <summary>
 			/// Gets information about power dissipated on an <see cref="IInductor"/>
 			/// </summary>
 			/// <param name="inductor"></param>
 			/// <returns></returns>
-			public ISignalInformation Get(IInductor inductor, bool voltageBA) => throw new NotImplementedException();
+			public ISignalInformation Get(IInductor inductor, bool voltageBA) => null;
 
 			/// <summary>
 			/// Gets information about power on an <see cref="ICurrentSource"/>

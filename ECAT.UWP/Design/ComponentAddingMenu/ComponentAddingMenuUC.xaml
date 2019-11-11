@@ -14,80 +14,46 @@
 	<!-- Scroll viewer is temporary -->
 	<ScrollViewer VerticalScrollBarVisibility="Auto"
 		VerticalScrollMode="Auto">
-		<StackPanel>
+		<Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*"/>
+				<RowDefinition Height="Auto"/>
+			</Grid.RowDefinitions>
+			<StackPanel>			
 
-			
+				<!-- Name of the part / title of the menu header with white underline -->
+				<Border BorderThickness="0 0 0 1"
+									BorderBrush="{StaticResource WhiteBrush}"
+									Margin="0 5 10 15"
+									Padding="0 0 0 5">
 
-			<!-- Name of the part / title of the menu header with white underline -->
-			<Border BorderThickness="0 0 0 1"
-								BorderBrush="{StaticResource WhiteBrush}"
-								Margin="0 5 10 15"
-								Padding="0 0 0 5">
+					<!-- TextBlock with name of the part -->
+					<TextBlock Text="{Binding ComponentAddingHeader, Mode=OneTime}"
+										FontSize="{StaticResource FontSizeLarge}"
+										FontFamily="{StaticResource LatoBold}"
+										Style="{StaticResource WhiteTextBlockStyle}"/>
 
-				<!-- TextBlock with name of the part -->
-				<TextBlock Text="{Binding ComponentAddingHeader, Mode=OneTime}"
-									FontSize="{StaticResource FontSizeLarge}"
-									FontFamily="{StaticResource LatoBold}"
-									Style="{StaticResource WhiteTextBlockStyle}"/>
-
-			</Border>
-
-			<ListView IsEnabled="{Binding EnableAddPartsButtons}"
-					ItemsSource="{Binding ComponentFactory.ImplementedComponents, Mode=OneWay}"
-					SelectedItem="{Binding ComponentToAdd, Mode=TwoWay}"
-					Style="{StaticResource PartAddingListViewStyle}"
-					ItemContainerStyle="{StaticResource PartAddingListViewItemStyle}"
-					ItemClick="PartAddingListViewItemClicked"/>
-					<!-- ItemClick="PartAddingListViewItemClicked"-->
-					<!-- SelectedIndex="{x:Bind InputListSelectedIndex, Mode=TwoWay}"-->
-
-			<!-- List with inputs -->
-			<!--<controls:Expander Header="{Binding PartTypeCollection.InputListHeader, Mode=OneTime}"
-				Style="{StaticResource ExpanderEditMenuStyle}"			
-				IsExpanded="{Binding PartTypeCollection.ExpandInputList, Mode=TwoWay}">
-
-				<ListView IsEnabled="{Binding EnableAddPartsButtons}"				
-					ItemClick="PartAddingListViewItemClicked"
-					ItemsSource="{Binding SimulationVM.SimulationManager.ImplementedComponents, Mode=OneWay}"
-					SelectedItem="{Binding DesignVM.ComponentToAdd, Mode=TwoWay}"
-					SelectedIndex="{x:Bind InputListSelectedIndex, Mode=TwoWay}"
-					Style="{StaticResource PartAddingListViewStyle}"
-					ItemContainerStyle="{StaticResource PartAddingListViewItemStyle}"/>
-
-			</controls:Expander>-->
-
-			<!-- List with simple logic gates -->
-			<!--<controls:Expander Header="{Binding PartTypeCollection.SimpleLogicListHeader, Mode=OneTime}"
-				Style="{StaticResource ExpanderEditMenuStyle}"			
-				IsExpanded="{Binding PartTypeCollection.ExpandSimpleLogicList, Mode=TwoWay}">
+				</Border>
 
 				<ListView IsEnabled="{Binding EnableAddPartsButtons}"
-							ItemClick="PartAddingListViewItemClicked"
-							ItemsSource="{Binding PartTypeCollection.SimpleLogic.Keys, Mode=OneWay}"
-							SelectedItem="{Binding SelectedPartToAdd, Mode=TwoWay}"
-							SelectedIndex="{x:Bind SimpleLogicListSelectedIndex, Mode=TwoWay}"
-							Style="{StaticResource PartAddingListViewStyle}"
-							ItemContainerStyle="{StaticResource PartAddingListViewItemStyle}"/>
+						ItemsSource="{Binding ComponentFactory.ImplementedComponents, Mode=OneWay}"
+						SelectedItem="{Binding ComponentToAdd, Mode=TwoWay}"
+						Style="{StaticResource PartAddingListViewStyle}"
+						ItemContainerStyle="{StaticResource PartAddingListViewItemStyle}"
+						ItemClick="PartAddingListViewItemClicked">
 
-			</controls:Expander>-->
-
-			<!-- List with complex logic -->
-			<!--<controls:Expander Header="{Binding PartTypeCollection.ComplexLogicListHeader, Mode=OneTime}"
-				Style="{StaticResource ExpanderEditMenuStyle}"			
-				IsExpanded="{Binding PartTypeCollection.ExpandComplexLogicList, Mode=TwoWay}">
-
-				<ListView IsEnabled="{Binding EnableAddPartsButtons}"
-							ItemClick="PartAddingListViewItemClicked"
-							ItemsSource="{Binding PartTypeCollection.ComplexLogic.Keys, Mode=OneWay}"
-							SelectedItem="{Binding SelectedPartToAdd, Mode=TwoWay}"
-							SelectedIndex="{x:Bind ComplexLogicListSelectedIndex, Mode=TwoWay}"
-							Style="{StaticResource PartAddingListViewStyle}"
-							ItemContainerStyle="{StaticResource PartAddingListViewItemStyle}"/>
-
-			</controls:Expander>-->
-
-
-
-		</StackPanel>
+					<ListView.ItemTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding }" FontSize="{StaticResource FontSizeLarge}" TextWrapping="WrapWholeWords" TextAlignment="Center"/>
+						</DataTemplate>
+					</ListView.ItemTemplate>
+						
+				</ListView>
+			</StackPanel>
+			<Button Grid.Row="1" Content="Clear schematic"
+				FontSize="{StaticResource FontSizeLarge}"
+				Style="{StaticResource PartAddingButtonStyle}"
+				Command="{Binding ClearSchematicCommand}"/>
+		</Grid>
 	</ScrollViewer>
 </UserControl>

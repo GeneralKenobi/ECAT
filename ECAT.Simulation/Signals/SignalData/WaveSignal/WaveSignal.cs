@@ -15,7 +15,7 @@ namespace ECAT.Simulation
 		/// Constructor which initializes <see cref="_FinalWaveform"/>
 		/// </summary>
 		/// <param name="samples"></param>
-		protected WaveSignal(int samples, T initialSamplesValue) : this()
+		protected WaveSignal(int samples, T initialSamplesValue, string unit) : this(unit)
 		{
 			// Check if value is correct
 			if (samples < 0)
@@ -35,7 +35,10 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		protected WaveSignal() { }
+		protected WaveSignal(string unit)
+		{
+			Unit = unit;
+		}
 
 		/// <summary>
 		/// Constructor with parameters, start time is considered 0
@@ -43,7 +46,7 @@ namespace ECAT.Simulation
 		/// <param name="instantenousValues">Values occuring at specific time moments, can'be be null</param>
 		/// <param name="timeStep">Time step between two subsequent values</param>
 		/// <exception cref="ArgumentNullException"></exception>
-		protected WaveSignal(int samples, double timeStep, T initialSamplesValue) : this(samples, timeStep, 0, initialSamplesValue) { }
+		protected WaveSignal(int samples, double timeStep, T initialSamplesValue, string unit) : this(samples, timeStep, 0, initialSamplesValue, unit) { }
 
 		/// <summary>
 		/// Constructor with parameters
@@ -51,7 +54,7 @@ namespace ECAT.Simulation
 		/// <param name="instantenousValues">Values occuring at specific time moments, can'be be null</param>
 		/// <param name="timeStep">Time step between two subsequent values</param>
 		/// <param name="startTime">Start time of the signal</param>
-		protected WaveSignal(int samples, double timeStep, double startTime, T initialSamplesValue) : this(samples, initialSamplesValue)
+		protected WaveSignal(int samples, double timeStep, double startTime, T initialSamplesValue, string unit) : this(samples, initialSamplesValue, unit)
 		{
 			if (timeStep < 0)
 			{
@@ -74,6 +77,11 @@ namespace ECAT.Simulation
 		#endregion
 
 		#region Public properties
+		
+		/// <summary>
+		/// Unit to dislay
+		/// </summary>
+		public string Unit { get; }
 
 		/// <summary>
 		/// Start time of the simulation, in seconds

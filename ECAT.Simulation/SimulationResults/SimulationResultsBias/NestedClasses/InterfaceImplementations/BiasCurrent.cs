@@ -137,7 +137,8 @@ namespace ECAT.Simulation
 					current = IoC.Resolve<IPhasorDomainSignal>(
 						voltageDrop.Phasors.ToDictionary(
 							(x) => x.Key,
-							(x) => x.Value * element.GetAdmittance(x.Key.Frequency)));
+							(x) => x.Value * element.GetAdmittance(x.Key.Frequency)),
+						IoC.Resolve<ISIUnits>().CurrentShort);
 
 					// And return success
 					return true;

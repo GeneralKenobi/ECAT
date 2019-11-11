@@ -27,7 +27,7 @@ namespace ECAT.ViewModel
 			get => _EditedComponent.RGS;
 			set
 			{
-				if(value >= 0)
+				if(value > 0)
 				{
 					_EditedComponent.RGS = value;
 				}
@@ -44,7 +44,7 @@ namespace ECAT.ViewModel
 			get => _EditedComponent.RDS;
 			set
 			{
-				if (value >= 0)
+				if (value > 0)
 				{
 					_EditedComponent.RDS = value;
 				}

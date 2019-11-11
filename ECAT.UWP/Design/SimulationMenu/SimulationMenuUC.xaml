@@ -36,29 +36,11 @@
 				FontSize="{StaticResource FontSizeLarge}"
 				Command="{Binding DCBiasCommand}"/>
 
-			<Button Content="AC Full Cycle without OpAmp adjustment" Style="{StaticResource StandardSideMenuButtonStyle}"
-				Margin="10"
-				Height="80"
-				FontSize="{StaticResource FontSizeRegular}"
-				Command="{Binding ACFullCycleWithoutOpAmpAdjustmentCommand}"/>
-
-			<Button Content="AC Full Cycle with OpAmp adjustment" Style="{StaticResource StandardSideMenuButtonStyle}"
-				Margin="10"
-				Height="80"
-				FontSize="{StaticResource FontSizeRegular}"
-				Command="{Binding ACFullCycleWithOpAmpAdjustmentCommand}"/>
-
-			<Button Content="ACDC Full Cycle without OpAmp adjustment" Style="{StaticResource StandardSideMenuButtonStyle}"
+			<Button Content="ACDC Full Cycle" Style="{StaticResource StandardSideMenuButtonStyle}"
 				Margin="10"
 				Height="80"
 				FontSize="{StaticResource FontSizeRegular}"
 				Command="{Binding ACDCFullCycleWithoutOpAmpAdjustmentCommand}"/>
-
-			<Button Content="ACDC Full Cycle with OpAmp adjustment" Style="{StaticResource StandardSideMenuButtonStyle}"
-				Margin="10"
-				Height="80"
-				FontSize="{StaticResource FontSizeRegular}"
-				Command="{Binding ACDCFullCycleWithOpAmpAdjustmentCommand}"/>
 
 			<Button Content="Frequency Sweep" Style="{StaticResource StandardSideMenuButtonStyle}"
 				Margin="10"

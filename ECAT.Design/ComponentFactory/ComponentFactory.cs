@@ -43,7 +43,7 @@ namespace ECAT.Design
 			new ComponentDeclaration(ComponentIDEnumeration.OpAmp, "Operational Amplifier", 3, ComponentType.Active, ComponentCategory.ThreeTerminal),
 			new ComponentDeclaration(ComponentIDEnumeration.ACVoltageSource, "AC Voltage Source", 2, ComponentType.Passive, ComponentCategory.Source),
 			new ComponentDeclaration(ComponentIDEnumeration.Capacitor, "Capacitor", 2, ComponentType.Passive, ComponentCategory.Impedance),
-			new ComponentDeclaration(ComponentIDEnumeration.SweepVoltageSource, "Sweep Voltage Source", 2, ComponentType.Active, ComponentCategory.Source),
+			new ComponentDeclaration(ComponentIDEnumeration.SweepVoltageSource, "AC Sweep Voltage Source", 2, ComponentType.Active, ComponentCategory.Source),
 			new ComponentDeclaration(ComponentIDEnumeration.Voltmeter, "Voltmeter", 2, ComponentType.Passive, ComponentCategory.Other),
 			new ComponentDeclaration(ComponentIDEnumeration.Inductor, "Inductor", 2, ComponentType.Passive, ComponentCategory.Impedance),
 			new ComponentDeclaration(ComponentIDEnumeration.NpnBjt, "NPN BJT", 2, ComponentType.Active, ComponentCategory.ThreeTerminal),

@@ -81,7 +81,7 @@ namespace ECAT.Simulation
 				var nodeB = _Data[nodeBIndex];
 
 				// Construct the result
-				var result = IoC.Resolve<IPhasorDomainSignal>(GetACWaveforms(nodeA.Phasors, nodeB.Phasors));
+				var result = IoC.Resolve<IPhasorDomainSignal>(GetACWaveforms(nodeA.Phasors, nodeB.Phasors), IoC.Resolve<ISIUnits>().VoltageShort);
 
 				// Return it
 				return result;

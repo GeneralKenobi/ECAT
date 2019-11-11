@@ -108,20 +108,6 @@ namespace ECAT.Simulation
 			return result;
 		}
 
-		/// <summary>
-		/// Creates and solves DC admittance matrix for saturated op-amps
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <returns></returns>
-		private PhasorState GetBjtDCComponentState(AdmittanceMatrixFactory factory)
-		{
-			var result = new PhasorState(factory.Nodes, factory.ActiveComponentsCount, factory.BjtBaseEmitterComponent);
-			factory.ConstructDCForBjtBaseEmitterSources().Solve(out var nodePotentials, out var activeComponentsCurrents);
-			result.AddValues(nodePotentials.ToArray(), activeComponentsCurrents.ToArray());
-
-			return result;
-		}
-
 		#endregion
 
 		#region DC biasing
@@ -137,7 +123,6 @@ namespace ECAT.Simulation
 
 			// Add op-amp saturation bias to complete the DC bias
 			state.AddState(GetOpAmpSaturationBias(factory));
-			state.AddState(GetBjtDCComponentState(factory));
 
 			// Loop until correct op-amp operation is found
 			while (!factory.CheckOperationWithSelfAdjustment(state.ToDC().Combine().Potentials, state.ToDC().Combine().Currents))
@@ -146,7 +131,6 @@ namespace ECAT.Simulation
 				state = GetPhasorsForAllDCSources(factory);
 
 				state.AddState(GetOpAmpSaturationBias(factory));
-				state.AddState(GetBjtDCComponentState(factory));
 			}
 
 			// Create simulation results based on node potentials and active components currents in the state
@@ -234,8 +218,6 @@ namespace ECAT.Simulation
 				phasors.MergeWith(GetPhasorsForAllDCSources(factory));
 			}
 
-			phasors.AddState(GetBjtDCComponentState(factory));
-
 			// Transform those phasors to instantenous valuesa
 			var instantenous = phasors.ToInstantenousValue(pointIndex, timeStep);
 
@@ -320,8 +302,7 @@ namespace ECAT.Simulation
 
 			// Create an enumeration of used sources - take AC sources and op-amp saturation source. If DC bias is requested, add the DC sources too.
 			var usedSources = (includeDCBias ? factory.GetAllSources() : factory.ACSources)
-				.Concat(factory.OpAmpSaturationSource)
-				.Concat(factory.BjtBaseEmitterComponent);
+				.Concat(factory.OpAmpSaturationSource);
 
 			// Get node indices constructed on the basis of the circuit
 			var nodeIndices = factory.Nodes.ToList();
@@ -364,7 +345,6 @@ namespace ECAT.Simulation
 
 				// Finally reset the op-amp operation for next iteration
 				factory.ResetOpAmpOperation();
-				factory.ResetBjtOperation();
 			}
 
 			// Create simulation results

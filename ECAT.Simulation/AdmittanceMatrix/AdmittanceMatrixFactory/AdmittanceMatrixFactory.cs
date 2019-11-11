@@ -76,11 +76,6 @@ namespace ECAT.Simulation
 		private IList<IDCVoltageSource> _InductorVoltageSources { get; } = new List<IDCVoltageSource>();
 
 		/// <summary>
-		/// Voltage sources that represent a saturated <see cref="IBjt"/>
-		/// </summary>
-		private IDictionary<IBjt, BjtSourcesInfo> _BjtVoltageSources { get; } = new Dictionary<IBjt, BjtSourcesInfo>();
-
-		/// <summary>
 		/// List with AC voltage sources in the <see cref="_Schematic"/>.
 		/// </summary>
 		private IList<IACVoltageSource> _ACVoltageSources { get; set; }
@@ -133,24 +128,24 @@ namespace ECAT.Simulation
 		private IDictionary<IOpAmpDescription, OpAmpOperationMode> _OpAmpOperation { get; } = new Dictionary<IOpAmpDescription, OpAmpOperationMode>();
 
 		/// <summary>
-		/// Dictionary containing operation mode assigned to each op-amp.
-		/// </summary>
-		private IDictionary<ITransistor, TransistorOperationMode> _TransistorOperation { get; } = new Dictionary<ITransistor, TransistorOperationMode>();
-
-		/// <summary>
-		/// List containing NPN BJTs
-		/// </summary>
-		private IList<INpnBjt> _NpnBjts { get; set; }
-
-		/// <summary>
 		/// Dictionary with indices of <see cref="IBjt"/>
 		/// </summary>
 		private IDictionary<IBjt, BjtNodeInfo> _BjtNodes { get; set; }
 
 		/// <summary>
-		/// Contains IDs of inner node of each BJT
+		/// Dictionary with indices of <see cref="IBjt"/>
 		/// </summary>
-		private IDictionary<IBjt, int> _InnerBjtNodes { get; } = new Dictionary<IBjt, int>();
+		private IDictionary<IJfet, JfetNodeInfo> _JfetNodes { get; set; }
+		
+		/// <summary>
+		/// List containing <see cref="IBjt"/>s
+		/// </summary>
+		private IList<IBjt> _Bjts { get; set; }
+
+		/// <summary>
+		/// List containing <see cref="IJfet"/>s
+		/// </summary>
+		private IList<IJfet> _Jfets { get; set; }
 
 		#endregion
 
@@ -165,8 +160,7 @@ namespace ECAT.Simulation
 		/// Size of D part of admittance matrix (equal to number of independent voltage sources, with op-amp outputs included)
 		/// </summary>
 		private int GetSmallDimension(bool includeInductorVoltageSources) =>
-			_DCVoltageSources.Count + _ACVoltageSources.Count + _OpAmps.Count + (includeInductorVoltageSources ? _InductorVoltageSources.Count : 0) +
-			_BjtVoltageSources.Where((bjt) => _TransistorOperation[bjt.Key] != TransistorOperationMode.SmallSignal).Count() * 3;
+			_DCVoltageSources.Count + _ACVoltageSources.Count + _OpAmps.Count + (includeInductorVoltageSources ? _InductorVoltageSources.Count : 0);
 			
 		#endregion
 
@@ -263,22 +257,6 @@ namespace ECAT.Simulation
 		/// </summary>
 		public ISourceDescription OpAmpSaturationSource { get; } = new OpAmpSaturationSourceDescription();
 
-		/// <summary>
-		/// <see cref="ISourceDescription"/> for results generated for saturated op-amps (matrices built with
-		/// <see cref="ConstructDCForSaturatedComponentsOnly"/>).
-		/// </summary>
-		public ISourceDescription BjtBaseEmitterComponent { get; } = new BjtBaseEmitterComponentDescription();
-
-		/// <summary>
-		/// <see cref="ISourceDescription"/>s for BJT Base-emitter sources.
-		/// </summary>
-		public IEnumerable<ISourceDescription> BjtBaseEmitterSources => _BjtVoltageSources.Select((x) => x.Value.SourceEI.Description);
-
-		/// <summary>
-		/// <see cref="IBjts"/>s in the schematic.
-		/// </summary>
-		public IEnumerable<IBjt> Bjts => _NpnBjts;
-
 		#endregion
 
 		#region Private methods
@@ -291,21 +269,6 @@ namespace ECAT.Simulation
 		private IEnumerable<IDCVoltageSource> GetDCVoltageSourcesForSimulation(bool includeInductorVoltageSources)
 		{
 			var result = _DCVoltageSources.ToList();
-
-			foreach(var sources in _BjtVoltageSources)
-			{
-				result.Add(sources.Value.SourceBI);
-
-				if(_TransistorOperation[sources.Key] != TransistorOperationMode.Cutoff)
-				{
-					result.Add(sources.Value.SourceEI);
-				}
-
-				if(_TransistorOperation[sources.Key] == TransistorOperationMode.Saturation)
-				{
-					result.Add(sources.Value.SourceCI);
-				}
-			}
 
 			if(includeInductorVoltageSources)
 			{
@@ -324,11 +287,6 @@ namespace ECAT.Simulation
 		{
 			var result = _DCVoltageSources.ToList();
 
-			foreach (var sources in _BjtVoltageSources)
-			{
-				result.AddRange(sources.Value.AsEnumerable());
-			}
-
 			result.AddRange(_InductorVoltageSources);
 
 			return result;
@@ -342,21 +300,6 @@ namespace ECAT.Simulation
 		private IEnumerable<ISourceDescription> GetDCVoltageSourcesDescriptions(bool includeInductorVoltageSources) =>
 			GetDCVoltageSourcesForSimulation(includeInductorVoltageSources).Select((x) => x.Description);
 
-		/// <summary>
-		/// Returns descriptions of all <see cref="IDCVoltageSource"/>s that model <see cref="IBjt"/>s.
-		/// </summary>
-		/// <returns></returns>
-		private IEnumerable<ISourceDescription> GetDescriptionsOfBjtVoltageSources()
-		{
-			var result = Enumerable.Empty<ISourceDescription>();
-
-			foreach(var bjtSources in _BjtVoltageSources)
-			{
-				result = result.Concat(bjtSources.Value.AsEnumerable().Select((x) => x.Description));
-			}
-
-			return result;
-		}
 		#region Initialization
 
 		/// <summary>
@@ -368,9 +311,7 @@ namespace ECAT.Simulation
 
 			ExtractSpecialComponents();
 
-			InitializeBjtOperationCollection();
-
-			InitializeBjts();
+			InitializeTransistors();
 
 			CreateVoltageSourcesForInductors();
 
@@ -486,34 +427,74 @@ namespace ECAT.Simulation
 
 			if(nodes.Base >= 0)
 			{
-				matrix._A[nodes.Base, nodes.Base] += bjt.Y11;
+				matrix._A[nodes.Base, nodes.Base] += 1 / bjt.H11;
 
 				if(nodes.Collector >= 0)
 				{
-					matrix._A[nodes.Base, nodes.Collector] += bjt.Y12;
-					matrix._A[nodes.Collector, nodes.Base] += bjt.Y21;
+					matrix._A[nodes.Base, nodes.Collector] -= bjt.H12 / bjt.H11;
+					matrix._A[nodes.Collector, nodes.Base] += bjt.H21 / bjt.H11;
 				}
 			}
 
 			if(nodes.Collector >= 0)
 			{
-				matrix._A[nodes.Collector, nodes.Collector] += bjt.Y22;
+				matrix._A[nodes.Collector, nodes.Collector] += bjt.H22 - bjt.H12 * bjt.H21 / bjt.H11;
 
 				if(nodes.Emitter >= 0)
 				{
-					matrix._A[nodes.Collector, nodes.Emitter] -= bjt.Y21 + bjt.Y22;
-					matrix._A[nodes.Emitter, nodes.Collector] -= bjt.Y12 + bjt.Y22;
+					matrix._A[nodes.Collector, nodes.Emitter] += bjt.H21 * (bjt.H12 - 1) / bjt.H11 - bjt.H22;
+					matrix._A[nodes.Emitter, nodes.Collector] += bjt.H12 * (bjt.H21 + 1) / bjt.H11 - bjt.H22;
 				}
 			}
 
 			if(nodes.Emitter >= 0)
 			{
-				matrix._A[nodes.Emitter, nodes.Emitter] += bjt.Y11 + bjt.Y12 + bjt.Y21 + bjt.Y22;
+				matrix._A[nodes.Emitter, nodes.Emitter] += bjt.H22 - (bjt.H21 + 1) * (bjt.H12 - 1) / bjt.H11;
 
 				if(nodes.Base >= 0)
 				{
-					matrix._A[nodes.Base, nodes.Emitter] -= bjt.Y11 + bjt.Y12;
-					matrix._A[nodes.Emitter, nodes.Base] -= bjt.Y11 + bjt.Y21;
+					matrix._A[nodes.Base, nodes.Emitter] += (bjt.H12 - 1) / bjt.H11;
+					matrix._A[nodes.Emitter, nodes.Base] -= (bjt.H21 + 1) / bjt.H11;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Fills the data connected with <see cref="ITransistor"/>s
+		/// </summary>
+		private void ConfigureJfetForSmallSignal(AdmittanceMatrix matrix, IJfet jfet)
+		{
+			var nodes = _JfetNodes[jfet];
+
+			if (nodes.Gate >= 0)
+			{
+				matrix._A[nodes.Gate, nodes.Gate] += 1 / jfet.RGS;
+
+				if (nodes.Drain >= 0)
+				{
+					matrix._A[nodes.Drain, nodes.Gate] += jfet.GM;
+				}
+			}
+
+			if (nodes.Drain >= 0)
+			{
+				matrix._A[nodes.Drain, nodes.Drain] += 1 / jfet.RDS;
+
+				if (nodes.Source >= 0)
+				{
+					matrix._A[nodes.Drain, nodes.Source] -= jfet.GM + 1 / jfet.RDS;
+					matrix._A[nodes.Source, nodes.Drain] -= 1 / jfet.RDS;
+				}
+			}
+
+			if (nodes.Source >= 0)
+			{
+				matrix._A[nodes.Source, nodes.Source] += jfet.GM + 1 / jfet.RDS + 1/jfet.RGS;
+
+				if (nodes.Gate >= 0)
+				{
+					matrix._A[nodes.Gate, nodes.Source] -= 1 / jfet.RGS;
+					matrix._A[nodes.Source, nodes.Gate] -= jfet.GM + 1 / jfet.RGS;
 				}
 			}
 		}
@@ -683,36 +664,6 @@ namespace ECAT.Simulation
 		}
 
 		/// <summary>
-		/// Activates Eollector-Inner voltage source for active and saturated BJTs
-		/// </summary>
-		/// <param name="matrix"></param>
-		private void ActivateBjtsEmitterInnerSource(AdmittanceMatrix matrix)
-		{
-			foreach (var bjt in _NpnBjts)
-			{
-				if (_TransistorOperation[bjt] == TransistorOperationMode.Active || _TransistorOperation[bjt] == TransistorOperationMode.Saturation) 
-				{
-					ConfigureVoltageSource(matrix, _BjtVoltageSources[bjt].SourceEI.Description, true);
-				}
-			}
-		}
-
-		/// <summary>
-		/// Activates Collector-Inner voltage source for saturated BJTs
-		/// </summary>
-		/// <param name="matrix"></param>
-		private void ActivateBjtsCollectorInnerSource(AdmittanceMatrix matrix)
-		{
-			foreach (var bjt in _NpnBjts)
-			{
-				if (_TransistorOperation[bjt] == TransistorOperationMode.Saturation)
-				{
-					ConfigureVoltageSource(matrix, _BjtVoltageSources[bjt].SourceCI.Description, true);
-				}
-			}
-		}
-
-		/// <summary>
 		/// Activates saturated op-amp - modifies matrix E with saturation voltage in entry corresponding to that op-amp. Does not check if
 		/// the op-amp is in fact saturated - assumes that caller checked that.
 		/// </summary>
@@ -824,21 +775,6 @@ namespace ECAT.Simulation
 		#endregion
 
 		#region Node generation
-
-		/// <summary>
-		/// Generates inner nodes (nodes only used for simulation) for BJTs
-		/// </summary>
-		private void CreateInnerNodesForBjts(IEnumerable<IBjt> bjts)
-		{
-			foreach(var bjt in bjts)
-			{
-				var node = new Node();
-				node.Index = _Nodes.Count;
-				node.ConnectedComponents.Add(bjt);
-				_InnerBjtNodes.Add(bjt, node.Index);
-				_Nodes.Add(node);
-			}
-		}
 
 		/// <summary>
 		/// Constructs nodes (assigns them to <see cref="_Nodes"/>), finds and removes reference nodes, assigns indices
@@ -969,7 +905,6 @@ namespace ECAT.Simulation
 				Concat(_ACVoltageSourcesDescriptions).
 				Cast<IComponentDescription>().
 				Concat(_OpAmps).
-				Concat(GetDescriptionsOfBjtVoltageSources()).
 				// Inductor voltage sources have to be last because they're not considered for AC simulations
 				Concat(_InductorVoltageSources.Select((x) => x.Description)).
 				Select((x, i) => new KeyValuePair<IComponentDescription, int>(x, i));
@@ -995,50 +930,22 @@ namespace ECAT.Simulation
 				}
 			}
 
-			foreach(var component in FindDCVoltageSources().Select((x) => Tuple.Create((IActiveComponent)x, (IComponentDescription)x.Description)).
-				Concat(FindACVoltageSources().Select((x) => Tuple.Create((IActiveComponent)x, (IComponentDescription)x.Description))).
-				Concat(FindOpAmps().Select((x) => Tuple.Create((IActiveComponent)x, (IComponentDescription)x.Description))))
+			foreach(var component in FindComponents<IDCVoltageSource>().Select((x) => Tuple.Create((IActiveComponent)x, (IComponentDescription)x.Description)).
+				Concat(FindComponents<IACVoltageSource>().Select((x) => Tuple.Create((IActiveComponent)x, (IComponentDescription)x.Description))).
+				Concat(FindComponents<IOpAmp>().Select((x) => Tuple.Create((IActiveComponent)x, (IComponentDescription)x.Description))))
 			{
 				component.Item1.Index = _IndexedComponentsIndices[component.Item2];
 			}
 		}
-
+	
 		/// <summary>
-		/// Returns all <see cref="IDCVoltageSource"/>s present in <see cref="ISchematic"/>
+		/// Returns the first sweep voltage source or null if no is present
 		/// </summary>
 		/// <returns></returns>
-		private IEnumerable<IDCVoltageSource> FindDCVoltageSources() => _Schematic.Components.
-			Where((component) => component is IDCVoltageSource).
-			Cast<IDCVoltageSource>();
-
-		/// <summary>
-		/// Returns all <see cref="IACVoltageSource"/>s present in <see cref="ISchematic"/>
-		/// </summary>
-		/// <returns></returns>
-		private IEnumerable<IACVoltageSource> FindACVoltageSources() => _Schematic.Components.
-			Where((component) => component is IACVoltageSource).
-			Cast<IACVoltageSource>();
-
-		/// <summary>
-		/// Returns all <see cref="ICurrentSource"/>s present in <see cref="ISchematic"/>
-		/// </summary>
-		/// <returns></returns>
-		private IEnumerable<ICurrentSource> FindDCCurrentSources() => _Schematic.Components.
-			Where((component) => component is ICurrentSource).
-			Cast<ICurrentSource>();
-
 		private ISweepVoltageSource FindSweepVoltageSource() => _Schematic.Components.
 			Where((component) => component is ISweepVoltageSource).
 			Cast<ISweepVoltageSource>().
 			FirstOrDefault();
-
-		/// <summary>
-		/// Returns all <see cref="IOpAmp"/>s present in <see cref="ISchematic"/>
-		/// </summary>
-		/// <returns></returns>
-		private IEnumerable<IOpAmp> FindOpAmps() => _Schematic.Components.
-			Where((component) => component is IOpAmp).
-			Cast<IOpAmp>();
 
 		/// <summary>
 		/// Returns all <see cref="IOpAmp"/>s present in <see cref="ISchematic"/>
@@ -1049,22 +956,6 @@ namespace ECAT.Simulation
 			Cast<T>();
 
 		/// <summary>
-		/// Returns all <see cref="IVoltmeter"/>s present in <see cref="ISchematic"/>
-		/// </summary>
-		/// <returns></returns>
-		private IEnumerable<IVoltmeter> FindVoltmeters() => _Schematic.Components.
-			Where((component) => component is IVoltmeter).
-			Cast<IVoltmeter>();
-
-		/// <summary>
-		/// Returns all <see cref="IInductor"/> present in <see cref="ISchematic"/>
-		/// </summary>
-		/// <returns></returns>
-		private IEnumerable<IInductor> FindInductors() => _Schematic.Components.
-			Where((component) => component is IInductor).
-			Cast<IInductor>();
-
-		/// <summary>
 		/// Replaces <see cref="IInductor"/>s with <see cref="IDCVoltageSource"/>s
 		/// (for DC simulation purposes Inductors act as short circuit, they are replaced with DC voltage sources
 		/// in order to calculate the current flowing through them).
@@ -1073,7 +964,7 @@ namespace ECAT.Simulation
 		{
 			_MappedInductors = new Dictionary<IComponentDescription, IInductor>();
 
-			foreach (var inductor in FindInductors())
+			foreach (var inductor in FindComponents<IInductor>())
 			{
 				var nodeA = _NodesWithReference.Find((x) => x.Index == inductor.TerminalA.NodeIndex);
 				var nodeB = _NodesWithReference.Find((x) => x.Index == inductor.TerminalB.NodeIndex);
@@ -1088,107 +979,17 @@ namespace ECAT.Simulation
 		/// Replaces <see cref="ITransistor"/>s with <see cref="IDCVoltageSource"/>s
 		/// which sets the <see cref="ITransistor"/> into saturation mode.
 		/// </summary>
-		private void InitializeBjts()
+		private void InitializeTransistors()
 		{
-			CreateInnerNodesForBjts(_NpnBjts.Where((x) => !x.SmallSignalModel));
-
 			_BjtNodes = FindComponents<INpnBjt>().ToDictionary((x) => (IBjt)x, (x) => new BjtNodeInfo(
 				_NodesWithReference.Find((node) => node.ConnectedTerminals.Contains(x.TerminalA)).Index,
 				_NodesWithReference.Find((node) => node.ConnectedTerminals.Contains(x.TerminalB)).Index,
-				_NodesWithReference.Find((node) => node.ConnectedTerminals.Contains(x.TerminalC)).Index,
-				_InnerBjtNodes[x]));
+				_NodesWithReference.Find((node) => node.ConnectedTerminals.Contains(x.TerminalC)).Index));
 
-			_NpnBjts.ForEach((bjt) =>
-				{
-					if (_TransistorOperation[bjt] != TransistorOperationMode.SmallSignal)
-					{
-						InitializeBjt(bjt, GetSmallDimension(true));
-					}
-				});
-		}
-
-		/// <summary>
-		/// Replaces <see cref="ITransistor"/>s with <see cref="IDCVoltageSource"/>s
-		/// which sets the <see cref="ITransistor"/> into saturation mode.
-		/// </summary>
-		private void PreConfigureBjts(AdmittanceMatrix matrix)
-		{
-			foreach(var bjt in _NpnBjts)
-			{
-				if(_TransistorOperation[bjt] != TransistorOperationMode.SmallSignal)
-				{
-					ConfigureVoltageSource(matrix, _BjtVoltageSources[bjt].SourceBI.Description, false);
-
-					if(_TransistorOperation[bjt] != TransistorOperationMode.Cutoff)
-					{
-						ConfigureVoltageSource(matrix, _BjtVoltageSources[bjt].SourceEI.Description, false);
-					}
-
-					if(_TransistorOperation[bjt] == TransistorOperationMode.Saturation)
-					{
-						ConfigureVoltageSource(matrix, _BjtVoltageSources[bjt].SourceCI.Description, false);
-					}
-				}
-			}
-		}
-
-		/// <summary>
-		/// Replaces <see cref="ITransistor"/>s with <see cref="IDCVoltageSource"/>s
-		/// which sets the <see cref="ITransistor"/> into saturation mode.
-		/// </summary>
-		private void ConfigureBjts(AdmittanceMatrix matrix)
-		{
-			foreach (var bjt in _NpnBjts)
-			{				
-				switch(_TransistorOperation[bjt])
-				{
-					case TransistorOperationMode.Active:
-						{
-							ConfigureBjtForActive(matrix, bjt);
-						}
-						break;
-
-					case TransistorOperationMode.SmallSignal:
-						{
-							ConfigureBjtForSmallSignal(matrix, bjt);
-						}
-						break;
-				}
-			}
-		}
-
-		/// <summary>
-		/// Alters B sub-matrix to make the bjt operate in active mode
-		/// </summary>
-		/// <param name="matrix"></param>
-		/// <param name="bjt"></param>
-		private void ConfigureBjtForActive(AdmittanceMatrix matrix, IBjt bjt)
-		{
-			var nodes = _BjtNodes[bjt];
-			var sourceBIIndex = _BjtVoltageSources[bjt].SourceBI.Index;
-
-			matrix._B[nodes.Collector, sourceBIIndex] += bjt.Beta;
-			matrix._B[nodes.Inner, sourceBIIndex] -= bjt.Beta;
-		}
-
-		/// <summary>
-		/// Replaces <see cref="ITransistor"/>s with <see cref="IDCVoltageSource"/>s
-		/// which sets the <see cref="ITransistor"/> into saturation mode.
-		/// </summary>
-		private void InitializeBjt(IBjt bjt, int sourceIndex)
-		{
-			var nodes = _BjtNodes[bjt];
-
-			var baseNode = _NodesWithReference.Find((x) => x.Index == nodes.Base);
-			var collectorNode = _NodesWithReference.Find((x) => x.Index == nodes.Collector);
-			var emitterNode = _NodesWithReference.ToList().Find((x) => x.Index == nodes.Emitter);
-			var innerNode = _NodesWithReference.ToList().Find((x) => x.Index == nodes.Inner);
-
-			var sourceBI = CreateVoltageSource(innerNode, baseNode, 0, sourceIndex);
-			var sourceEI = CreateVoltageSource(emitterNode, innerNode, bjt.UBEForward, sourceIndex + 1);
-			var sourceCI = CreateVoltageSource(collectorNode, innerNode, bjt.UBEForward - bjt.UCESaturation, sourceIndex + 2);
-
-			_BjtVoltageSources.Add(bjt, new BjtSourcesInfo(sourceBI, sourceEI, sourceCI));
+			_JfetNodes = FindComponents<IJfet>().ToDictionary((x) => (IJfet)x, (x) => new JfetNodeInfo(
+				_NodesWithReference.Find((node) => node.ConnectedTerminals.Contains(x.TerminalA)).Index,
+				_NodesWithReference.Find((node) => node.ConnectedTerminals.Contains(x.TerminalB)).Index,
+				_NodesWithReference.Find((node) => node.ConnectedTerminals.Contains(x.TerminalC)).Index));
 		}
 
 		/// <summary>
@@ -1225,13 +1026,13 @@ namespace ECAT.Simulation
 		private void ExtractSpecialComponents()
 		{
 			// Get the voltage sources
-			_DCVoltageSources = new List<IDCVoltageSource>(FindDCVoltageSources());
+			_DCVoltageSources = FindComponents<IDCVoltageSource>().ToList();
 
 			// Get the AC voltage sources
-			_ACVoltageSources = new List<IACVoltageSource>(FindACVoltageSources());
+			_ACVoltageSources = FindComponents<IACVoltageSource>().ToList();
 
 			// Get the current sources
-			_DCCurrentSources = new List<ICurrentSource>(FindDCCurrentSources());
+			_DCCurrentSources = FindComponents<ICurrentSource>().ToList();
 
 			SweepSource = FindSweepVoltageSource();
 
@@ -1242,10 +1043,11 @@ namespace ECAT.Simulation
 				Select((x) => x.Description).
 				ToList();
 
-			_NpnBjts = FindComponents<INpnBjt>().ToList();
+			_Bjts = FindComponents<IBjt>().ToList();
+			_Jfets = FindComponents<IJfet>().ToList();
 
 			// Get voltmeters
-			Voltmeters = FindVoltmeters().Select((x) => IoC.Resolve<IVoltmeterMeasurement>(x.ID, x.TerminalA.NodeIndex, x.TerminalB.NodeIndex));
+			Voltmeters = FindComponents<IVoltmeter>().Select((x) => IoC.Resolve<IVoltmeterMeasurement>(x.ID, x.TerminalA.NodeIndex, x.TerminalB.NodeIndex));
 		}
 
 		/// <summary>
@@ -1277,7 +1079,7 @@ namespace ECAT.Simulation
 						nodesWithReference.Find((node) => node.ConnectedTerminals.Contains(x.Item1.TerminalA)).Index));
 			
 			// Find nodes of all op-amps and put them in a dictionary
-			_OpAmpsNodes = FindOpAmps().ToDictionary(
+			_OpAmpsNodes = FindComponents<IOpAmp>().ToDictionary(
 				// Keys are descriptions
 				(x) => x.Description,
 				// Values are OpAmpNodeInfos with assigned (found) nodes
@@ -1292,15 +1094,7 @@ namespace ECAT.Simulation
 		/// in active operation
 		/// </summary>
 		private void InitializeOpAmpOperationCollection() =>
-			FindOpAmps().ForEach((x) => _OpAmpOperation.Add(x.Description, OpAmpOperationMode.Active));
-
-		/// <summary>
-		/// Initializes <see cref="_TransistorOperation"/> with default values - all <see cref="TransistorOperationMode.Active"/> - all <see cref="ITransistor"/>s
-		/// in active operation
-		/// </summary>
-		private void InitializeBjtOperationCollection() =>
-			FindComponents<ITransistor>().ForEach((x) => _TransistorOperation.Add(
-				x, x.SmallSignalModel ? TransistorOperationMode.SmallSignal : TransistorOperationMode.Active));
+			FindComponents<IOpAmp>().ForEach((x) => _OpAmpOperation.Add(x.Description, OpAmpOperationMode.Active));
 
 		#endregion
 
@@ -1399,44 +1193,6 @@ namespace ECAT.Simulation
 				}
 			}
 
-			foreach (var bjt in _NpnBjts)
-			{
-				double basePotential = _BjtNodes[bjt].Base >= 0 ? lookupPotentials[_BjtNodes[bjt].Base] : 0;
-				double collectorPotential = _BjtNodes[bjt].Collector >= 0 ? lookupPotentials[_BjtNodes[bjt].Collector] : 0;
-				double emitterPotential = _BjtNodes[bjt].Emitter >= 0 ? lookupPotentials[_BjtNodes[bjt].Emitter] : 0;
-				// // Minus becaue current source's current is given in the opposite direction of voltage drop
-				double baseCurrent = lookupCurrents[_BjtVoltageSources[bjt].SourceBI.Index];
-
-				var uBE = basePotential - emitterPotential;
-				var uCE = collectorPotential - emitterPotential;
-
-				TransistorOperationMode expectedOperationMode = TransistorOperationMode.Active;
-
-				// If output voltage is between supply voltages
-				if(baseCurrent <= 0)
-				{
-					expectedOperationMode = TransistorOperationMode.Cutoff;
-				}
-				else if (uCE <= bjt.UCESaturation)
-				{
-					expectedOperationMode = TransistorOperationMode.Saturation;
-				}
-				// If not cutoff or saturation then the transistor must be in active mode - already assigned
-				
-				// If the expected operation mode differs from the actual on
-				if (expectedOperationMode != _TransistorOperation[bjt])
-				{
-					// If adjustment was requested, set the op-amp's operation mode to the expected mode
-					if (adjust)
-					{
-						_TransistorOperation[bjt] = expectedOperationMode;
-					}
-
-					// Return incorrect operation
-					return false;
-				}
-			}
-
 			// Return correct operation - neither op-amp operated incorrectly
 			return true;
 		}
@@ -1459,8 +1215,6 @@ namespace ECAT.Simulation
 			// Initialize submatrices (arrays)
 			InitializeSubmatrices(matrix, includeInductorVoltageSources);
 
-			PreConfigureBjts(matrix);
-
 			// Fill A matrix - it's only dependent on frequency
 			FillAMatrix(matrix, frequency);
 
@@ -1470,7 +1224,8 @@ namespace ECAT.Simulation
 			// Initialize op-amp settings - disabled saturated op-amps
 			InitialOpAmpConfiguration(matrix);
 
-			ConfigureBjts(matrix);
+			this._Bjts.ForEach((x) => ConfigureBjtForSmallSignal(matrix, x));
+			this._Jfets.ForEach((x) => ConfigureJfetForSmallSignal(matrix, x));
 
 			return matrix;
 		}
@@ -1539,17 +1294,6 @@ namespace ECAT.Simulation
 		}
 
 		/// <summary>
-		/// Resets operation of <see cref="IBjt"/>s - every <see cref="IBjt"/> is set to active mode
-		/// </summary>
-		public void ResetBjtOperation()
-		{
-			foreach (var bjt in _NpnBjts)
-			{
-				_TransistorOperation[bjt] = TransistorOperationMode.Active;
-			}
-		}
-
-		/// <summary>
 		/// Checks <see cref="IOpAmp"/>s operation and returns true if it's correct or false if it's incorrect.
 		/// </summary>
 		/// <param name="nodePotentials">Keys are simulation node indices</param>
@@ -1594,21 +1338,6 @@ namespace ECAT.Simulation
 		}
 
 		/// <summary>
-		/// Constructs an Admittance Matrix for all <paramref name="bjt"/>s' base-emitter DC component.
-		/// </summary>
-		/// <param name="bjt"></param>
-		/// <returns></returns>
-		public AdmittanceMatrix ConstructForBjtBESources()
-		{
-			var matrix = ConstructAndInitialize(0);
-
-			_NpnBjts.Where((bjt) => _TransistorOperation[bjt] == TransistorOperationMode.Active || _TransistorOperation[bjt] == TransistorOperationMode.Saturation).
-				ForEach((bjt) => ConfigureVoltageSource(matrix, _BjtVoltageSources[bjt].SourceEI.Description, true));
-
-			return matrix;
-		}
-
-		/// <summary>
 		/// Constructs a DC addmittance matrix for saturated <see cref="IOpAmp"/>s only. Its purpose is to determine influence of saturated
 		/// <see cref="IOpAmp"/>s on AC circuits.
 		/// </summary>
@@ -1620,18 +1349,6 @@ namespace ECAT.Simulation
 
 			// And activate saturated op-amps
 			ActivateSaturatedOpAmps(matrix);
-			ActivateBjtsCollectorInnerSource(matrix);
-
-			return matrix;
-		}
-
-		public AdmittanceMatrix ConstructDCForBjtBaseEmitterSources()
-		{
-			// Construct initial version
-			var matrix = ConstructAndInitialize(0);
-
-			// And activate saturated op-amps
-			ActivateBjtsEmitterInnerSource(matrix);
 
 			return matrix;
 		}

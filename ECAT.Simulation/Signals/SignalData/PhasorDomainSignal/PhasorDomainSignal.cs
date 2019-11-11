@@ -19,8 +19,9 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public PhasorDomainSignal()
+		public PhasorDomainSignal(string unit)
 		{
+			Unit = unit;
 			Interpreter = new PhasorDomainSignalInterpreter(this);
 		}
 
@@ -28,7 +29,7 @@ namespace ECAT.Simulation
 		/// Copy constructor
 		/// </summary>
 		/// <exception cref="ArgumentNullException"></exception>
-		public PhasorDomainSignal(IPhasorDomainSignal signal) : this()
+		public PhasorDomainSignal(IPhasorDomainSignal signal) : this(signal.Unit)
 		{
 			Copy(signal ?? throw new ArgumentNullException(nameof(signal)));
 		}
@@ -38,7 +39,7 @@ namespace ECAT.Simulation
 		/// </summary>
 		/// <param name="phasors"></param>
 		/// <exception cref="ArgumentNullException"></exception>
-		public PhasorDomainSignal(IEnumerable<KeyValuePair<ISourceDescription, Complex>> phasors) : this()
+		public PhasorDomainSignal(IEnumerable<KeyValuePair<ISourceDescription, Complex>> phasors, string unit) : this(unit)
 		{
 			_Phasors = phasors?.ToDictionary((x) => x.Key, (x) => x.Value) ?? throw new ArgumentNullException(nameof(phasors));
 		}
@@ -55,6 +56,11 @@ namespace ECAT.Simulation
 		#endregion
 
 		#region Public properties
+
+		/// <summary>
+		/// Unit to dislay
+		/// </summary>
+		public string Unit { get; }
 
 		/// <summary>
 		/// List with phasors adding to the signal
@@ -167,7 +173,7 @@ namespace ECAT.Simulation
 		/// </summary>
 		/// <returns></returns>
 		public PhasorDomainSignal CopyAndNegate() => new PhasorDomainSignal(Phasors.Select((phasor) =>
-			new KeyValuePair<ISourceDescription, Complex>(phasor.Key, -phasor.Value)));
+			new KeyValuePair<ISourceDescription, Complex>(phasor.Key, -phasor.Value)), Unit);
 
 		/// <summary>
 		/// Creates a copy of the signal in reversed direction (<see cref="DC"/> and each <see cref="Phasors"/> value is negated)

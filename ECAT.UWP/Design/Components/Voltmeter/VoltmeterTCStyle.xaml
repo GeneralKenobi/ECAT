@@ -14,14 +14,13 @@
 					<!-- Root container -->
 					<Grid>
 
-						<!-- Presents current flow through the component -->
-						<local:CurrentFlowTC VerticalAlignment="Center"
-							Style="{StaticResource VoltageSourceTCCurrentFlowStyle}"/>
+						<!-- Presents voltage drop across the component -->
+						<local:VoltageDropTC VerticalAlignment="Top"/>
 
 						<!-- Socket for terminal A-->
 						<local:SocketTC Terminal="{Binding Component.TerminalA}"
 							HorizontalAlignment="Left"
-							VerticalAlignment="Center"/>
+							VerticalAlignment="Center"/>						
 
 						<!-- Socket for terminal B-->
 						<local:SocketTC Terminal="{Binding Component.TerminalB}"
@@ -65,10 +64,41 @@
 								Stroke="{StaticResource BlackBrush}"
 								StrokeThickness="4"/>
 
+							<!-- Horizontal part of the plus sign -->
+							<Rectangle Fill="{StaticResource BlackBrush}"
+								Height="2"
+								Width="14"
+								Margin="0 0 13 0"
+								VerticalAlignment="Center"
+								HorizontalAlignment="Right"/>
+
+							<!-- Vertical part of the plus sign -->
+							<Rectangle Fill="{StaticResource BlackBrush}"
+								Height="14"
+								Width="2"
+								Margin="0 0 19 0"
+								VerticalAlignment="Center"
+								HorizontalAlignment="Right"/>
+
+							<!-- Minus sign -->
+							<Rectangle Fill="{StaticResource BlackBrush}"
+								Height="2"
+								Width="14"
+								Margin="13 0 0 0"
+								VerticalAlignment="Center"
+								HorizontalAlignment="Left"
+								RenderTransformOrigin="0.5 0.5">
+
+								<Rectangle.RenderTransform>
+									<RotateTransform Angle="{Binding Component.Center.RotationAngle}"/>
+								</Rectangle.RenderTransform>
+
+							</Rectangle>
+
 							<!-- 'V' letter -->
 							<TextBlock HorizontalAlignment="Center"
 								VerticalAlignment="Center"
-								FontSize="{StaticResource FontSizeXXXXLarge}"
+								FontSize="{StaticResource FontSizeXXXLarge}"
 								RenderTransformOrigin="0.5 0.5"
 								CharacterSpacing="0"
 								Text="{Binding Component.ID}">

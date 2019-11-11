@@ -1,4 +1,5 @@
 ﻿using ECAT.Core;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 
@@ -9,8 +10,8 @@ namespace ECAT.Simulation
 	/// interface
 	/// </summary>
 	[NecessaryService]
-	[ConstructorDeclaration]
-	[ConstructorDeclaration(typeof(IEnumerable<KeyValuePair<ISourceDescription, Complex>>), "Phasors")]
+	[ConstructorDeclaration(typeof(string), "Unit")]
+	[ConstructorDeclaration(new Type[] { typeof(IEnumerable<KeyValuePair<ISourceDescription, Complex>>), typeof(string)}, "Phasors", "Unit")]
 	[ConstructorDeclaration(typeof(IPhasorDomainSignal), "Copy constructor")]
 	public interface IPhasorDomainSignalMutable : IPhasorDomainSignal
     {

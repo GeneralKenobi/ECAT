@@ -39,11 +39,6 @@ namespace ECAT.Design
 		/// </summary>
 		public override double Height { get; } = 200;
 
-		/// <summary>
-		/// If true, small-signal model of the transistor will be used
-		/// </summary>
-		public bool SmallSignalModel { get; set; }
-
 		#endregion
 	}
 }

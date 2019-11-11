@@ -43,7 +43,7 @@ namespace ECAT.ViewModel
 			get => _EditedComponent.H12;
 			set
 			{
-				if (value > 0)
+				if (value >= 0)
 				{
 					_EditedComponent.H12 = value;
 					InvokePropertyChanged(nameof(H12));
@@ -75,7 +75,7 @@ namespace ECAT.ViewModel
 			get => _EditedComponent.H22;
 			set
 			{
-				if (value > 0)
+				if (value >= 0)
 				{
 					_EditedComponent.H22 = value;
 					InvokePropertyChanged(nameof(H22));
@@ -83,33 +83,6 @@ namespace ECAT.ViewModel
 			}
 		}
 		
-		/// <summary>
-		/// Cutoff base-emitter voltage
-		/// </summary>
-		public double UBEForward
-		{
-			get => _EditedComponent.UBEForward;
-			set => _EditedComponent.UBEForward = value;
-		}
-
-		/// <summary>
-		/// Saturation collector-emitter voltage
-		/// </summary>
-		public double UCESaturation
-		{
-			get => _EditedComponent.UCESaturation;
-			set => _EditedComponent.UCESaturation = value;
-		}
-
-		/// <summary>
-		/// Beta coefficient of the BJT
-		/// </summary>
-		public double Beta
-		{
-			get => _EditedComponent.Beta;
-			set => _EditedComponent.Beta = value;
-		}
-
 		#endregion
 	}
 }

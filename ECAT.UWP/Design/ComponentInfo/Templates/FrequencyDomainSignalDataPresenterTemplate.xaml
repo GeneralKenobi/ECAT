@@ -57,15 +57,21 @@
 	</DataTemplate>
 
 	<DataTemplate x:Key="MainContentFrequencyDomainSignalDataTemplate">
-		<Grid Margin="40 10 10 40">
+		<Grid Margin="40 10 40 40">
 
 			<Grid.RowDefinitions>
+				<RowDefinition Height="40"/>
 				<RowDefinition Height="*"/>
+				<RowDefinition Height="20"/>
 				<RowDefinition Height="40"/>
 				<RowDefinition Height="*"/>
 			</Grid.RowDefinitions>
 
+			<TextBlock Text="Magnitude" HorizontalAlignment="Center" VerticalAlignment="Center"
+				FontSize="{StaticResource FontSizeLarge}"/>
+
 			<controls:Graph Data="{Binding Magnitude}"
+				Grid.Row="1"
 				TitleFontSize="16"
 				Background="{StaticResource WhiteBrush}"
 				BorderThickness="0"
@@ -74,15 +80,19 @@
 				HorizontalAxisDescription="{Binding XUnit}"
 				VerticalAxisDescription="{Binding YUnitGain}"
 				SIPrefixConfig="Adequate"
-				InterpolationLineThickness="2"
-				GridlinesThickness="1"
+				InterpolationLineThickness="3"
+				GridlinesThickness="1.5"
 				DataForeground="{StaticResource BlackBrush}"
 				GridlinesBrush="{StaticResource DarkGrayBrush}"
-				SecondaryGridlinesBrush="{StaticResource DarkGrayBrush}"
+				SecondaryGridlinesBrush="{StaticResource GrayBrush}"
 			/>
 
+			<TextBlock Text="Phase" HorizontalAlignment="Center" VerticalAlignment="Center"
+				Grid.Row="3"
+				FontSize="{StaticResource FontSizeLarge}"/>
+
 			<controls:Graph Data="{Binding Phase}"
-				Grid.Row="2"
+				Grid.Row="4"
 				TitleFontSize="16"
 				Background="{StaticResource WhiteBrush}"
 				BorderThickness="0"
@@ -91,11 +101,11 @@
 				HorizontalAxisDescription="{Binding XUnit}"
 				VerticalAxisDescription="{Binding YUnitPhase}"
 				SIPrefixConfig="Adequate"
-				InterpolationLineThickness="2"
-				GridlinesThickness="1"
+				InterpolationLineThickness="3"
+				GridlinesThickness="1.5"
 				DataForeground="{StaticResource BlackBrush}"
 				GridlinesBrush="{StaticResource DarkGrayBrush}"
-				SecondaryGridlinesBrush="{StaticResource DarkGrayBrush}"
+				SecondaryGridlinesBrush="{StaticResource GrayBrush}"
 			/>
 		</Grid>
 	</DataTemplate>

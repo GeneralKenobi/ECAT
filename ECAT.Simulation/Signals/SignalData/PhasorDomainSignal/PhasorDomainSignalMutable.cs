@@ -15,7 +15,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public PhasorDomainSignalMutable() { }
+		public PhasorDomainSignalMutable(string unit) : base(unit){ }
 
 		/// <summary>
 		/// Copy constructor
@@ -28,7 +28,7 @@ namespace ECAT.Simulation
 		/// </summary>
 		/// <param name="phasors"></param>
 		/// <exception cref="ArgumentNullException"></exception>
-		public PhasorDomainSignalMutable(IEnumerable<KeyValuePair<ISourceDescription, Complex>> phasors) : base(phasors) { }
+		public PhasorDomainSignalMutable(IEnumerable<KeyValuePair<ISourceDescription, Complex>> phasors, string unit) : base(phasors, unit) { }
 
 		#endregion
 

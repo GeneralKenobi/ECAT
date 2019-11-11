@@ -34,7 +34,7 @@ namespace ECAT.Design
 		/// </summary>
 		/// <param name="frequency"></param>
 		/// <returns></returns>
-		protected override Complex CalculateAdmittance(double frequency) => frequency == 0 ? 0 : new Complex(0, 1 / (2 * Math.PI * frequency * Inductance));
+		protected override Complex CalculateAdmittance(double frequency) => frequency == 0 ? 0 : new Complex(0, -1 / (2 * Math.PI * frequency * Inductance));
 
 		#endregion
 	}

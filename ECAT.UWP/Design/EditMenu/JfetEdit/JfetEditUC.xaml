@@ -16,41 +16,35 @@
 
 	<StackPanel>
 
-		<!-- Open loop gain label -->
+		<!-- GM -->
 		<TextBlock Style="{StaticResource WhiteTextBlockStyle}"
 			FontSize="{StaticResource FontSizeBig}"
-			Text="{Binding OpenLoopGainEditHeader, Mode=OneTime}"
+			Text="gm"
 			TextWrapping="WrapWholeWords"
 			Margin="0 0 0 10"/>
-
-		<!-- TextBox with the open loop gain settings -->
 		<TextBox Style="{StaticResource SideMenuTextBoxStyleUnder8}"
-			Text="{Binding RDS, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"
-			Grid.ColumnSpan="2"/>
+			Margin="0 0 0 20"
+			Text="{Binding GM, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"/>
 
-		<!-- Positive supply voltage label -->
+		<!-- Rgs -->
 		<TextBlock Style="{StaticResource WhiteTextBlockStyle}"
 			FontSize="{StaticResource FontSizeBig}"
-			Text="{Binding PositiveSupplyVoltageEditHeader, Mode=OneTime}"
+			Text="rgs"
 			TextWrapping="WrapWholeWords"
-			Margin="0 20 0 10"/>
-
-		<!-- TextBox with the positive supply voltage settings -->
+			Margin="0 0 0 10"/>
 		<TextBox Style="{StaticResource SideMenuTextBoxStyleUnder8}"
-			Text="{Binding PositiveSupplyVoltage, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"
-			Grid.ColumnSpan="2"/>
+			Margin="0 0 0 20"
+			Text="{Binding RGS, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"/>
 
-		<!-- Negative supply voltage label -->
+		<!-- Rds -->
 		<TextBlock Style="{StaticResource WhiteTextBlockStyle}"
 			FontSize="{StaticResource FontSizeBig}"
-			Text="{Binding NegativeSupplyVoltageEditHeader, Mode=OneTime}"
+			Text="rds"
 			TextWrapping="WrapWholeWords"
-			Margin="0 20 0 10"/>
-
-		<!-- TextBox with the negative supply voltage settings -->
+			Margin="0 0 0 10"/>
 		<TextBox Style="{StaticResource SideMenuTextBoxStyleUnder8}"
-			Text="{Binding NegativeSupplyVoltage, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"
-			Grid.ColumnSpan="2"/>
+			Margin="0 0 0 20"
+			Text="{Binding RDS, Mode=TwoWay, Converter={StaticResource SIStringConverter}}"/>
 
 	</StackPanel>
 

@@ -47,7 +47,7 @@ namespace ECAT.Simulation
 				//var nodeBWaveforms = nodeB.AllWaveforms.ToDictionary((x) => x.Key, (x) => x.Value);
 
 				// Construct a result
-				var result = IoC.Resolve<ITimeDomainSignalMutable>(nodeA.Samples, nodeA.Step, nodeA.StartSample);
+				var result = IoC.Resolve<ITimeDomainSignalMutable>(nodeA.Samples, nodeA.Step, nodeA.StartSample, IoC.Resolve<ISIUnits>().VoltageShort);
 
 				// Add waveforms from node B
 				nodeB.ComposingWaveforms.ForEach((x) => result.AddWaveform(x.Key, x.Value));

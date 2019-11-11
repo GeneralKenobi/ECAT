@@ -15,17 +15,17 @@ namespace ECAT.Design
 		/// <summary>
 		/// Gate
 		/// </summary>
-		public double RGS { get; set; }
+		public double RGS { get; set; } = 1e+9;
 
 		/// <summary>
 		/// Small-signal output resistance
 		/// </summary>
-		public double RDS { get; set; }
+		public double RDS { get; set; } = 1e+6;
 
 		/// <summary>
 		/// Transconductance
 		/// </summary>
-		public double GM { get; set; }
+		public double GM { get; set; } = 0.0075;
 
 		#endregion
 	}

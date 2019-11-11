@@ -18,7 +18,7 @@ namespace ECAT.ViewModel
 		/// <param name="signal"></param>
 		/// <param name="gainUnit">The unit of values</param>
 		/// <exception cref="ArgumentNullException"></exception>
-		public FrequencyDomainSignalViewModel(IFrequencyDomainSignal signal, string gainUnit, string phaseUnit)
+		public FrequencyDomainSignalViewModel(IFrequencyDomainSignal signal)
 		{
 			if(signal == null)
 			{
@@ -32,9 +32,6 @@ namespace ECAT.ViewModel
 
 			Phase = signal.Waveform.
 				Select((value, counter) => new KeyValuePair<double, double>(signal.StartSample + counter * signal.Step, value.Phase * 180 / Math.PI));
-
-			YUnitGain = gainUnit ?? throw new ArgumentNullException(nameof(gainUnit));
-			YUnitPhase = phaseUnit ?? throw new ArgumentNullException(nameof(phaseUnit));
 		}
 
 		#endregion
@@ -59,12 +56,12 @@ namespace ECAT.ViewModel
 		/// <summary>
 		/// Unit for gain values
 		/// </summary>
-		public string YUnitGain { get; }
+		public string YUnitGain { get; } = IoC.Resolve<ISIUnits>().GainShort;
 
 		/// <summary>
 		/// Unit for phase values
 		/// </summary>
-		public string YUnitPhase { get; }
+		public string YUnitPhase { get; } = IoC.Resolve<ISIUnits>().Phase;
 
 		#endregion
 	}

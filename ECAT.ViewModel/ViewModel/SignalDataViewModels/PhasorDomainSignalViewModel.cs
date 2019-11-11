@@ -17,11 +17,9 @@ namespace ECAT.ViewModel
 		/// </summary>
 		/// <param name="signal"></param>
 		/// <exception cref="ArgumentNullException"></exception>
-		public PhasorDomainSignalViewModel(IPhasorDomainSignal signal, string unit)
+		public PhasorDomainSignalViewModel(IPhasorDomainSignal signal)
 		{
-			DisplayText = ProcessSignal(
-				signal ?? throw new ArgumentNullException(nameof(signal)),
-				unit ?? throw new ArgumentNullException(nameof(unit)));
+			DisplayText = ProcessSignal(signal ?? throw new ArgumentNullException(nameof(signal)));
 		}
 
 		#endregion
@@ -52,7 +50,7 @@ namespace ECAT.ViewModel
 		/// <param name="signal"></param>
 		/// <param name="unit"></param>
 		/// <returns></returns>
-		private IEnumerable<string> ProcessSignal(IPhasorDomainSignal signal, string unit)
+		private IEnumerable<string> ProcessSignal(IPhasorDomainSignal signal)
 		{
 			// For each phasor in the signal
 			foreach(var phasor in signal.Phasors)
@@ -65,12 +63,12 @@ namespace ECAT.ViewModel
 				{
 					case FrequencyCategory.DC:
 						{
-							infoString += SIHelpers.ToAltSIStringExcludingSmallPrefixes(phasor.Value, unit, _RoundToDigit) + " DC";
+							infoString += SIHelpers.ToAltSIStringExcludingSmallPrefixes(phasor.Value, signal.Unit, _RoundToDigit) + " DC";
 						} break;
 
 					case FrequencyCategory.AC:
 						{
-							infoString += SIHelpers.ToAltSIStringExcludingSmallPrefixes(phasor.Value, unit, _RoundToDigit) + " AC";
+							infoString += SIHelpers.ToAltSIStringExcludingSmallPrefixes(phasor.Value, signal.Unit, _RoundToDigit) + " AC";
 						}
 						break;
 				}

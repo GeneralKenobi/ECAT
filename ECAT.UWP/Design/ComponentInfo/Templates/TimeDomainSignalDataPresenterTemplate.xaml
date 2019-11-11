@@ -39,11 +39,11 @@
 			HorizontalAxisDescription="{Binding XUnit}"
 			VerticalAxisDescription="{Binding YUnit}"
 			SIPrefixConfig="Adequate"
-			InterpolationLineThickness="2"
-			GridlinesThickness="1"
+			InterpolationLineThickness="3"
+			GridlinesThickness="1.5"
 			DataForeground="{StaticResource BlackBrush}"
 			GridlinesBrush="{StaticResource DarkGrayBrush}"
-			SecondaryGridlinesBrush="{StaticResource DarkGrayBrush}"
+			SecondaryGridlinesBrush="{StaticResource GrayBrush}"
 			/>
 
 	</DataTemplate>

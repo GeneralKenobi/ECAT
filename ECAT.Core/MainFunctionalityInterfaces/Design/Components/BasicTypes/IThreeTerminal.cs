@@ -25,21 +25,6 @@ namespace ECAT.Core
 		ITerminal TerminalC { get; }
 
 		/// <summary>
-		/// The admittance between <see cref="TerminalA"/> and <see cref="TerminalB"/>
-		/// </summary>
-		Complex AdmittanceAB { get; set; }
-
-		/// <summary>
-		/// The admittance between <see cref="TerminalA"/> and <see cref="TerminalC"/>
-		/// </summary>
-		Complex AdmittanceAC { get; set; }
-
-		/// <summary>
-		/// The admittance between <see cref="TerminalB"/> and <see cref="TerminalC"/>
-		/// </summary>
-		Complex AdmittanceBC { get; set; }
-
-		/// <summary>
 		/// Voltage drop between <see cref="TerminalB"/> and <see cref="TerminalA"/>
 		/// </summary>
 		double VoltageBA { get; }

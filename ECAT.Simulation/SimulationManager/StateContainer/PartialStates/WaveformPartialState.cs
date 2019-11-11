@@ -189,7 +189,7 @@ namespace ECAT.Simulation
 			// Add each node index with time domain signal for it
 			foreach (var index in _NodeIndices)
 			{
-				result.Add(index, IoC.Resolve<ITimeDomainSignalMutable>(pointsCount, timeStep));
+				result.Add(index, IoC.Resolve<ITimeDomainSignalMutable>(pointsCount, timeStep, IoC.Resolve<ISIUnits>().VoltageShort));
 			}
 
 			// Add the states
@@ -202,7 +202,7 @@ namespace ECAT.Simulation
 			if(includeReferenceNode)
 			{
 				// Create an entry for it with an empty ITimeDomainSignal stored
-				result.Add(AdmittanceMatrixFactory.ReferenceNode, IoC.Resolve<ITimeDomainSignalMutable>(pointsCount, timeStep));
+				result.Add(AdmittanceMatrixFactory.ReferenceNode, IoC.Resolve<ITimeDomainSignalMutable>(pointsCount, timeStep, IoC.Resolve<ISIUnits>().VoltageShort));
 			}
 
 			// Cast the mutable time domain signal to standard ITimeDomainSignal
@@ -227,7 +227,7 @@ namespace ECAT.Simulation
 			// Add each active component index with time domain signal for it
 			foreach (var index in _ActiveComponentsIndices)
 			{
-				result.Add(index, IoC.Resolve<ITimeDomainSignalMutable>(pointsCount, timeStep));
+				result.Add(index, IoC.Resolve<ITimeDomainSignalMutable>(pointsCount, timeStep, IoC.Resolve<ISIUnits>().CurrentShort));
 			}
 
 			// Add the states

@@ -13,22 +13,16 @@
 		/// <param name="baseTerminal"></param>
 		/// <param name="collectorTerminal"></param>
 		/// <param name="emitterTerminal"></param>
-		public BjtNodeInfo(int baseTerminal, int collectorTerminal, int emitterTerminal, int innerTerminal)
+		public BjtNodeInfo(int baseTerminal, int collectorTerminal, int emitterTerminal)
 		{
 			Base = baseTerminal;
 			Collector = collectorTerminal;
 			Emitter = emitterTerminal;
-			Inner = innerTerminal;
 		}
 
 		#endregion
 
 		#region Public properties
-
-		/// <summary>
-		/// Inner terminal
-		/// </summary>
-		public int Inner { get; }
 
 		/// <summary>
 		/// Base terminal

@@ -18,7 +18,7 @@ namespace ECAT.ViewModel
 		/// <param name="signal"></param>
 		/// <param name="unit">The unit of values</param>
 		/// <exception cref="ArgumentNullException"></exception>
-		public TimeDomainSignalViewModel(ITimeDomainSignal signal, string unit)
+		public TimeDomainSignalViewModel(ITimeDomainSignal signal)
 		{
 			if(signal == null)
 			{
@@ -28,7 +28,7 @@ namespace ECAT.ViewModel
 			Data = signal.Waveform.
 				Select((value, counter) => new KeyValuePair<double, double>(signal.StartSample + counter * signal.Step, value));
 
-			YUnit = unit ?? throw new ArgumentNullException(nameof(unit));
+			YUnit = signal.Unit;
 		}
 
 		#endregion

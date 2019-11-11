@@ -1,4 +1,5 @@
 ﻿using CSharpEnhanced.CoreInterfaces;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 
@@ -8,8 +9,8 @@ namespace ECAT.Core
 	/// Interface for classes containing signal composed of a DC offset and phasors
 	/// </summary>
 	[NecessaryService]
-	[ConstructorDeclaration]
-	[ConstructorDeclaration(typeof(IEnumerable<KeyValuePair<ISourceDescription, Complex>>), "Phasors")]
+	[ConstructorDeclaration(typeof(string), "Unit")]
+	[ConstructorDeclaration(new Type[] { typeof(IEnumerable<KeyValuePair<ISourceDescription, Complex>>), typeof(string) }, "Phasors", "Unit")]
 	[ConstructorDeclaration(typeof(IPhasorDomainSignal), "Copy constructor")]
 	public interface IPhasorDomainSignal : ISignalData, IShallowCopy<IPhasorDomainSignal>
 	{

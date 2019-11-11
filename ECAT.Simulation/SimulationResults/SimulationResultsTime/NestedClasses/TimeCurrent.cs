@@ -106,7 +106,7 @@ namespace ECAT.Simulation
 				if (_VoltageDrops.TryGet(element, out var voltageDrop, voltageBA))
 				{
 					// If successful, create a new current signal based on it, cache it
-					var result = IoC.Resolve<ITimeDomainSignalMutable>(voltageDrop.Samples, voltageDrop.Step, voltageDrop.StartSample);
+					var result = IoC.Resolve<ITimeDomainSignalMutable>(voltageDrop.Samples, voltageDrop.Step, voltageDrop.StartSample, IoC.Resolve<ISIUnits>().CurrentShort);
 
 					// Get the minimum frequency - it is needed for capacitor waveform shifting, check if there are any waveforms, if not
 					// just assign 0 (technically no waveforms result in a zero wave, which is DC)

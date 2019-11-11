@@ -16,7 +16,7 @@ namespace ECAT.Simulation
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public TimeDomainSignalMutable() { }
+		public TimeDomainSignalMutable(string unit) : base(unit) { }
 
 		/// <summary>
 		/// Constructor with parameters, start time is considered 0
@@ -24,7 +24,7 @@ namespace ECAT.Simulation
 		/// <param name="instantenousValues">Values occuring at specific time moments, can'be be null</param>
 		/// <param name="timeStep">Time step between two subsequent values</param>
 		/// <exception cref="ArgumentNullException"></exception>
-		public TimeDomainSignalMutable(int samples, double timeStep) : base(samples, timeStep) { }
+		public TimeDomainSignalMutable(int samples, double timeStep, string unit) : base(samples, timeStep, unit) { }
 
 		/// <summary>
 		/// Constructor with parameters
@@ -32,7 +32,7 @@ namespace ECAT.Simulation
 		/// <param name="instantenousValues">Values occuring at specific time moments, can'be be null</param>
 		/// <param name="timeStep">Time step between two subsequent values</param>
 		/// <param name="startTime">Start time of the signal</param>
-		public TimeDomainSignalMutable(int samples, double timeStep, double startTime) : base(samples, timeStep, startTime) { }
+		public TimeDomainSignalMutable(int samples, double timeStep, double startTime, string unit) : base(samples, timeStep, startTime, unit) { }
 
 		/// <summary>
 		/// Copy constructor
