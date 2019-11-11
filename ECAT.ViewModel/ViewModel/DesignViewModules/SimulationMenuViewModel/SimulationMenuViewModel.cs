@@ -23,7 +23,7 @@ namespace ECAT.ViewModel
 			_DesignManager = designManager ?? throw new ArgumentNullException(nameof(designManager));
 
 			DCBiasCommand = new RelayCommand(() => SimulationMethodWrapper(_SimulationManager.DCBias));
-			ACDCFullCycleWithoutOpAmpAdjustmentCommand = new RelayCommand(() => SimulationMethodWrapper(_SimulationManager.ACDCFullCycle));
+			ACDCFullCycleCommand = new RelayCommand(() => SimulationMethodWrapper(_SimulationManager.ACDCFullCycle));
 			FrequencySweepCommand = new RelayCommand(() => SimulationMethodWrapper(_SimulationManager.FrequencySweep));
 		}
 
@@ -61,30 +61,10 @@ namespace ECAT.ViewModel
 		public ICommand DCBiasCommand { get; }
 
 		/// <summary>
-		/// Performs a full cycle AC simulation
-		/// </summary>
-		/// <param name="schematic"></param>
-		public ICommand ACFullCycleWithoutOpAmpAdjustmentCommand { get; }
-
-		/// <summary>
 		/// Performs a full ACDC simulation
 		/// </summary>
 		/// <param name="schematic"></param>
-		public ICommand ACDCFullCycleWithoutOpAmpAdjustmentCommand { get; }
-
-		/// <summary>
-		/// Performs a full cycle AC simulation with <see cref="IOpAmp"/> adjustment - every <see cref="IOpAmp"/> is operating in either active or
-		/// saturated state so that its output voltage does not exceed its supply voltages.
-		/// </summary>
-		/// <param name="schematic"></param>
-		public ICommand ACFullCycleWithOpAmpAdjustmentCommand { get; }
-
-		/// <summary>
-		/// Performs a full ACDC simulation with <see cref="IOpAmp"/> adjustment - every <see cref="IOpAmp"/> is operating in either active or
-		/// saturated state so that its output voltage does not exceed its supply voltages.
-		/// </summary>
-		/// <param name="schematic"></param>
-		public ICommand ACDCFullCycleWithOpAmpAdjustmentCommand { get; }
+		public ICommand ACDCFullCycleCommand { get; }
 
 		/// <summary>
 		/// Performs a full ACDC simulation with <see cref="IOpAmp"/> adjustment - every <see cref="IOpAmp"/> is operating in either active or

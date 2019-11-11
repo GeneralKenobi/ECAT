@@ -121,7 +121,7 @@ namespace ECAT.ViewModel
 				"Run DC Bias", new KeyArgument("T"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.DCBias(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic)));
 			
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
-				"Run Full Cycle ACDC Without Op-Amp Adjustment",
+				"Run ACDC Full Cycle Simulation",
 				new KeyArgument("Y"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.ACDCFullCycle(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic)));
 
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(

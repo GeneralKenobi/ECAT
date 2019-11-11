@@ -40,7 +40,7 @@
 				Margin="10"
 				Height="80"
 				FontSize="{StaticResource FontSizeRegular}"
-				Command="{Binding ACDCFullCycleWithoutOpAmpAdjustmentCommand}"/>
+				Command="{Binding ACDCFullCycleCommand}"/>
 
 			<Button Content="Frequency Sweep" Style="{StaticResource StandardSideMenuButtonStyle}"
 				Margin="10"

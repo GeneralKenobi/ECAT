@@ -24,8 +24,6 @@ namespace ECAT.Design
 			_Description = new OpAmpDescription()
 			{
 				Label = this.Label,
-				PositiveSupplyVoltage = this.PositiveSupplyVoltage,
-				NegativeSupplyVoltage = this.NegativeSupplyVoltage,
 				OpenLoopGain = this.OpenLoopGain,
 			};
 		}
@@ -33,16 +31,6 @@ namespace ECAT.Design
 		#endregion
 
 		#region Private members
-
-		/// <summary>
-		/// Backing store for <see cref="PositiveSupplyVoltage"/>
-		/// </summary>
-		private double mPositiveSupplyVoltage = IoC.Resolve<IDefaultValues>().DefaultOpAmpPositiveSupplyVoltage;
-
-		/// <summary>
-		/// Backing store for <see cref="NegativeSupplyVoltage"/>
-		/// </summary>
-		private double mNegativeSupplyVoltage = IoC.Resolve<IDefaultValues>().DefaultOpAmpNegativeSupplyVoltage;
 
 		/// <summary>
 		/// Backing store for <see cref="OpenLoopGain"/>
@@ -86,32 +74,6 @@ namespace ECAT.Design
 		/// TODO: Make it so that only the designated classes can assign it, this is temporary
 		/// </summary>
 		public int Index { get; set; }
-
-		/// <summary>		
-		/// Positive supply voltage - output cannot be greater than this value
-		/// </summary>
-		public double PositiveSupplyVoltage
-		{
-			get => mPositiveSupplyVoltage;
-			set
-			{
-				mPositiveSupplyVoltage = value;
-				_Description.PositiveSupplyVoltage = value;
-			}
-		}
-
-		/// <summary>
-		/// Negative supply voltage - output cannot be smaller than this value
-		/// </summary>
-		public double NegativeSupplyVoltage
-		{
-			get => mNegativeSupplyVoltage;
-			set
-			{
-				mNegativeSupplyVoltage = value;
-				_Description.NegativeSupplyVoltage = value;
-			}
-		}
 
 		/// <summary>
 		/// Open loop gain - voltage gain defined as output voltage divided by differential voltage (U+ - U-)
