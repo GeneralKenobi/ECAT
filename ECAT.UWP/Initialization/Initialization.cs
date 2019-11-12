@@ -27,6 +27,7 @@ namespace ECAT.UWP
 		/// </summary>
 		private static Type[] TypeRefArray { get; set; } = new Type[]
 		{
+			typeof(Initialization),
 			typeof(Core.DummyType),
 			typeof(DataDisplay.DummyType),
 			typeof(Design.DummyType),
@@ -44,13 +45,14 @@ namespace ECAT.UWP
 		/// <returns></returns>
 		private static IEnumerable<Assembly> GetECATAssemblies() =>
 			// Get referenced AssemblyNames
-			Assembly.GetExecutingAssembly().GetReferencedAssemblies().
-			// Filter them to get only those with ECAT in their name
-			Where((assemblyName) => assemblyName.Name.Contains("ECAT")).
-			// Project them to Assemblies by loading them (if they were already loaded then nothing will happen)
-			Select((assemblyName) => Assembly.Load(assemblyName)).
-			// Finally add self to the enumeration
-			Concat(Assembly.GetExecutingAssembly());
+			//Assembly.GetExecutingAssembly().GetReferencedAssemblies().
+			//// Filter them to get only those with ECAT in their name
+			//Where((assemblyName) => assemblyName.Name.Contains("ECAT")).
+			//// Project them to Assemblies by loading them (if they were already loaded then nothing will happen)
+			//Select((assemblyName) => Assembly.Load(assemblyName)).
+			//// Finally add self to the enumeration
+			//Concat(Assembly.GetExecutingAssembly());
+			TypeRefArray.Select((type) => type.Assembly);
 
 		/// <summary>
 		/// Returns all types defined in <paramref name="assemblies"/>
@@ -83,6 +85,9 @@ namespace ECAT.UWP
 		{
 			// Get assemblies, get types defined in them and run the initialization in Core
 			Core.Initialization.Run(GetTypes(GetECATAssemblies()));
+
+			//List<int> a = null;
+			//int b = a[1];
 
 			// Remove the TypeRefArray from references
 			TypeRefArray = null;

@@ -4,29 +4,29 @@
     xmlns:local="using:ECAT.UWP">
 
 	<ResourceDictionary.MergedDictionaries>
-		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/GeneralPurposeControls/ComponentWrapper/ComponentWrapperTCStyle.xaml"/>
-		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/Resistor/ResistorTCStyle.xaml"/>
-		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/GeneralPurposeControls/Socket/SocketTCStyle.xaml"/>
-		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/Wire/WireSocket/WireSocketTCStyle.xaml"/>
-		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/Wire/WireTCStyle.xaml"/>
-		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/VoltageSource/VoltageSourceTCStyle.xaml"/>
-		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/CurrentSource/CurrentSourceTCStyle.xaml"/>
-		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/Ground/GroundTCStyle.xaml"/>
-		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/GeneralPurposeControls/VoltageDrop/VoltageDropTCStyle.xaml"/>
-		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/GeneralPurposeControls/Arrowhead/ArrowheadTCStyle.xaml"/>
-		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/GeneralPurposeControls/CurrentFlow/CurrentFlowTCStyle.xaml"/>
-		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/GeneralPurposeControls/TwoTerminalComponentPackage/TwoTerminalComponentPackageTCStyle.xaml"/>
-		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/OpAmp/OpAmpTCStyle.xaml"/>
-		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/Capacitor/CapacitorTCStyle.xaml"/>
-		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/ACVoltageSource/ACVoltageSourceTCStyle.xaml"/>
-		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/SweepVoltageSource/SweepVoltageSourceTCStyle.xaml"/>
-		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/Voltmeter/VoltmeterTCStyle.xaml"/>
-		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/ComponentInfo/Templates/PhasorDomainSignalDataPresenterTemplate.xaml"/>
-		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/ComponentInfo/Templates/TimeDomainSignalDataPresenterTemplate.xaml"/>
-		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/ComponentInfo/Templates/FrequencyDomainSignalDataPresenterTemplate.xaml"/>
-		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/Inductor/InductorTCStyle.xaml"/>
-		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/BJT/BjtTCStyle.xaml"/>
-		<ResourceDictionary Source="ms-appx://ECAT.UWP/Design/Components/NChannelJfet/NChannelJfetTCStyle.xaml"/>
+		<ResourceDictionary Source="/Design/GeneralPurposeControls/ComponentWrapper/ComponentWrapperTCStyle.xaml"/>
+		<ResourceDictionary Source="/Design/Components/Resistor/ResistorTCStyle.xaml"/>
+		<ResourceDictionary Source="/Design/GeneralPurposeControls/Socket/SocketTCStyle.xaml"/>
+		<ResourceDictionary Source="/Design/Components/Wire/WireSocket/WireSocketTCStyle.xaml"/>
+		<ResourceDictionary Source="/Design/Components/Wire/WireTCStyle.xaml"/>
+		<ResourceDictionary Source="/Design/Components/VoltageSource/VoltageSourceTCStyle.xaml"/>
+		<ResourceDictionary Source="/Design/Components/CurrentSource/CurrentSourceTCStyle.xaml"/>
+		<ResourceDictionary Source="/Design/Components/Ground/GroundTCStyle.xaml"/>
+		<ResourceDictionary Source="/Design/GeneralPurposeControls/VoltageDrop/VoltageDropTCStyle.xaml"/>
+		<ResourceDictionary Source="/Design/GeneralPurposeControls/Arrowhead/ArrowheadTCStyle.xaml"/>
+		<ResourceDictionary Source="/Design/GeneralPurposeControls/CurrentFlow/CurrentFlowTCStyle.xaml"/>
+		<ResourceDictionary Source="/Design/GeneralPurposeControls/TwoTerminalComponentPackage/TwoTerminalComponentPackageTCStyle.xaml"/>
+		<ResourceDictionary Source="/Design/Components/OpAmp/OpAmpTCStyle.xaml"/>
+		<ResourceDictionary Source="/Design/Components/Capacitor/CapacitorTCStyle.xaml"/>
+		<ResourceDictionary Source="/Design/Components/ACVoltageSource/ACVoltageSourceTCStyle.xaml"/>
+		<ResourceDictionary Source="/Design/Components/SweepVoltageSource/SweepVoltageSourceTCStyle.xaml"/>
+		<ResourceDictionary Source="/Design/Components/Voltmeter/VoltmeterTCStyle.xaml"/>
+		<ResourceDictionary Source="/Design/ComponentInfo/Templates/PhasorDomainSignalDataPresenterTemplate.xaml"/>
+		<ResourceDictionary Source="/Design/ComponentInfo/Templates/TimeDomainSignalDataPresenterTemplate.xaml"/>
+		<ResourceDictionary Source="/Design/ComponentInfo/Templates/FrequencyDomainSignalDataPresenterTemplate.xaml"/>
+		<ResourceDictionary Source="/Design/Components/Inductor/InductorTCStyle.xaml"/>
+		<ResourceDictionary Source="/Design/Components/BJT/BjtTCStyle.xaml"/>
+		<ResourceDictionary Source="/Design/Components/NChannelJfet/NChannelJfetTCStyle.xaml"/>
 	</ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

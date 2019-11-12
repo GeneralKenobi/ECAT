@@ -181,7 +181,7 @@
     <Compile Include="Initialization\Initialization.cs" />
     <Compile Include="MainPage\IBaseComponentToComponentViewModelConverter.cs" />
     <Compile Include="MainPage\IWireToWireViewModelConverter.cs" />
-    <Compile Include="MainPage\MainPage.xaml.cs">
+    <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -367,7 +367,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="MainPage\MainPage.xaml">
+    <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -447,15 +447,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="CSharpEnhanced">
-      <HintPath>..\..\CSharpEnhanced\CSharpEnhanced\bin\Debug\netstandard2.0\CSharpEnhanced.dll</HintPath>
-    </Reference>
-    <Reference Include="UWPEnhanced, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\UWPEnhanced\UWPEnhanced\bin\Debug\UWPEnhanced.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\ECAT.Core\ECAT.Core.csproj">
       <Project>{d134819f-aeaf-4625-b413-72d6edc6ca20}</Project>
       <Name>ECAT.Core</Name>
@@ -477,9 +468,21 @@
       <Name>ECAT.ViewModel</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="CSharpEnhanced, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\CSharpEnhanced\CSharpEnhanced\bin\Release\netstandard2.0\CSharpEnhanced.dll</HintPath>
+    </Reference>
+    <Reference Include="UWPEnhanced, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\UWPEnhanced\UWPEnhanced\bin\Release\UWPEnhanced.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

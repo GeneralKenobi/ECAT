@@ -12,8 +12,8 @@
 
   <ItemGroup>
     <Reference Include="CSharpEnhanced">
-      <HintPath>..\..\CSharpEnhanced\CSharpEnhanced\bin\Debug\netstandard2.0\CSharpEnhanced.dll</HintPath>
-    </Reference>	
+      <HintPath>..\..\CSharpEnhanced\CSharpEnhanced\bin\Release\netstandard2.0\CSharpEnhanced.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
