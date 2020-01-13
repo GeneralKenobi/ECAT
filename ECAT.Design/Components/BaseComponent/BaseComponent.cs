@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
+using System.Threading.Tasks;
 
 namespace ECAT.Design
 {
@@ -131,7 +132,7 @@ namespace ECAT.Design
 		#endregion
 
 		#region Public methods
-		
+
 		/// <summary>
 		/// Returns a list with all terminals in this component
 		/// </summary>

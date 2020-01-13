@@ -121,26 +121,22 @@ namespace ECAT.Simulation
 			/// <returns></returns>
 			private bool TryConstructPower(IDCVoltageSource voltageSource)
 			{
-				return false;
-				// TODO: Adapt for new current resolution
-				//// Try to get voltage drop across the element
-				//if (_Currents.TryGet(voltageSource.ActiveComponentIndex, out var current))
-				//{
-				//	// If successful, create a new power signal based on it, cache it
-				//	CachePower(voltageSource, new CharacteristicValuesPowerSignal(
-				//		current.Interpreter.Maximum() * voltageSource.ProducedDCVoltage,
-				//		current.Interpreter.Minimum() * voltageSource.ProducedDCVoltage,
-				//		-current.DC * voltageSource.ProducedDCVoltage));
-				//		
-				//
-				//	// And return success
-				//	return true;
-				//}
-				//else
-				//{
-				//	// Return failure					
-				//	return false;
-				//}
+				// Try to get voltage drop across the element
+				if (_Currents.TryGet(voltageSource.Index, out var current))
+				{
+					// If successful, create a new power signal based on it, cache it
+					CachePower(voltageSource, new CharacteristicValuesPowerSignal(
+						current.Interpreter.Maximum() * voltageSource.OutputValue,
+						current.Interpreter.Minimum() * voltageSource.OutputValue,
+						current.Interpreter.Average() * voltageSource.OutputValue));
+					// And return success
+					return true;
+				}
+				else
+				{
+					// Return failure					
+					return false;
+				}
 			}
 
 			/// <summary>
@@ -159,28 +155,8 @@ namespace ECAT.Simulation
 			/// <returns></returns>
 			private bool TryConstructPower(IACVoltageSource voltageSource)
 			{
+				// AC Voltage sources are not supported in DC simulations
 				return false;
-				// TODO: Adapt for new current resolution
-				//// Try to get voltage drop across the element
-				//if (_Currents.TryGet(voltageSource.ActiveComponentIndex, out var current))
-				//{
-				//	// If successful, create a new power signal based on it, cache it
-				//	CachePower(voltageSource, new CharacteristicValuesPowerSignal(
-				//		// Min and max can't be calculated
-				//		double.NaN,
-				//		double.NaN,
-				//		// If there is only one phasor then average can be calculated, otherwise not
-				//		current.Phasors.Count() != 1 ? double.NaN :
-				//		current.Interpreter.RMS() * voltageSource.PeakProducedVoltage / Math.Sqrt(2) * Math.Cos(current.Phasors.First().Value.Phase)));
-				//	
-				//	// And return success
-				//	return true;
-				//}
-				//else
-				//{
-				//	// Return failure					
-				//	return false;
-				//}
 			}
 
 			/// <summary>
@@ -199,32 +175,30 @@ namespace ECAT.Simulation
 			/// <returns></returns>
 			private bool TryConstructPower(ICurrentSource currentSource)
 			{
-				return false;
-				// TODO: Adapt for new current resolution
-				//// Try to get voltage drop across the element
-				//if (_VoltageDrops.TryGet(currentSource, out var voltageDrop))
-				//{
-				//	// If successful, create a new power signal based on it, cache it
-				//	CachePower(currentSource, new CharacteristicValuesPowerSignal(
-				//		// Minimum power (the maximum supplied or the least dissipated, depending on actual values)
-				//		// It's the minimum voltage drop minus twice DC voltage drop times current. (Minimum already has +VDC in it so in order
-				//		// to have -VDC in total there's -2VDC. We need to subtract DC due to passive sign convention)
-				//		(voltageDrop.Interpreter.Maximum() - 2 * voltageDrop.DC) * currentSource.ProducedCurrent,
-				//		// Maximum power (the maximum dissipated or the least supplied, depending on actual values)
-				//		// It's the maximum voltage drop minus twice DC voltage drop times current. (Maximum already has +VDC in it so in order
-				//		// to have -VDC in total there's -2VDC. We need to subtract DC due to passive sign convention)
-				//		(voltageDrop.Interpreter.Maximum() - 2 * voltageDrop.DC) * currentSource.ProducedCurrent,
-				//		// Average is negative voltage drop times produced current (to abide passive sign convention)						
-				//		-voltageDrop.DC * currentSource.ProducedCurrent));
-				//
-				//	// And return success
-				//	return true;
-				//}
-				//else
-				//{
-				//	// Return failure					
-				//	return false;
-				//}
+				// Try to get voltage drop across the element
+				if (_VoltageDrops.TryGet(currentSource, out var voltageDrop))
+				{
+					// If successful, create a new power signal based on it, cache it
+					CachePower(currentSource, new CharacteristicValuesPowerSignal(
+						// Minimum power (the maximum supplied or the least dissipated, depending on actual values)
+						// It's the minimum voltage drop minus twice DC voltage drop times current. (Minimum already has +VDC in it so in order
+						// to have -VDC in total there's -2VDC. We need to subtract DC due to passive sign convention)
+						(voltageDrop.Interpreter.Maximum() - 2 * voltageDrop.Interpreter.Average()) * currentSource.OutputValue,
+						// Maximum power (the maximum dissipated or the least supplied, depending on actual values)
+						// It's the maximum voltage drop minus twice DC voltage drop times current. (Maximum already has +VDC in it so in order
+						// to have -VDC in total there's -2VDC. We need to subtract DC due to passive sign convention)
+						(voltageDrop.Interpreter.Maximum() - 2 * voltageDrop.Interpreter.Average()) * currentSource.OutputValue,
+						// Average is negative voltage drop times produced current (to abide passive sign convention)						
+						-voltageDrop.Interpreter.Average() * currentSource.OutputValue));
+
+					// And return success
+					return true;
+				}
+				else
+				{
+					// Return failure					
+					return false;
+				}
 			}
 
 			#endregion

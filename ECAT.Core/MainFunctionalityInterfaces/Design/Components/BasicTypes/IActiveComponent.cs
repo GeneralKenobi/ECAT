@@ -10,7 +10,6 @@
 
 		/// <summary>
 		/// Index assigned to this <see cref="IActiveComponent"/>
-		/// TODO: Make it so that only the designated classes can assign it, this is temporary
 		/// </summary>
 		int Index { get; set; }
 

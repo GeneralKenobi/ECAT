@@ -32,7 +32,7 @@ namespace ECAT.Design
 		#region Private properties
 
 		/// <summary>
-		/// List of all implemented components with their declared information. TODO: Read it from a file
+		/// List of all implemented components with their declared information.
 		/// </summary>
 		private List<IComponentDeclaration> _ImplementedComponents { get; } = new List<IComponentDeclaration>()
 		{

@@ -288,8 +288,6 @@ namespace ECAT.Simulation
 		/// <returns></returns>
 		public void Solve(out Complex[] nodePotentials, out Complex[] activeComponentsCurrents)
 		{
-			// TODO: Add error handling (not all matrices are solvable)
-
 			// Calculate the solution
 			var solution = LinearEquations.SimplifiedGaussJordanElimination(ComputeCoefficientMatrix(), ComputeFreeTermsMatrix(), true);
 

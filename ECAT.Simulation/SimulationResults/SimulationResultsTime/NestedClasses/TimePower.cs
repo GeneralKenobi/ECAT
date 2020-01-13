@@ -62,10 +62,10 @@ namespace ECAT.Simulation
 
 					// Call different method depending on the type of the two terminal
 					TypeSwitch.Construct().
-						LazyCase<IResistor>((x) => _Currents.TryGet(x, out current)).
-						LazyCase<ICapacitor>((x) => _Currents.TryGet(x, out current)).
-						LazyCase<IInductor>((x) => _Currents.TryGet(x, out current)).
-						LazyCase<IActiveComponent>((x) => _Currents.TryGet(x.Index, out current)).
+						LazyCase<IResistor>((x) => _Currents.TryGet(x, out current, voltageBA)).
+						LazyCase<ICapacitor>((x) => _Currents.TryGet(x, out current, voltageBA)).
+						LazyCase<IInductor>((x) => _Currents.TryGet(x, out current, voltageBA)).
+						LazyCase<IActiveComponent>((x) => _Currents.TryGet(x.Index, out current, voltageBA)).
 						SwitchFirst(twoTerminal);
 					
 					// If both voltage and current were obtained

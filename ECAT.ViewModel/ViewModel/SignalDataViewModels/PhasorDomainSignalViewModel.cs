@@ -2,6 +2,7 @@
 using ECAT.Core;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ECAT.ViewModel
 {
@@ -19,7 +20,7 @@ namespace ECAT.ViewModel
 		/// <exception cref="ArgumentNullException"></exception>
 		public PhasorDomainSignalViewModel(IPhasorDomainSignal signal)
 		{
-			DisplayText = ProcessSignal(signal ?? throw new ArgumentNullException(nameof(signal)));
+			DisplayText = Enumerable.Empty<string>();
 		}
 
 		#endregion

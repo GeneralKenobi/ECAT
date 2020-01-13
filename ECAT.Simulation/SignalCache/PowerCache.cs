@@ -59,8 +59,6 @@ namespace ECAT.Simulation
 		protected void CachePower(TSignal power, IBaseComponent component, bool voltageBA)
 		{
 			CacheHelper(power, component, voltageBA);
-
-			CacheHelper(CopyAndNegate(power), component, !voltageBA);
 		}
 
 		/// <summary>

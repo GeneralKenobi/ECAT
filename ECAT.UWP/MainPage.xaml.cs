@@ -45,14 +45,14 @@ namespace ECAT.UWP
 		private void MainPageLoaded(object sender, RoutedEventArgs e)
 		{
 			// Add a horizontal and a vertical line every 25 pixels
-			for (int i = 50; i < 2000; i += 50)
+			for (int i = 50; i < 20000; i += 50)
 			{
 				BackgroundGrid.Children.Add(new Line()
 				{
 					Stroke = App.Current.Resources["LightGrayBrush"] as SolidColorBrush,
 					StrokeThickness = 2,
 					X1 = 0,
-					X2 = 2000,
+					X2 = 20000,
 					Y1 = i,
 					Y2 = i,
 				});
@@ -64,7 +64,7 @@ namespace ECAT.UWP
 					X1 = i,
 					X2 = i,
 					Y1 = 0,
-					Y2 = 2000,
+					Y2 = 20000,
 				});
 			}
 		}

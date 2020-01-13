@@ -51,114 +51,99 @@
 
 	<Grid>
 
-		<ScrollViewer Name="ScrollViewerControl"
-					ZoomMode="Enabled" MinZoomFactor="0.1" MaxZoomFactor="10"			
-					HorizontalScrollMode="Enabled" HorizontalScrollBarVisibility="Auto"
-					HorizontalAlignment="Left"
-					VerticalAlignment="Top"
-					Visibility="{Binding DesignVM.ShowSchematic, Converter={converters:BoolToVisibilityMEC}}">
-
-			<!--<Grid Tapped="DesignAreaTapped">-->
-			<Grid>
-
-				<xaml:VisualAttachments.AttachedVisuals>
-					<xaml:TappedPointerPositionVisualCommand Command="{Binding DesignVM.DesignAreaClickedCommand}"
-							Converter="{StaticResource PositionConverter}">
-						<xaml:VisualTappedTrigger/>
-					</xaml:TappedPointerPositionVisualCommand>
-				</xaml:VisualAttachments.AttachedVisuals>
-
-				<Grid x:Name="BackgroundGrid"
-						Background="Transparent"
-						UseLayoutRounding="False"
-						HorizontalAlignment="Left"
-						VerticalAlignment="Top"/>
-
-				<!--DragOver="PartDragOver"
-					Drop="DropOnMainCanvas"
-					Tapped="MainCanvasTapped"-->
-
-				<!-- Control for wires-->
-				<ItemsControl ItemsSource="{Binding DesignVM.DesignManager.CurrentSchematic.Wires}"
-						UseLayoutRounding="False">
-
-					<ItemsControl.ItemsPanel>
-						<ItemsPanelTemplate>
-							<Canvas />
-						</ItemsPanelTemplate>
-					</ItemsControl.ItemsPanel>
-
-					<ItemsControl.ItemTemplate>
-						<DataTemplate>
-							<local:WireTC DataContext="{Binding Converter={StaticResource WireConverter}}"/>
-						</DataTemplate>
-					</ItemsControl.ItemTemplate>
-				</ItemsControl>
-
-				<!-- Control for components -->
-				<!-- Don't use layout rounding because it blurs the parts when they're rotated,
-					especially noticeable when the control has text in it -->
-				<ItemsControl ItemsSource="{Binding DesignVM.DesignManager.CurrentSchematic.Components}"
-						UseLayoutRounding="False">
-
-					<ItemsControl.ItemsPanel>
-						<ItemsPanelTemplate>
-							<Canvas />
-						</ItemsPanelTemplate>
-					</ItemsControl.ItemsPanel>
-
-					<ItemsControl.ItemTemplate>
-						<DataTemplate>
-							<local:ComponentWrapperTC DataContext="{Binding Converter={StaticResource ComponentConverter}}"/>
-						</DataTemplate>
-					</ItemsControl.ItemTemplate>
-				</ItemsControl>
-			</Grid>
-		</ScrollViewer>
-
 		<Grid>
 			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="*"/>
+				<RowDefinition Height="Auto"/>
 			</Grid.RowDefinitions>
 
-			<TextBlock Text="{Binding DesignVM.GraphHeader}"
-				FontSize="{StaticResource FontSizeXXXLarge}"
-				HorizontalAlignment="Center"
-				Margin="0 10 0 0"/>
+			<ScrollViewer Name="ScrollViewerControl"
+						ZoomMode="Enabled" MinZoomFactor="0.1" MaxZoomFactor="10"			
+						HorizontalScrollMode="Enabled" HorizontalScrollBarVisibility="Auto"
+						HorizontalAlignment="Left"
+						VerticalAlignment="Top"
+						Visibility="{Binding DesignVM.ShowSchematic, Converter={converters:BoolToVisibilityMEC}}">
 
-			<ContentControl Content="{Binding DesignVM.GraphToShow.Data, Converter={StaticResource SignalDataConverter}}"
-				HorizontalAlignment="Center"
-				VerticalAlignment="Center"
-				Grid.Row="1"
-				ContentTemplateSelector="{StaticResource SignalDataTemplateSelector}"
-				Visibility="{Binding DesignVM.ShowGraph, Converter={converters:BoolToVisibilityMEC}}"/>
-		</Grid>
+				<!--<Grid Tapped="DesignAreaTapped">-->
+				<Grid>
 
-		<!-- Elements at the bottom of the screen: The dark blue border, the currently logged message, the component info -->
-		<StackPanel 
-			HorizontalAlignment="Stretch"
-			VerticalAlignment="Bottom">
+					<xaml:VisualAttachments.AttachedVisuals>
+						<xaml:TappedPointerPositionVisualCommand Command="{Binding DesignVM.DesignAreaClickedCommand}"
+								Converter="{StaticResource PositionConverter}">
+							<xaml:VisualTappedTrigger/>
+						</xaml:TappedPointerPositionVisualCommand>
+					</xaml:VisualAttachments.AttachedVisuals>
+
+					<Grid x:Name="BackgroundGrid"
+							Background="Transparent"
+							UseLayoutRounding="False"
+							HorizontalAlignment="Left"
+							VerticalAlignment="Top"/>
+
+					<!--DragOver="PartDragOver"
+						Drop="DropOnMainCanvas"
+						Tapped="MainCanvasTapped"-->
+
+					<!-- Control for wires-->
+					<ItemsControl ItemsSource="{Binding DesignVM.DesignManager.CurrentSchematic.Wires}"
+							UseLayoutRounding="False">
+
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<Canvas />
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+
+						<ItemsControl.ItemTemplate>
+							<DataTemplate>
+								<local:WireTC DataContext="{Binding Converter={StaticResource WireConverter}}"/>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+
+					<!-- Control for components -->
+					<!-- Don't use layout rounding because it blurs the parts when they're rotated,
+						especially noticeable when the control has text in it -->
+					<ItemsControl ItemsSource="{Binding DesignVM.DesignManager.CurrentSchematic.Components}"
+							UseLayoutRounding="False">
+
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<Canvas />
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+
+						<ItemsControl.ItemTemplate>
+							<DataTemplate>
+								<local:ComponentWrapperTC DataContext="{Binding Converter={StaticResource ComponentConverter}}"/>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</Grid>
+			</ScrollViewer>
 
 			<local:ComponentInfoUC HorizontalAlignment="Right"
-				DataContext="{Binding DesignVM.ComponentInfoProvider.Value}"
-				Visibility="{Binding ElementName=RootPage, Path=DataContext.DesignVM.ComponentInfoProvider.CanBeHidden, Converter={converters:BoolToVisibilityMEC InvertConvesion=True}}"/>
+			VerticalAlignment="Bottom"
+			DataContext="{Binding DesignVM.ComponentInfoProvider.Value}"
+			Visibility="{Binding ElementName=RootPage, Path=DataContext.DesignVM.ComponentInfoProvider.CanBeHidden, Converter={converters:BoolToVisibilityMEC InvertConvesion=True}}"/>
 
 			<!-- The dark blue border at the bottom of the screen with the currently logged message -->
 			<Border Background="{StaticResource DarkBlue5Brush}"
+				Grid.Row="1"
+				HorizontalAlignment="Stretch"
 				Padding="50 0 0 0"
 				Height="30">
 
-				<!-- The currently logged message -->
-				<TextBlock Text="{Binding DesignVM.InfoLogger.Message}"
+					<!-- The currently logged message -->
+					<TextBlock Text="{Binding DesignVM.InfoLogger.Message}"
 				FontSize="{StaticResource FontSizeSmall}"
 				Foreground="{StaticResource LightGrayBrush}"
 				VerticalAlignment="Center">
 
 				<!-- Translate transform which adjusts the position of the message depending on if menu is open/closed -->
-					<TextBlock.RenderTransform>
-						<TranslateTransform x:Name="LogMessageTranslateTransform"/>
-					</TextBlock.RenderTransform>
+						<TextBlock.RenderTransform>
+							<TranslateTransform x:Name="LogMessageTranslateTransform"/>
+						</TextBlock.RenderTransform>
 
 				<xaml:VisualManager.VisualSetups>
 					<xaml:VisualSetupGroup>
@@ -219,11 +204,30 @@
 					</xaml:VisualSetupGroup>
 				</xaml:VisualManager.VisualSetups>
 
-				</TextBlock>
+					</TextBlock>
 
-			</Border>
+				</Border>
 
-		</StackPanel>
+		</Grid>
+
+		<Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+
+			<TextBlock Text="{Binding DesignVM.GraphHeader}"
+				FontSize="{StaticResource FontSizeXXXLarge}"
+				HorizontalAlignment="Center"
+				Margin="0 10 0 0"/>
+
+			<ContentControl Content="{Binding DesignVM.GraphToShow.Data, Converter={StaticResource SignalDataConverter}}"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center"
+				Grid.Row="1"
+				ContentTemplateSelector="{StaticResource SignalDataTemplateSelector}"
+				Visibility="{Binding DesignVM.ShowGraph, Converter={converters:BoolToVisibilityMEC}}"/>
+		</Grid>
 
 		<controls:Menu x:Name="SideMenu"
 			Position="Left"

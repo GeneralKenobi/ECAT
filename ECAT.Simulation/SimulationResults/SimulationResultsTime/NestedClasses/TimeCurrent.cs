@@ -110,7 +110,8 @@ namespace ECAT.Simulation
 
 					// Get the minimum frequency - it is needed for capacitor waveform shifting, check if there are any waveforms, if not
 					// just assign 0 (technically no waveforms result in a zero wave, which is DC)
-					var minACFrequency = voltageDrop.ComposingWaveforms.Count > 0 ? voltageDrop.ComposingWaveforms.Keys.Min((x) => x.Frequency) : 0;
+					var acWaveforms = voltageDrop.ComposingWaveforms.Where((x) => x.Key.Frequency > 0);
+					var minACFrequency = acWaveforms.Count() > 0 ? acWaveforms.Min((x) => x.Key.Frequency) : 0;
 
 					// Current is composed of each voltage waveform times admittance of the element
 					foreach (var waveform in voltageDrop.ComposingWaveforms)
@@ -121,14 +122,22 @@ namespace ECAT.Simulation
 						// Current waveform is the product of voltage waveforrm and magnitude
 						var finalWaveform = waveform.Value.Select((x) => x * admittanceMagnitude);
 
-						// Introduce phase shift for capacitors - but only if minimum AC frequency is greater than 0, if it's not then there were
+						// Introduce phase shift for capacitors and inductors - but only if minimum AC frequency is greater than 0, if it's not then there were
 						// no AC voltage sources and so no current will flow through any capacitor
-						if (minACFrequency > 0 && element is ICapacitor)
+						if (minACFrequency > 0 && waveform.Key.Frequency > 0)
 						{
-							// Each wave has to be shifted by pi / 2 but only in its period.
-							// For example, a wave with frequency 2 times the lowest frequency has to be shifted by total of pi / 4 - because
-							// there are 2 periods of it in the full waveform. This relation is given by minimum frequency / wave frequency
-							finalWaveform = WaveformBuilder.ShiftWaveform(finalWaveform, minACFrequency / waveform.Key.Frequency * Math.PI / 2 );
+							if(element is ICapacitor)
+							{
+								// Each wave has to be shifted by pi / 2 but only in its period.
+								// For example, a wave with frequency 2 times the lowest frequency has to be shifted by total of pi / 4 - because
+								// there are 2 periods of it in the full waveform. This relation is given by minimum frequency / wave frequency
+								finalWaveform = WaveformBuilder.ShiftWaveform(finalWaveform, minACFrequency / waveform.Key.Frequency * Math.PI / 2 );
+							}
+							else if (element is IInductor)
+							{
+								// Analogous for inductors
+								finalWaveform = WaveformBuilder.ShiftWaveform(finalWaveform, 2 * Math.PI - minACFrequency / waveform.Key.Frequency * Math.PI / 2);
+							}
 						}
 
 						// Add the waveform to the final waveform

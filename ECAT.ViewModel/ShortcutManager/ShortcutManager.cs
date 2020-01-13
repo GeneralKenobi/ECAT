@@ -127,8 +127,6 @@ namespace ECAT.ViewModel
 			_RegisteredShortcuts.Add(new ShortcutActionDefinition(
 				"Run Frequency Sweep Simulation",
 				new KeyArgument("U"), () => AppViewModel.Singleton.SimulationVM.SimulationManager.FrequencySweep(AppViewModel.Singleton.DesignVM.DesignManager.CurrentSchematic)));
-
-			// TODO: Change the ShortcutKeys to ShortcutKey.Empty and load the saved combinations from a local file
 		}
 
 		/// <summary>
@@ -165,8 +163,6 @@ namespace ECAT.ViewModel
 			if(hashes.Distinct().Count() == hashes.Count)
 			{
 				// If so, then it means that all key bingins are unique and the new values may be applied and saved
-
-				// TODO: Save the new bindings locally
 			}
 			else
 			{
